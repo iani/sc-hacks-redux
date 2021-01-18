@@ -1,11 +1,14 @@
 //: 18 Jan 2021 18:40 Redo of NEvent as NamedSingleton.
 /* 
 Experimental.
-To be used with Player2.
+To be used with new Player.
 
-Note: To test Event2 updating mechanism start like this: 
+To test updating mechanism start like this: 
 
-Event2.push;
+NamedEvent.push;
+
+currentEnvironment.watchChanges;
+
 
 currentEnvironment addDependant: { | ... args | postf ("args are: %\n", args) };
 
@@ -13,7 +16,7 @@ currentEnvironment addDependant: { | ... args | postf ("args are: %\n", args) };
 
 */
 
-Event2 : NamedSingleton {
+NamedEvent : NamedSingleton {
 	var <event;
 
 	prInit {
