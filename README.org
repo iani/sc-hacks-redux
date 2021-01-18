@@ -1,0 +1,4 @@
+# 18 Jan 2021 22:59
+The time has come to redo sc-hacks from scratch.
+
+Good luck...
