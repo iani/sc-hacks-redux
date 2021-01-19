@@ -38,6 +38,6 @@ It is unclear how to implement that.
 
 Solution 1: Define several subclasses of SynthMaker, each using a different kind of synth function wrapper, and to define different methods in Function which return this class.  
 
-Solution 2: to pass the wrap function, and potentially additional arguments such as number of channels, parameter default values, etc. as additinal arguments, and then use these parameters to create the wrapping function which is to be used inside the SynthMaker instance accessed by the player.
+Solution 2: Pass the wrap function, and potentially additional arguments such as number of channels, parameter default values, etc. as additinal arguments, and then use these parameters to create the wrapping function which is to be used inside the SynthMaker instance accessed by the player.
 
 In both of the above cases, the object passed to the Player should be not just a class, but an array containing the class and the function or additional parameters to use with it.  The Player accesses the instance of process maker from its sources dictionary and then plays it, passing additional arguments if needed.  An additional advantage of this approach is that a subarray contained in these arguments can be filtered and/or complimented by merging info from the SynthMaker or PatternMaker instance state (including for example default values of synth parameters), and state stored in the environment of the Player. (one should consider updating this info when a relevant key is set in the environment, to use as cache?).
