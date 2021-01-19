@@ -151,5 +151,50 @@ add { | action |
 
 Find what messages from server are used to sync Queue, and which messages from lang trigger these messages.
 
+*** Answer
 
+The queue works by evaluating the first (or next) function in its queue (here called =f=), and then *immediately* sending the message =/sync= to the server. Thus: 
 
+1) First evaluate the function - which may start on the server some task such as loading a buffer or a synthder. 
+2) Then send the message =/sync= to the server.
+
+This means that under normal conditions the server will start executing some time consuming task *before* receiving the =/sync= message.  If the task that was started by the evaluated function has already finished by the time that the server receives the subsequent =/sync= message, then the server will *immediately* send back the message =/synced=.  Else, the server will send back the message =/synced= as soon as it has finished the task which it was executing when it received the =/sync= message from Queue. 
+
+The Queue sends the =/sync= message together with a unique id which it obtains from =UniqueID.next=.  In response to this, the server sends back the message =/synced= together with the same id.  The OSCFunc of Queue compares the id received with the one it just generated, and thus makes sure to respond to the =/synced= message which corresponds to the =/sync= message that it just sent. When the ids match, Queue executes the next function in its queue list. 
+
+*** What this means for syncing the loading of synthdefs and starting of synths
+
+For starting of synths we can test this by including a synth.set message in a function that creates a synth, just after Synth.new, and after that syncing, and then in the next action also sending a synth.set message. According to today's tests, one can send both synth.set and synth.map to a synth right after Synth.new, without syncing.  But we may want to test this again ...  . However it would be more interesting to test the same thing with generating a synthdef from a function and sending it to the server, and then immediately trying to start a synth from it before syncing. This should definitely not work. The synth should only be possible to generate in the next function added to the Queue after the synthdef loading function.  This next function is guaranteed to run after the SynthDef has been loaded, and therefore it is guaranteed that this function can start a synth with this synthdef.
+
+** TODO 19 Jan 2021 22:42 Redo synthdef freeing  + controls + bus mechanism from makeSynth of SynthPlayer.
+
+This code is complex and needs rebuilding step-by-step.
+
+Connecting an array of parameters as receiver of update messages from the players envir may improve the code.
+
+** TODO 19 Jan 2021 22:18 enable customization of envelopes in GraphBuilder:wrapPlayerOut
+
+I could not find a way to detect if a synthdef contains a \gate control
+from inside GraphBuilder.  But:
+An easy way to automate this customization might be to require that the gate
+control be written as argument and then check for its presence in the source function like this: 
+
+#+begin_src sclang
+{ | gate = 0 | }.def.argNames.includes(\gate);
+#+end_src
+
+The relevant code in GraphBuilder is: 
+#+begin_src sclang
+
+ GraphBuilder {
+	/*
+		TODO: add an argument for customizing makeFadeEnv.
+		Make it possible to either provide the function itself,
+		or the name of a method to call,
+		Define different methods for different types of fade envelopes.
+		Symbol \none might build as envelope just the number 1, 
+		thus canceling the envelope making and allowing the user 
+		to write their envelope + gate in the function. 
+	*/
+	*wrapPlayerOut 
+#+end_src
