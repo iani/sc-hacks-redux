@@ -9,20 +9,25 @@ Cache Pattern and Synth players for a Player as NamedSingletons - or in dictiona
 
 The different makers instances are stored in a dictionary.  These could be accessed by a key that could be either the name of a synthdef (or possibly also a PatternDef), or the name of the class, in case that we want to use a generic SynthMaker or PatternMaker *(StreamMaker ?)* instance.  The additional advantage of this solution is that one could easily switch between different synth maker / stream maker templates, and cache a large number of these in a player (they could for example include the entire collection of currently loaded synthdefs).  Also, one could cache the last Maker played, so that play message without additional argument simply restarts the player using the last maker.
 
-
  *(Note: It is possible to resume EventStreams which have been stopped from the last point where they were stopped)* See this example:
 
 #+begin_src sclang
 //:+ wrap the code below in { }.fork if not using emacs sclang-snippets.
-p = EventPattern((dur: 1/4, amp: 0.5, degree: Pn(Pseries(0, 1, 20), inf)));
+p = EventPattern((dur: 1/10 * Pseq([1, 3, 1], inf), amp: 0.5, degree:
+        Pn(Pseries(-9, 1, 35)
+                + Pseq([0, [0, 2], -2], inf),
+                inf)));
 e = p.play;
 loop {
-	0.5.rrand(1.5).wait;
-	e.stop;
-	1.5.rrand(2).wait;
-	e.start;
+        1.5.rrand(2.5).wait;
+        e.stop;
+        1.5.rrand(2).wait;
+        e.start;
 }
+//:
 #+end_src
+
+_! TODO: The Pseq pattern in dur gets out of phase of the degree Pseq, even though they have the same length. This is probably due to stopping and restarting the EventPattern.  Check the code to see if there is some different treatment of the =dur= key from the other keys when stopping and/or starting the EventStream._
 
 The class could be returned by a method depending on the class of the source object.  For example, 
 
@@ -49,32 +54,61 @@ In both of the above cases, the object passed to the Player should be not just a
 
 - In the case of symbols as SynthDef names, the SynthMaker may be accessed from a global dictionary containing all loaded synthdefs (SynthDefLib?)
 
-- The process of choosing the Maker to use for the next Player.play has many steps, and should be redesigned:
+- In the case of Patterns, these should be stored in keys inside each Player where they have been used, because then the player can continue playing a pattern from the point at which it was previously stopped, and also each Player can hold its own custom patterns (rather than in a shared global repository of SynthDefs available on the server).
 
-Player.play(nil) -> Play the last played Maker (cached), or the default (possibly a Player or Maker class variable.
+Therefore, the Player can store in its =makers= dictionary a single SynthMaker using a SynthMaker instance as key, and several PatternMaker instances, using symbols as keys.
 
-Player.playSynthDef(name)
+- The process of choosing the Maker to use for the next Player.play has many steps or variants, and should be redesigned:
 
-Player.playFunc(Function)
+*** aPlayer.play(nil) 
+Play the last played Maker (cached), or the default (possibly a Player or Maker class variable.
+*** aPlayer.playSynthDef(synthdef)
+The 
+*** aPlayer.playFunc(Function)
+*** aPlayer.playPatternDef(name, proto)
+If PatternMaker is found under name, then add proto event to the keys of the maker. Start the pattern if it is not already playing.
 
-Player.playPatternDef(name)
+Else create a new pattern from the proto event and start it. 
 
-
+*** Shortcut methods for applying above methods to Player
 
 The above should in turn be constructed and issued from user input, translating from operators - methods: 
 
-aFunction +> aPlayerName (or Player)
-   play Function in SynthMaker - making new temporary SynthDef.
+**** aFunction +> aPlayerName (or Player)
+     play Function in SynthMaker - making new temporary SynthDef.
 
-aSymbol +> aPlayerName (or Player)
-   play SynthDef named aSymbol, or default synthdef if none found.
+**** aSymbol +> aPlayerName (or Player)
+     play SynthDef named aSymbol, or default synthdef if none found.
 
-anEvent +> aPlayerName (orPlayer), patternName
-   play anEvent in pattern named patternName.  If pattern under patternName already exists, just merge the events keys to it. Else, create a new pattern based on anEvent.
+**** anEvent +> aPlayerName (orPlayer), patternName
+     play anEvent in pattern named patternName.  If pattern under patternName already exists, just merge the events keys to it. Else, create a new pattern based on anEvent.
 
-Note: possible conflict/deviation of semantics from current sc-hacks version:
-aSymbol *> aPlayerName (or Player), patternName
-   play pattern patternName, or empty Pattern =()= if none found.
+**** nil +> aPlayerName (or Player), patternName
+   or: \aPlayerName.pplay(\patternName); (see next section for discussion of synonyms)
+     play pattern patternName, or empty Pattern =()= if none found.
+
+ Note: This is to avoid having to use a different operator distinguish playing a Pattern by PatternMaker name and a Synth by SynthDef name.
+ 
+**** \aPlayername.stop;  : Stop the process(es) currently playing in Player \aPlayername.
+
+*** Caching/setting/mapping synth parameters
+
+Can be done in SynthMaker. Following approach is slightly cpu costly at the time of the set up because, several new notifiers are added. but could lead to a clean and safe algorithm.
+
+- When the new synthdef is created or accessed, create a new array holding all paramname - value pairs to act as arg array for Synth(\defname, args ...). Get the values from the Player's envir, and if absent, from the SynthDef's defaults. 
+
+- When receipt from server is received that the synth has started do: 
+  1. Store the started synth in var =process=.
+  2. map any params that need to be mapped.
+  3. add notifiers to the array from the environment of the player, whith actions:
+     - set the parameter at the corresponding array slot to the value received
+     - set the synth parameter to the value received.
+
+- When issuing release to stop the synth, do:
+  - remove all notifiers from the parameter array. The synth is left to fade out without any parameter changes (!).
+  - Set the array variable to a new empty array [].
+
+ 
 
 *** Extra feature: Play arrays of synthdefs and/or patterns at each play, sharing the Players environment
 
@@ -84,10 +118,33 @@ This could be the default behavior.
 
 It means that the player performs set, map, free, release or event merging operations on each of the currently active processes.  The variable process should always contain an array. 
 
-** 19 Jan 2021 12:54 Pseq with function filter?
+** DONE 19 Jan 2021 12:54 Pseq and Pser with function filter?
+   CLOSED: [2021-01-19 Tue 14:12]
+
+   - State "DONE"       from              [2021-01-19 Tue 14:12] \\
+     Done. see Pfseq, Pfser.
 
 Devise a Pattern that plays like a Pseq but creates a new array for the Pseq at each new repetition, using a function.  The function should take the initial array, the previous array, and the number of repetitions as argument.
 
+The same with a Pser pattern, using the function to calculate the next index for accessing the list.
 
+** TODO 19 Jan 2021 16:42 check Queue:add: prevent running waitForBoot each time
 
-
+#+begin_src 
+add { | action |
+	actions add: action;
+	if (inactive) {  // make sure server is booted, then eval first action
+		inactive = false; // must be before waitForBoot !!!!!!!
+		/* TODO:
+			check if it is possible to avoid running
+		preboot.(this) and waitForboot, when the server is already running.
+		*/
+		preboot.(this);
+		server.waitForBoot({ // because waitForBoot messes with more delay
+			this.changed(\started, Process.elapsedTime);
+			this.prNext;
+		})
+	}
+	// if active, wait for sync message from server.
+}
+#+end_src

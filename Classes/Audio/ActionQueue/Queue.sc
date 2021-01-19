@@ -65,6 +65,10 @@ Queue {
 		actions add: action;
 		if (inactive) {  // make sure server is booted, then eval first action
 			inactive = false; // must be before waitForBoot !!!!!!!
+			/* TODO:
+				check if it is possible to avoid running
+				preboot.(this) and waitForboot, when the server is already running.
+			*/
 			preboot.(this);
 			server.waitForBoot({ // because waitForBoot messes with more delay
 				this.changed(\started, Process.elapsedTime);

@@ -32,7 +32,9 @@ N.B. 2: Buffer
 				);
 			*/
 			Synth(defName, args, target, addAction)
+			
 		}.sync(target.asTarget.server);
+		// ^synth; // RETURN THE SYNTH IMMEDIATELY FOR FURTHER USE!
 	}
 
 	syncSet { | ... args |

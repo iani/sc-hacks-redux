@@ -49,7 +49,7 @@ SynthDefAction : ActionQueTemplate {
 
 SynthAction : ActionQueTemplate {
 	sync { // INCOMPLETE!
-		Buffer.read(
+		Buffer.read( // WRONG
 			actionQue.server,
 			template,
 			{ actionQue.next(this) }
