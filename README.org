@@ -2,3 +2,43 @@
 The time has come to redo sc-hacks from scratch.
 
 Good luck...
+* Roadmap, etc.
+** 19 Jan 2021 08:55: Redo SourcePlayer as dictionary of Pattern/Synth making instances
+
+Cache Pattern and Synth players for a Player as NamedSingleton's - or in dictionary inside Player's var =sourcemakers= or =sources=.
+
+The different makers instances are stored in a dictionary.  These could be accessed by a key that could be either the name of a synthdef (or possibly also a PatternDef), or the name of the class, in case that we want to use a generic SynthMaker or PatternMaker *(StreamMaker ?)* instance.  The additional advantage of this solution is that one could easily switch between different synth maker / stream maker templates, and cache a large number of these in a player (they could for example include the entire collection of currently loaded synthdefs).  Also, one could cache the last Maker played, so that play message without additional argument simply restarts the player using the last maker.
+
+
+ *(Note: It is possible to resume EventStreams which have been stopped from the last point where they were stopped)* See this example:
+
+#+begin_src sclang
+//:+ wrap the code below in { }.fork if not using emacs sclang-snippets.
+p = EventPattern((dur: 1/4, amp: 0.5, degree: Pn(Pseries(0, 1, 20), inf)));
+e = p.play;
+loop {
+	0.5.rrand(1.5).wait;
+	e.stop;
+	1.5.rrand(2).wait;
+	e.start;
+}
+#+end_src
+
+The class could be returned by a method depending on the class of the source object.  For example, 
+
+- Function returns SynthMaker (make synthdef from function and play it)
+- Symbol returns SynthMaker (make synth from synthdef's name)
+- Pattern returns PatternMaker
+
+Each such instance knows how to make its pattern stream or its synth.  It stores the source for making it as synthdef or StreamPlayer etc.
+
+Also, one may customize SynthMaker's to make them wrap a function or UGen inside a function providing for example different types of envelopes, filters, panners, buffer players, granulators, SendTrig.kr etc.   
+
+It is unclear how to implement that. 
+
+Solution 1: Define several subclasses of SynthMaker, each using a different kind of synth function wrapper, and to define different methods in Function which return this class.  
+
+Solution 2: to pass the wrap function, and potentially additional arguments such as number of channels, parameter default values, etc. as additinal arguments, and then use these parameters to create the wrapping function which is to be used inside the SynthMaker instance accessed by the player.
+
+In both of the above cases, the object passed to the Player should be not just a class, but an array containing the class and the function or additional parameters to use with it.  The Player accesses the instance of process maker from its sources dictionary and then plays it, passing additional arguments if needed.
+

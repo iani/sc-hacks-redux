@@ -17,7 +17,20 @@ N.B. 2: Buffer
 
 + Synth {
 	sync { | defName, args, target, addAction=\addToHead |
+		/* Rewrite this to return the synth immediately and 
+			send the synth bundle to the server later.
+			See SynthPlayer:makeSynth in sc-hacks.
+		*/
+		// var synth;
+		// synth = Synth.basicNew(...)
 		{
+			/*
+				source.doSend (
+					server, // TODO: remove \out, outbus from args and check
+					process.newMsg(target, [\i_out, outbus, \out, outbus] ++ args,
+						envir [\addAction] ? \addToHead);
+				);
+			*/
 			Synth(defName, args, target, addAction)
 		}.sync(target.asTarget.server);
 	}
@@ -69,6 +82,9 @@ N.B. 2: Buffer
 			Create new buffer and return it.
 			Postpone the reading from file on the server 
 			to happen in synced order, using Queue.add(). 
+
+			TODO: Use method from SuperDirt to set buffer frame info etc.
+			from info on file.  See: Buffer:readWithInfo
 		*/
 		var buffer;
 		server = server ? Server.default;
