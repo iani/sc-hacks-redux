@@ -5,7 +5,7 @@ Good luck...
 * Roadmap, etc.
 ** 19 Jan 2021 08:55: Redo SourcePlayer as dictionary of Pattern/Synth making instances
 
-Cache Pattern and Synth players for a Player as NamedSingleton's - or in dictionary inside Player's var =sourcemakers= or =sources=.
+Cache Pattern and Synth players for a Player as NamedSingletons - or in dictionary inside Player's var =sourcemakers= or =sources=.
 
 The different makers instances are stored in a dictionary.  These could be accessed by a key that could be either the name of a synthdef (or possibly also a PatternDef), or the name of the class, in case that we want to use a generic SynthMaker or PatternMaker *(StreamMaker ?)* instance.  The additional advantage of this solution is that one could easily switch between different synth maker / stream maker templates, and cache a large number of these in a player (they could for example include the entire collection of currently loaded synthdefs).  Also, one could cache the last Maker played, so that play message without additional argument simply restarts the player using the last maker.
 
@@ -41,3 +41,45 @@ Solution 1: Define several subclasses of SynthMaker, each using a different kind
 Solution 2: Pass the wrap function, and potentially additional arguments such as number of channels, parameter default values, etc. as additinal arguments, and then use these parameters to create the wrapping function which is to be used inside the SynthMaker instance accessed by the player.
 
 In both of the above cases, the object passed to the Player should be not just a class, but an array containing the class and the function or additional parameters to use with it.  The Player accesses the instance of process maker from its sources dictionary and then plays it, passing additional arguments if needed.  An additional advantage of this approach is that a subarray contained in these arguments can be filtered and/or complimented by merging info from the SynthMaker or PatternMaker instance state (including for example default values of synth parameters), and state stored in the environment of the Player. (one should consider updating this info when a relevant key is set in the environment, to use as cache?).
+** 19 Jan 2021 11:19 SynthMaker, PatternMaker details
+
+- They cannot store playing state - because there is only one per player - but there can be many SynthMakers and/or PatternMakers cached in a Player's sources.
+
+- Since an EventStream can continue from where it last stopped, these should be cached for each individual Player (not shared), using symbols as keys, in order to permit switching between different Streams!
+
+- In the case of symbols as SynthDef names, the SynthMaker may be accessed from a global dictionary containing all loaded synthdefs (SynthDefLib?)
+
+- The process of choosing the Maker to use for the next Player.play has many steps, and should be redesigned:
+
+Player.play(nil) -> Play the last played Maker (cached), or the default (possibly a Player or Maker class variable.
+
+Player.playSynthDef(name)
+
+Player.playFunc(Function)
+
+Player.playPatternDef(name)
+
+
+
+The above should in turn be constructed and issued from user input, translating from operators - methods: 
+
+aFunction +> aPlayerName (or Player)
+   play Function in SynthMaker - making new temporary SynthDef.
+
+aSymbol +> aPlayerName (or Player)
+   play SynthDef named aSymbol, or default synthdef if none found.
+
+anEvent +> aPlayerName (orPlayer), patternName
+   play anEvent in pattern named patternName.  If pattern under patternName already exists, just merge the events keys to it. Else, create a new pattern based on anEvent.
+
+Note: possible conflict/deviation of semantics from current sc-hacks version:
+aSymbol *> aPlayerName (or Player), patternName
+   play pattern patternName, or empty Pattern =()= if none found.
+
+*** Extra feature: Play arrays of synthdefs and/or patterns at each play, sharing the Players environment
+
+To consider! : 
+
+This could be the default behavior.
+
+It means that the player performs set, map, free, release or event merging operations on each of the currently active processes.  The variable process should always contain an array. 
