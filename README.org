@@ -83,3 +83,11 @@ To consider! :
 This could be the default behavior.
 
 It means that the player performs set, map, free, release or event merging operations on each of the currently active processes.  The variable process should always contain an array. 
+
+** 19 Jan 2021 12:54 Pseq with function filter?
+
+Devise a Pattern that plays like a Pseq but creates a new array for the Pseq at each new repetition, using a function.  The function should take the initial array, the previous array, and the number of repetitions as argument.
+
+
+
+
