@@ -147,8 +147,11 @@ add { | action |
 }
 #+end_src
 
-** TODO 19 Jan 2021 20:04 document Queue sync mechanism to write own SynthDef loading code
+** DONE 19 Jan 2021 20:04 document Queue sync mechanism to write own SynthDef loading code
+   CLOSED: [2021-01-19 Tue 23:33]
 
+   - State "DONE"       from "TODO"       [2021-01-19 Tue 23:33] \\
+     done
 Find what messages from server are used to sync Queue, and which messages from lang trigger these messages.
 
 *** Answer
@@ -164,13 +167,17 @@ The Queue sends the =/sync= message together with a unique id which it obtains f
 
 *** What this means for syncing the loading of synthdefs and starting of synths
 
-For starting of synths we can test this by including a synth.set message in a function that creates a synth, just after Synth.new, and after that syncing, and then in the next action also sending a synth.set message. According to today's tests, one can send both synth.set and synth.map to a synth right after Synth.new, without syncing.  But we may want to test this again ...  . However it would be more interesting to test the same thing with generating a synthdef from a function and sending it to the server, and then immediately trying to start a synth from it before syncing. This should definitely not work. The synth should only be possible to generate in the next function added to the Queue after the synthdef loading function.  This next function is guaranteed to run after the SynthDef has been loaded, and therefore it is guaranteed that this function can start a synth with this synthdef.
+For starting of synths we can test this by including a synth.set message in a function that creates a synth, just after Synth.new, and after that syncing, and then in the next action also sending a synth.set message. According to today's tests, one can send both synth.set and synth.map to a synth right after Synth.new, without syncing. But we may want to test this again ...  . However it would be more interesting to test the same thing with generating a synthdef from a function and sending it to the server, and then immediately trying to start a synth from it before syncing. This should definitely not work. The synth should only be possible to generate in the next function added to the Queue after the synthdef loading function. This next function is guaranteed to run after the SynthDef has been loaded, and therefore it is guaranteed that this function can start a synth with this synthdef.
 
 ** TODO 19 Jan 2021 22:42 Redo synthdef freeing  + controls + bus mechanism from makeSynth of SynthPlayer.
 
 This code is complex and needs rebuilding step-by-step.
 
 Connecting an array of parameters as receiver of update messages from the players envir may improve the code.
+
+One can get rid of the code that tests if the player is still waiting for the synth to start (which has occasional errors), and use sync instead.  
+
+Check again the code for testing whether the player stopped when its synth stops - which is, do not stop if another synth is in its place.
 
 ** TODO 19 Jan 2021 22:18 enable customization of envelopes in GraphBuilder:wrapPlayerOut
 
