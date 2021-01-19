@@ -5,13 +5,13 @@ Devise a Pattern that plays like a Pseq but creates a new array for the Pseq at 
 
 /*
 //:
-Pfuncseq((1..3), { | l, i | l.reverse.rotate(i) }, 5).asStream.nextN(12);
+Pfseq((1..3), { | l, i | l.reverse.rotate(i) }, 5).asStream.nextN(12);
 //:
-EventPattern((dur: 0.15, degree: Pfuncseq((1..5), { | l, i | l.reverse.rotate(i) }, 200))).play;
+EventPattern((dur: 0.15, degree: Pfseq((1..5) * 2, { | l, i | l.reverse.rotate(i) }, 200))).play;
 //:
 */
 
-Pfuncseq : Pseq {
+Pfseq : Pseq {
 	var <>func, <>initialList;
 
 		*new { arg list, func, repeats=1, offset=0;
