@@ -2,6 +2,7 @@
 /*
 A List Pattern that computes its index by applying a function on the previous index.
 
+Note: Compare this to Pindex!
 
 */
 

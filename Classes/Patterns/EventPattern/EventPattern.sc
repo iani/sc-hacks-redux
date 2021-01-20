@@ -62,7 +62,7 @@ EventStream : Stream {
 			// Use inEvent as main event to play,
 			// and then filter any of its values through the present event
 			outEvent = inEvent.copy;
-			outEvent use: { // evaluate using outEvent as environment
+			outEvent use: { //  evaluate using outEvent as environment
 				// makes outEvent values available as environmentVariables
 				event keysValuesDo: { | key value |
 					outValue = value.(this);
@@ -101,5 +101,18 @@ EventStream : Stream {
 		};
 		// this.changed(\stopped); // Put this in when the need arises.
 		nil;
-	}	
+	}
+
+	play2 {
+		var myevent;
+		postf("% starting to build playing mechanism from scratch\n", this);
+		postf("this is what happens when I call next to self: %\n",
+			myevent = this.next);
+		^myevent;
+		/* 
+			per default, myevent has no parent.
+			myevent.play however provides defaultParentEvent as parent.
+		*/
+		
+	}
 }
