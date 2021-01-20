@@ -29,7 +29,7 @@ loop {
 
 _! TODO: The Pseq pattern in dur gets out of phase of the degree Pseq, even though they have the same length. This is probably due to stopping and restarting the EventPattern.  Check the code to see if there is some different treatment of the =dur= key from the other keys when stopping and/or starting the EventStream._
 
-The class could be returned by a method depending on the class of the source object.  For example, 
+The class could be returned by a method depending on the class of the source object.  For example:
 
 - Function returns SynthMaker (make synthdef from function and play it)
 - Symbol returns SynthMaker (make synth from synthdef's name)
@@ -43,12 +43,15 @@ It is unclear how to implement that.
 
 Solution 1: Define several subclasses of SynthMaker, each using a different kind of synth function wrapper, and to define different methods in Function which return this class.  
 
-Solution 2: Pass the wrap function, and potentially additional arguments such as number of channels, parameter default values, etc. as additinal arguments, and then use these parameters to create the wrapping function which is to be used inside the SynthMaker instance accessed by the player.
+Solution 2: Pass the wrap function, and potentially additional arguments such as number of channels, parameter default values, etc. as additional arguments, and then use these parameters to create the wrapping function which is to be used inside the SynthMaker instance accessed by the player.
 
 In both of the above cases, the object passed to the Player should be not just a class, but an array containing the class and the function or additional parameters to use with it.  The Player accesses the instance of process maker from its sources dictionary and then plays it, passing additional arguments if needed.  An additional advantage of this approach is that a subarray contained in these arguments can be filtered and/or complimented by merging info from the SynthMaker or PatternMaker instance state (including for example default values of synth parameters), and state stored in the environment of the Player. (one should consider updating this info when a relevant key is set in the environment, to use as cache?).
+
+/Note: A new asSynthDef mechanism can be devised that will /
+
 ** 19 Jan 2021 11:19 SynthMaker, PatternMaker details
 
-- They cannot store playing state - because there is only one per player - but there can be many SynthMakers and/or PatternMakers cached in a Player's sources.
+
 
 - Since an EventStream can continue from where it last stopped, these should be cached for each individual Player (not shared), using symbols as keys, in order to permit switching between different Streams!
 
@@ -179,29 +182,83 @@ One can get rid of the code that tests if the player is still waiting for the sy
 
 Check again the code for testing whether the player stopped when its synth stops - which is, do not stop if another synth is in its place.
 
-** TODO 19 Jan 2021 22:18 enable customization of envelopes in GraphBuilder:wrapPlayerOut
+*** TODO 20 Jan 2021 12:41 initial considerations
 
-I could not find a way to detect if a synthdef contains a \gate control
-from inside GraphBuilder.  But:
-An easy way to automate this customization might be to require that the gate
-control be written as argument and then check for its presence in the source function like this: 
+- use asPlayerSynthDef to obtain synthdef
+- get arguments and synthdef name from the synthdef obtained.
+- code draft to create synthdef and optionally start the synth:
+  - ={ newSynthDef.add }.sync;
+  - if needed to start synth immediately, then also do: ={ synth = Synth(<synthdef name>) }.sync= to create the synth as soon as the synthdef was loaded.
+
+- *Freeing temp synthdefs!*: when asked to play a new func, then always free the previously stored synthdef, and replace it by the synthdef created from the new func provided. 
+
+*Important (1):* To ensure that only temp synthdefs are freed, playing synthdef and playing symbols should provide different classes to handle this.  Their differences are: 
+  - playSynthFunc ::
+    - generate new synthdef
+    - use sync to ensure that the synth starts after the synth def is loaded. 
+  - playSynthSymbol :: (assumes that the def is already loaded)
+    - obtain synthdef from SynthDescLib by name. If not found, issue warning and use \default synthdef instead. 
+    - play synth immediately *(NOTE: Must test this extensively first to ensure that it always works!)* (The alternative is to enclose the synth creation and argument settin/mapping funcs in 2 separate sync statements.). 
+
+*Important (2):* When playing a new synthdef the previous synthdef must be freed *only when it is a temp synthdef!*.  A safe and simple way to decide this is to store the SynthDefMaker that creates or accesses the synthdef each time that a new synthdef is used.  Thus, if the synthdef maker which created the previously played synthdef is a =Symbol2SynthDef=, it will *not* free the synthdef, because it is a permanent def.  But if the synthdef maker which created the previously played synthdef is a =Func2SynthDef=, it *will free* the synthdef, because it is a temporary def. Here is a draft for implementing this: 
+
+The choice of class can be done through method =Function:asSynthDefMaker= vs. =Symbol:asSynthDefMaker=.
+
+In conclusion, the new implementation of Player stores a single instance of SynthPlayer in its players dictionary.  This instance is responsible for playing both functions and symbols as synths. It is accessed by =playSynth= or possibly by either =playSynthFunc= or =playSynthSymbol= - chosen upstream in the chain of computation. Thereafter: 
+
+- =playSynthFunc= creates an instance of =Func2SynthDef= to obtain its synthdef.
+- alternatively =playSynthSymbol= creates an instance of =Symbol2SynthDef= to obtain its synthdef.
+- *Before storing the newly obtained synthdefmaker in variable synthDefMaker*, the SynthPlayer instance sends to the previously stored synthDefMaker instance the message =freeDefIfTemp=.   If the previously stored synthDefMaker is a =Symbol2SynthDef= it does not free.  Else if the instance is a =Func2SynthDef= it does free the temporary def that it holds.  
+
+** TODO 20 Jan 2021 11:16 custom asSynthDef for Player
+   :PROPERTIES:
+   :DATE:     <2021-01-20 Wed 11:16>
+   :END:
+
+*** 20 Jan 2021 12:22 workaround for providing own gated envelopes in synthdef functions
+
+the method GraphBuilder:wrapPlayerOut does not work if the synthdef function provided contains a =\gate= control, because it tries to provide =\gate= itself
+ - which is not accepted by the builder.  However, one can switch this off if one provides nil as value of =fadeTime=.  The workaround for doing this requires the =\gate= control to be defined as an argument of the synthdef function, i.e. it will not work if the gate control is defined inside the function with =\gate.kr(0)=.  The presence of a gate argument in the function can be detected like this: 
+
+ #+begin_src sclang
+ { | gate = 0 | }.def.argNames.includes(\gate);
+ #+end_src
+
+Based on the above, it is possible to provide an alternative method calling =Function:asSynthDef= with the right argument values: 
 
 #+begin_src sclang
-{ | gate = 0 | }.def.argNames.includes(\gate);
++ Function { 
+   asPlayerSynthDef { | fadeTime = 0.02 |
+     ^this.asSynthDef(
+       fadeTime: if (this.def.argNames includes: \gate) {
+         nil				
+       }{
+         fadeTime				
+       },
+       name: SystemSynthDefs.generateTempName
+     );
+   }
+}
 #+end_src
 
-The relevant code in GraphBuilder is: 
-#+begin_src sclang
+Note: Additionally GraphBuilder:wrapOut should be modified to provide a regular control argument =out= instead of scalar =i_out=, so that synths can change their output channel. 
 
- GraphBuilder {
-	/*
-		TODO: add an argument for customizing makeFadeEnv.
-		Make it possible to either provide the function itself,
-		or the name of a method to call,
-		Define different methods for different types of fade envelopes.
-		Symbol \none might build as envelope just the number 1, 
-		thus canceling the envelope making and allowing the user 
-		to write their envelope + gate in the function. 
-	*/
-	*wrapPlayerOut 
-#+end_src
+*** TODO 19 Jan 2021 22:18 enable customization of envelopes in GraphBuilder:wrapPlayerOut
+
+This is an optional additional feature to consider. Define a new method GraphBuilder:wrapPlayerOut which enables one to provide the envelope to be used as additional argument. 
+
+ The relevant code in GraphBuilder is: 
+ #+begin_src sclang
+
+  GraphBuilder {
+	 /*
+		 TODO: add an argument for customizing makeFadeEnv.
+		 Make it possible to either provide the function itself,
+		 or the name of a method to call,
+		 Define different methods for different types of fade envelopes.
+		 Symbol \none might build as envelope just the number 1, 
+		 thus canceling the envelope making and allowing the user 
+		 to write their envelope + gate in the function. 
+	 */
+	 *wrapPlayerOut 
+ #+end_src
