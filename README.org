@@ -217,7 +217,7 @@ In conclusion, the new implementation of Player stores a single instance of Synt
 
 *** 20 Jan 2021 12:22 workaround for providing own gated envelopes in synthdef functions
 
-the method GraphBuilder:wrapPlayerOut does not work if the synthdef function provided contains a =\gate= control, because it tries to provide =\gate= itself
+The method GraphBuilder:wrapPlayerOut does not work if the synthdef function provided contains a =\gate= control, because it tries to provide =\gate= itself
  - which is not accepted by the builder.  However, one can switch this off if one provides nil as value of =fadeTime=.  The workaround for doing this requires the =\gate= control to be defined as an argument of the synthdef function, i.e. it will not work if the gate control is defined inside the function with =\gate.kr(0)=.  The presence of a gate argument in the function can be detected like this: 
 
  #+begin_src sclang
@@ -262,3 +262,35 @@ This is an optional additional feature to consider. Define a new method GraphBui
 	 */
 	 *wrapPlayerOut 
  #+end_src
+
+*** 20 Jan 2021 14:47 New Player implementation notes
+    :PROPERTIES:
+    :DATE:     <2021-01-20 Wed 14:48>
+    :END:
+
+**** Recent features added (in sc-hacks):  
+
+Include pattern streams in environment. At each new play, the next value of the stream is broadcast to the player. 
+
+**** Recent features in preparation (in sc-hacks):
+
+Trigger players from SendTrig players.  Many-to-many connections enabled.
+
+**** New features planned
+
+***** Play any number of synths or patterns concurrently 
+
+(This was originally envisaged, but never really used. The old implementation foresaw multiple players stored in/responding to one environment. The new implementation delegates the playing to [Synth]Players stored in a dictionary inside the Player.)
+
+Implementation is discussed in the following subsection
+****** combine patterns and synths: play patterns always inside of synths
+
+This solves several problems while also adding the extra feature of providing customizeable fadein/out (as well as possibly also other effects to play the pattern in).
+
+Short discussion: Using different classes for pattern and synth players presents the problem that we cannot keep the state of the instance if it is replace.  This means that we would either have to keep two sets of sub-players - in which case we have to stop instances of either set, at the appropriate key, or we have to store a pair of synth and pattern player in one object, and switch between the two accordingly.
+
+On the other hand, if we play a pattern inside a synth (routing its output to the input of the synth), then we can also have fadein and out from the synth. We can keep playing the pattern while the synth is fading out.  This would be a desirable consistent behavior for cross-fading when playing different alternating patterns or synths in sequence in a player.  
+
+***** Provide customizeable filter functions for adapting input from any key in the environment
+
+Short discussion: This can be done by customizing the Notifier actions for each key in the internal player.  Defaults can be provided and customized for each internal player. 
