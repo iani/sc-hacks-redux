@@ -182,6 +182,12 @@ One can get rid of the code that tests if the player is still waiting for the sy
 
 Check again the code for testing whether the player stopped when its synth stops - which is, do not stop if another synth is in its place.
 
+*** 20 Jan 2021 16:19 Name for class playing Synths/Patterns inside a Player: Voice
+
+A Voice can play both synths and patterns.  Patterns are always played inside a synth which provides the fade envelope for them. 
+
+Multiple Voices can play in one Player at the same time.  They are stored in a dictionary by name (symbol).  Access is given via the adverb in operators addressed to player.  (this replaces the previous hardly used scheme envir, player with a new scheme: player, voice).
+
 *** TODO 20 Jan 2021 12:41 initial considerations
 
 - use asPlayerSynthDef to obtain synthdef
