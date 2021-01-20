@@ -263,27 +263,27 @@ This is an optional additional feature to consider. Define a new method GraphBui
 	 *wrapPlayerOut 
  #+end_src
 
-*** 20 Jan 2021 14:47 New Player implementation notes
-    :PROPERTIES:
-    :DATE:     <2021-01-20 Wed 14:48>
-    :END:
+** 20 Jan 2021 14:47 New Player implementation notes
+   :PROPERTIES:
+   :DATE:     <2021-01-20 Wed 14:48>
+   :END:
 
-**** Recent features added (in sc-hacks):  
+*** Recent features added (in sc-hacks):  
 
 Include pattern streams in environment. At each new play, the next value of the stream is broadcast to the player. 
 
-**** Recent features in preparation (in sc-hacks):
+*** Recent features in preparation (in sc-hacks):
 
 Trigger players from SendTrig players.  Many-to-many connections enabled.
 
-**** New features planned
+*** New features planned
 
-***** Play any number of synths or patterns concurrently 
+**** Play any number of synths or patterns concurrently 
 
 (This was originally envisaged, but never really used. The old implementation foresaw multiple players stored in/responding to one environment. The new implementation delegates the playing to [Synth]Players stored in a dictionary inside the Player.)
 
 Implementation is discussed in the following subsection
-****** combine patterns and synths: play patterns always inside of synths
+***** combine patterns and synths: play patterns always inside of synths
 
 This solves several problems while also adding the extra feature of providing customizeable fadein/out (as well as possibly also other effects to play the pattern in).
 
@@ -291,6 +291,6 @@ Short discussion: Using different classes for pattern and synth players presents
 
 On the other hand, if we play a pattern inside a synth (routing its output to the input of the synth), then we can also have fadein and out from the synth. We can keep playing the pattern while the synth is fading out.  This would be a desirable consistent behavior for cross-fading when playing different alternating patterns or synths in sequence in a player.  
 
-***** Provide customizeable filter functions for adapting input from any key in the environment
+**** Provide customizeable filter functions for adapting input from any key in the environment
 
 Short discussion: This can be done by customizing the Notifier actions for each key in the internal player.  Defaults can be provided and customized for each internal player. 
