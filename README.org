@@ -51,8 +51,6 @@ In both of the above cases, the object passed to the Player should be not just a
 
 ** 19 Jan 2021 11:19 SynthMaker, PatternMaker details
 
-
-
 - Since an EventStream can continue from where it last stopped, these should be cached for each individual Player (not shared), using symbols as keys, in order to permit switching between different Streams!
 
 - In the case of symbols as SynthDef names, the SynthMaker may be accessed from a global dictionary containing all loaded synthdefs (SynthDefLib?)
@@ -76,7 +74,9 @@ Therefore, the Player can store in its =makers= dictionary a single SynthMaker u
 
 *** 21 Jan 2021 14:59 New methods for starting/stopping synthdefs/patterns in voices
 
-**** aPlayer.start(\voice, optional: synthdef name, function, or event);
+**** aPlayer.start [or play ](\voice, optional: synthdef name, function, or event);
+
+(Use start or play as play as synonyms).
 
 **** \aPlayername.stop(... voices);  : Stop the process(es) currently playing in Player \aPlayername.
 
