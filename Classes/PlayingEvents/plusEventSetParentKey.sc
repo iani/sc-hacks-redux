@@ -32,4 +32,23 @@ Thereby ensure that:
 		 parent.put(key, newValue);
 		 //		 parent.postln;
 	 }
+
+	/*	
+	//  Temporary test for testing syntax usage:
+
+	argtest { | player, input |
+		/* works with all of the below: 
+().argtest;
+() argtest: 1;
+().argtest(1)
+().argtest(1, 2);
+		*/
+		postf("Temporary test method. player: %, input: %\n", player, input);
+	}
+	*/
+
+
 }
+
+
+
