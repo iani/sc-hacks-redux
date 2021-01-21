@@ -301,7 +301,9 @@ On the other hand, if we play a pattern inside a synth (routing its output to th
 
 Short discussion: This can be done by customizing the Notifier actions for each key in the internal player.  Defaults can be provided and customized for each internal player. 
 
-** 20 Jan 2021 18:31 alternative pattern playing mechanism in EventStream
+** TODO 20 Jan 2021 18:31 alternative pattern playing mechanism in EventStream
+
+This is radical but everything indicates it should be done. Current mechanism is so complex that I could not find even a way to locally modify the parent event of an event when playing (see also subsection to the present section below. [[*21 Jan 2021 09:58 devise and new functions for defaultParentEvent keys.][21 Jan 2021 09:58 devise and new functions for defaultParentEvent keys.]]).
 
 It should become possible to build the pattern playing mechanism from scratch in EventStream, like this: 
 
@@ -312,9 +314,66 @@ It should become possible to build the pattern playing mechanism from scratch in
 - Then start adding functions to process keys e.g. to convert degrees to frequency, calculate duration based on legato etc. 
 
 Start by exploring the way EventStream creates its events with method next.
-(See file in Snippets/EventPattern.)
+(See files in Snippets/EventPattern210120)
 
+*** CANCELED 21 Jan 2021 09:58 devise and new functions for defaultParentEvent keys.
+    CLOSED: [2021-01-21 Thu 11:10]
 
+ This route is now abandoned. Resuming with rebuilding event playing in pattern approach from scratch. 
+
+ COULD NOT GET THIS TO WORK WITH EventPattern or Pbind or anything.
+
+ Route tried:
+
+ Preparing. Look at these, then add your own ~freq function to defaultParentEvent.
+
+ #+begin_src sclang
+ a = ();
+ a.parent; //parent is nil
+ ().play;
+ a.parent; // parent is defaultParentEvent
+ a.parent[\freq] // get the key of a's parent
+ a.parent.freq; // cannot eval default freq function outside of its event
+ a use: { a.parent.freq; }; // but can evaluate it inside its event, like this
+ #+end_src
+
+ If you want to use a modified version of the defaultParentEvent locally, without changing the default global behavior, then you should make a copy and modify that one. The following shows that modifying the parent event in an event after playing is inherited when playing another event: 
+
+ #+begin_src sclang
+ a.parent[\freq];
+ a.parent[\freq] = 1000;
+ //:
+ b = ().play;
+ b.parent[\freq];
+ #+end_src
+
+**** Solution 1 (did not work - see file where this method is defined.
+
+ Since defaultParentEvent is not accessible outside an Event (see class definition code!), write a method like this to do the modification: 
+
+ #+begin_src sclang
+ + Event {
+	  setParentKey_ { | key, newValue |
+		  // preserve previous changes to parent!
+		  parent = (parent ? defaultParentEvent).copy;
+		  parent.put(key, newValue);
+	  }
+ }
+ #+end_src
+
+**** Solution 2 (not found a way to make this work!)
+
+ Use a Pfunc.  However I could not find a way to evaluate the Function of a Pfunc using the event itself as environment.  (FuncStream uses currentEnvironment, so it might be possible to do this with event.push, but this looks like a risky workaround).
+
+ See this: 
+
+ #+begin_src sclang
+ Pbind(\freq, Pfunc({ | in |
+	 postf("testing degree: %\n", ~degree);
+	 postf("testing inval: %\n", in);
+	 1200; }
+ ), \degree, 10).play;
+ #+end_src
 ** 21 Jan 2021 06:50 explore patterns that operate on the result of other patterns
 
 *** 20 Jan 2021 22:32 1. define new kind of pattern that continues outputting the last value produced by the pattern that precedes it, for n number of times. 
@@ -347,8 +406,6 @@ Returns:
 
 *** 21 Jan 2021 06:51 2. Play less elements from a pattern at each repeat.
 
-(Note: Compare code of patterns Pdrop, Pgate to see some related techniques.)
-
 For example: 
 
 #+begin_src sclang
@@ -361,44 +418,52 @@ should produce:
 [1, 2, 3, 4, 5, 1, 2, 3, 4, 1, 2, 3, 1, 2, 1]
 #+end_src
 
+**** Implementation notes 21 Jan 2021 09:53
+
+Extend Ptake to take less notes at each repetition.
+
+Requires specifying the initial number of elements to take because this is not known at the outset (and cannot be inferred from the source pattern because it may be infinite in length).
+
+**** Earlier notes (before 21 Jan 2021 09:51)
+
 This is probably possible with Pgate.  The doc file is not clear to me. Must study more.  Also, since Pgate requires an event, it is probably better to code a new pattern that does the job without requiring a pattern.
 
 Examples from doc file: 
 
-#+begin_src sclang
-//:
-(
-Pbind(
-    \degree, Pseq((0..7), inf),
-	\amp, 0.5,
-    \step, Pseq([false, false, false, true, false, true, false], inf),
-    \octave, Pgate(Pwhite(5,7), inf, \step),
-    \dur, 0.2
-).play
-)
-//: Pn advances Pgate each time its subpattern is repeated
-(
-Pbind(
-	\amp, 0.5,
-	\octave, 6,
-    \degree, Pn(Pseq((0..7)), inf, \step),
-    \mtranspose, Pgate(Pseq((0..4), inf), inf, \step),
-    \dur, 0.2
-).play
-)
+ #+begin_src sclang
+ //:
+ (
+ Pbind(
+     \degree, Pseq((0..7), inf),
+	 \amp, 0.5,
+     \step, Pseq([false, false, false, true, false, true, false], inf),
+     \octave, Pgate(Pwhite(5,7), inf, \step),
+     \dur, 0.2
+ ).play
+ )
+ //: Pn advances Pgate each time its subpattern is repeated
+ (
+ Pbind(
+	 \amp, 0.5,
+	 \octave, 6,
+     \degree, Pn(Pseq((0..7)), inf, \step),
+     \mtranspose, Pgate(Pseq((0..4), inf), inf, \step),
+     \dur, 0.2
+ ).play
+ )
 
 
-//: Two different Pgates advanced at two different rates
-(
-Pbind(
-	\amp, 0.5,
-	\octave, 6,
-    \scale,    Scale.minor,
-    \foo, Pn(Pseq((0..2)),inf,  \step1),
-    \degree, Pn(Pseq((0..7).mirror), inf, \step),
-    \ctranspose, Pgate(Pwhite(0,5), inf, \step) + Pgate(Pseq([0,7,0,-7], inf), inf, \step1),
-    \dur, 0.2
-).play
-)
-#+end_src
+ //: Two different Pgates advanced at two different rates
+ (
+ Pbind(
+	 \amp, 0.5,
+	 \octave, 6,
+     \scale,    Scale.minor,
+     \foo, Pn(Pseq((0..2)),inf,  \step1),
+     \degree, Pn(Pseq((0..7).mirror), inf, \step),
+     \ctranspose, Pgate(Pwhite(0,5), inf, \step) + Pgate(Pseq([0,7,0,-7], inf), inf, \step1),
+     \dur, 0.2
+ ).play
+ )
+ #+end_src
 
