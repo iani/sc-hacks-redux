@@ -61,17 +61,28 @@ In both of the above cases, the object passed to the Player should be not just a
 
 Therefore, the Player can store in its =makers= dictionary a single SynthMaker using a SynthMaker instance as key, and several PatternMaker instances, using symbols as keys.
 
-- The process of choosing the Maker to use for the next Player.play has many steps or variants, and should be redesigned:
+*** DRAFT: Starting synthdefs/patterns in voices of player. Old version (now replaced by new version below)
+ - The process of choosing the Maker to use for the next Player.play has many steps or variants, and should be redesigned:
 
-*** aPlayer.play(nil) 
-Play the last played Maker (cached), or the default (possibly a Player or Maker class variable.
-*** aPlayer.playSynthDef(synthdef)
-The 
-*** aPlayer.playFunc(Function)
-*** aPlayer.playPatternDef(name, proto)
-If PatternMaker is found under name, then add proto event to the keys of the maker. Start the pattern if it is not already playing.
+**** aPlayer.play(nil) 
+ Play the last played Maker (cached), or the default (possibly a Player or Maker class variable.
+**** aPlayer.playSynthDef(synthdef)
 
-Else create a new pattern from the proto event and start it. 
+**** aPlayer.playFunc(Function)
+**** aPlayer.playPatternDef(name, proto)
+ If PatternMaker is found under name, then add proto event to the keys of the maker. Start the pattern if it is not already playing.
+
+ Else create a new pattern from the proto event and start it. 
+
+*** 21 Jan 2021 14:59 New methods for starting/stopping synthdefs/patterns in voices
+
+**** aPlayer.start(\voice, optional: synthdef name, function, or event);
+
+**** \aPlayername.stop(... voices);  : Stop the process(es) currently playing in Player \aPlayername.
+
+If no voices are specified, stop all voices.
+Otherwise, stop any voices found under the given voice names.
+
 
 *** Shortcut methods for applying above methods to Player
 
@@ -85,14 +96,6 @@ The above should in turn be constructed and issued from user input, translating 
 
 **** anEvent +> aPlayerName (orPlayer), patternName
      play anEvent in pattern named patternName.  If pattern under patternName already exists, just merge the events keys to it. Else, create a new pattern based on anEvent.
-
-**** nil +> aPlayerName (or Player), patternName
-   or: \aPlayerName.pplay(\patternName); (see next section for discussion of synonyms)
-     play pattern patternName, or empty Pattern =()= if none found.
-
- Note: This is to avoid having to use a different operator distinguish playing a Pattern by PatternMaker name and a Synth by SynthDef name.
- 
-**** \aPlayername.stop;  : Stop the process(es) currently playing in Player \aPlayername.
 
 *** Caching/setting/mapping synth parameters
 
