@@ -2,12 +2,33 @@
 /* explore how eventstream plays.
 
 */
+//:TEMPORARILY DISABLED
+/* 
+EventPattern((amp: 0.5, freq: 1000, dur: 0.25)).play;
+
+EventPattern((amp: 0.5, degree: Pbrown(10, 20, 2), dur: 0.05)).play;
+*/
 //:
-EventPattern((amp: 0.5, freq: 1000)).play;
-//:
-a = EventStream((amp: 0.5, degree: Pseries(20, 1, 10))).play2;
+a = EventStream((amp: 0.5, degree: Pseries(20, 1, 10)));
 a;
-a.parent; // is nil!
+a.event.dur;
+a.setParentKey(\dur, 0.1);
+
+a.parent;
+a.event.parent;
+
+a.event;
+
+a.next;
+a.event.dur;
+a.next.dur;
+a.next.parent;
+
+a.event.play;
+
+a
+
+
 a.dur; // before playing, is nil
 a.play; // provides defaultParentEvent and plays
 a.dur; // after playing, is 1

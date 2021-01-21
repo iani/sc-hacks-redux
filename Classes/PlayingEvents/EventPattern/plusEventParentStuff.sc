@@ -26,28 +26,24 @@ Thereby ensure that:
 */
 
 + Event {
-	 setParentKey { | key, newValue |
+	*getDefaultParentEvent { ^defaultParentEvent; }
+
+	setParentKey { | key, newValue |
 		 // preserve previous changes to parent!
 		 parent = (parent ? defaultParentEvent).copy;
 		 parent.put(key, newValue);
-		 //		 parent.postln;
-	 }
-
-	/*	
-	//  Temporary test for testing syntax usage:
-
-	argtest { | player, input |
-		/* works with all of the below: 
-().argtest;
-() argtest: 1;
-().argtest(1)
-().argtest(1, 2);
-		*/
-		postf("Temporary test method. player: %, input: %\n", player, input);
+	}
+	/*
+	// NOT USED:
+	initParent { | argParent |
+		parent = (argParent ? defaultParentEvent).copy;
+		postf("inited parent. new parent is: %\n", parent);
+		"================================================================".postln;
+		postf("I am: %\n", this);
+		"================================================================".postln;
+		postf("my parent is: %\n", this.parent);
 	}
 	*/
-
-
 }
 
 
