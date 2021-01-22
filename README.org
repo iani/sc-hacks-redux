@@ -650,6 +650,21 @@ f.free;
 	 1200; }
  ), \degree, 10).play;
  #+end_src
+** 22 Jan 2021 12:59 Keeping EventStream simple by adding behaviors as keys
+
+Some extra features could be added as behaviors through keys assigned to corresponding Classes.  But some are so simple that it is better to add them as methods to EventStreasm. 
+
+- Count the number of events played: Return =past.size=.
+- Calculate the total duration of the pattern played so far. Sum durations of past events.  Better to do that than to incrementally add durations of partial playings - as an EventStream can be paused and restarted many times.
+
+** 22 Jan 2021 13:06 Conditionally change the value of a key
+
+add a key that contains a condition and then goes event.put[key, newValue] when that condition is met. This is much better in most cases than going 
+
+=Pseq([Pn(val1, n1), Pn(val2, n2) ... etc ])=
+
+Especially if conditions do not depend on counting times but on other stuff.
+
 ** 21 Jan 2021 06:50 explore patterns that operate on the result of other patterns
 
 *** 20 Jan 2021 22:32 1. define new kind of pattern that continues outputting the last value produced by the pattern that precedes it, for n number of times. 
@@ -742,4 +757,5 @@ Examples from doc file:
  ).play
  )
  #+end_src
+
 
