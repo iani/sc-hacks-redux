@@ -489,6 +489,11 @@ Some delay is involved to wait for the custom function to play before mapping. T
 
 The mechanism is a bit complex as we need to create a bus, load or access a control synthdef, play it in the bus, start the main synth, and map the parameter in the bus. When the event ends, free the control synth and the bus.
 
+**** 22 Jan 2021 11:26 Modifying the event of EventStream on the fly: methods =set=, =add=
+
+- =set(argEvent)= :: Set the event of the EventStream to argEvent
+- =add(argEvent)= :: Add the contents of argEvent to the event of the EventStream
+
 **** Other on-the-spot algorithmic generation of events
 
 ...
