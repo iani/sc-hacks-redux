@@ -409,10 +409,17 @@ Implementing this requires some careful work.  Suggested approach:  Collect n ev
 
 ***** =tstream= : Create EventStream and play that listening to =/tr= messages from SendTrig.
 
-=anEvent.tstream(... ids);
+=anEvent.tstream(key ... ids);
 
-Create OSCFunc listening to =/tr= and triggering anEvent.play each time. 
-If =ids.size == 0=, then no argTemplate filter is given 
+Create OSCFunc listening to =/tr= and triggering anEvent.play each time.
+
+If key is provided, then the event sets that key to the value sent by SendTrig.
+A variant could be to make key a function =func= and evaluate that function with =event.use(func.(value, id))= where =value= and =id= are the value and id received from SendTrig. This would give generalized access to the entire event for more modifications.
+
+If =ids.size == 0=, then no argTemplate filter is given.
+Else a the OSCFunc is constructed using an =argTemplate= filter. Implementation note: If more than one ids are possible in one =argTemplate=, then one OSCFunc does the job. Else multiple OSCFuncs must be constructed, one for each id. 
+
+The event plays at each receipt of =/tr=. 
 
 ****** Register dt - time between triggers
 
@@ -443,6 +450,13 @@ Can be delegated to play functions.  Should be relatively easy. A play event (ke
 	}
 }
 #+end_src
+
+To use this when playing events generated from an EventStream, one would have to wrap it in a function stored inside the =play= key.
+
+**** URGENT 22 Jan 2021 10:11 define methods for customizing the play function inside an event.
+     CLOSED: [2021-01-22 Fri 10:15]
+
+...
 
 **** Other on-the-spot algorithmic generation of events
 
