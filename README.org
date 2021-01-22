@@ -659,12 +659,28 @@ Some extra features could be added as behaviors through keys assigned to corresp
 
 ** 22 Jan 2021 13:06 Conditionally change the value of a key
 
-add a key that contains a condition and then goes event.put[key, newValue] when that condition is met. This is much better in most cases than going 
+Add a key that contains a condition and then goes event.put[key, newValue] when that condition is met. This is much better in most cases than going 
 
 =Pseq([Pn(val1, n1), Pn(val2, n2) ... etc ])=
 
 Especially if conditions do not depend on counting times but on other stuff.
 
+** 22 Jan 2021 14:03 is there a Pcount? (or anything that works like it?)
+
+Initialize on 0 (or any given start number).
+At each iteration, increment the current count number by 1 (or any given increment, or function).
+Optionally reset to start.
+Optionally change the starting point / increment / function.
+
+** 22 Jan 2021 14:06 get - set: Important operations on the event of the EventStream.
+
+For the actions described in the title and in the following subsections: At which level (EventStream, Event, inside event keys?) should these be made available and how? (Method?/Class?).
+
+I seem to be repeating this thought but should settle on one implementation and discuss its various use cases!
+
+*** Get the value of a key to operate on it (if it is a stream for example).
+
+*** Set the value of a key
 ** 21 Jan 2021 06:50 explore patterns that operate on the result of other patterns
 
 *** 20 Jan 2021 22:32 1. define new kind of pattern that continues outputting the last value produced by the pattern that precedes it, for n number of times. 
