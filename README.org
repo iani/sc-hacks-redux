@@ -453,10 +453,41 @@ Can be delegated to play functions.  Should be relatively easy. A play event (ke
 
 To use this when playing events generated from an EventStream, one would have to wrap it in a function stored inside the =play= key.
 
-**** URGENT 22 Jan 2021 10:11 define methods for customizing the play function inside an event.
+**** URGENT 22 Jan 2021 10:11 define methods (or classes?) for customizing the play function inside an event.
      CLOSED: [2021-01-22 Fri 10:15]
 
-...
+... [explain how event is played in EventStream by the function stored in =~play=] ...
+
+It is best to define these as Classes because they exist as functions independent of an EventStream or Event.  (The function which they contain is evaluated within the context of the event with =use=.  Must check whether this =use= must be repeated inside or not. Probably it is best to set the =play= event of the default parent event to a default =PlayEvent= instance which does =event use: (myFunc.value)=, and derive custom subclasses from it which generate their own custom function with customizable parameter values inherited within the closure context of the instance that created them. 
+
+Examples of functions or classes for customizing the play function in EventStream are: 
+
+***** Dtranspose (transpose degree)
+***** Mtranspose (midi Transpose)
+***** Ctranspose (cent Transpose)
+***** Ftranspose (frequency Transpose (multiply!))
+***** ScaleDur
+***** Delay
+***** Arpeggiate
+***** Repeat
+***** Subpattern
+
+An interesting exercise might be to create a subclass of Subpattern that replays a section of the past or future events of the EventStream within the duration of the present event, while possibly transposing them or otherwise scaling their parameters.
+
+***** Gamaka (or Portamento)
+
+(could also use values past and present events)
+
+Play a control-rate curve inside a parameter.
+
+Arguments: 
+
+- =key= :: the key to which the control rate bus will be mapped
+- =gFunc= :: ...
+
+Some delay is involved to wait for the custom function to play before mapping. This can be minimized by playing pre-loaded synthdefs.  Custom shapes are possible in these by foreseeing custom envelopes (see examples under Env in SC doc, also quoted in the present file.)
+
+The mechanism is a bit complex as we need to create a bus, load or access a control synthdef, play it in the bus, start the main synth, and map the parameter in the bus. When the event ends, free the control synth and the bus.
 
 **** Other on-the-spot algorithmic generation of events
 
