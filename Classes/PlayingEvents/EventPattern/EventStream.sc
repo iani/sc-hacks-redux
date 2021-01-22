@@ -5,26 +5,46 @@ Maybe this does not have to be a Stream.  We shall see later.
 */
 EventStream /* : Stream */ { // TODO: review subclassing from Stream.
 	var <>event, <>eventStreamParent;
-	*new { | event, parent |
-		^super.new.initEventStream(event, parent);
+	var <tempoClock;
+	var <past; // array containing all events produced by playing this stream.
+	var <present; // the present event;
+	var <future; // array containing <horizon> events in the future
+	var <horizon = 10; // number of future events to look up
+	var <isRunning = false;
+	var <restartCache;
+
+	// Debugging state with many flags;
+	var state = \waitingToStart;
+	
+	*new { | event, parent, tempoClock |
+		^super.new.init(event, parent, tempoClock);
 	}
 
-	initEventStream { | inEvent, inParent |
+	init { | inEvent, inParent, clock |
+		this.restartCache_(inEvent, inParent, clock);
+		this.initEventStream(inEvent, inParent, clock);
+		CmdPeriod add: { this.resetStream }
+	}
+
+	restartCache_ { | inEvent, inParent, clock |
+		restartCache = [inEvent, inParent, clock];
+	}
+
+	resetStream {
+		this.initEventStream(*restartCache);
+		isRunning = false;
+		this.changed(\reset);
+	}
+
+	initEventStream { | inEvent, inParent, clock |
+		tempoClock = clock ?? { TempoClock.default };
 		eventStreamParent = (inParent ? Event.getDefaultParentEvent).copy;
+		eventStreamParent[\stream] = this;
 		event = ();
 		event.parent = eventStreamParent;
 		inEvent keysValuesDo: { | key, value | event[key] = value.asStream(this); };
-		// event.initParent(eventStreamParent);
-		// "================================================================".postln;
-		// event.postln;
-		// event.parent.postln;
 	}
 
-	setParentKey { | key, value |
-		eventStreamParent[key] = value;
-	}
-	
-	// 21 Jan 2021 21:16 simplified version. See below for quoted earlier version
 	next {
 		var outEvent, outValue;
 		outEvent = ();
@@ -36,44 +56,52 @@ EventStream /* : Stream */ { // TODO: review subclassing from Stream.
 		}
 		^outEvent;
 	}
-	
-	// 21 Jan 2021 21:15 substituted simpler version above
-	/*
-	next { | inEvent |
-		// If inEvent is provided, add its contents,
-		// filtering them through own values.
-		var outEvent, outValue;
 
-		if (inEvent.isNil) {
-			"not using inEvent".postln;
-			outEvent = ();
-			event keysValuesDo: { | key, value |
-				outValue = value.next(this);
-				if (outValue.isNil) { ^nil };
-				outEvent[key] = outValue;
-			}
+	embedInStream { arg inval;
+		var outval;
+		while {
+			outval = this.next;
+			outval.notNil;
 		}{
-			// Use inEvent as main event to play,
-			// and then filter any of its values through the present event
-			"USING INEVENT".postln;
-			postf("my inevent is: %\n", inEvent);
-			postf("its parent is: %\n", inEvent.parent);
-			outEvent = inEvent.copy;
-			outEvent use: { //  evaluate using outEvent as environment
-				// makes outEvent values available as environmentVariables
-				event keysValuesDo: { | key value |
-					outValue = value.(this);
-					if (outValue.isNil) { ^nil };
-					outEvent [key] = outValue;
-				}
-			}
+			outval.yield;
 		};
-		postf("The outevent produced is: %\n", outEvent);
-		^outEvent;
+		nil;
 	}
-	*/
-	
-	addEvent { | inEvent |
+
+	// experimenting, trying to understand ... 
+	play {
+		if (isRunning) { ^postf("% is already running\n", this) };
+		isRunning = true;
+		this.changed(\started);
+		tempoClock.sched(0, {
+			if (isRunning) {
+				present = this.next.play;
+				// maybe move this to 'stopped'?
+				if (present.isNil) {
+					state = \streamHasFinished;
+					this.resetStream
+				};
+			} {
+				present = nil
+			};
+			this.changed(\played, present);
+			if ( present.notNil ) { present.dur } {
+				this.stop;
+			};
+		});
+	}
+
+	stop {
+		isRunning = false;
+		this.changed(\stopped);
+		state = \stopped;
+		postf("stop received. present is: %\n", present);
+		
+	}
+
+	// ================================================================
+	// extentions, features etc.
+	add { | inEvent |
 		inEvent keysValuesDo: { | key, value |
 			event[key] = value.asStream;
 			if (key === \degree) {
@@ -86,33 +114,12 @@ EventStream /* : Stream */ { // TODO: review subclassing from Stream.
 		}
 	}
 
-	/* Needed to embed an EventPattern in a Stream as in: 
-		Pseq([EventPattern((degree: (1..8).pseq(2)))]).play;
-	*/
-	embedInStream { arg inval;
-		var outval;
-		// this.changed(\started); // Put this in when the need arises.
-		while {
-			outval = this.next;
-			outval.notNil;
-		}{
-			outval.yield;
-		};
-		// this.changed(\stopped); // Put this in when the need arises.
-		nil;
+	set { | inEvent |
+		// inherit parent
+		inEvent.parent = eventStreamParent;
+		event = inEvent;
 	}
-
-	// experimenting, trying to understand ... 
-	play2 {
-		var myevent;
-		postf("% starting to build playing mechanism from scratch\n", this);
-		postf("this is what happens when I call next to self: %\n",
-			myevent = this.next);
-		^myevent;
-		/* 
-			per default, myevent has no parent.
-			myevent.play however provides defaultParentEvent as parent.
-		*/
-		
+	setParentKey { | key, value |
+		eventStreamParent[key] = value;
 	}
 }

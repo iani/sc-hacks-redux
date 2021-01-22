@@ -1,4 +1,9 @@
 /*
+NOTE: 22 Jan 2021 21:50 Note: EventPattern is now obsolete. 
+One can play EventStreams with events containing patterns directly, and no features are missing
+
+
+
 EventPattern can be embedded in another Pattern, 
 in similar way as Pdef can be embedded in a Pseq (see Pdef help entry).
 
