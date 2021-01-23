@@ -1,6 +1,5 @@
 /* 23 Jan 2021 15:25
 Obtain events to be played from an EventStream.
-
 */
 
 EventGetter {
@@ -13,7 +12,11 @@ EventGetter {
 
 	var <sourceEvent; // event with streams for producing the events to play
 	var <currentEvent; // event last accessed from sourceEvent through 'next'
-	
+
+	// if userStopped, then only run reset if the stream has already 
+	//	reached its end.
+	var <wasInterrupted = false;
+
 	*new { | stream, proto, parent |
 		^this.newCopyArgs(stream,
 			proto.copy,
@@ -24,15 +27,29 @@ EventGetter {
 	*defaultParent {
 		^defaultParent ?? { defaultParent = Event.default.parent.copy };
 	}
-	
+
+
 	reset {
-		sourceEvent = ();
-		sourceEvent.parent = parent;
+		"the EventGetter will now reset!".postln;
+		sourceEvent = ().parent = parent;
 		proto keysValuesDo: { | key, value | sourceEvent[key] = value.asStream; };
 	}
 
-	next {
-		var outValue;
+	next { | isFirstTime = false |
+		var next;
+		next = this.prNext;
+		if (wasInterrupted) {
+			next ?? {
+				this.reset;
+				next = this.prNext;
+			};
+			wasInterrupted = false;
+		}
+		^next;
+	}
+
+	prNext {
+		var outValue;		
 		currentEvent = ();
 		currentEvent.parent = parent;
 		sourceEvent keysValuesDo: { | key, value |
@@ -40,10 +57,10 @@ EventGetter {
 			if (outValue.isNil) { ^currentEvent = nil };
 			currentEvent[key] = outValue;
 		};
-		^currentEvent;
+		^currentEvent;		
 	}
-
-	resetIfNeeded { if (this.atEnd) { this.reset } }
+	
+	userStopped { wasInterrupted = true }
 
 	atEnd { ^currentEvent.isNil; }
 }

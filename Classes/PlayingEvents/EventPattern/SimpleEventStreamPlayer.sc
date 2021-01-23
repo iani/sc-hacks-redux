@@ -16,41 +16,47 @@
 SimpleEventStreamPlayer {
 	var <stream;
 	var <tempoClock;
-	var <isRunning = false;
-
 	var <getter; // get events from stream. reset stream if needed when starting
+	var <routine;
 
+	var <currentEvent;
+	
 	*new { | stream, event, parent, tempo |
 		^this.newCopyArgs(stream, tempo ?? { TempoClock.default })
 		.init(event, parent);
 	}
 
-	init { | event, parent |
-		getter = EventGetter(stream, event, parent);
-		getter.reset;
-	}
-
+	init { | event, parent | getter = EventGetter(stream, event, parent) }
+	
 	play {
-		if (isRunning) { ^"Stream already playing".postln; };
-		isRunning = true;
-		getter.resetIfNeeded;
-		tempoClock.sched(0, {
-			var nextEvent;
-			if (isRunning) { // isRunning may be set by user 
-				nextEvent = getter.next.postln.play;
-				stream.changed(\played, nextEvent);
-				if ( nextEvent.notNil ) { nextEvent.dur } {
-					this.stopped;
-				};
-			}
-		})
+		if (this.isRunning) { ^"Stream already playing".postln; };
+		routine = {
+			while {
+				(currentEvent = getter.next.play).notNil;
+			}{
+				stream.changed(\played, currentEvent);
+				currentEvent.dur.wait;
+			};
+			this.stopped;
+		}.play(tempoClock);
 	}
 
-	stop { this.stopped }
+	isRunning { ^routine.notNil }
+
+	stop { // For control by user while running
+		routine !? {
+			routine.stop;
+			getter.userStopped;
+		};
+		this.stopped;
+	}
+	
 	stopped {
-		isRunning = false;
+		routine = nil;
 		stream.changed(\stopped);
 	}
+
+	cmdPeriod { this.stopped; }
 
 	parent { ^getter.parent }
 	next { ^getter.next }

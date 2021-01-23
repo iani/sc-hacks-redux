@@ -8,11 +8,13 @@
 //:
 a = EventStream((
 	amp: 0.5,
-	dur: Pseq([2, 1, 5], 1),
+	dur: Pseq([2, 3, 5], 1),
 	degree: Pseq((0..2) + 14, inf)
 ));
 //:
 a.play;
+//:
+a.stop;
 //:
 a
 //:
