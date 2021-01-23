@@ -4,8 +4,9 @@ Reworking EventStream from sc-hacks.
 Maybe this does not have to be a Stream.  We shall see later.
 */
 EventStream /* : Stream */ { // TODO: review subclassing from Stream.
-	var <>event, <>eventStreamParent;
-	var <tempoClock;
+	var <>event;
+	var <>eventStreamParent; // 
+	// var <tempoClock; moved to streamOperations
 	var <past; // array containing all events produced by playing this stream.
 	var <present; // the present event;
 	var <future; // array containing <horizon> events in the future
@@ -13,6 +14,9 @@ EventStream /* : Stream */ { // TODO: review subclassing from Stream.
 	var <isRunning = false;
 	var <restartCache;
 
+	var <streamOperations;
+	var <history; // keep track of past, present and future events
+	
 	// Debugging state with many flags;
 	var state = \waitingToStart;
 	
@@ -21,6 +25,7 @@ EventStream /* : Stream */ { // TODO: review subclassing from Stream.
 	}
 
 	init { | inEvent, inParent, clock |
+		streamOperations = EventStreamOperations(this, inEvent, inParent, clock);
 		this.restartCache_(inEvent, inParent, clock);
 		this.initEventStream(inEvent, inParent, clock);
 		CmdPeriod add: { this.resetStream }
@@ -37,7 +42,7 @@ EventStream /* : Stream */ { // TODO: review subclassing from Stream.
 	}
 
 	initEventStream { | inEvent, inParent, clock |
-		tempoClock = clock ?? { TempoClock.default };
+		//		tempoClock = clock ?? { TempoClock.default };
 		eventStreamParent = (inParent ? Event.getDefaultParentEvent).copy;
 		eventStreamParent[\stream] = this;
 		event = ();
@@ -68,7 +73,16 @@ EventStream /* : Stream */ { // TODO: review subclassing from Stream.
 		nil;
 	}
 
+	play {
+		streamOperations.play;
+	}
+
+	resetIfNeeded {
+		"I will check if I need to reset.".postln;
+	}
+
 	// experimenting, trying to understand ... 
+	/*
 	play {
 		if (isRunning) { ^postf("% is already running\n", this) };
 		isRunning = true;
@@ -90,7 +104,7 @@ EventStream /* : Stream */ { // TODO: review subclassing from Stream.
 			};
 		});
 	}
-
+	*/
 	stop {
 		isRunning = false;
 		this.changed(\stopped);
@@ -100,7 +114,7 @@ EventStream /* : Stream */ { // TODO: review subclassing from Stream.
 	}
 
 	// ================================================================
-	// extentions, features etc.
+	// extensions, features etc.
 	add { | inEvent |
 		inEvent keysValuesDo: { | key, value |
 			event[key] = value.asStream;
