@@ -1,26 +1,35 @@
 /* 23 Jan 2021 15:25
 Obtain events to be played from an EventStream.
 
+This version computes several events ahead of time.
+
+Disadvantage: Any changes to the event will only be reflected after the precomputed events have played.
+
+Advantage: the present event has access to future events and can calculate 
+things like glissando or other phrases from them.
+
+Disadvantage: Changes made to the stream while it is playing take
+effect only after the already pre-computed events have past. 
+
 */
 
 EventStreamHistory {
 	classvar >defaultParent;
+	classvar <>horizon = 10; // number of future events to look up
 
 	var <stream; // the stream that produces the events
 	var <proto; // the prototype event producing the event source.
 	var <parent; // parent event for the event source	
-	var <horizon = 10; // number of future events to look up
 
 	var <event; // event with streams for producing the events to play
 	var <past; // array holding all events played so far
 	var <present; // the present event
 	var <future; // array containing <horizon> events in the future
 
-	*new { | stream, proto, parent, horizon = 10 |
+	*new { | stream, proto, parent |
 		^this.newCopyArgs(stream,
 			proto.copy,
-			(parent ?? { this.defaultParent }).copy,
-			horizon
+			(parent ?? { this.defaultParent }).copy
 		).reset;
 	}
 
@@ -35,10 +44,10 @@ EventStreamHistory {
 		proto keysValuesDo: { | key, value |
 			event[key] = value.asStream;
 		};
-		future = { this.next } ! horizon;
+		future = { this.getNextFromEvent } ! horizon;
 	}
 
-	next {
+	getNextFromEvent {
 		var outEvent, outValue;
 		outEvent = ();
 		outEvent.parent = parent;
@@ -50,11 +59,30 @@ EventStreamHistory {
 		^outEvent;
 	}
 
+	next {
+		present = future[0];
+		if (present.isNil) {
+			"the end of the stream has been reached".postln;
+		}{  // only record non-nil events
+			future = future rotate: -1;
+			future[future.size - 1] = this.getNextFromEvent;
+			past = past add: present;
+		};
+		^present;
+	}
+
 	resetIfNeeded {
 		if (this.atEnd) { this.reset }
 	}
 
 	atEnd {
 		// true if the stream has already produced the last event.
+		^this.eventsInFuture == 0;
 	}
+
+	eventsInFuture {
+		// find how many events are left to the first nil event in the future
+		^future indexOf: nil;		
+	}
+
 }
