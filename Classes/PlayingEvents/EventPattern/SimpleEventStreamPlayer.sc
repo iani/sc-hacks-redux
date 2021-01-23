@@ -23,7 +23,13 @@ SimpleEventStreamPlayer {
 	var <currentEvent;
 	
 	*new { | stream, event, parent, tempo, quant = 1 |
-		^this.newCopyArgs(stream, tempo ?? { TempoClock.new }, quant)
+		/* FIXME: using TempoClock.new(quant) 
+			issues a warning could not set scheduler priority
+			and then issues an error if a cmdPeriod has been 
+			to interrupt playing previously. : 
+			^this.newCopyArgs(stream, tempo ?? { TempoClock.new(quant) })
+		*/
+		^this.newCopyArgs(stream, tempo ?? { SystemClock })
 		.init(event, parent);
 	}
 

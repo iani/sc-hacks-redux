@@ -16,6 +16,7 @@ EventGetter {
 	// if userStopped, then only run reset if the stream has already 
 	//	reached its end.
 	var <wasInterrupted = false;
+	var <nextEvent; // lookahead needed to reset when interrupted at last event
 
 	*new { | stream, proto, parent |
 		^this.newCopyArgs(stream,
@@ -30,20 +31,23 @@ EventGetter {
 
 
 	reset {
-		"Was told to reset but will check if interrupted to decide".postln;
 		if (wasInterrupted) {
-			"WAS NOT INTERRUPTED AND WILL THEREFORE NOT RESET".postln;
 		}{
-			"was not interrupted and  will therefore reset!".postln;
 			sourceEvent = ().parent = parent;
 			proto keysValuesDo: { | key, value |
 				sourceEvent[key] = value.asStream;
 			};
 		};
+		wasInterrupted = false; // maybe this is not needed?
 	}
 
 	next {
 		var next;
+		if (nextEvent.notNil) {
+			next = nextEvent;
+			nextEvent = nil;
+			^next;
+		};
 		next = this.prNext;
 		if (wasInterrupted) {
 			next ?? {
@@ -67,7 +71,14 @@ EventGetter {
 		^currentEvent;		
 	}
 	
-	userStopped { wasInterrupted = true }
+	userStopped {
+		wasInterrupted = true;
+		nextEvent = this.prNext;
+		if (nextEvent.isNil) {
+			this.reset;
+			nextEvent = this.prNext;
+		}
+	}
 
 	atEnd { ^currentEvent.isNil; }
 }
