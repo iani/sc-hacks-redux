@@ -16,13 +16,14 @@
 SimpleEventStreamPlayer {
 	var <stream;
 	var <tempoClock;
+	var <>quant;
 	var <getter; // get events from stream. reset stream if needed when starting
 	var <routine;
 
 	var <currentEvent;
 	
-	*new { | stream, event, parent, tempo |
-		^this.newCopyArgs(stream, tempo ?? { TempoClock.default })
+	*new { | stream, event, parent, tempo, quant = 1 |
+		^this.newCopyArgs(stream, tempo ?? { TempoClock.new }, quant)
 		.init(event, parent);
 	}
 
@@ -39,7 +40,7 @@ SimpleEventStreamPlayer {
 				currentEvent.dur.wait;
 			};
 			this.stopped;
-		}.fork(tempoClock);
+		}.fork(tempoClock, quant); // forkIfNeeded?
 	}
 
 	isRunning { ^routine.notNil }

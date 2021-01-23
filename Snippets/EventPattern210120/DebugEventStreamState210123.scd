@@ -44,4 +44,12 @@ a.collect({ | i | (i !== nil).binaryValue }).sum;
 //:alternative
 a = { [nil, \X].choose } ! 10;
 a.postln;
-a indexOf: nil
+a indexOf: nil;
+//:================================================================
+//: explore tempo clock with quant;
+r = TempoClock.play({
+	10 do: {
+		"Hello there".postln;
+		1.wait;
+	}
+});
