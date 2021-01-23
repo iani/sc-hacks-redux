@@ -38,7 +38,7 @@ SimpleEventStreamPlayer {
 				currentEvent.dur.wait;
 			};
 			this.stopped;
-		}.play(tempoClock);
+		}.fork(tempoClock);
 	}
 
 	isRunning { ^routine.notNil }
