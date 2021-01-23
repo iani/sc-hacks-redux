@@ -30,6 +30,7 @@ SimpleEventStreamPlayer {
 	
 	play {
 		if (this.isRunning) { ^"Stream already playing".postln; };
+		getter.reset;
 		routine = {
 			while {
 				(currentEvent = getter.next.play).notNil;

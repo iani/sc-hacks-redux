@@ -21,7 +21,7 @@ EventGetter {
 		^this.newCopyArgs(stream,
 			proto.copy,
 			(parent ?? { this.defaultParent }).copy
-		).reset;
+		);
 	}
 
 	*defaultParent {
@@ -30,12 +30,19 @@ EventGetter {
 
 
 	reset {
-		"the EventGetter will now reset!".postln;
-		sourceEvent = ().parent = parent;
-		proto keysValuesDo: { | key, value | sourceEvent[key] = value.asStream; };
+		"Was told to reset but will check if interrupted to decide".postln;
+		if (wasInterrupted) {
+			"WAS NOT INTERRUPTED AND WILL THEREFORE NOT RESET".postln;
+		}{
+			"was not interrupted and  will therefore reset!".postln;
+			sourceEvent = ().parent = parent;
+			proto keysValuesDo: { | key, value |
+				sourceEvent[key] = value.asStream;
+			};
+		};
 	}
 
-	next { | isFirstTime = false |
+	next {
 		var next;
 		next = this.prNext;
 		if (wasInterrupted) {
