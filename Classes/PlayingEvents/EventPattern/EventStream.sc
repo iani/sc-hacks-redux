@@ -7,15 +7,9 @@ EventStream /* : Stream */ { // TODO: review subclassing from Stream.
 	var <>event;
 	var <>eventStreamParent; // 
 	// var <tempoClock; moved to streamOperations
-	var <past; // array containing all events produced by playing this stream.
-	var <present; // the present event;
-	var <future; // array containing <horizon> events in the future
-	var <horizon = 10; // number of future events to look up
 	var <isRunning = false;
-	var <restartCache;
 
 	var <streamOperations;
-	var <history; // keep track of past, present and future events
 	
 	// Debugging state with many flags;
 	var state = \waitingToStart;
@@ -26,23 +20,14 @@ EventStream /* : Stream */ { // TODO: review subclassing from Stream.
 
 	init { | inEvent, inParent, clock |
 		streamOperations = EventStreamOperations(this, inEvent, inParent, clock);
-		this.restartCache_(inEvent, inParent, clock);
-		this.initEventStream(inEvent, inParent, clock);
-		CmdPeriod add: { this.resetStream }
-	}
-
-	restartCache_ { | inEvent, inParent, clock |
-		restartCache = [inEvent, inParent, clock];
+		CmdPeriod add: { /* this.resetStream */ }
 	}
 
 	resetStream {
-		this.initEventStream(*restartCache);
-		isRunning = false;
-		this.changed(\reset);
+
 	}
 
 	initEventStream { | inEvent, inParent, clock |
-		//		tempoClock = clock ?? { TempoClock.default };
 		eventStreamParent = (inParent ? Event.getDefaultParentEvent).copy;
 		eventStreamParent[\stream] = this;
 		event = ();
@@ -50,6 +35,7 @@ EventStream /* : Stream */ { // TODO: review subclassing from Stream.
 		inEvent keysValuesDo: { | key, value | event[key] = value.asStream(this); };
 	}
 
+	/*
 	next {
 		var outEvent, outValue;
 		outEvent = ();
@@ -61,6 +47,7 @@ EventStream /* : Stream */ { // TODO: review subclassing from Stream.
 		}
 		^outEvent;
 	}
+	*/
 
 	embedInStream { arg inval;
 		var outval;
@@ -106,25 +93,19 @@ EventStream /* : Stream */ { // TODO: review subclassing from Stream.
 	}
 	*/
 	stop {
-		isRunning = false;
+		//		isRunning = false;
 		this.changed(\stopped);
 		state = \stopped;
-		postf("stop received. present is: %\n", present);
+		// postf("stop received. present is: %\n", present);
 		
 	}
 
 	// ================================================================
 	// extensions, features etc.
+	/*
 	add { | inEvent |
 		inEvent keysValuesDo: { | key, value |
 			event[key] = value.asStream;
-			if (key === \degree) {
-				event[\freq] = nil;
-				event[\note] = nil;
-			};
-			if (key === \note) {
-				event[\freq] = nil;
-			}
 		}
 	}
 
@@ -136,4 +117,5 @@ EventStream /* : Stream */ { // TODO: review subclassing from Stream.
 	setParentKey { | key, value |
 		eventStreamParent[key] = value;
 	}
+	*/
 }

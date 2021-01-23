@@ -30,7 +30,8 @@ EventStreamOperations {
 	var <userStopped = false;
 	var <isRunning = false;
 
-	var <prototype; // recreate event when reset is needed to start anew
+	var <history; // keep track of past, present and future events,
+               	// and reset when needed to start anew
 
 	*new { | stream, event, parent, tempo |
 		^this.newCopyArgs(stream, tempo ?? { TempoClock.default })
@@ -38,24 +39,24 @@ EventStreamOperations {
 	}
 
 	init { | event, parent |
-		prototype = EventStreamPrototype(stream, event, parent);
-		prototype.reset;
+		history = EventStreamHistory(stream, event, parent);
+		history.reset;
 	}
 
 	play {
 		if (isRunning) { ^"Stream already playing".postln; };
 		isRunning = true;
-		stream.resetIfNeeded;
+		history.resetIfNeeded;
 		tempoClock.sched(0, {
 			var nextEvent;
 			nextEvent = stream.next.postln.play;
 			stream.changed(\played, nextEvent);
 			if ( nextEvent.notNil ) { nextEvent.dur } {
-				prototype.streamEnded;
+				history.streamEnded;
 			};
 		})
 	}
 	
-	parent { ^prototype.parent }
+	parent { ^history.parent }
 
 }

@@ -12,6 +12,8 @@ a = EventStream((
 	degree: Pseq((0..2) + 14, inf)
 ));
 //:
+a.streamOperations.history.future do: _.postln;
+//:
 a.play;
 //:
 a.next.play;
