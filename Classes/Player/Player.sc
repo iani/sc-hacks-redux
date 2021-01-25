@@ -9,7 +9,7 @@ Also delegate functionality such as SynthDef and Synth building to other classes
 
 */
 
-Player2 : NamedSingleton {
+Player : NamedSingleton {
 	
 	
 }

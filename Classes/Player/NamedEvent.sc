@@ -9,7 +9,6 @@ NamedEvent.push;
 
 currentEnvironment.watchChanges;
 
-
 currentEnvironment addDependant: { | ... args | postf ("args are: %\n", args) };
 
 ~a = 10;

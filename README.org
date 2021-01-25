@@ -83,7 +83,6 @@ Therefore, the Player can store in its =makers= dictionary a single SynthMaker u
 If no voices are specified, stop all voices.
 Otherwise, stop any voices found under the given voice names.
 
-
 *** Shortcut methods for applying above methods to Player
 
 The above should in turn be constructed and issued from user input, translating from operators - methods: 

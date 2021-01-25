@@ -13,9 +13,9 @@ EventGetter {
 	var <sourceEvent; // event with streams for producing the events to play
 	var <currentEvent; // event last accessed from sourceEvent through 'next'
 
-	// if userStopped, then only run reset if the stream has already 
+	// if stopped, then only run reset if the stream has already 
 	//	reached its end.
-	var <wasInterrupted = false;
+	var <wasInterrupted = false; // if true, restart without resetting
 	var <nextEvent; // lookahead needed to reset when interrupted at last event
 
 	*new { | stream, proto, parent |
@@ -38,7 +38,7 @@ EventGetter {
 				sourceEvent[key] = value.asStream;
 			};
 		};
-		wasInterrupted = false; // maybe this is not needed?
+		wasInterrupted = false; // !!!
 	}
 
 	next {
@@ -73,6 +73,7 @@ EventGetter {
 	
 	userStopped {
 		wasInterrupted = true;
+		 // ensure reset if at end of stream:
 		nextEvent = this.prNext;
 		if (nextEvent.isNil) {
 			this.reset;
