@@ -832,4 +832,14 @@ In the case of EventStream it is possible to keep state, so this is hnadled diff
 
 Also Player can keep state, so here again the behavior is different.
 
+**** 25 Jan 2021 22:36 Test first prototype
 
+Evaluate following lines at different times:
+
+#+begin_src sclang
+a = Mediator().push; // initialize the system with this
+// then execute any of the following lines in different order:
+~b = { WhiteNoise.ar(0.1).dup }.play;
+~b = { SinOsc.ar(2000, 0, 0.1).dup }.play;
+~b = Pbind(\amp, 0.4, \degree, Pwhite(10, 20)).play;
+#+end_src
