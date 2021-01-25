@@ -27,10 +27,13 @@ SimpleEventStreamPlayer {
 	}
 
 	init { | event, parent | getter = EventGetter(stream, event, parent) }
-	
+
+	// ================================================================
+	// playing
+
 	play {
 		if (this.isRunning) { ^"Stream already playing".postln; };
-		getter.reset;
+		getter.resetIfNotInterrupted;
 		routine = {
 			while {
 				(currentEvent = getter.next.play).notNil;
@@ -59,6 +62,18 @@ SimpleEventStreamPlayer {
 
 	cmdPeriod { this.stopped; }
 
-	parent { ^getter.parent }
 	next { ^getter.next }
+
+	// ================================================================
+	// access
+	proto { ^getter.proto}
+	source { ^getter.sourceEvent }
+	parent { ^getter.parent }
+
+	// Modify prototype event and its stream at any point (also while playing).
+	// All of the below are delegated to EventGetter (q.v.).
+	set { | inEvent | getter.set(inEvent); }
+	add { | inEvent | getter.add(inEvent); }
+	removeKey { | key | getter.removeKey(key); }
+	addToParent { | key, value | getter.addToParent(key, value); }
 }

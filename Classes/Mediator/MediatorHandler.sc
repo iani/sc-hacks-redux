@@ -10,27 +10,18 @@ MediatorHandler : AbstractFunction {
 	value { | key, newValue |
 		var currentValue;
 		currentValue = envir.at(key);
-		currentValue.handleReplacement(envir, key, newValue);
-		//		envir.prPut(key, newValue);
+		currentValue.handleReplacement(newValue);
+		envir.prPut(key, newValue);
 	}
 }
 
-+ Object {
-	handleReplacement { | argEnvir, argKey, argNewValue |		
-		argEnvir.prPut(argKey, argNewValue);
-	}	
-}
+// other objects add more complex behavior
++ Object { handleReplacement {} }
 
-+ Synth {
-	handleReplacement { | argEnvir, argKey, argNewValue |
-		this.release; // if this does not have gate then free ... ?
-		super.handleReplacement(argEnvir, argKey, argNewValue);
-	}
-}
+// if this does not have gate then free ... ?
++ Synth { handleReplacement { this.release } }
 
-+ EventStreamPlayer {
-	handleReplacement {| argEnvir, argKey, argNewValue |
-		this.stop; //
-		super.handleReplacement(argEnvir, argKey, argNewValue);
-	}
-}
++ EventStreamPlayer { handleReplacement { this.stop; } }
+
++ EventStream { handleReplacement { this.stop; } }
+

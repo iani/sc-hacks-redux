@@ -3,8 +3,8 @@ Obtain events to be played from an EventStream.
 */
 
 EventGetter {
-	classvar >defaultParent;
-	classvar <>horizon = 10; // number of future events to look up
+	// this should go to class EventHistory:
+	// classvar <>horizon = 10; // number of future events to look up
 
 	var <stream; // the stream that produces the events
 	var <proto; // the prototype event producing the event source.
@@ -21,24 +21,20 @@ EventGetter {
 	*new { | stream, proto, parent |
 		^this.newCopyArgs(stream,
 			proto.copy,
-			(parent ?? { this.defaultParent }).copy
-		);
+			parent.asParent
+		).reset;
 	}
 
-	*defaultParent {
-		^defaultParent ?? { defaultParent = Event.default.parent.copy };
-	}
+	reset { sourceEvent = proto.makeStream(parent) }
 
-
-	reset {
-		if (wasInterrupted) {
-		}{
-			sourceEvent = ().parent = parent;
-			proto keysValuesDo: { | key, value |
-				sourceEvent[key] = value.asStream;
-			};
-		};
+	resetIfNotInterrupted { // do not reset if resuming from user stop
+		if (wasInterrupted) {}{ this.reset };
 		wasInterrupted = false; // !!!
+	}
+
+	clear { 
+		proto = ().parent = parent.asParent;
+		this.reset;
 	}
 
 	next {
@@ -60,15 +56,7 @@ EventGetter {
 	}
 
 	prNext {
-		var outValue;		
-		currentEvent = ();
-		currentEvent.parent = parent;
-		sourceEvent keysValuesDo: { | key, value |
-			outValue = value.next(this);
-			if (outValue.isNil) { ^currentEvent = nil };
-			currentEvent[key] = outValue;
-		};
-		^currentEvent;		
+		^currentEvent = sourceEvent.makeNext(parent);
 	}
 	
 	userStopped {
@@ -82,4 +70,41 @@ EventGetter {
 	}
 
 	atEnd { ^currentEvent.isNil; }
+
+	// ================================================================
+	// modifying contents while running
+
+	// ================
+	// 1: Modify prototype. Also add the streams of all new keys sourceEvent
+	// modified keys 
+	set { | argEvent |
+		// set proto to argEvent and update sourceEvent
+		proto = argEvent.copy.parent = parent;
+		this.reset;
+	}
+
+	addEventStreams { | argEvent |
+		sourceEvent !? { sourceEvent.addStreams(argEvent) };
+	}
+	
+	add { | argEvent |
+		// add all keys-values of argEvent to proto.
+		// set proto to argEvent and update sourceEvent
+		proto = argEvent.copy.parent = parent;
+		this addEventStreams: proto;
+	}
+
+	removeKey { | key |
+		proto.put(key, nil);
+		sourceEvent.put(key, nil);
+	}
+	// ================
+	// 2: Modify parent.
+	// Events having this parent automatically inherit new contents.
+
+	addToParent { | argEvent | // add all keys-values of argEvent to parent.
+		parent addEvent: argEvent;
+	}
+
+	setParentKey { | key, value | parent[key] = value; }
 }
