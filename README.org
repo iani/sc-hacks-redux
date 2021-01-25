@@ -3,774 +3,833 @@ The time has come to redo sc-hacks from scratch.
 
 Good luck...
 * Roadmap, etc.
-** 19 Jan 2021 08:55: Redo SourcePlayer as dictionary of Pattern/Synth making instances
+** Phase 1: Initial Design Considerations + Preliminary work (till 25.1.2021)
+*** 19 Jan 2021 08:55: Redo SourcePlayer as dictionary of Pattern/Synth making instances
 
-Cache Pattern and Synth players for a Player as NamedSingletons - or in dictionary inside Player's var =sourcemakers= or =sources=.
+ Cache Pattern and Synth players for a Player as NamedSingletons - or in dictionary inside Player's var =sourcemakers= or =sources=.
 
-The different makers instances are stored in a dictionary.  These could be accessed by a key that could be either the name of a synthdef (or possibly also a PatternDef), or the name of the class, in case that we want to use a generic SynthMaker or PatternMaker *(StreamMaker ?)* instance.  The additional advantage of this solution is that one could easily switch between different synth maker / stream maker templates, and cache a large number of these in a player (they could for example include the entire collection of currently loaded synthdefs).  Also, one could cache the last Maker played, so that play message without additional argument simply restarts the player using the last maker.
+ The different makers instances are stored in a dictionary.  These could be accessed by a key that could be either the name of a synthdef (or possibly also a PatternDef), or the name of the class, in case that we want to use a generic SynthMaker or PatternMaker *(StreamMaker ?)* instance.  The additional advantage of this solution is that one could easily switch between different synth maker / stream maker templates, and cache a large number of these in a player (they could for example include the entire collection of currently loaded synthdefs).  Also, one could cache the last Maker played, so that play message without additional argument simply restarts the player using the last maker.
 
- *(Note: It is possible to resume EventStreams which have been stopped from the last point where they were stopped)* See this example:
-
-#+begin_src sclang
-//:+ wrap the code below in { }.fork if not using emacs sclang-snippets.
-p = EventPattern((dur: 1/10 * Pseq([1, 3, 1], inf), amp: 0.5, degree:
-        Pn(Pseries(-9, 1, 35)
-                + Pseq([0, [0, 2], -2], inf),
-                inf)));
-e = p.play;
-loop {
-        1.5.rrand(2.5).wait;
-        e.stop;
-        1.5.rrand(2).wait;
-        e.start;
-}
-//:
-#+end_src
-
-_! TODO: The Pseq pattern in dur gets out of phase of the degree Pseq, even though they have the same length. This is probably due to stopping and restarting the EventPattern.  Check the code to see if there is some different treatment of the =dur= key from the other keys when stopping and/or starting the EventStream._
-
-The class could be returned by a method depending on the class of the source object.  For example:
-
-- Function returns SynthMaker (make synthdef from function and play it)
-- Symbol returns SynthMaker (make synth from synthdef's name)
-- Pattern returns PatternMaker
-
-Each such instance knows how to make its pattern stream or its synth.  It stores the source for making it as synthdef or StreamPlayer etc.
-
-Also, one may customize SynthMaker's to make them wrap a function or UGen inside a function providing for example different types of envelopes, filters, panners, buffer players, granulators, SendTrig.kr etc.   
-
-It is unclear how to implement that. 
-
-Solution 1: Define several subclasses of SynthMaker, each using a different kind of synth function wrapper, and to define different methods in Function which return this class.  
-
-Solution 2: Pass the wrap function, and potentially additional arguments such as number of channels, parameter default values, etc. as additional arguments, and then use these parameters to create the wrapping function which is to be used inside the SynthMaker instance accessed by the player.
-
-In both of the above cases, the object passed to the Player should be not just a class, but an array containing the class and the function or additional parameters to use with it.  The Player accesses the instance of process maker from its sources dictionary and then plays it, passing additional arguments if needed.  An additional advantage of this approach is that a subarray contained in these arguments can be filtered and/or complimented by merging info from the SynthMaker or PatternMaker instance state (including for example default values of synth parameters), and state stored in the environment of the Player. (one should consider updating this info when a relevant key is set in the environment, to use as cache?).
-
-/Note: A new asSynthDef mechanism can be devised that will /
-
-** 19 Jan 2021 11:19 SynthMaker, PatternMaker details
-
-- Since an EventStream can continue from where it last stopped, these should be cached for each individual Player (not shared), using symbols as keys, in order to permit switching between different Streams!
-
-- In the case of symbols as SynthDef names, the SynthMaker may be accessed from a global dictionary containing all loaded synthdefs (SynthDefLib?)
-
-- In the case of Patterns, these should be stored in keys inside each Player where they have been used, because then the player can continue playing a pattern from the point at which it was previously stopped, and also each Player can hold its own custom patterns (rather than in a shared global repository of SynthDefs available on the server).
-
-Therefore, the Player can store in its =makers= dictionary a single SynthMaker using a SynthMaker instance as key, and several PatternMaker instances, using symbols as keys.
-
-*** DRAFT: Starting synthdefs/patterns in voices of player. Old version (now replaced by new version below)
- - The process of choosing the Maker to use for the next Player.play has many steps or variants, and should be redesigned:
-
-**** aPlayer.play(nil) 
- Play the last played Maker (cached), or the default (possibly a Player or Maker class variable.
-**** aPlayer.playSynthDef(synthdef)
-
-**** aPlayer.playFunc(Function)
-**** aPlayer.playPatternDef(name, proto)
- If PatternMaker is found under name, then add proto event to the keys of the maker. Start the pattern if it is not already playing.
-
- Else create a new pattern from the proto event and start it. 
-
-*** 21 Jan 2021 14:59 New methods for starting/stopping synthdefs/patterns in voices
-
-**** aPlayer.start [or play ](\voice, optional: synthdef name, function, or event);
-
-(Use start or play as play as synonyms).
-
-**** \aPlayername.stop(... voices);  : Stop the process(es) currently playing in Player \aPlayername.
-
-If no voices are specified, stop all voices.
-Otherwise, stop any voices found under the given voice names.
-
-*** Shortcut methods for applying above methods to Player
-
-The above should in turn be constructed and issued from user input, translating from operators - methods: 
-
-**** aFunction +> aPlayerName (or Player)
-     play Function in SynthMaker - making new temporary SynthDef.
-
-**** aSymbol +> aPlayerName (or Player)
-     play SynthDef named aSymbol, or default synthdef if none found.
-
-**** anEvent +> aPlayerName (orPlayer), patternName
-     play anEvent in pattern named patternName.  If pattern under patternName already exists, just merge the events keys to it. Else, create a new pattern based on anEvent.
-
-*** Caching/setting/mapping synth parameters
-
-Can be done in SynthMaker. Following approach is slightly cpu costly at the time of the set up because, several new notifiers are added. but could lead to a clean and safe algorithm.
-
-- When the new synthdef is created or accessed, create a new array holding all paramname - value pairs to act as arg array for Synth(\defname, args ...). Get the values from the Player's envir, and if absent, from the SynthDef's defaults. 
-
-- When receipt from server is received that the synth has started do: 
-  1. Store the started synth in var =process=.
-  2. map any params that need to be mapped.
-  3. add notifiers to the array from the environment of the player, whith actions:
-     - set the parameter at the corresponding array slot to the value received
-     - set the synth parameter to the value received.
-
-- When issuing release to stop the synth, do:
-  - remove all notifiers from the parameter array. The synth is left to fade out without any parameter changes (!).
-  - Set the array variable to a new empty array [].
-
-*** Extra feature: Play arrays of synthdefs and/or patterns at each play, sharing the Players environment
-
-To consider! : 
-
-This could be the default behavior.
-
-It means that the player performs set, map, free, release or event merging operations on each of the currently active processes.  The variable process should always contain an array. 
-
-** DONE 19 Jan 2021 12:54 Pseq and Pser with function filter?
-   CLOSED: [2021-01-19 Tue 14:12]
-
-   - State "DONE"       from              [2021-01-19 Tue 14:12] \\
-     Done. see Pfseq, Pfser.
-
-Devise a Pattern that plays like a Pseq but creates a new array for the Pseq at each new repetition, using a function.  The function should take the initial array, the previous array, and the number of repetitions as argument.
-
-The same with a Pser pattern, using the function to calculate the next index for accessing the list.
-
-** TODO 19 Jan 2021 16:42 check Queue:add: prevent running waitForBoot each time
-
-#+begin_src 
-add { | action |
-	actions add: action;
-	if (inactive) {  // make sure server is booted, then eval first action
-		inactive = false; // must be before waitForBoot !!!!!!!
-		/* TODO:
-			check if it is possible to avoid running
-		preboot.(this) and waitForboot, when the server is already running.
-		*/
-		preboot.(this);
-		server.waitForBoot({ // because waitForBoot messes with more delay
-			this.changed(\started, Process.elapsedTime);
-			this.prNext;
-		})
-	}
-	// if active, wait for sync message from server.
-}
-#+end_src
-
-** DONE 19 Jan 2021 20:04 document Queue sync mechanism to write own SynthDef loading code
-   CLOSED: [2021-01-19 Tue 23:33]
-
-   - State "DONE"       from "TODO"       [2021-01-19 Tue 23:33] \\
-     done
-Find what messages from server are used to sync Queue, and which messages from lang trigger these messages.
-
-*** Answer
-
-The queue works by evaluating the first (or next) function in its queue (here called =f=), and then *immediately* sending the message =/sync= to the server. Thus: 
-
-1) First evaluate the function - which may start on the server some task such as loading a buffer or a synthder. 
-2) Then send the message =/sync= to the server.
-
-This means that under normal conditions the server will start executing some time consuming task *before* receiving the =/sync= message.  If the task that was started by the evaluated function has already finished by the time that the server receives the subsequent =/sync= message, then the server will *immediately* send back the message =/synced=.  Else, the server will send back the message =/synced= as soon as it has finished the task which it was executing when it received the =/sync= message from Queue. 
-
-The Queue sends the =/sync= message together with a unique id which it obtains from =UniqueID.next=.  In response to this, the server sends back the message =/synced= together with the same id.  The OSCFunc of Queue compares the id received with the one it just generated, and thus makes sure to respond to the =/synced= message which corresponds to the =/sync= message that it just sent. When the ids match, Queue executes the next function in its queue list. 
-
-*** What this means for syncing the loading of synthdefs and starting of synths
-
-For starting of synths we can test this by including a synth.set message in a function that creates a synth, just after Synth.new, and after that syncing, and then in the next action also sending a synth.set message. According to today's tests, one can send both synth.set and synth.map to a synth right after Synth.new, without syncing. But we may want to test this again ...  . However it would be more interesting to test the same thing with generating a synthdef from a function and sending it to the server, and then immediately trying to start a synth from it before syncing. This should definitely not work. The synth should only be possible to generate in the next function added to the Queue after the synthdef loading function. This next function is guaranteed to run after the SynthDef has been loaded, and therefore it is guaranteed that this function can start a synth with this synthdef.
-
-** TODO 19 Jan 2021 22:42 Redo synthdef freeing  + controls + bus mechanism from makeSynth of SynthPlayer.
-
-This code is complex and needs rebuilding step-by-step.
-
-Connecting an array of parameters as receiver of update messages from the players envir may improve the code.
-
-One can get rid of the code that tests if the player is still waiting for the synth to start (which has occasional errors), and use sync instead.  
-
-Check again the code for testing whether the player stopped when its synth stops - which is, do not stop if another synth is in its place.
-
-*** 20 Jan 2021 16:19 Name for class playing Synths/Patterns inside a Player: Voice
-
-A Voice can play both synths and patterns.  Patterns are always played inside a synth which provides the fade envelope for them. 
-
-Multiple Voices can play in one Player at the same time.  They are stored in a dictionary by name (symbol).  Access is given via the adverb in operators addressed to player.  (this replaces the previous hardly used scheme envir, player with a new scheme: player, voice).
-
-*** TODO 20 Jan 2021 12:41 initial considerations
-
-- use asPlayerSynthDef to obtain synthdef
-- get arguments and synthdef name from the synthdef obtained.
-- code draft to create synthdef and optionally start the synth:
-  - ={ newSynthDef.add }.sync;
-  - if needed to start synth immediately, then also do: ={ synth = Synth(<synthdef name>) }.sync= to create the synth as soon as the synthdef was loaded.
-
-- *Freeing temp synthdefs!*: when asked to play a new func, then always free the previously stored synthdef, and replace it by the synthdef created from the new func provided. 
-
-*Important (1):* To ensure that only temp synthdefs are freed, playing synthdef and playing symbols should provide different classes to handle this.  Their differences are: 
-  - playSynthFunc ::
-    - generate new synthdef
-    - use sync to ensure that the synth starts after the synth def is loaded. 
-  - playSynthSymbol :: (assumes that the def is already loaded)
-    - obtain synthdef from SynthDescLib by name. If not found, issue warning and use \default synthdef instead. 
-    - play synth immediately *(NOTE: Must test this extensively first to ensure that it always works!)* (The alternative is to enclose the synth creation and argument settin/mapping funcs in 2 separate sync statements.). 
-
-*Important (2):* When playing a new synthdef the previous synthdef must be freed *only when it is a temp synthdef!*.  A safe and simple way to decide this is to store the SynthDefMaker that creates or accesses the synthdef each time that a new synthdef is used.  Thus, if the synthdef maker which created the previously played synthdef is a =Symbol2SynthDef=, it will *not* free the synthdef, because it is a permanent def.  But if the synthdef maker which created the previously played synthdef is a =Func2SynthDef=, it *will free* the synthdef, because it is a temporary def. Here is a draft for implementing this: 
-
-The choice of class can be done through method =Function:asSynthDefMaker= vs. =Symbol:asSynthDefMaker=.
-
-In conclusion, the new implementation of Player stores a single instance of SynthPlayer in its players dictionary.  This instance is responsible for playing both functions and symbols as synths. It is accessed by =playSynth= or possibly by either =playSynthFunc= or =playSynthSymbol= - chosen upstream in the chain of computation. Thereafter: 
-
-- =playSynthFunc= creates an instance of =Func2SynthDef= to obtain its synthdef.
-- alternatively =playSynthSymbol= creates an instance of =Symbol2SynthDef= to obtain its synthdef.
-- *Before storing the newly obtained synthdefmaker in variable synthDefMaker*, the SynthPlayer instance sends to the previously stored synthDefMaker instance the message =freeDefIfTemp=.   If the previously stored synthDefMaker is a =Symbol2SynthDef= it does not free.  Else if the instance is a =Func2SynthDef= it does free the temporary def that it holds.  
-
-** TODO 20 Jan 2021 11:16 custom asSynthDef for Player
-   :PROPERTIES:
-   :DATE:     <2021-01-20 Wed 11:16>
-   :END:
-
-*** 20 Jan 2021 12:22 workaround for providing own gated envelopes in synthdef functions
-
-The method GraphBuilder:wrapPlayerOut does not work if the synthdef function provided contains a =\gate= control, because it tries to provide =\gate= itself
- - which is not accepted by the builder.  However, one can switch this off if one provides nil as value of =fadeTime=.  The workaround for doing this requires the =\gate= control to be defined as an argument of the synthdef function, i.e. it will not work if the gate control is defined inside the function with =\gate.kr(0)=.  The presence of a gate argument in the function can be detected like this: 
+  *(Note: It is possible to resume EventStreams which have been stopped from the last point where they were stopped)* See this example:
 
  #+begin_src sclang
- { | gate = 0 | }.def.argNames.includes(\gate);
- #+end_src
-
-Based on the above, it is possible to provide an alternative method calling =Function:asSynthDef= with the right argument values: 
-
-#+begin_src sclang
-+ Function { 
-   asPlayerSynthDef { | fadeTime = 0.02 |
-     ^this.asSynthDef(
-       fadeTime: if (this.def.argNames includes: \gate) {
-         nil				
-       }{
-         fadeTime				
-       },
-       name: SystemSynthDefs.generateTempName
-     );
-   }
-}
-#+end_src
-
-Note: Additionally GraphBuilder:wrapOut should be modified to provide a regular control argument =out= instead of scalar =i_out=, so that synths can change their output channel. 
-
-*** TODO 19 Jan 2021 22:18 enable customization of envelopes in GraphBuilder:wrapPlayerOut
-
-This is an optional additional feature to consider. Define a new method GraphBuilder:wrapPlayerOut which enables one to provide the envelope to be used as additional argument. 
-
- The relevant code in GraphBuilder is: 
- #+begin_src sclang
-
-  GraphBuilder {
-	 /*
-		 TODO: add an argument for customizing makeFadeEnv.
-		 Make it possible to either provide the function itself,
-		 or the name of a method to call,
-		 Define different methods for different types of fade envelopes.
-		 Symbol \none might build as envelope just the number 1, 
-		 thus canceling the envelope making and allowing the user 
-		 to write their envelope + gate in the function. 
-	 */
-	 *wrapPlayerOut 
- #+end_src
-
-** 20 Jan 2021 14:47 New Player implementation notes
-   :PROPERTIES:
-   :DATE:     <2021-01-20 Wed 14:48>
-   :END:
-
-*** Recent features added (in sc-hacks):  
-
-Include pattern streams in environment. At each new play, the next value of the stream is broadcast to the player. 
-
-*** Recent features in preparation (in sc-hacks):
-
-Trigger players from SendTrig players.  Many-to-many connections enabled.
-
-*** New features planned
-
-**** Play any number of synths or patterns concurrently 
-
-(This was originally envisaged, but never really used. The old implementation foresaw multiple players stored in/responding to one environment. The new implementation delegates the playing to [Synth]Players stored in a dictionary inside the Player.)
-
-Implementation is discussed in the following subsection
-***** combine patterns and synths: play patterns always inside of synths
-
-This solves several problems while also adding the extra feature of providing customizeable fadein/out (as well as possibly also other effects to play the pattern in).
-
-Short discussion: Using different classes for pattern and synth players presents the problem that we cannot keep the state of the instance if it is replace.  This means that we would either have to keep two sets of sub-players - in which case we have to stop instances of either set, at the appropriate key, or we have to store a pair of synth and pattern player in one object, and switch between the two accordingly.
-
-On the other hand, if we play a pattern inside a synth (routing its output to the input of the synth), then we can also have fadein and out from the synth. We can keep playing the pattern while the synth is fading out.  This would be a desirable consistent behavior for cross-fading when playing different alternating patterns or synths in sequence in a player.  
-
-**** Provide customizeable filter functions for adapting input from any key in the environment
-
-Short discussion: This can be done by customizing the Notifier actions for each key in the internal player.  Defaults can be provided and customized for each internal player. 
-
-** TODO 20 Jan 2021 18:31 alternative pattern playing mechanism in EventStream
-
-This is radical but everything indicates it should be done. Current mechanism is so complex that I could not find even a way to locally modify the parent event of an event when playing (see also subsection to the present section below. [[*21 Jan 2021 09:58 devise and new functions for defaultParentEvent keys.][21 Jan 2021 09:58 devise and new functions for defaultParentEvent keys.]]).
-
-It should become possible to build the pattern playing mechanism from scratch in EventStream, like this: 
-
-- Add a function that processes all keys returned by the Event.
-- Bypass (remove) the event playing function, substituting a function that returns a new event with the keys-value pairs obtained by evaluating "next" on all keys of the event being played.
-- Pass this event as argument to a function.
-- At first, program the scheduling mechanism that repeatedly evaluates the stream value getting mechanism at time intervals determined by the value of dur.
-- Then start adding functions to process keys e.g. to convert degrees to frequency, calculate duration based on legato etc. 
-
-Start by exploring the way EventStream creates its events with method next.
-(See files in Snippets/EventPattern210120)
-
-*** 21 Jan 2021 12:38 step 0: setting the parent event to the event played.
-
-If the event to be played has no parent event, set its parent event from a copy of some default parent event provided by the class itself or by an argument to the play function.
-
-This step should be done once only in response to a play method sent to the EventStream.  Subsequent play methods that evaluate each subsequent event generated from the EventStream do not substitute its parent event.  There should thus be 2 separate methods:
-
-...
-
-*** 21 Jan 2021 12:36 step 1: creating the event to play from the EventStream
-
-Create a new event =targetevent= and fill it with the values obtained from the streams in the event being played: 
-
-For each key-stream pair in the event: 
-1. Issue a this.changed(\nextevent) notification that can be caught by objects previously generated by the play function to stop them (release synths etc.), or by other concerned objects (gui, remote osc clients, etc.);
-2. get the next value of the stream by evaluating it inside the event itself with event.use({ streamvalue.next }).
-3. Store the value obtained in the previous step into =targetevent= at the same key as where it was obtained from.  
-4. If a nil is encountered, then abort the loop and also cancel rescheduling (i.e. stop playing because the eventstream has finished).
-
-**** 21 Jan 2021 15:32 EventStream next method already works as needed for the new implementation
-
-#+begin_src sclang
-//:
-a = EventPattern((dur: 1)).asStream;
-{ a.next.postln; } ! 10;
-//:
-a = EventPattern((dur: Pn(1, 3))).asStream;
-{ a.next.postln; } ! 10;
-
-#+end_src
-
-*** 21 Jan 2021 12:37 step 2: evaluating the function stored in the play key.
-
-**** Easy change of play functions
-Since this is produced by a stream like all other keys, the type of play function can change individually for each played event (midi, osc, fx, setting busses, playing other event patterns .... etc.).  
-
-**** Playing multiple functions at each time.
-
-Also it is possible to execute multiple play functions for one event.  So the general statement to enable this should always treat the play function as an array and iterate over each of its elements.
-
- #+begin_src sclang
- targetevent.use({ ~play.asArray do: _.value });
- #+end_src
-
-**** collecting arguments for play functions from the event
-
-***** For synth playing functions: 
-
- Iterate over the arguments required by the a synth play function collecting the value of the key corresponding to the argument (or if absent, the defalt value!).
-
-Loaded SynthDefs may cache their argument arrays with default values to save time. 
-
-**** connecting event processes to event for future control: easy control of portamento vs. restart
-
-synths created by the play function can either specify a fixed duration or ask to be notified for release when the next event plays or the pattern stops. 
-
-It should be relatively easy also to control whether the synth is to restart at the next event or simply to set its control parameters to the values obtained by the next event (mono-playing).
-
-
-**** 22 Jan 2021 03:27 simple lookahead. (very easy - please continue this example)
-
-#+begin_src sclang
-//:
-a = EventStream((dur: 0.2, play: Pseries(1, 1, 10)));
-AppClock.sched(0, {
-	var next;
-	next = a.next;
-	a.changed(\newEvent); // previous voices stop in response to this
-	next.play.postln;     // new voices start here
-	if (next.notNil) { next.dur } { a.changed(\ended)};
-});
-#+end_src
-
-**** 22 Jan 2021 03:34 Lookahead
-
-In order to do a glissando between one note and the next one (portamento), one needs to know the duration of the note, and the pitches of both the current and the next note. 
-
-One could collect a small subset of the events generated by the EventStream into a cache, and send all of these to the play function at each time.  This is essential for playing events that include movement that depends on both the present start condition and the next start condition as for example, a portamento between the current and the next pitch, taking place during the entire duration of the event. 
-
-Implementing this requires some careful work.  Suggested approach:  Collect n events in an array, start by playing the first one, and then rotate the array to bring the next one first, and set the next obtained event to the slot peviously containing the past event. 
-
-Testing behavior of rotate:
-#+begin_src sclang
-{ | i | i.post; ', '.post; (1..10).rotate(i).postln; } ! 10;
-"that was not the right order".postln;
-"retrying with negative values: ".postln;
-(0..-10) do: { | i | i.post; ', '.post; (1..10).rotate(i).postln; };
-#+end_src
-
-Rotation algorithm to try would be:
-
-#+begin_src sclang
-// assumes past, present, future are instance vars of EventStream
-present = event = future[0];
-future = future rotate: -1;
-future.put(future.size - 1, this.next); // !!! this.next !!!
-present.play;
-past = past add: present;
-#+end_src
-**** 22 Jan 2021 09:25 Make EventStream available to main playing event
-
-**** 22 Jan 2021 09:31 Add past, present, future to EventStream
-
-**** 22 Jan 2021 09:19 New Event methods: =stream=, =tstream=
-
-***** =stream= : Create EventStream and play that.
-
-***** =tstream= : Create EventStream and play that listening to =/tr= messages from SendTrig.
-
-=anEvent.tstream(key ... ids);
-
-Create OSCFunc listening to =/tr= and triggering anEvent.play each time.
-
-If key is provided, then the event sets that key to the value sent by SendTrig.
-A variant could be to make key a function =func= and evaluate that function with =event.use(func.(value, id))= where =value= and =id= are the value and id received from SendTrig. This would give generalized access to the entire event for more modifications.
-
-If =ids.size == 0=, then no argTemplate filter is given.
-Else a the OSCFunc is constructed using an =argTemplate= filter. Implementation note: If more than one ids are possible in one =argTemplate=, then one OSCFunc does the job. Else multiple OSCFuncs must be constructed, one for each id. 
-
-The event plays at each receipt of =/tr=. 
-
-****** Register dt - time between triggers
-
-if =~lastTime= is nil, set =~dt= to 0.
-Else set =~dt= to =~lastTime - Process.elapsedTime=.  
-
-**** Playing sub-patterns at each event. =fPlay=?
-
-Can be delegated to play functions.  Should be relatively easy. A play event (key) inside the streasm played can be a function calling another event inside it to play as stream, while filtering duration and optionally also other keys to adapt them to the current playing context.  For this, an easy way to add filters to keys should be devised - if possible without modifying the event that is playing.  That could be an event passed as argument to the play message. This might have to be a new method name as Event:play is already taken, and does not include this mechanism.  Perhaps =filterPlay=, or =fPlay=?
-
-=fPlay= could be something like: 
-
-#+begin_src sclang
-+ Event {
-	fPlay { | filterEvent |
-		var playEvent;
-		playEvent = this;
-		filterEvent !? {
-// Copy the Event because you are modifying it.
-// The original event may be needed for playing other modified copies,
-// and also for storing in past history:
-			playEvent = this.copy;
-			filterEvent.keysValuesDo: { | key, value |
-				playEvent.put(key, value.(this[key]));
-			};
-		};
-		playEvent.play;
-	}
-}
-#+end_src
-
-To use this when playing events generated from an EventStream, one would have to wrap it in a function stored inside the =play= key.
-
-**** URGENT 22 Jan 2021 10:11 define methods (or classes?) for customizing the play function inside an event.
-     CLOSED: [2021-01-22 Fri 10:15]
-
-... [explain how event is played in EventStream by the function stored in =~play=] ...
-
-It is best to define these as Classes because they exist as functions independent of an EventStream or Event.  (The function which they contain is evaluated within the context of the event with =use=.  Must check whether this =use= must be repeated inside or not. Probably it is best to set the =play= event of the default parent event to a default =PlayEvent= instance which does =event use: (myFunc.value)=, and derive custom subclasses from it which generate their own custom function with customizable parameter values inherited within the closure context of the instance that created them. 
-
-Examples of functions or classes for customizing the play function in EventStream are: 
-
-***** Dtranspose (transpose degree)
-***** Mtranspose (midi Transpose)
-***** Ctranspose (cent Transpose)
-***** Ftranspose (frequency Transpose (multiply!))
-***** ScaleDur
-***** Delay
-***** Arpeggiate
-***** Repeat
-***** Subpattern
-
-An interesting exercise might be to create a subclass of Subpattern that replays a section of the past or future events of the EventStream within the duration of the present event, while possibly transposing them or otherwise scaling their parameters.
-
-***** Gamaka (or Portamento)
-
-(could also use values past and present events)
-
-Play a control-rate curve inside a parameter.
-
-Arguments: 
-
-- =key= :: the key to which the control rate bus will be mapped
-- =gFunc= :: ...
-
-Some delay is involved to wait for the custom function to play before mapping. This can be minimized by playing pre-loaded synthdefs.  Custom shapes are possible in these by foreseeing custom envelopes (see examples under Env in SC doc, also quoted in the present file.)
-
-The mechanism is a bit complex as we need to create a bus, load or access a control synthdef, play it in the bus, start the main synth, and map the parameter in the bus. When the event ends, free the control synth and the bus.
-
-**** 22 Jan 2021 11:26 Modifying the event of EventStream on the fly: methods =set=, =add=
-
-- =set(argEvent)= :: Set the event of the EventStream to argEvent
-- =add(argEvent)= :: Add the contents of argEvent to the event of the EventStream
-
-**** Other on-the-spot algorithmic generation of events
-
-...
-
-*** Step 3: schedule the next =targetevent=
-
-If no event was produced (=targetevent= is =nil=), then signal this.stopped. All played events will be notified, and will stop if needed. 
-
-If an event was produced, then schedule the next event to be played after =~dur= seconds.  The parent event of the eventstream event should always contain a =dur= key with a default value.  To ensure this implement following recipe: 
-
-
-
-*** Providing default synthdefs for unspecified or missing defnames
-
-The play func can do this very easily.
-
-*** TODO 21 Jan 2021 14:07 review how to pass an envelope shape as argument to a synth
-
-Start with these examples from https://doc.sccode.org/Classes/EnvGen.html
-
-#+begin_src sclang
-(
-SynthDef(\help_Env_newClear, { |out = 0|
-    var env, envctl;
-    // make an empty 4 segment envelope
-    env = Env.newClear(4);
-    // create a control argument array
-    envctl = \env.kr(env.asArray);
-    Out.ar(out,
-        SinOsc.ar(EnvGen.kr(envctl, \gate.tr), 0, 0.3) // the gate control is a trigger
-    );
-}).add;
-)
-
-Synth(\help_Env_newClear, [\gate, 1, \env, Env([700,900,900,800], [1,1,1], \exp)]); // 3 segments
-
-// reset then play again:
-Synth(\help_Env_newClear, [\gate, 1, \env, Env({ rrand(60, 70).midicps } ! 4, [1,1,1], \exp)]);
-
-// the same written as an event:
-(instrument: \help_Env_newClear, gate: 1, env: Env({ rrand(60, 70).midicps } ! 4, [1,1,1], \exp)).play;
-#+end_src
-
-#+begin_src sclang
-// Changing an Env while playing
-(
-SynthDef(\env, { arg i_outbus=0;
-    var env, envctl;
-
-    // make a dummy 8 segment envelope
-    env = Env.newClear(8);
-
-    // create a control argument array
-    envctl = \env.kr( env.asArray );
-
-    ReplaceOut.kr(i_outbus, EnvGen.kr(envctl, doneAction: Done.freeSelf));
-}).add;
-)
-
-(
-SynthDef(\sine, { |out, freq = 440|
-    Out.ar(out, SinOsc.ar(freq, 0, 0.2));
-}).add;
-)
-
-f = Bus.control(s, 1);
-f.set(800);
-
-// use f's control bus value for frequency
-// i.e. *map* the control to read from the bus
-a = Synth(\sine, [freq: f.asMap]);
-
-Synth(\env, [i_outbus: f, env: Env([700, 900, 900, 800], [1, 1, 1]*0.4, \exp)]);
-
-Synth(\env, [i_outbus: f, env: Env([1000, 1000, 800, 1000, 900, 1000], [1, 1, 1, 1, 1]*0.3, \step)]);
-
-a.free;
-f.free;
-#+end_src
-
-*** CANCELED 21 Jan 2021 09:58 devise and new functions for defaultParentEvent keys.
-    CLOSED: [2021-01-21 Thu 11:10]
-
- This route is now abandoned. Resuming with rebuilding event playing in pattern approach from scratch. 
-
- COULD NOT GET THIS TO WORK WITH EventPattern or Pbind or anything.
-
- Route tried:
-
- Preparing. Look at these, then add your own ~freq function to defaultParentEvent.
-
- #+begin_src sclang
- a = ();
- a.parent; //parent is nil
- ().play;
- a.parent; // parent is defaultParentEvent
- a.parent[\freq] // get the key of a's parent
- a.parent.freq; // cannot eval default freq function outside of its event
- a use: { a.parent.freq; }; // but can evaluate it inside its event, like this
- #+end_src
-
- If you want to use a modified version of the defaultParentEvent locally, without changing the default global behavior, then you should make a copy and modify that one. The following shows that modifying the parent event in an event after playing is inherited when playing another event: 
-
- #+begin_src sclang
- a.parent[\freq];
- a.parent[\freq] = 1000;
+ //:+ wrap the code below in { }.fork if not using emacs sclang-snippets.
+ p = EventPattern((dur: 1/10 * Pseq([1, 3, 1], inf), amp: 0.5, degree:
+         Pn(Pseries(-9, 1, 35)
+                 + Pseq([0, [0, 2], -2], inf),
+                 inf)));
+ e = p.play;
+ loop {
+         1.5.rrand(2.5).wait;
+         e.stop;
+         1.5.rrand(2).wait;
+         e.start;
+ }
  //:
- b = ().play;
- b.parent[\freq];
  #+end_src
 
-**** Solution 1 (did not work - see file where this method is defined.
+ _! TODO: The Pseq pattern in dur gets out of phase of the degree Pseq, even though they have the same length. This is probably due to stopping and restarting the EventPattern.  Check the code to see if there is some different treatment of the =dur= key from the other keys when stopping and/or starting the EventStream._
 
- Since defaultParentEvent is not accessible outside an Event (see class definition code!), write a method like this to do the modification: 
+ The class could be returned by a method depending on the class of the source object.  For example:
 
- #+begin_src sclang
- + Event {
-	  setParentKey_ { | key, newValue |
-		  // preserve previous changes to parent!
-		  parent = (parent ? defaultParentEvent).copy;
-		  parent.put(key, newValue);
-	  }
+ - Function returns SynthMaker (make synthdef from function and play it)
+ - Symbol returns SynthMaker (make synth from synthdef's name)
+ - Pattern returns PatternMaker
+
+ Each such instance knows how to make its pattern stream or its synth.  It stores the source for making it as synthdef or StreamPlayer etc.
+
+ Also, one may customize SynthMaker's to make them wrap a function or UGen inside a function providing for example different types of envelopes, filters, panners, buffer players, granulators, SendTrig.kr etc.   
+
+ It is unclear how to implement that. 
+
+ Solution 1: Define several subclasses of SynthMaker, each using a different kind of synth function wrapper, and to define different methods in Function which return this class.  
+
+ Solution 2: Pass the wrap function, and potentially additional arguments such as number of channels, parameter default values, etc. as additional arguments, and then use these parameters to create the wrapping function which is to be used inside the SynthMaker instance accessed by the player.
+
+ In both of the above cases, the object passed to the Player should be not just a class, but an array containing the class and the function or additional parameters to use with it.  The Player accesses the instance of process maker from its sources dictionary and then plays it, passing additional arguments if needed.  An additional advantage of this approach is that a subarray contained in these arguments can be filtered and/or complimented by merging info from the SynthMaker or PatternMaker instance state (including for example default values of synth parameters), and state stored in the environment of the Player. (one should consider updating this info when a relevant key is set in the environment, to use as cache?).
+
+ /Note: A new asSynthDef mechanism can be devised that will /
+
+*** 19 Jan 2021 11:19 SynthMaker, PatternMaker details
+
+ - Since an EventStream can continue from where it last stopped, these should be cached for each individual Player (not shared), using symbols as keys, in order to permit switching between different Streams!
+
+ - In the case of symbols as SynthDef names, the SynthMaker may be accessed from a global dictionary containing all loaded synthdefs (SynthDefLib?)
+
+ - In the case of Patterns, these should be stored in keys inside each Player where they have been used, because then the player can continue playing a pattern from the point at which it was previously stopped, and also each Player can hold its own custom patterns (rather than in a shared global repository of SynthDefs available on the server).
+
+ Therefore, the Player can store in its =makers= dictionary a single SynthMaker using a SynthMaker instance as key, and several PatternMaker instances, using symbols as keys.
+
+**** DRAFT: Starting synthdefs/patterns in voices of player. Old version (now replaced by new version below)
+  - The process of choosing the Maker to use for the next Player.play has many steps or variants, and should be redesigned:
+
+***** aPlayer.play(nil) 
+  Play the last played Maker (cached), or the default (possibly a Player or Maker class variable.
+***** aPlayer.playSynthDef(synthdef)
+
+***** aPlayer.playFunc(Function)
+***** aPlayer.playPatternDef(name, proto)
+  If PatternMaker is found under name, then add proto event to the keys of the maker. Start the pattern if it is not already playing.
+
+  Else create a new pattern from the proto event and start it. 
+
+**** 21 Jan 2021 14:59 New methods for starting/stopping synthdefs/patterns in voices
+
+***** aPlayer.start [or play ](\voice, optional: synthdef name, function, or event);
+
+ (Use start or play as play as synonyms).
+
+***** \aPlayername.stop(... voices);  : Stop the process(es) currently playing in Player \aPlayername.
+
+ If no voices are specified, stop all voices.
+ Otherwise, stop any voices found under the given voice names.
+
+**** Shortcut methods for applying above methods to Player
+
+ The above should in turn be constructed and issued from user input, translating from operators - methods: 
+
+***** aFunction +> aPlayerName (or Player)
+      play Function in SynthMaker - making new temporary SynthDef.
+
+***** aSymbol +> aPlayerName (or Player)
+      play SynthDef named aSymbol, or default synthdef if none found.
+
+***** anEvent +> aPlayerName (orPlayer), patternName
+      play anEvent in pattern named patternName.  If pattern under patternName already exists, just merge the events keys to it. Else, create a new pattern based on anEvent.
+
+**** Caching/setting/mapping synth parameters
+
+ Can be done in SynthMaker. Following approach is slightly cpu costly at the time of the set up because, several new notifiers are added. but could lead to a clean and safe algorithm.
+
+ - When the new synthdef is created or accessed, create a new array holding all paramname - value pairs to act as arg array for Synth(\defname, args ...). Get the values from the Player's envir, and if absent, from the SynthDef's defaults. 
+
+ - When receipt from server is received that the synth has started do: 
+   1. Store the started synth in var =process=.
+   2. map any params that need to be mapped.
+   3. add notifiers to the array from the environment of the player, whith actions:
+      - set the parameter at the corresponding array slot to the value received
+      - set the synth parameter to the value received.
+
+ - When issuing release to stop the synth, do:
+   - remove all notifiers from the parameter array. The synth is left to fade out without any parameter changes (!).
+   - Set the array variable to a new empty array [].
+
+**** Extra feature: Play arrays of synthdefs and/or patterns at each play, sharing the Players environment
+
+ To consider! : 
+
+ This could be the default behavior.
+
+ It means that the player performs set, map, free, release or event merging operations on each of the currently active processes.  The variable process should always contain an array. 
+
+*** DONE 19 Jan 2021 12:54 Pseq and Pser with function filter?
+    CLOSED: [2021-01-19 Tue 14:12]
+
+    - State "DONE"       from              [2021-01-19 Tue 14:12] \\
+      Done. see Pfseq, Pfser.
+
+ Devise a Pattern that plays like a Pseq but creates a new array for the Pseq at each new repetition, using a function.  The function should take the initial array, the previous array, and the number of repetitions as argument.
+
+ The same with a Pser pattern, using the function to calculate the next index for accessing the list.
+
+*** TODO 19 Jan 2021 16:42 check Queue:add: prevent running waitForBoot each time
+
+ #+begin_src 
+ add { | action |
+	 actions add: action;
+	 if (inactive) {  // make sure server is booted, then eval first action
+		 inactive = false; // must be before waitForBoot !!!!!!!
+		 /* TODO:
+			 check if it is possible to avoid running
+		 preboot.(this) and waitForboot, when the server is already running.
+		 */
+		 preboot.(this);
+		 server.waitForBoot({ // because waitForBoot messes with more delay
+			 this.changed(\started, Process.elapsedTime);
+			 this.prNext;
+		 })
+	 }
+	 // if active, wait for sync message from server.
  }
  #+end_src
 
-**** Solution 2 (not found a way to make this work!)
+*** DONE 19 Jan 2021 20:04 document Queue sync mechanism to write own SynthDef loading code
+    CLOSED: [2021-01-19 Tue 23:33]
 
- Use a Pfunc.  However I could not find a way to evaluate the Function of a Pfunc using the event itself as environment.  (FuncStream uses currentEnvironment, so it might be possible to do this with event.push, but this looks like a risky workaround).
+    - State "DONE"       from "TODO"       [2021-01-19 Tue 23:33] \\
+      done
+ Find what messages from server are used to sync Queue, and which messages from lang trigger these messages.
 
- See this: 
+**** Answer
 
- #+begin_src sclang
- Pbind(\freq, Pfunc({ | in |
-	 postf("testing degree: %\n", ~degree);
-	 postf("testing inval: %\n", in);
-	 1200; }
- ), \degree, 10).play;
- #+end_src
-** 22 Jan 2021 12:59 Keeping EventStream simple by adding behaviors as keys
+ The queue works by evaluating the first (or next) function in its queue (here called =f=), and then *immediately* sending the message =/sync= to the server. Thus: 
 
-Some extra features could be added as behaviors through keys assigned to corresponding Classes.  But some are so simple that it is better to add them as methods to EventStreasm. 
+ 1) First evaluate the function - which may start on the server some task such as loading a buffer or a synthder. 
+ 2) Then send the message =/sync= to the server.
 
-- Count the number of events played: Return =past.size=.
-- Calculate the total duration of the pattern played so far. Sum durations of past events.  Better to do that than to incrementally add durations of partial playings - as an EventStream can be paused and restarted many times.
+ This means that under normal conditions the server will start executing some time consuming task *before* receiving the =/sync= message.  If the task that was started by the evaluated function has already finished by the time that the server receives the subsequent =/sync= message, then the server will *immediately* send back the message =/synced=.  Else, the server will send back the message =/synced= as soon as it has finished the task which it was executing when it received the =/sync= message from Queue. 
 
-** 22 Jan 2021 13:06 Conditionally change the value of a key
+ The Queue sends the =/sync= message together with a unique id which it obtains from =UniqueID.next=.  In response to this, the server sends back the message =/synced= together with the same id.  The OSCFunc of Queue compares the id received with the one it just generated, and thus makes sure to respond to the =/synced= message which corresponds to the =/sync= message that it just sent. When the ids match, Queue executes the next function in its queue list. 
 
-Add a key that contains a condition and then goes event.put[key, newValue] when that condition is met. This is much better in most cases than going 
+**** What this means for syncing the loading of synthdefs and starting of synths
 
-=Pseq([Pn(val1, n1), Pn(val2, n2) ... etc ])=
+ For starting of synths we can test this by including a synth.set message in a function that creates a synth, just after Synth.new, and after that syncing, and then in the next action also sending a synth.set message. According to today's tests, one can send both synth.set and synth.map to a synth right after Synth.new, without syncing. But we may want to test this again ...  . However it would be more interesting to test the same thing with generating a synthdef from a function and sending it to the server, and then immediately trying to start a synth from it before syncing. This should definitely not work. The synth should only be possible to generate in the next function added to the Queue after the synthdef loading function. This next function is guaranteed to run after the SynthDef has been loaded, and therefore it is guaranteed that this function can start a synth with this synthdef.
 
-Especially if conditions do not depend on counting times but on other stuff.
+*** TODO 19 Jan 2021 22:42 Redo synthdef freeing  + controls + bus mechanism from makeSynth of SynthPlayer.
 
-** 22 Jan 2021 14:03 is there a Pcount? (or anything that works like it?)
+ This code is complex and needs rebuilding step-by-step.
 
-Initialize on 0 (or any given start number).
-At each iteration, increment the current count number by 1 (or any given increment, or function).
-Optionally reset to start.
-Optionally change the starting point / increment / function.
+ Connecting an array of parameters as receiver of update messages from the players envir may improve the code.
 
-** 22 Jan 2021 14:06 get - set: Important operations on the event of the EventStream.
+ One can get rid of the code that tests if the player is still waiting for the synth to start (which has occasional errors), and use sync instead.  
 
-For the actions described in the title and in the following subsections: At which level (EventStream, Event, inside event keys?) should these be made available and how? (Method?/Class?).
+ Check again the code for testing whether the player stopped when its synth stops - which is, do not stop if another synth is in its place.
 
-I seem to be repeating this thought but should settle on one implementation and discuss its various use cases!
+**** 20 Jan 2021 16:19 Name for class playing Synths/Patterns inside a Player: Voice
 
-*** Get the value of a key to operate on it (if it is a stream for example).
+ A Voice can play both synths and patterns.  Patterns are always played inside a synth which provides the fade envelope for them. 
 
-*** Set the value of a key
-** 21 Jan 2021 06:50 explore patterns that operate on the result of other patterns
+ Multiple Voices can play in one Player at the same time.  They are stored in a dictionary by name (symbol).  Access is given via the adverb in operators addressed to player.  (this replaces the previous hardly used scheme envir, player with a new scheme: player, voice).
 
-*** 20 Jan 2021 22:32 1. define new kind of pattern that continues outputting the last value produced by the pattern that precedes it, for n number of times. 
+**** TODO 20 Jan 2021 12:41 initial considerations
 
- Say the pattern is called Pcontinue.
+ - use asPlayerSynthDef to obtain synthdef
+ - get arguments and synthdef name from the synthdef obtained.
+ - code draft to create synthdef and optionally start the synth:
+   - ={ newSynthDef.add }.sync;
+   - if needed to start synth immediately, then also do: ={ synth = Synth(<synthdef name>) }.sync= to create the synth as soon as the synthdef was loaded.
 
+ - *Freeing temp synthdefs!*: when asked to play a new func, then always free the previously stored synthdef, and replace it by the synthdef created from the new func provided. 
 
- For example: 
+ *Important (1):* To ensure that only temp synthdefs are freed, playing synthdef and playing symbols should provide different classes to handle this.  Their differences are: 
+   - playSynthFunc ::
+     - generate new synthdef
+     - use sync to ensure that the synth starts after the synth def is loaded. 
+   - playSynthSymbol :: (assumes that the def is already loaded)
+     - obtain synthdef from SynthDescLib by name. If not found, issue warning and use \default synthdef instead. 
+     - play synth immediately *(NOTE: Must test this extensively first to ensure that it always works!)* (The alternative is to enclose the synth creation and argument settin/mapping funcs in 2 separate sync statements.). 
 
- Pcontinue(Pseries(1, 1, 3), 3).asStream.nextN(8) 
+ *Important (2):* When playing a new synthdef the previous synthdef must be freed *only when it is a temp synthdef!*.  A safe and simple way to decide this is to store the SynthDefMaker that creates or accesses the synthdef each time that a new synthdef is used.  Thus, if the synthdef maker which created the previously played synthdef is a =Symbol2SynthDef=, it will *not* free the synthdef, because it is a permanent def.  But if the synthdef maker which created the previously played synthdef is a =Func2SynthDef=, it *will free* the synthdef, because it is a temporary def. Here is a draft for implementing this: 
 
- should produce: 
+ The choice of class can be done through method =Function:asSynthDefMaker= vs. =Symbol:asSynthDefMaker=.
 
- [1, 2, 3, 3, 3, 3, nil, nil]
+ In conclusion, the new implementation of Player stores a single instance of SynthPlayer in its players dictionary.  This instance is responsible for playing both functions and symbols as synths. It is accessed by =playSynth= or possibly by either =playSynthFunc= or =playSynthSymbol= - chosen upstream in the chain of computation. Thereafter: 
 
-*** 21 Jan 2021 07:58 Ptake: Pattern returning the first n elements of a stream.
+ - =playSynthFunc= creates an instance of =Func2SynthDef= to obtain its synthdef.
+ - alternatively =playSynthSymbol= creates an instance of =Symbol2SynthDef= to obtain its synthdef.
+ - *Before storing the newly obtained synthdefmaker in variable synthDefMaker*, the SynthPlayer instance sends to the previously stored synthDefMaker instance the message =freeDefIfTemp=.   If the previously stored synthDefMaker is a =Symbol2SynthDef= it does not free.  Else if the instance is a =Func2SynthDef= it does free the temporary def that it holds.  
+
+*** TODO 20 Jan 2021 11:16 custom asSynthDef for Player
     :PROPERTIES:
-    :DATE:     <2021-01-21 Thu 08:00>
+    :DATE:     <2021-01-20 Wed 11:16>
     :END:
 
-#+begin_src sclang
-Ptake(Pseries(1, 1, 6), 2).asStream.nextN(5);
-#+end_src
+**** 20 Jan 2021 12:22 workaround for providing own gated envelopes in synthdef functions
 
-Returns: 
+ The method GraphBuilder:wrapPlayerOut does not work if the synthdef function provided contains a =\gate= control, because it tries to provide =\gate= itself
+  - which is not accepted by the builder.  However, one can switch this off if one provides nil as value of =fadeTime=.  The workaround for doing this requires the =\gate= control to be defined as an argument of the synthdef function, i.e. it will not work if the gate control is defined inside the function with =\gate.kr(0)=.  The presence of a gate argument in the function can be detected like this: 
 
-#+begin_src sclang
-[ 1, 2, nil, nil, nil ]
-#+end_src
+  #+begin_src sclang
+  { | gate = 0 | }.def.argNames.includes(\gate);
+  #+end_src
 
-*** 21 Jan 2021 06:51 2. Play less elements from a pattern at each repeat.
+ Based on the above, it is possible to provide an alternative method calling =Function:asSynthDef= with the right argument values: 
 
-For example: 
+ #+begin_src sclang
+ + Function { 
+    asPlayerSynthDef { | fadeTime = 0.02 |
+      ^this.asSynthDef(
+        fadeTime: if (this.def.argNames includes: \gate) {
+          nil				
+        }{
+          fadeTime				
+        },
+        name: SystemSynthDefs.generateTempName
+      );
+    }
+ }
+ #+end_src
 
-#+begin_src sclang
-Preduce(Pseries(1, 1, 5)).asStream.all;
-#+end_src
+ Note: Additionally GraphBuilder:wrapOut should be modified to provide a regular control argument =out= instead of scalar =i_out=, so that synths can change their output channel. 
 
-should produce: 
+**** TODO 19 Jan 2021 22:18 enable customization of envelopes in GraphBuilder:wrapPlayerOut
 
-#+begin_src sclang
-[1, 2, 3, 4, 5, 1, 2, 3, 4, 1, 2, 3, 1, 2, 1]
-#+end_src
+ This is an optional additional feature to consider. Define a new method GraphBuilder:wrapPlayerOut which enables one to provide the envelope to be used as additional argument. 
 
-**** Implementation notes 21 Jan 2021 09:53
+  The relevant code in GraphBuilder is: 
+  #+begin_src sclang
 
-Extend Ptake to take less notes at each repetition.
+   GraphBuilder {
+	  /*
+		  TODO: add an argument for customizing makeFadeEnv.
+		  Make it possible to either provide the function itself,
+		  or the name of a method to call,
+		  Define different methods for different types of fade envelopes.
+		  Symbol \none might build as envelope just the number 1, 
+		  thus canceling the envelope making and allowing the user 
+		  to write their envelope + gate in the function. 
+	  */
+	  *wrapPlayerOut 
+  #+end_src
 
-Requires specifying the initial number of elements to take because this is not known at the outset (and cannot be inferred from the source pattern because it may be infinite in length).
+*** 20 Jan 2021 14:47 New Player implementation notes
+    :PROPERTIES:
+    :DATE:     <2021-01-20 Wed 14:48>
+    :END:
 
-**** Earlier notes (before 21 Jan 2021 09:51)
+**** Recent features added (in sc-hacks):  
 
-This is probably possible with Pgate.  The doc file is not clear to me. Must study more.  Also, since Pgate requires an event, it is probably better to code a new pattern that does the job without requiring a pattern.
+ Include pattern streams in environment. At each new play, the next value of the stream is broadcast to the player. 
 
-Examples from doc file: 
+**** Recent features in preparation (in sc-hacks):
+
+ Trigger players from SendTrig players.  Many-to-many connections enabled.
+
+**** New features planned
+
+***** Play any number of synths or patterns concurrently 
+
+ (This was originally envisaged, but never really used. The old implementation foresaw multiple players stored in/responding to one environment. The new implementation delegates the playing to [Synth]Players stored in a dictionary inside the Player.)
+
+ Implementation is discussed in the following subsection
+****** combine patterns and synths: play patterns always inside of synths
+
+ This solves several problems while also adding the extra feature of providing customizeable fadein/out (as well as possibly also other effects to play the pattern in).
+
+ Short discussion: Using different classes for pattern and synth players presents the problem that we cannot keep the state of the instance if it is replace.  This means that we would either have to keep two sets of sub-players - in which case we have to stop instances of either set, at the appropriate key, or we have to store a pair of synth and pattern player in one object, and switch between the two accordingly.
+
+ On the other hand, if we play a pattern inside a synth (routing its output to the input of the synth), then we can also have fadein and out from the synth. We can keep playing the pattern while the synth is fading out.  This would be a desirable consistent behavior for cross-fading when playing different alternating patterns or synths in sequence in a player.  
+
+***** Provide customizeable filter functions for adapting input from any key in the environment
+
+ Short discussion: This can be done by customizing the Notifier actions for each key in the internal player.  Defaults can be provided and customized for each internal player. 
+
+*** TODO 20 Jan 2021 18:31 alternative pattern playing mechanism in EventStream
+
+ This is radical but everything indicates it should be done. Current mechanism is so complex that I could not find even a way to locally modify the parent event of an event when playing (see also subsection to the present section below. [[*21 Jan 2021 09:58 devise and new functions for defaultParentEvent keys.][21 Jan 2021 09:58 devise and new functions for defaultParentEvent keys.]]).
+
+ It should become possible to build the pattern playing mechanism from scratch in EventStream, like this: 
+
+ - Add a function that processes all keys returned by the Event.
+ - Bypass (remove) the event playing function, substituting a function that returns a new event with the keys-value pairs obtained by evaluating "next" on all keys of the event being played.
+ - Pass this event as argument to a function.
+ - At first, program the scheduling mechanism that repeatedly evaluates the stream value getting mechanism at time intervals determined by the value of dur.
+ - Then start adding functions to process keys e.g. to convert degrees to frequency, calculate duration based on legato etc. 
+
+ Start by exploring the way EventStream creates its events with method next.
+ (See files in Snippets/EventPattern210120)
+
+**** 21 Jan 2021 12:38 step 0: setting the parent event to the event played.
+
+ If the event to be played has no parent event, set its parent event from a copy of some default parent event provided by the class itself or by an argument to the play function.
+
+ This step should be done once only in response to a play method sent to the EventStream.  Subsequent play methods that evaluate each subsequent event generated from the EventStream do not substitute its parent event.  There should thus be 2 separate methods:
+
+ ...
+
+**** 21 Jan 2021 12:36 step 1: creating the event to play from the EventStream
+
+ Create a new event =targetevent= and fill it with the values obtained from the streams in the event being played: 
+
+ For each key-stream pair in the event: 
+ 1. Issue a this.changed(\nextevent) notification that can be caught by objects previously generated by the play function to stop them (release synths etc.), or by other concerned objects (gui, remote osc clients, etc.);
+ 2. get the next value of the stream by evaluating it inside the event itself with event.use({ streamvalue.next }).
+ 3. Store the value obtained in the previous step into =targetevent= at the same key as where it was obtained from.  
+ 4. If a nil is encountered, then abort the loop and also cancel rescheduling (i.e. stop playing because the eventstream has finished).
+
+***** 21 Jan 2021 15:32 EventStream next method already works as needed for the new implementation
 
  #+begin_src sclang
  //:
- (
- Pbind(
-     \degree, Pseq((0..7), inf),
-	 \amp, 0.5,
-     \step, Pseq([false, false, false, true, false, true, false], inf),
-     \octave, Pgate(Pwhite(5,7), inf, \step),
-     \dur, 0.2
- ).play
- )
- //: Pn advances Pgate each time its subpattern is repeated
- (
- Pbind(
-	 \amp, 0.5,
-	 \octave, 6,
-     \degree, Pn(Pseq((0..7)), inf, \step),
-     \mtranspose, Pgate(Pseq((0..4), inf), inf, \step),
-     \dur, 0.2
- ).play
- )
+ a = EventPattern((dur: 1)).asStream;
+ { a.next.postln; } ! 10;
+ //:
+ a = EventPattern((dur: Pn(1, 3))).asStream;
+ { a.next.postln; } ! 10;
 
-
- //: Two different Pgates advanced at two different rates
- (
- Pbind(
-	 \amp, 0.5,
-	 \octave, 6,
-     \scale,    Scale.minor,
-     \foo, Pn(Pseq((0..2)),inf,  \step1),
-     \degree, Pn(Pseq((0..7).mirror), inf, \step),
-     \ctranspose, Pgate(Pwhite(0,5), inf, \step) + Pgate(Pseq([0,7,0,-7], inf), inf, \step1),
-     \dur, 0.2
- ).play
- )
  #+end_src
+
+**** 21 Jan 2021 12:37 step 2: evaluating the function stored in the play key.
+
+***** Easy change of play functions
+ Since this is produced by a stream like all other keys, the type of play function can change individually for each played event (midi, osc, fx, setting busses, playing other event patterns .... etc.).  
+
+***** Playing multiple functions at each time.
+
+ Also it is possible to execute multiple play functions for one event.  So the general statement to enable this should always treat the play function as an array and iterate over each of its elements.
+
+  #+begin_src sclang
+  targetevent.use({ ~play.asArray do: _.value });
+  #+end_src
+
+***** collecting arguments for play functions from the event
+
+****** For synth playing functions: 
+
+  Iterate over the arguments required by the a synth play function collecting the value of the key corresponding to the argument (or if absent, the defalt value!).
+
+ Loaded SynthDefs may cache their argument arrays with default values to save time. 
+
+***** connecting event processes to event for future control: easy control of portamento vs. restart
+
+ synths created by the play function can either specify a fixed duration or ask to be notified for release when the next event plays or the pattern stops. 
+
+ It should be relatively easy also to control whether the synth is to restart at the next event or simply to set its control parameters to the values obtained by the next event (mono-playing).
+
+
+***** 22 Jan 2021 03:27 simple lookahead. (very easy - please continue this example)
+
+ #+begin_src sclang
+ //:
+ a = EventStream((dur: 0.2, play: Pseries(1, 1, 10)));
+ AppClock.sched(0, {
+	 var next;
+	 next = a.next;
+	 a.changed(\newEvent); // previous voices stop in response to this
+	 next.play.postln;     // new voices start here
+	 if (next.notNil) { next.dur } { a.changed(\ended)};
+ });
+ #+end_src
+
+***** 22 Jan 2021 03:34 Lookahead
+
+ In order to do a glissando between one note and the next one (portamento), one needs to know the duration of the note, and the pitches of both the current and the next note. 
+
+ One could collect a small subset of the events generated by the EventStream into a cache, and send all of these to the play function at each time.  This is essential for playing events that include movement that depends on both the present start condition and the next start condition as for example, a portamento between the current and the next pitch, taking place during the entire duration of the event. 
+
+ Implementing this requires some careful work.  Suggested approach:  Collect n events in an array, start by playing the first one, and then rotate the array to bring the next one first, and set the next obtained event to the slot peviously containing the past event. 
+
+ Testing behavior of rotate:
+ #+begin_src sclang
+ { | i | i.post; ', '.post; (1..10).rotate(i).postln; } ! 10;
+ "that was not the right order".postln;
+ "retrying with negative values: ".postln;
+ (0..-10) do: { | i | i.post; ', '.post; (1..10).rotate(i).postln; };
+ #+end_src
+
+ Rotation algorithm to try would be:
+
+ #+begin_src sclang
+ // assumes past, present, future are instance vars of EventStream
+ present = event = future[0];
+ future = future rotate: -1;
+ future.put(future.size - 1, this.next); // !!! this.next !!!
+ present.play;
+ past = past add: present;
+ #+end_src
+***** 22 Jan 2021 09:25 Make EventStream available to main playing event
+
+***** 22 Jan 2021 09:31 Add past, present, future to EventStream
+
+***** 22 Jan 2021 09:19 New Event methods: =stream=, =tstream=
+
+****** =stream= : Create EventStream and play that.
+
+****** =tstream= : Create EventStream and play that listening to =/tr= messages from SendTrig.
+
+ =anEvent.tstream(key ... ids);
+
+ Create OSCFunc listening to =/tr= and triggering anEvent.play each time.
+
+ If key is provided, then the event sets that key to the value sent by SendTrig.
+ A variant could be to make key a function =func= and evaluate that function with =event.use(func.(value, id))= where =value= and =id= are the value and id received from SendTrig. This would give generalized access to the entire event for more modifications.
+
+ If =ids.size == 0=, then no argTemplate filter is given.
+ Else a the OSCFunc is constructed using an =argTemplate= filter. Implementation note: If more than one ids are possible in one =argTemplate=, then one OSCFunc does the job. Else multiple OSCFuncs must be constructed, one for each id. 
+
+ The event plays at each receipt of =/tr=. 
+
+******* Register dt - time between triggers
+
+ if =~lastTime= is nil, set =~dt= to 0.
+ Else set =~dt= to =~lastTime - Process.elapsedTime=.  
+
+***** Playing sub-patterns at each event. =fPlay=?
+
+ Can be delegated to play functions.  Should be relatively easy. A play event (key) inside the streasm played can be a function calling another event inside it to play as stream, while filtering duration and optionally also other keys to adapt them to the current playing context.  For this, an easy way to add filters to keys should be devised - if possible without modifying the event that is playing.  That could be an event passed as argument to the play message. This might have to be a new method name as Event:play is already taken, and does not include this mechanism.  Perhaps =filterPlay=, or =fPlay=?
+
+ =fPlay= could be something like: 
+
+ #+begin_src sclang
+ + Event {
+	 fPlay { | filterEvent |
+		 var playEvent;
+		 playEvent = this;
+		 filterEvent !? {
+ // Copy the Event because you are modifying it.
+ // The original event may be needed for playing other modified copies,
+ // and also for storing in past history:
+			 playEvent = this.copy;
+			 filterEvent.keysValuesDo: { | key, value |
+				 playEvent.put(key, value.(this[key]));
+			 };
+		 };
+		 playEvent.play;
+	 }
+ }
+ #+end_src
+
+ To use this when playing events generated from an EventStream, one would have to wrap it in a function stored inside the =play= key.
+
+***** URGENT 22 Jan 2021 10:11 define methods (or classes?) for customizing the play function inside an event.
+      CLOSED: [2021-01-22 Fri 10:15]
+
+ ... [explain how event is played in EventStream by the function stored in =~play=] ...
+
+ It is best to define these as Classes because they exist as functions independent of an EventStream or Event.  (The function which they contain is evaluated within the context of the event with =use=.  Must check whether this =use= must be repeated inside or not. Probably it is best to set the =play= event of the default parent event to a default =PlayEvent= instance which does =event use: (myFunc.value)=, and derive custom subclasses from it which generate their own custom function with customizable parameter values inherited within the closure context of the instance that created them. 
+
+ Examples of functions or classes for customizing the play function in EventStream are: 
+
+****** Dtranspose (transpose degree)
+****** Mtranspose (midi Transpose)
+****** Ctranspose (cent Transpose)
+****** Ftranspose (frequency Transpose (multiply!))
+****** ScaleDur
+****** Delay
+****** Arpeggiate
+****** Repeat
+****** Subpattern
+
+ An interesting exercise might be to create a subclass of Subpattern that replays a section of the past or future events of the EventStream within the duration of the present event, while possibly transposing them or otherwise scaling their parameters.
+
+****** Gamaka (or Portamento)
+
+ (could also use values past and present events)
+
+ Play a control-rate curve inside a parameter.
+
+ Arguments: 
+
+ - =key= :: the key to which the control rate bus will be mapped
+ - =gFunc= :: ...
+
+ Some delay is involved to wait for the custom function to play before mapping. This can be minimized by playing pre-loaded synthdefs.  Custom shapes are possible in these by foreseeing custom envelopes (see examples under Env in SC doc, also quoted in the present file.)
+
+ The mechanism is a bit complex as we need to create a bus, load or access a control synthdef, play it in the bus, start the main synth, and map the parameter in the bus. When the event ends, free the control synth and the bus.
+
+***** 22 Jan 2021 11:26 Modifying the event of EventStream on the fly: methods =set=, =add=
+
+ - =set(argEvent)= :: Set the event of the EventStream to argEvent
+ - =add(argEvent)= :: Add the contents of argEvent to the event of the EventStream
+
+***** Other on-the-spot algorithmic generation of events
+
+ ...
+
+**** Step 3: schedule the next =targetevent=
+
+ If no event was produced (=targetevent= is =nil=), then signal this.stopped. All played events will be notified, and will stop if needed. 
+
+ If an event was produced, then schedule the next event to be played after =~dur= seconds.  The parent event of the eventstream event should always contain a =dur= key with a default value.  To ensure this implement following recipe: 
+
+
+
+**** Providing default synthdefs for unspecified or missing defnames
+
+ The play func can do this very easily.
+
+**** TODO 21 Jan 2021 14:07 review how to pass an envelope shape as argument to a synth
+
+ Start with these examples from https://doc.sccode.org/Classes/EnvGen.html
+
+ #+begin_src sclang
+ (
+ SynthDef(\help_Env_newClear, { |out = 0|
+     var env, envctl;
+     // make an empty 4 segment envelope
+     env = Env.newClear(4);
+     // create a control argument array
+     envctl = \env.kr(env.asArray);
+     Out.ar(out,
+         SinOsc.ar(EnvGen.kr(envctl, \gate.tr), 0, 0.3) // the gate control is a trigger
+     );
+ }).add;
+ )
+
+ Synth(\help_Env_newClear, [\gate, 1, \env, Env([700,900,900,800], [1,1,1], \exp)]); // 3 segments
+
+ // reset then play again:
+ Synth(\help_Env_newClear, [\gate, 1, \env, Env({ rrand(60, 70).midicps } ! 4, [1,1,1], \exp)]);
+
+ // the same written as an event:
+ (instrument: \help_Env_newClear, gate: 1, env: Env({ rrand(60, 70).midicps } ! 4, [1,1,1], \exp)).play;
+ #+end_src
+
+ #+begin_src sclang
+ // Changing an Env while playing
+ (
+ SynthDef(\env, { arg i_outbus=0;
+     var env, envctl;
+
+     // make a dummy 8 segment envelope
+     env = Env.newClear(8);
+
+     // create a control argument array
+     envctl = \env.kr( env.asArray );
+
+     ReplaceOut.kr(i_outbus, EnvGen.kr(envctl, doneAction: Done.freeSelf));
+ }).add;
+ )
+
+ (
+ SynthDef(\sine, { |out, freq = 440|
+     Out.ar(out, SinOsc.ar(freq, 0, 0.2));
+ }).add;
+ )
+
+ f = Bus.control(s, 1);
+ f.set(800);
+
+ // use f's control bus value for frequency
+ // i.e. *map* the control to read from the bus
+ a = Synth(\sine, [freq: f.asMap]);
+
+ Synth(\env, [i_outbus: f, env: Env([700, 900, 900, 800], [1, 1, 1]*0.4, \exp)]);
+
+ Synth(\env, [i_outbus: f, env: Env([1000, 1000, 800, 1000, 900, 1000], [1, 1, 1, 1, 1]*0.3, \step)]);
+
+ a.free;
+ f.free;
+ #+end_src
+
+**** CANCELED 21 Jan 2021 09:58 devise and new functions for defaultParentEvent keys.
+     CLOSED: [2021-01-21 Thu 11:10]
+
+  This route is now abandoned. Resuming with rebuilding event playing in pattern approach from scratch. 
+
+  COULD NOT GET THIS TO WORK WITH EventPattern or Pbind or anything.
+
+  Route tried:
+
+  Preparing. Look at these, then add your own ~freq function to defaultParentEvent.
+
+  #+begin_src sclang
+  a = ();
+  a.parent; //parent is nil
+  ().play;
+  a.parent; // parent is defaultParentEvent
+  a.parent[\freq] // get the key of a's parent
+  a.parent.freq; // cannot eval default freq function outside of its event
+  a use: { a.parent.freq; }; // but can evaluate it inside its event, like this
+  #+end_src
+
+  If you want to use a modified version of the defaultParentEvent locally, without changing the default global behavior, then you should make a copy and modify that one. The following shows that modifying the parent event in an event after playing is inherited when playing another event: 
+
+  #+begin_src sclang
+  a.parent[\freq];
+  a.parent[\freq] = 1000;
+  //:
+  b = ().play;
+  b.parent[\freq];
+  #+end_src
+
+***** Solution 1 (did not work - see file where this method is defined.
+
+  Since defaultParentEvent is not accessible outside an Event (see class definition code!), write a method like this to do the modification: 
+
+  #+begin_src sclang
+  + Event {
+	   setParentKey_ { | key, newValue |
+		   // preserve previous changes to parent!
+		   parent = (parent ? defaultParentEvent).copy;
+		   parent.put(key, newValue);
+	   }
+  }
+  #+end_src
+
+***** Solution 2 (not found a way to make this work!)
+
+  Use a Pfunc.  However I could not find a way to evaluate the Function of a Pfunc using the event itself as environment.  (FuncStream uses currentEnvironment, so it might be possible to do this with event.push, but this looks like a risky workaround).
+
+  See this: 
+
+  #+begin_src sclang
+  Pbind(\freq, Pfunc({ | in |
+	  postf("testing degree: %\n", ~degree);
+	  postf("testing inval: %\n", in);
+	  1200; }
+  ), \degree, 10).play;
+  #+end_src
+*** 22 Jan 2021 12:59 Keeping EventStream simple by adding behaviors as keys
+
+ Some extra features could be added as behaviors through keys assigned to corresponding Classes.  But some are so simple that it is better to add them as methods to EventStreasm. 
+
+ - Count the number of events played: Return =past.size=.
+ - Calculate the total duration of the pattern played so far. Sum durations of past events.  Better to do that than to incrementally add durations of partial playings - as an EventStream can be paused and restarted many times.
+
+*** 22 Jan 2021 13:06 Conditionally change the value of a key
+
+ Add a key that contains a condition and then goes event.put[key, newValue] when that condition is met. This is much better in most cases than going 
+
+ =Pseq([Pn(val1, n1), Pn(val2, n2) ... etc ])=
+
+ Especially if conditions do not depend on counting times but on other stuff.
+
+*** 22 Jan 2021 14:03 is there a Pcount? (or anything that works like it?)
+
+ Initialize on 0 (or any given start number).
+ At each iteration, increment the current count number by 1 (or any given increment, or function).
+ Optionally reset to start.
+ Optionally change the starting point / increment / function.
+
+*** 22 Jan 2021 14:06 get - set: Important operations on the event of the EventStream.
+
+ For the actions described in the title and in the following subsections: At which level (EventStream, Event, inside event keys?) should these be made available and how? (Method?/Class?).
+
+ I seem to be repeating this thought but should settle on one implementation and discuss its various use cases!
+
+**** Get the value of a key to operate on it (if it is a stream for example).
+
+**** Set the value of a key
+*** 21 Jan 2021 06:50 explore patterns that operate on the result of other patterns
+
+**** 20 Jan 2021 22:32 1. define new kind of pattern that continues outputting the last value produced by the pattern that precedes it, for n number of times. 
+
+  Say the pattern is called Pcontinue.
+
+
+  For example: 
+
+  Pcontinue(Pseries(1, 1, 3), 3).asStream.nextN(8) 
+
+  should produce: 
+
+  [1, 2, 3, 3, 3, 3, nil, nil]
+
+**** 21 Jan 2021 07:58 Ptake: Pattern returning the first n elements of a stream.
+     :PROPERTIES:
+     :DATE:     <2021-01-21 Thu 08:00>
+     :END:
+
+ #+begin_src sclang
+ Ptake(Pseries(1, 1, 6), 2).asStream.nextN(5);
+ #+end_src
+
+ Returns: 
+
+ #+begin_src sclang
+ [ 1, 2, nil, nil, nil ]
+ #+end_src
+
+**** 21 Jan 2021 06:51 2. Play less elements from a pattern at each repeat.
+
+ For example: 
+
+ #+begin_src sclang
+ Preduce(Pseries(1, 1, 5)).asStream.all;
+ #+end_src
+
+ should produce: 
+
+ #+begin_src sclang
+ [1, 2, 3, 4, 5, 1, 2, 3, 4, 1, 2, 3, 1, 2, 1]
+ #+end_src
+
+***** Implementation notes 21 Jan 2021 09:53
+
+ Extend Ptake to take less notes at each repetition.
+
+ Requires specifying the initial number of elements to take because this is not known at the outset (and cannot be inferred from the source pattern because it may be infinite in length).
+
+***** Earlier notes (before 21 Jan 2021 09:51)
+
+ This is probably possible with Pgate.  The doc file is not clear to me. Must study more.  Also, since Pgate requires an event, it is probably better to code a new pattern that does the job without requiring a pattern.
+
+ Examples from doc file: 
+
+  #+begin_src sclang
+  //:
+  (
+  Pbind(
+      \degree, Pseq((0..7), inf),
+	  \amp, 0.5,
+      \step, Pseq([false, false, false, true, false, true, false], inf),
+      \octave, Pgate(Pwhite(5,7), inf, \step),
+      \dur, 0.2
+  ).play
+  )
+  //: Pn advances Pgate each time its subpattern is repeated
+  (
+  Pbind(
+	  \amp, 0.5,
+	  \octave, 6,
+      \degree, Pn(Pseq((0..7)), inf, \step),
+      \mtranspose, Pgate(Pseq((0..4), inf), inf, \step),
+      \dur, 0.2
+  ).play
+  )
+
+
+  //: Two different Pgates advanced at two different rates
+  (
+  Pbind(
+	  \amp, 0.5,
+	  \octave, 6,
+      \scale,    Scale.minor,
+      \foo, Pn(Pseq((0..2)),inf,  \step1),
+      \degree, Pn(Pseq((0..7).mirror), inf, \step),
+      \ctranspose, Pgate(Pwhite(0,5), inf, \step) + Pgate(Pseq([0,7,0,-7], inf), inf, \step1),
+      \dur, 0.2
+  ).play
+  )
+  #+end_src
+** Phase 2: New EventStream + New currentEnvironment API strategy (25.1.2021 ff.)
+*** 25 Jan 2021 18:24 Redesign of EventStream complete
+    :PROPERTIES:
+    :DATE:     <2021-01-25 Mon 18:24>
+    :END:
+
+See work in repository =aliran=.  
+Description to follow after transfer to present repository.
+
+*** 25 Jan 2021 18:30 Radical simplification of currentEnvironment usage
+
+**** Preliminaries: A New ProxySpace-like class and its api
+ Write a new dipatcher for EnvironmentRedirect 
+
+ The Class using the new dispatcher will be called =Mediator= or =WakalaNafasi=
+
+ To activate it, go: 
+
+ #+begin_src sclang
+ Enviroment.startDispatcher;
+ // or: 
+ Mediator.activate;
+ #+end_src
+
+ To deactivate it, go: 
+
+ #+begin_src sclang
+ Enviroment.stopDispatcher;
+ // or: 
+ Mediator.deactivate;
+ #+end_src
+
+**** How it works
+
+It pushes itself to the =currentEnvironment= and translates requests to set a variable to a synth or a pattern to an action that stops a synth or pattern before replacing it.  The following classes will stop previous contents of a key before being stored:
+
+- Synth
+- EventStreamPlayer
+
+This means that in the following cases, the element previously stored in the environment variable will be stopped before storing the new element:
+
+#+begin_src sclang
+~myvoice = Synth(\default);
+~myvoice = { SinOsc.ar(440, 0, 0.2).dup }.play;
+~myvoice = Pbind(\dur, 0.3).play;
+#+end_src
+
+Discussion:
+
+Advantages:
+- Simple use
+
+Disadvantages:
+- No state is saved. Thus no restarting or resuming is possible.
+
+In the case of EventStream it is possible to keep state, so this is hnadled differently than Synth and EventStreamPlayer.
+
+Also Player can keep state, so here again the behavior is different.
 
 
