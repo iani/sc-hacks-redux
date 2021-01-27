@@ -1,7 +1,11 @@
 //: 21 Jan 2021 21:29
 /*
-Reworking EventStream from sc-hacks.
-Maybe this does not have to be a Stream.  We shall see later.
+Play an event, converting its values to streams.
+Features user methods: Start, stop, reset
+Also methods to modify the stream:
+set, put, add, removeKey, addToParent, setParentKey
+These work independently of whether the EventStream is playing or not.
+Changes take effect immediately.
 */
 EventStream /* : Stream */ { // TODO: review subclassing from Stream.
 	classvar >defaultParent;
@@ -28,19 +32,23 @@ EventStream /* : Stream */ { // TODO: review subclassing from Stream.
 	reset { this.resetStream }
 	resetStream { streamPlayer.history.reset; }
 
-	next { ^streamPlayer.next } // access for playing (in various ways)
+	next { ^streamPlayer.next } // access for playing (in various ways!)
 
 	start { this.play }
 	play { streamPlayer.play; }
+	// play using a tr synth for timing (instead of own dur stream).
+	addTrig { 
+		
+		
+	}
 	stop { streamPlayer.stop }
 
 	// access
 	event { ^streamPlayer.event } 	// source event
 	proto { ^streamPlayer.proto }   // source event's prototype
-	atProto { | key | ^this.proto.at(key) }
-	// putProto { | key, value | this.proto.}
+	atProto { | key | ^this.proto.at(key) } // prototype's value at key
 	currentEvent { ^streamPlayer.currentEvent } // currently played event
-	parent { ^streamPlayer.parent }
+	parent { ^streamPlayer.parent } // parent
 
 	// Modify prototype event and its stream at any point (also while playing).
 	// All of the below are delegated to EventGetter (q.v.).

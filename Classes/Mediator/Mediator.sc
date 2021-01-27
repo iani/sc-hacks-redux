@@ -1,6 +1,7 @@
 /* 25 Jan 2021 20:30
 EnvironmentRedirect that handles state of objects before replacing them
-in its keys.
+in its keys. Setting the value of an environment variable in this environment will cause whatever was previously in that variable to stop. This is a simple way
+to guarante that any patterns or synths will stop playing when the reference to them from an environment variable is lost.
 
 See README.
 */

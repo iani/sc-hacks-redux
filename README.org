@@ -782,9 +782,9 @@ Good luck...
 See work in repository =aliran=.  
 Description to follow after transfer to present repository.
 
-*** 25 Jan 2021 18:30 Radical simplification of currentEnvironment usage
+*** 25 Jan 2021 18:30 =Mediator=: Stop processes in currentEnvironment before replacing them
 
-**** Preliminaries: A New ProxySpace-like class and its api
+**** Preliminaries: =Mediator=: A New ProxySpace-like class and its api
  Write a new dipatcher for EnvironmentRedirect 
 
  The Class using the new dispatcher will be called =Mediator= or =WakalaNafasi=
@@ -837,9 +837,36 @@ Also Player can keep state, so here again the behavior is different.
 Evaluate following lines at different times:
 
 #+begin_src sclang
-a = Mediator().push; // initialize the system with this
+Mediator.push; // start using mediator
 // then execute any of the following lines in different order:
 ~b = { WhiteNoise.ar(0.1).dup }.play;
 ~b = { SinOsc.ar(2000, 0, 0.1).dup }.play;
 ~b = Pbind(\amp, 0.4, \degree, Pwhite(10, 20)).play;
+// finally restore the original currentEnvironment:
+Mediator.pop; // stop using mediator
 #+end_src
+
+*** 27 Jan 2021 17:06 Store and retrieve additional objects for any object
+
+When adding new functionality to a class, it is often needed to add some instance variables in order to store state needed for that functionality.  This presents some problems in coding: 
+
+To add variables, either one has to edit the source code of the class concerned, or one has to create a subclass of that class, and add the variables to the subclass.  This has several disadvantages or problems:
+  - Adding variables and/or subclasses leads to bloating of the code and can make it difficult to follow, because the roles of variables and their interdepences become more complex.
+  - One may not want to modify the code of classes defined by other programmers because they belong to libraries whose modification requires checking by the authors.
+
+One way to add state to an object without adding variables, is to store its state in a dictionary and access it using the object as key.  A good example of this pattern is the dependant pattern in SuperCollider.  This uses classvar dependantsDictionary of Object in order to store the dependants of an Object.  The 
+
+
+**** =putLib= store an object for the receiver under a key
+
+Key defaults to class =Nil=. Other classes or types of keys can be used to store / retrieve the object. 
+
+**** =atLib= return object stored for receiver under a key. 
+
+Key defaults to class =Nil=. Other classes or types of keys can be used to store / retrieve the object. 
+
+**** =addLib=
+
+**** =takeLib=
+
+**** =repLib=

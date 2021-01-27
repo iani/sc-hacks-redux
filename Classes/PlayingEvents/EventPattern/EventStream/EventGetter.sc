@@ -75,18 +75,14 @@ EventGetter {
 	// modifying contents while running
 
 	// ================
-	// 1: Modify prototype. Also add the streams of all new keys sourceEvent
-	// modified keys 
+	// 1: Modify prototype.
+	// Always add the streams of all new or modified keys to sourceEvent
 	set { | argEvent |
 		// set proto to argEvent and update sourceEvent
 		proto = argEvent.copy.parent = parent;
 		this.reset;
 	}
 
-	addEventStreams { | argEvent |
-		sourceEvent !? { sourceEvent.addStreams(argEvent) };
-	}
-	
 	add { | argEvent |
 		// add all keys-values of argEvent to proto.
 		// set proto to argEvent and update sourceEvent
@@ -94,10 +90,15 @@ EventGetter {
 		this addEventStreams: proto;
 	}
 
+	addEventStreams { | argEvent |
+		sourceEvent !? { sourceEvent.addStreams(argEvent) };
+	}
+
 	removeKey { | key |
 		proto.put(key, nil);
 		sourceEvent.put(key, nil);
 	}
+
 	// ================
 	// 2: Modify parent.
 	// Events having this parent automatically inherit new contents.

@@ -1,21 +1,21 @@
-/* 25 Jan 2021 10:29
-Some useful event methods
-*/
+// 25 Jan 2021 10:29. Some useful event methods
+
 + Event {
-	splay { | quant, clock |
-		^EventStream(this).play()	
-	}
+	splay { | quant, clock | ^EventStream(this).play() }
 
 	makeStream { | argParent |
 		// return new event containing all my contents as streams
 		^().parent_(argParent.asParent) addStreams: this;
 	}
 
-	addStreams { | argEvent |
-		// add argEvent's contents as streams to myself
-		argEvent keysValuesDo: { | key, value | this[key] = value.asStream };
-	}
-	
+	// add argEvent's contents as streams to myself
+	addStreams { | e | e keysValuesDo: { | key, value | this[key] = value.asStream };}
+
+	// add all key-value pairs of argEvent to self.
+	addEvent { | e | e keysValuesDo: { | key, value | this[key] = value; }}
+
+	// return event whose contents are the 'next' values of this events values
+	// return nil if the next value of any value in self is nil
 	makeNext { | argParent |
 		var outValue, nextEvent;
 		nextEvent = ().parent = parent;
@@ -27,15 +27,8 @@ Some useful event methods
 		^nextEvent;		
 	}
 
-	asParent { ^this.copy }
-
-	addEvent { | argEvent |
-		// add all key-value pairs of argEvent to self.
-		argEvent keysValuesDo: { | key, value | this[key] = value; }
-	}
+	asParent { ^this.copy } // 'copy' also copies the parent!
 
 }
 
-+ Nil {
-	asParent { ^EventStream.defaultParent.asParent }
-}
++ Nil { asParent { ^EventStream.defaultParent.asParent } }
