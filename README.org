@@ -851,121 +851,123 @@ Mediator.pop; // stop using mediator
     :DATE:     <2021-01-28 Thu 18:42>
     :END:
 
-*** CANCELED 27 Jan 2021 17:06 Store and retrieve additional objects for any object
-    CLOSED: [2021-01-28 Thu 18:38]
+=Object:atLib(class, key ... args)= Return object at Library.global[class, key], or if no object was found create one from class.new(*args);
 
-*Note: The idea described here of combining global access to objects with objects local to specific instances leads to problem difficult to solve, because to combine the global and local access functionality one either has to store the objects under 2 different perspectives, or one has to use search in order to provide the functionality of either one of the perspectives.  Therefore this approach is abandoned.  We keep only the global aspect, as a modified, minimalist approach to what was previously the Registry class, and the classes related to it, Singleton, NamedSingleton etc.  Different approaches to the same issue are found in the Ndef/Tdef/Pdef classes of JITLib and in OSCFunc and its sister classes.*
+**** CANCELED 27 Jan 2021 17:06 Store and retrieve additional objects for any object
+     CLOSED: [2021-01-28 Thu 18:38]
 
-When adding new functionality to a class, it is often needed to add some instance variables in order to store state needed for that functionality.  This presents some problems in coding: 
+ *Note: The idea described here of combining global access to objects with objects local to specific instances leads to problem difficult to solve, because to combine the global and local access functionality one either has to store the objects under 2 different perspectives, or one has to use search in order to provide the functionality of either one of the perspectives.  Therefore this approach is abandoned.  We keep only the global aspect, as a modified, minimalist approach to what was previously the Registry class, and the classes related to it, Singleton, NamedSingleton etc.  Different approaches to the same issue are found in the Ndef/Tdef/Pdef classes of JITLib and in OSCFunc and its sister classes.*
 
-To add variables, either one has to edit the source code of the class concerned, or one has to create a subclass of that class, and add the variables to the subclass.  This has several disadvantages or problems:
+ When adding new functionality to a class, it is often needed to add some instance variables in order to store state needed for that functionality.  This presents some problems in coding: 
 
-1. Adding variables and/or subclasses leads to bloating of the code and can make it difficult to follow, because the roles of variables and their interdepences become more complex.
-2. One may not want to modify the code of classes defined by other programmers because they belong to libraries whose modification requires checking by the authors.
+ To add variables, either one has to edit the source code of the class concerned, or one has to create a subclass of that class, and add the variables to the subclass.  This has several disadvantages or problems:
 
-One way to add state to an object without adding variables, is to store its state in a dictionary and access it using the object as key.  An example of this pattern is the dependant pattern in SuperCollider.  This uses classvar =dependantsDictionary= of =Object= in order to store the dependants of an object.  However =dependantsDictionary= is used for the special purpose of updating dependants and therefore should not be used for general storage purposes.
+ 1. Adding variables and/or subclasses leads to bloating of the code and can make it difficult to follow, because the roles of variables and their interdepences become more complex.
+ 2. One may not want to modify the code of classes defined by other programmers because they belong to libraries whose modification requires checking by the authors.
 
-Here we propose to use the Library (Library.global) to store such objects, for 2 reasons: 1. =Library.global= is designed in SCClassLibrary for the express purpose of storing objects. 2. The implementation of Library as MultiLevelIdentityDictionary is handy for storing objects under a path composed from a sequence of keys, which is something handy for the needs of the functionality discussed here. 
+ One way to add state to an object without adding variables, is to store its state in a dictionary and access it using the object as key.  An example of this pattern is the dependant pattern in SuperCollider.  This uses classvar =dependantsDictionary= of =Object= in order to store the dependants of an object.  However =dependantsDictionary= is used for the special purpose of updating dependants and therefore should not be used for general storage purposes.
 
-**** Use case analysis: Global storage of instances under ids, local storage for a single instance
+ Here we propose to use the Library (Library.global) to store such objects, for 2 reasons: 1. =Library.global= is designed in SCClassLibrary for the express purpose of storing objects. 2. The implementation of Library as MultiLevelIdentityDictionary is handy for storing objects under a path composed from a sequence of keys, which is something handy for the needs of the functionality discussed here. 
 
-The first use case for the proposed Lib strategy is the implementation of a method addTrig in EventStream.
+***** Use case analysis: Global storage of instances under ids, local storage for a single instance
 
-#+begin_src sclang
-anEventStream.addTrig(id)
-#+end_src
+ The first use case for the proposed Lib strategy is the implementation of a method addTrig in EventStream.
 
-=anEventStream.addTrig(id)= : add an instance of =OSCTrig= which contains an OSCFunc listening to =/tr= with argTemplate =[id]=, and when receiving an OSC at that address, sends to the receiver (=anEventStream=) the message =trig(id)=.  Note:
+ #+begin_src sclang
+ anEventStream.addTrig(id)
+ #+end_src
+
+ =anEventStream.addTrig(id)= : add an instance of =OSCTrig= which contains an OSCFunc listening to =/tr= with argTemplate =[id]=, and when receiving an OSC at that address, sends to the receiver (=anEventStream=) the message =trig(id)=.  Note:
  
-- An =EventStream= instance should be able to add multiple trigs on different ids.
-- Also, an =OSCTtrig= instance should be able to send =trig= to multiple instances of =EventStream=.
+ - An =EventStream= instance should be able to add multiple trigs on different ids.
+ - Also, an =OSCTtrig= instance should be able to send =trig= to multiple instances of =EventStream=.
 
-In order to be able to function as above, the system must perform the following tasks:
+ In order to be able to function as above, the system must perform the following tasks:
 
-***** =EventStream= obtains =OSCTrig= instance under =id= key.
+****** =EventStream= obtains =OSCTrig= instance under =id= key.
 
-In order to add itself to an =OSCTrig= instance, an =EventStream= should be able to obtain an =OSCTrig= instance with a specified =id=.  If an =OSCTrig= instance with that =id= already exists, it should get that instance and use it. Else, a new instance should be created and stored under that =id= so that it is accessible for future use by any =EventStream= or other object that needs it. 
+ In order to add itself to an =OSCTrig= instance, an =EventStream= should be able to obtain an =OSCTrig= instance with a specified =id=.  If an =OSCTrig= instance with that =id= already exists, it should get that instance and use it. Else, a new instance should be created and stored under that =id= so that it is accessible for future use by any =EventStream= or other object that needs it. 
 
-***** =EventStream= finds one or all =OSCTrig= instances that it is connected to
+****** =EventStream= finds one or all =OSCTrig= instances that it is connected to
 
-In order to remove itself from an =OSCTrig= instance, an =EventStream= should be able to know if it aready has that instance.  
+ In order to remove itself from an =OSCTrig= instance, an =EventStream= should be able to know if it aready has that instance.  
 
-Therefore, an =EventStream= should store all of the =OSCTrig= instances that it is connected to, using their =id=s as keys. 
+ Therefore, an =EventStream= should store all of the =OSCTrig= instances that it is connected to, using their =id=s as keys. 
 
-**** Method proposal replacing NamedSingleton/Registry behavior
+***** Method proposal replacing NamedSingleton/Registry behavior
 
-#+begin_src sclang
-aClass.libGet(key ... args);
-#+end_src
+ #+begin_src sclang
+ aClass.libGet(key ... args);
+ #+end_src
 
-an object could instance of class using method above, as follows:
+ an object could instance of class using method above, as follows:
 
-#+begin_src sclang
+ #+begin_src sclang
 
-#+end_src
-
-
-
-
-**** more (eariler) draft
-#+begin_src sclang
-aClass.libStore(key ... args);
-#+end_src
+ #+end_src
 
 
 
 
-**** Storage formats 
-     :PROPERTIES:
-     :DATE:     <2021-01-28 Thu 14:12>
-     :END:
+***** more (eariler) draft
+ #+begin_src sclang
+ aClass.libStore(key ... args);
+ #+end_src
 
-***** 1. class - id (= key) - value
 
-***** 2. object - class (= varname = key) - id  - value
 
-****** (Alternative: class - object - dict, or class - object -key - value)
 
-**** Test case with =EventStream.addTrig(id)= 
+***** Storage formats 
+      :PROPERTIES:
+      :DATE:     <2021-01-28 Thu 14:12>
+      :END:
 
-- get an =OSCTrig= instance =ot= corresponding to given =id=.
-- =ot= is stored in Library.global under =[OSCTtrig, id]=
-- =ot= is also stored in Library.global under =[thisEventStream, OSCTrig, id]=
+****** 1. class - id (= key) - value
 
-**** API: Methods for adding, accessing, replacing objects
+****** 2. object - class (= varname = key) - id  - value
 
-***** DRAFT 2 : Suggested names
+******* (Alternative: class - object - dict, or class - object -key - value)
 
-****** libAt
+***** Test case with =EventStream.addTrig(id)= 
 
-#+begin_src sclang
-anObject.libAt(class, key ... args)
-#+end_src
+ - get an =OSCTrig= instance =ot= corresponding to given =id=.
+ - =ot= is stored in Library.global under =[OSCTtrig, id]=
+ - =ot= is also stored in Library.global under =[thisEventStream, OSCTrig, id]=
 
-****** obtain
+***** API: Methods for adding, accessing, replacing objects
 
-(see synonyms from https://www.thesaurus.com/browse/obtain :
- access achieve attain collect earn gain gather glean have pick up procure purchase reach realize reap receive recover retrieve secure seize take win 
-)
+****** DRAFT 2 : Suggested names
 
-****** libPut, libPadd
+******* libAt
 
-#+begin_src sclang
-anObject.libPut(class, key )
-#+end_src
+ #+begin_src sclang
+ anObject.libAt(class, key ... args)
+ #+end_src
 
-***** DRAFT 1 - very primitive, before analysis
-****** =putLib= store an object for the receiver under a key
+******* obtain
 
-  Key defaults to class =Nil=. Other classes or types of keys can be used to store / retrieve the object. 
+ (see synonyms from https://www.thesaurus.com/browse/obtain :
+  access achieve attain collect earn gain gather glean have pick up procure purchase reach realize reap receive recover retrieve secure seize take win 
+ )
 
-****** =atLib= return object stored for receiver under a key. 
+******* libPut, libPadd
 
-  Key defaults to class =Nil=. Other classes or types of keys can be used to store / retrieve the object. 
+ #+begin_src sclang
+ anObject.libPut(class, key )
+ #+end_src
 
-****** =addLib= add an object to a set of objects stored under a key
+****** DRAFT 1 - very primitive, before analysis
+******* =putLib= store an object for the receiver under a key
 
-****** =takeLib= remove an object from a set of objects stored under a key
+   Key defaults to class =Nil=. Other classes or types of keys can be used to store / retrieve the object. 
 
-****** =repLib=  replace an object from a set of objects stored under a key with another object
+******* =atLib= return object stored for receiver under a key. 
+
+   Key defaults to class =Nil=. Other classes or types of keys can be used to store / retrieve the object. 
+
+******* =addLib= add an object to a set of objects stored under a key
+
+******* =takeLib= remove an object from a set of objects stored under a key
+
+******* =repLib=  replace an object from a set of objects stored under a key with another object
 
