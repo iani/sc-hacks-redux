@@ -1,5 +1,8 @@
 /*
 
+NOTE 30 Jan 2021 11:39; Notification has been replaced by Notifier.
+Port of older methods using Notification is still under way.
+
 Enable adding message-specific calls using the changed/update mechanism of Object.
 
 Usage:
@@ -103,7 +106,7 @@ Notification {
 }
 
 + Object {
-
+	/*
 	addNotifier { | notifier, message, action |
 		Notification(notifier, message, this, action);
 	}
@@ -111,6 +114,7 @@ Notification {
 	removeNotifier { | notifier, message |
 		Notification.remove(notifier, message, this);
 	}
+	*/
 
 	// Review? Possibly used by AppModel. 
 	// But the correct form should be 
@@ -143,6 +147,7 @@ Notification {
 		}
 	}
 
+	/*
 	addNotifierOneShot { | notifier, message, action |
 		Notification(notifier, message, this, { | ... args |
 			action.(*args); //action.(args);
@@ -159,55 +164,5 @@ Notification {
 			notification.action = notification.action addFunc: action;
 		}
 	}
-}
-
-+ Node {
-    /* always release notified nodes when they are freed
-        Note: any objects that want to be notified of the node's end, 
-        can listen to it notifying 'n_end', which is triggered through NodeWatcher
-        and which is the same message that makes the Node remove all its Notifications.
-    */
-    addNotifier { | notifier, message, action |
-        super.addNotifier(notifier, message, action);
-        NodeWatcher.register(this);
-        this.addNotifierOneShot(this, 'n_end', {
-			// remove notifiers only after all notifications have been issued!
-			{ this.objectClosed; }.defer(0.1);
-		});
-    }
-
-	
-}
-
-+ View {
-	addNotifier { | notifier, message, action |
-		super.addNotifier(notifier, message, action);
-		// release view when closed
-		this.onClose = { this.objectClosed };
-    }
-
-	addServerNotifier { | server, on = 1, off = 0 |
-		// Shortcut for server monitoring
-		server = server ?? { Server.default };
-		this.addNotifier(server, \counts, { | n |
-			n.listener.value = on;
-		});
-		this.addNotifier(server, \didQuit, { | n |
-			n.listener.value = off;
-		})
-	}
-
-	onServerCounts { | action, server |
-		server = server ?? { Server.default };
-		this.addNotifier(server, \counts, { | n |
-			action.(n.listener, server);
-		})
-	}
-	
-	onServerQuit { | action, server |
-		server = server ?? { Server.default };
-				this.addNotifier(server, \quit, { | n |
-			action.(n.listener, server);
-		})
-	}
+	*/
 }

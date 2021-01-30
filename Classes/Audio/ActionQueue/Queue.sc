@@ -24,22 +24,28 @@ Queue {
 		Class.initClassTree(Server);
 		Class.initClassTree(OSCFunc);
 		Class.initClassTree(Library);
-		Class.initClassTree(Registry);
-		Class.initClassTree(Notification);
+		//		Class.initClassTree(Registry);
+		// Class.initClassTree(Notification);
 		default = this.new(Server.default);
 	}
 	
 	*add { | action |
 		this.new add: action;
 	}
-	
+
+	*at { | server |
+		^this.obtain(server ?? { Server.default });
+	}
+
 	*new { | server |
-		if (server.isNil) { ^default };
+		^this.newCopyArgs(List(), server).init;
 		// { postf("server is now: %\n", server); } ! 100;
 		// one Que instance per server;
+		/*
 		^Registry(\Queue, server, { // initialize empty que as List
 			this.newCopyArgs(List(), server).init;
 		});
+		*/
 	}
 
 	init {

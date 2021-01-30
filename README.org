@@ -846,28 +846,30 @@ Mediator.push; // start using mediator
 Mediator.pop; // stop using mediator
 #+end_src
 
-*** 28 Jan 2021 18:41 Provide simple method alternative to Registry
+*** 28 Jan 2021 18:41 Simple Alternatives to Registry and Notification
     :PROPERTIES:
     :DATE:     <2021-01-28 Thu 18:42>
     :END:
 
-=Object:atLib(class, key ... args)= Return object at Library.global[class, key], or if no object was found create one from class.new(*args);
+See files =Notifier.sc= and =StateWithoutVars.sc=
 
-**** CANCELED 27 Jan 2021 17:06 Store and retrieve additional objects for any object
+**** 27 Jan 2021 17:06 Store and retrieve additional objects for any object
      CLOSED: [2021-01-28 Thu 18:38]
 
- *Note: The idea described here of combining global access to objects with objects local to specific instances leads to problem difficult to solve, because to combine the global and local access functionality one either has to store the objects under 2 different perspectives, or one has to use search in order to provide the functionality of either one of the perspectives.  Therefore this approach is abandoned.  We keep only the global aspect, as a modified, minimalist approach to what was previously the Registry class, and the classes related to it, Singleton, NamedSingleton etc.  Different approaches to the same issue are found in the Ndef/Tdef/Pdef classes of JITLib and in OSCFunc and its sister classes.*
+30 Jan 2021 11:29: *These are earlier notes and should be scrapped - replaced by better description:*
 
- When adding new functionality to a class, it is often needed to add some instance variables in order to store state needed for that functionality.  This presents some problems in coding: 
+Note:  the global and local access functionality one either has to store the objects under 2 different perspectives, or one has to use search in order to provide the functionality of either one of the perspectives.  Therefore this approach is abandoned.  We keep only the global aspect, as a modified, minimalist approach to what was previously the Registry class, and the classes related to it, Singleton, NamedSingleton etc.  
 
- To add variables, either one has to edit the source code of the class concerned, or one has to create a subclass of that class, and add the variables to the subclass.  This has several disadvantages or problems:
+When adding new functionality to a class, it is often needed to add some instance variables in order to store state needed for that functionality.  This presents some problems in coding: 
 
- 1. Adding variables and/or subclasses leads to bloating of the code and can make it difficult to follow, because the roles of variables and their interdepences become more complex.
- 2. One may not want to modify the code of classes defined by other programmers because they belong to libraries whose modification requires checking by the authors.
+To add variables, either one has to edit the source code of the class concerned, or one has to create a subclass of that class, and add the variables to the subclass.  This has several disadvantages or problems:
 
- One way to add state to an object without adding variables, is to store its state in a dictionary and access it using the object as key.  An example of this pattern is the dependant pattern in SuperCollider.  This uses classvar =dependantsDictionary= of =Object= in order to store the dependants of an object.  However =dependantsDictionary= is used for the special purpose of updating dependants and therefore should not be used for general storage purposes.
+1. Adding variables and/or subclasses leads to bloating of the code and can make it difficult to follow, because the roles of variables and their interdepences become more complex.
+2. One may not want to modify the code of classes defined by other programmers because they belong to libraries whose modification requires checking by the authors.
 
- Here we propose to use the Library (Library.global) to store such objects, for 2 reasons: 1. =Library.global= is designed in SCClassLibrary for the express purpose of storing objects. 2. The implementation of Library as MultiLevelIdentityDictionary is handy for storing objects under a path composed from a sequence of keys, which is something handy for the needs of the functionality discussed here. 
+One way to add state to an object without adding variables, is to store its state in a dictionary and access it using the object as key.  An example of this pattern is the dependant pattern in SuperCollider.  This uses classvar =dependantsDictionary= of =Object= in order to store the dependants of an object.  However =dependantsDictionary= is used for the special purpose of updating dependants and therefore should not be used for general storage purposes.  Here we propose to use the Library (Library.global) to store such objects, for 2 reasons: 1. =Library.global= is designed in SCClassLibrary for the express purpose of storing objects. 2. The implementation of Library as MultiLevelIdentityDictionary is handy for storing objects under a path composed from a sequence of keys, which is something handy for the needs of the functionality discussed here. Different approaches to the same issue, using class variables, are found in the Ndef/Tdef/Pdef classes of JITLib and in OSCFunc and its sister classes. 
+
+
 
 ***** Use case analysis: Global storage of instances under ids, local storage for a single instance
 
@@ -970,4 +972,6 @@ Mediator.pop; // stop using mediator
 ******* =takeLib= remove an object from a set of objects stored under a key
 
 ******* =repLib=  replace an object from a set of objects stored under a key with another object
+
+*** 
 

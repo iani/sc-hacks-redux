@@ -10,7 +10,11 @@ WatchChanges {
 }
 
 + Object {
-	watchChanges {
-		this addDependant: WatchChanges;		
+	watchChanges { | switch = true |
+		if (switch) {
+			this addDependant: WatchChanges;
+		}{
+			this removeDependant: WatchChanges;
+		}
 	}
 }
