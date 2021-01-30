@@ -1,57 +1,59 @@
 //: 21 Jan 2021 21:29
 /*
 Play an event, converting its values to streams.
-Features user methods: Start, stop, reset
-Also methods to modify the stream:
-set, put, add, removeKey, addToParent, setParentKey
-These work independently of whether the EventStream is playing or not.
+Play with methods: start, stop, reset
+Modify the stream before or during playing with methods:
+set, put, add, removeKey, addToParent, setParentKey.
 Changes take effect immediately.
 */
-EventStream /* : Stream */ { // TODO: review subclassing from Stream.
-	classvar >defaultParent;
+EventStream { // intentionally not a subclass of Stream
+	classvar >defaultParent; // private copy for non-interference with lib default
+	var <streamPlayer, <triggers;
 
-	var <clock, <quant;
-	var <streamPlayer;
-	
 	*new { | event, parent, tempoClock, quant |
-		^super.newCopyArgs(tempoClock, quant).init(event, parent);
+		^super.new().init(event, parent, tempoClock, quant);
 	}
 
 	*defaultParent {
 		^defaultParent ?? { defaultParent = Event.default.parent.copy };
 	}
 
-	init { | argEvent, argParent |
+	init { | argEvent, argParent, argClock, argQuant |
+		triggers = IdentityDictionary();
 		streamPlayer = SimpleEventStreamPlayer(
-			this, argEvent, argParent, clock, quant
+			this, argEvent, argParent, argClock, argQuant
 		);
 		CmdPeriod add: { streamPlayer.cmdPeriod }
 	}
 
-	// playing
+	// ================ playing
 	reset { this.resetStream }
 	resetStream { streamPlayer.history.reset; }
-
-	next { ^streamPlayer.next } // access for playing (in various ways!)
-
+	playNext { this.next.play } // avoid this while playing with routine
+	next { ^streamPlayer.next } // get next event (for playing)
 	start { this.play }
 	play { streamPlayer.play; }
+	stop { streamPlayer.stop }
 	// play using a tr synth for timing (instead of own dur stream).
-	addTrig { 
-		
+	addTrig { | key = \default |
+		 triggers[key] = OscTrig.fromLib(key);
 		
 	}
-	stop { streamPlayer.stop }
+	removeTrig { | trigKey |
 
-	// access
+	}
+	addTrigSynth { | playFunc, trigKey, synthKey |
+
+	}
+
+	// ================ access
 	event { ^streamPlayer.event } 	// source event
 	proto { ^streamPlayer.proto }   // source event's prototype
 	atProto { | key | ^this.proto.at(key) } // prototype's value at key
 	currentEvent { ^streamPlayer.currentEvent } // currently played event
 	parent { ^streamPlayer.parent } // parent
 
-	// Modify prototype event and its stream at any point (also while playing).
-	// All of the below are delegated to EventGetter (q.v.).
+	// ================ modifying
 	set { | inEvent | streamPlayer.set(inEvent); }
 	put { | key, value | this add: ().put(key, value); }
 	add { | inEvent | streamPlayer.add(inEvent); }

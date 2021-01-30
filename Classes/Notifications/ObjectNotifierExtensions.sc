@@ -20,20 +20,20 @@
 		})
 	}
 
-	removeMessage { | message |
-		// remove all listeners listening to me at this message
-		"Notifier:removeMessage not yet implemented".postln;
-	}
-
 	listeners { ^Notifier.listenersOf(this) }
 	notifiers { ^Notifier.notifiersOf(this) }
 	removeListeners { this.listeners do: _.remove; } // remove all listeners
 	removeNotifiers { this.notifiers do: _.remove; } // remove all notifiers
+	removeListenersAt { | message |
+		
+	}
+	removeNotifiersAt { | message |
 
+	}
 	objectClosed {
 		this.changed(\objectClosed);
-		Notifier.removeNotifiersOf(this);
-		Notifier.removeListenersOf(this);
+		this.removeListeners;
+		this.removeNotifiers;
 		this.releaseDependants;
 	}
 

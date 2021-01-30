@@ -10,42 +10,30 @@ Can use:
 */
 
 OscTrig {
-	var <id, <oscfunc, <listeners, <envir;
+	var <id, <oscfunc, <envir;
 
-	*new { | id = 0 |
-		^this.newCopyArgs.init;
+	*new { | id |
+		^this.newCopyArgs.init(id);
 	}
 
-	init {
-		oscFunc = this.makeOscFunc(id);
-		listeners = Set();
-		envir = Mediator().put(\id, id);
+	init { | id |
+		id ?? { id = UniqueID.next };
+		oscFunc = this.makeOscFunc;
+		envir = Mediator(); // .put(\id, id);
 	}
 
-	add { | listener |
-
+	makeOscFunc {
+		oscFunc = OSCFunc({ | msg |
+			this.changed(\trig, id, msg[2])
+		}, '/tr', argTemplate: [nil, id])
 	}
 
-	remove { | listener |
-
+	addSynth { | synthFunc, key = \default |
+		envir[key] = synthFunc.play(args: [id: id]);
 	}
 
 	free { // remove all listeners and deactivate OSCFunc
 		oscfunc.free;
-		listeners do: { | l | l.removeDependant(this) };
-		listeners = nil;
+		this.objectClosed;
 	}
-
-	addSource { | key, source |
-		/*  Note 30 Jan 2021 17:59
-			We need a new class that converts the source to a synth,
-			using envir as Mediator-environment to use id as parameter.
-		*/
-	}
-
-	removeSource { | key |
-			
-	}
-
-	
 }

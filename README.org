@@ -846,7 +846,7 @@ Mediator.push; // start using mediator
 Mediator.pop; // stop using mediator
 #+end_src
 
-*** 28 Jan 2021 18:41 Simple Alternatives to Registry and Notification
+*** 28 Jan 2021 18:41 Simpler Alternatives to Registry and Notification
     :PROPERTIES:
     :DATE:     <2021-01-28 Thu 18:42>
     :END:
@@ -983,6 +983,9 @@ Features (draft):
 - store argume names from a synthdef
 - construct argument array for starting a synth from a synthdef. 
 - evaluate argument array consruction function in an envir providing default values for starting the synth
+
+Possible extra features (maybe use separate class for these):
+
 - handle both synthdefs existing in SynthDescLib and newly constructed synthdefs from functions.  
 - use sync to ensure that synths are created after their synthdef has been loaded.
 

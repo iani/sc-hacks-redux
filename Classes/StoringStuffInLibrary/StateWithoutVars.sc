@@ -5,18 +5,19 @@ See discussion in https://github.com/iani/sc-hacks-redux/blob/master/README.org
 
 + Class {
 	// return what is stored in library at [this, key]
-	access { | key | ^Library.global.at(this, key) }
+	atLibKey { | key | ^Library.global.at(this, key) }
 	// if not present at key, then store new instance in key and return that
-	obtain { | key ... args |
+	fromLib { | key ... args |
 		var new;
-		new = this.access(key);
+		new = this.atLibKey(key);
 		new ?? {
 			new = this.new(*args);
+			this.addNotifier(new, \objectClosed, { this removeLibKey: key });
 			Library.global.put(this, key, new);
 		};
 		^new;
 	}
-	removeKey { | key | Library.global.put(this, key, nil) }
+	removeLibKey { | key | Library.global.put(this, key, nil) }
 	// return what has been stored in Library under me
 	libTree { ^Library.global.at(this) }
 }

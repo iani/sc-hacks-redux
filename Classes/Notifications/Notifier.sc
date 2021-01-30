@@ -7,8 +7,7 @@ Notifier {
 	var <notifier, <message, <listener, <action;
 
 	*initClass {
-		StartUp add: { notifiers = MultiLevelIdentityDictionary() }
-		
+		StartUp add: { notifiers = MultiLevelIdentityDictionary() }	
 	}
 	
 	*new { | notifier, message, listener, action |
