@@ -2,22 +2,24 @@
 Holds an OSCfunc that responds to \tr messages and sends \trig 
 messages to one or more listening objects.
 
-TODO: Figure out how to handle both:
+Can use: 
 - more than 1 osctrig for a single listener
 - more than 1 listener per single osctrig
-
-Probably implement this using some extended technique along
-new methods putLib / atLib, which allows putting/managing a set objects in lib
-under path: ClassOfObjectStored, objectThatStores.  
+- Several synths sending trigs to one OscTrig
 
 */
 
 OscTrig {
-	var id, oscfunc, listeners;
+	var <id, <oscfunc, <listeners, <envir;
 
-	*new {
-		
-		
+	*new { | id = 0 |
+		^this.newCopyArgs.init;
+	}
+
+	init {
+		oscFunc = this.makeOscFunc(id);
+		listeners = Set();
+		envir = Mediator().put(\id, id);
 	}
 
 	add { | listener |
@@ -32,5 +34,18 @@ OscTrig {
 		oscfunc.free;
 		listeners do: { | l | l.removeDependant(this) };
 		listeners = nil;
-	}	
+	}
+
+	addSource { | key, source |
+		/*  Note 30 Jan 2021 17:59
+			We need a new class that converts the source to a synth,
+			using envir as Mediator-environment to use id as parameter.
+		*/
+	}
+
+	removeSource { | key |
+			
+	}
+
+	
 }

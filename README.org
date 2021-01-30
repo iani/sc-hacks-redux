@@ -853,6 +853,9 @@ Mediator.pop; // stop using mediator
 
 See files =Notifier.sc= and =StateWithoutVars.sc=
 
+See EventStream:addTrig and OscTrig for use case ...
+
+The following notes are obsolete.
 **** 27 Jan 2021 17:06 Store and retrieve additional objects for any object
      CLOSED: [2021-01-28 Thu 18:38]
 
@@ -973,5 +976,14 @@ One way to add state to an object without adding variables, is to store its stat
 
 ******* =repLib=  replace an object from a set of objects stored under a key with another object
 
-*** 
+*** 30 Jan 2021 18:03 SynthCache: construct synth args and start synths in an environment
+
+Features (draft):
+
+- store argume names from a synthdef
+- construct argument array for starting a synth from a synthdef. 
+- evaluate argument array consruction function in an envir providing default values for starting the synth
+- handle both synthdefs existing in SynthDescLib and newly constructed synthdefs from functions.  
+- use sync to ensure that synths are created after their synthdef has been loaded.
+
 

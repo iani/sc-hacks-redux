@@ -22,7 +22,7 @@
 
 	removeMessage { | message |
 		// remove all listeners listening to me at this message
-		
+		"Notifier:removeMessage not yet implemented".postln;
 	}
 
 	listeners { ^Notifier.listenersOf(this) }
