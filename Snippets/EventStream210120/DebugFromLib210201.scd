@@ -13,11 +13,29 @@ b = OscTrig.fromLib(\test1, 1);
 b === a;
 //:
 a = (dur: 0.1, degree: Pn(Pseries(10, 1, 10))).eventStream;
-a.addTrigSynth({ Impulse.kr(1)});
 t = a.addTrig;
+t.addSynth({ Impulse.kr(1)});
+MyLibrary.global;
 
-t.addSynth({ Impulse.kr(1)})
+\xxx.changed(\yyy);
 
-Library.global;
 
-Library.put(\test, 1, 2, 3, 10000);
+t;
+t.changed(\trig);
+
+y = a.addTrig;
+y.addSynth({ Impulse.kr(1)});
+
+t.id;
+
+{ SendTrig.kr(Impulse.kr(1), 1009) }.play;
+
+a.addTrigSynth({ Impulse.kr(1)});
+
+
+t.addSynth({ Impulse.kr(3)})
+y.addSynth({ Impulse.kr(2)})
+
+MyLibrary.global.put(1, 2, 3);
+
+
