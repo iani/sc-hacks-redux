@@ -49,8 +49,8 @@ EventStream { // intentionally not a subclass of Stream
 			triggers[key] = nil;
 		}
 	}
-	addTrigSynth { | synthFunc, trigKey = \default, synthKey = \default |
-		this.addTrig(trigKey).addSynth(synthFunc, synthKey);
+	addTrigSynth { | source, trigKey = \default, synthKey = \default |
+		this.addTrig(trigKey).addSynth(source, synthKey);
 	}
 
 	// ================ access

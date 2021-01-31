@@ -17,11 +17,11 @@ Mediator.push;
 	players = [
 		{ SinOsc.ar(1000 rrand: 2000, 0, 0.1).dup },
 		{ SinOsc.ar(1000 rrand: 2000, 0, 0.3 * Env.perc.kr(doneAction: 2)).dup },
-		{ WhiteNoise.ar(0.05).dup },
+		{ WhiteNoise.ar(0.01).dup * Decay.kr(Impulse.kr(8)) },
 		(dur: 0.1, degree: Pbrown(20, 30, 1), amp: 0.3),
 		(dur: 0.15, degree: Pseries(-10, 2, 10), amp: 0.3),
 		(dur: 0.5, degree: Pseries(10, -2, 10), amp: 0.3),
-		{ GrayNoise.ar(0.05).dup }
+		{ GrayNoise.ar(0.01).dup * Decay.kr(Impulse.kr(5)) }
 	];
 	loop {
 		postf("playing new %\n", player);
