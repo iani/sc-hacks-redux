@@ -10,7 +10,7 @@ Can use:
 */
 
 OscTrig {
-	var <id, <oscfunc, <envir;
+	var <id, <oscFunc, <envir;
 
 	*new { | id |
 		^this.newCopyArgs.init(id);
@@ -39,7 +39,7 @@ OscTrig {
 	}
 
 	free { // remove all listeners and deactivate OSCFunc
-		oscfunc.free;
+		oscFunc.free;
 		this.objectClosed;
 	}
 }
