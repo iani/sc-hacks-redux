@@ -989,4 +989,39 @@ Possible extra features (maybe use separate class for these):
 - handle both synthdefs existing in SynthDescLib and newly constructed synthdefs from functions.  
 - use sync to ensure that synths are created after their synthdef has been loaded.
 
+*** 31 Jan 2021 23:02 Rhythmical pattern notation with SendTrig based on rational numbers
+    :PROPERTIES:
+    :DATE:     <2021-01-31 Sun 23:03>
+    :END:
+
+Notation principle - first thoughts: 
+
+**** ="x-x-x---x-".b(reldur)= and ="x-x-x---x-".f(reldur)= : 
+
+=reldur= can be an Integer, Float, or Ratio. (See class =Ratio= in present library).
+
+We should compare two appraches:  Converting =reldur= to =Ratio= type, or leaving it as it is.  In either case, we should also consider how to wait additional time after the end of the pattern until the beginning of the next beat. 
+
+- treat the string as beats, x means play the beat, - means do not play the beat. 
+- Calculate the number of beats in the string.
+- Calculate the duration of the beat so that the entire duration of the notated rhythm pattern will sum up to the argument (SimpleNumber or Ratio) in terms of a the current reference beat duration, where (SimpleNumber or Ratio) could signify:
+
+***** method =b= (beat)
+
+The duration of *one* beat in the pattern becomes equal to the value of =reldur= multiplied by the duration of the refererence beat.
+
+***** method =f= (fit)
+
+The duration of each beat in the pattern is calculated so that the duration of the *entire pattern* becomes equal to the value of =reldur= multiplied by the duration of the refererence beat.
+
+
+**** Implementation
+
+2 Approaches (for different styles of playing):
+
+1. as a pattern for insertion into an event for playing the usual way
+2. as a synth sending SendTrig based on an impulse pattern.  
+
+To create the impulse pattern in approach 2, use Impulse.kr with a constant frequency (steady i.e. equal beat lengths), and use a demand ugen outputting a series of 0 or 1 in order to filter out those beats which should be sent (1) or remain silent (0). Alternatively, use TDuty and specify the duration to the next beat individually.  Stop the synth after the last beat.
+
 
