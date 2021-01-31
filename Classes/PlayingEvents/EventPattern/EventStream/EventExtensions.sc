@@ -1,8 +1,7 @@
 // 25 Jan 2021 10:29. Some useful event methods
 
 + Event {
-	splay { | quant, clock | ^EventStream(this).play() }
-
+	splay { | parent, quant, clock | ^EventStream(this, parent, quant, clock).play() }
 	makeStream { | argParent |
 		// return new event containing all my contents as streams
 		^().parent_(argParent.asParent) addStreams: this;

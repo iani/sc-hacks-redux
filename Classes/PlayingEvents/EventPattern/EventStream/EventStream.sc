@@ -10,18 +10,18 @@ EventStream { // intentionally not a subclass of Stream
 	classvar >defaultParent; // avoid modifying default from SCClassLibrary
 	var <streamPlayer, <triggers;
 
-	*new { | event, parent, tempoClock, quant |
-		^super.new().init(event, parent, tempoClock, quant);
+	*new { | event, parent, quant, tempoClock |
+		^super.new().init(event, parent, quant, tempoClock);
 	}
 
 	*defaultParent { // avoid modifying default from SCClassLibrary!
 		^defaultParent ?? { defaultParent = Event.default.parent.copy };
 	}
 
-	init { | argEvent, argParent, argClock, argQuant |
+	init { | argEvent, argParent, argQuant, argClock |
 		triggers = IdentityDictionary();
 		streamPlayer = SimpleEventStreamPlayer(
-			this, argEvent, argParent, argClock, argQuant
+			this, argEvent, argParent, argQuant, argClock
 		);
 		CmdPeriod add: { streamPlayer.cmdPeriod }
 	}

@@ -21,8 +21,8 @@ SimpleEventStreamPlayer {
 
 	var <currentEvent;
 	
-	*new { | stream, event, parent, quant, tempo |
-		^this.newCopyArgs(stream, quant, tempo ?? { TempoClock.default })
+	*new { | stream, event, parent, quant, clock |
+		^this.newCopyArgs(stream, quant, clock ?? { TempoClock.default })
 		.init(event, parent);
 	}
 
