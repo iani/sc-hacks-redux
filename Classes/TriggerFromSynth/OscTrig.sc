@@ -16,21 +16,21 @@ OscTrig {
 		^this.newCopyArgs.init(id);
 	}
 
-	init { | id |
-		id ?? { id = UniqueID.next };
+	init { | argId |
+		id = argId ?? { UniqueID.next };
 		oscFunc = this.makeOscFunc;
 		envir = Mediator(); // .put(\id, id);
 	}
 
 	makeOscFunc {
 		oscFunc = OSCFunc({ | msg |
-			this.changed(\trig, id, msg[2])
+			this.changed(\trig, *msg[2..])
 		}, '/tr', argTemplate: [nil, id])
 	}
 
 	addListener { | listener, action |
-		listener.addNotifier(this, \trig, action ?? {		
-			{ postf("% received trig from %\n", listener, this) }
+		listener.addNotifier(this, \trig, action ?? { | ... args |		
+			{ postf("% received % from %\n", listener, args, this) }
 		});
 	}
 
