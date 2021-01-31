@@ -33,8 +33,8 @@ t.id;
 { SendTrig.kr(Impulse.kr(1), 1009) }.play;
 
 a.addTrigSynth({ Impulse.kr(5)});
-a.addTrigSynth({ Impulse.kr(0.5)});
-a.addTrigSynth({ Impulse.kr(15)});
+a.trigSynth({ Impulse.kr(0.5)});
+a.trigSynth({ Impulse.kr(15)});
 
 
 t.addSynth({ Impulse.kr(3)})

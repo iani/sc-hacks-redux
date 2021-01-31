@@ -49,8 +49,15 @@ EventStream { // intentionally not a subclass of Stream
 			triggers[key] = nil;
 		}
 	}
-	addTrigSynth { | source, trigKey = \default, synthKey = \default |
+	trigSynth { | source, trigKey = \default, synthKey = \default |
+		// NOTE: Perhaps better use a method like:
+		// \trigKey.trigSynth(source, synthKey)!
 		this.addTrig(trigKey).addSynth(source, synthKey);
+	}
+	remSynth { | trigKey = \default, synthKey = \default |
+		// TODO: Implement this
+		// remove synth - best done perhaps via OscTrig directly?
+		"remSynth not yet implemented".postln;
 	}
 
 	// ================ access
