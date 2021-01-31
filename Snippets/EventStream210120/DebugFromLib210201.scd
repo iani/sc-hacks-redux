@@ -17,6 +17,8 @@ t = a.addTrig;
 t.addSynth({ Impulse.kr(1)});
 MyLibrary.global;
 
+t.dependants;
+
 \xxx.changed(\yyy);
 
 
@@ -30,7 +32,9 @@ t.id;
 
 { SendTrig.kr(Impulse.kr(1), 1009) }.play;
 
-a.addTrigSynth({ Impulse.kr(1)});
+a.addTrigSynth({ Impulse.kr(5)});
+a.addTrigSynth({ Impulse.kr(0.5)});
+a.addTrigSynth({ Impulse.kr(15)});
 
 
 t.addSynth({ Impulse.kr(3)})

@@ -24,10 +24,8 @@ OscTrig {
 
 	makeOscFunc {
 		oscFunc = OSCFunc({ | msg |
-			"FIXME: MyLibrary is now broken after OscTrig:makeOscFunc triggers".postln;
-			"TO START: INSERT DEBUG MESSAGES TO MultiLevelIdentityDictionary:put".postln;
 			this.changed(\trig, *msg[2..])
-		}, '/tr', argTemplate: [nil, id])
+		}, '/tr', argTemplate: [nil, id]).fix;
 	}
 
 	addListener { | listener, action |
@@ -37,14 +35,7 @@ OscTrig {
 	}
 
 	addSynth { | source, key = \default |
-		// FIXME: THIS INVALIDATES THE LIBRARY
-		// AND BREAKS addTrig, via fromLib !!!!
-		//		envir[key] = source.makeTrig.play(args: [id: id]);
-		"ADD SYNTH NEEDS DEBUGGING !!!!!!!".postln;
-		"THE TRIGGER EMPTIES OscTrig's path in MyLibrary".postln;
-		envir.postln;
 		envir[key] = source.makeTrig.play(args: [id: id]);
-		envir.post; "  !!!!!!".postln;
 	}
 
 	free { // remove all listeners and deactivate OSCFunc
