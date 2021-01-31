@@ -20,19 +20,20 @@ Mediator : EnvironmentRedirect {
 	prPut { | key, obj | envir.put (key, obj) }
 }
 
-MediatorHandler : AbstractFunction {
+MediatorHandler {
 	var <>envir;
 	value { | key, newValue |
 		var currentValue;
 		currentValue = envir.at(key);
-		currentValue.handleReplacement(newValue);
+		envir use: { currentValue.handleReplacement(newValue); };
 		envir.prPut(key, newValue);
 	}
 }
 
 // other objects add more complex behavior
 + Object { handleReplacement { this.stop } }
-// if this does not have gate then free ... ?
-+ Synth { handleReplacement { this.release } }
++ Synth { handleReplacement { this.release(~release) } }
+// Often produces unwelcome clicks: 
+// + Synth { handleReplacement { this.free } }
 
 

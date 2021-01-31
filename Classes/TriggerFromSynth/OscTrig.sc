@@ -19,7 +19,7 @@ OscTrig {
 	init { | argId |
 		id = argId ?? { UniqueID.next };
 		oscFunc = this.makeOscFunc;
-		envir = Mediator(); // .put(\id, id);
+		envir = Mediator().put(\release, 0);
 	}
 
 	makeOscFunc {
@@ -34,8 +34,9 @@ OscTrig {
 		});
 	}
 
-	addSynth { | synthFunc, key = \default |
-		envir[key] = synthFunc.play(args: [id: id]);
+	addSynth { | source, key = \default |
+		envir[key] = source.makeTrig.play(args: [id: id]);
+
 	}
 
 	free { // remove all listeners and deactivate OSCFunc
