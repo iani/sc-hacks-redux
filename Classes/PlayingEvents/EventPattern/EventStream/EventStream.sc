@@ -7,14 +7,14 @@ set, put, add, removeKey, addToParent, setParentKey.
 Changes take effect immediately.
 */
 EventStream { // intentionally not a subclass of Stream
-	classvar >defaultParent; // private copy for non-interference with lib default
+	classvar >defaultParent; // avoid modifying default from SCClassLibrary
 	var <streamPlayer, <triggers;
 
 	*new { | event, parent, tempoClock, quant |
 		^super.new().init(event, parent, tempoClock, quant);
 	}
 
-	*defaultParent {
+	*defaultParent { // avoid modifying default from SCClassLibrary!
 		^defaultParent ?? { defaultParent = Event.default.parent.copy };
 	}
 
@@ -34,16 +34,23 @@ EventStream { // intentionally not a subclass of Stream
 	start { this.play }
 	play { streamPlayer.play; }
 	stop { streamPlayer.stop }
-	// play using a tr synth for timing (instead of own dur stream).
-	addTrig { | key = \default |
-		 triggers[key] = OscTrig.fromLib(key);
-		
+	// ==== play using a tr synth for timing (instead of own dur stream).
+	addTrig { | key = \default, action |
+		var trig;
+		trig = OscTrig.fromLib(key);
+		trig.addListener(this, action ?? {{ this.playNext }});
+		triggers[key] = trig;
+		^trig;
 	}
-	removeTrig { | trigKey |
-
+	removeTrig { | key = \default |
+		var trig;
+		if ((trig = triggers[key]).notNil) {
+			this.removeNotifier(trig);
+			triggers[key] = nil;
+		}
 	}
-	addTrigSynth { | playFunc, trigKey, synthKey |
-
+	addTrigSynth { | synthFunc, trigKey = \default, synthKey = \default |
+		this.addTrig(trigKey).addSynth(synthFunc, synthKey);
 	}
 
 	// ================ access

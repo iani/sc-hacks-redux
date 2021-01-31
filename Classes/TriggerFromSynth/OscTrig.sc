@@ -28,6 +28,12 @@ OscTrig {
 		}, '/tr', argTemplate: [nil, id])
 	}
 
+	addListener { | listener, action |
+		listener.addNotifier(this, \trig, action ?? {		
+			{ postf("% received trig from %\n", listener, this) }
+		});
+	}
+
 	addSynth { | synthFunc, key = \default |
 		envir[key] = synthFunc.play(args: [id: id]);
 	}
