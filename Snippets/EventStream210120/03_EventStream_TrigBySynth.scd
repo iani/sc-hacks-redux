@@ -11,3 +11,15 @@ by using SendTrig.  Makes use of OscTrig.
 //:FIXME: synth added on same default key should REPLACE previous trig synth
 ~a.addTrigSynth({ Impulse.kr(5)});
 ~a.addTrigSynth({ Dust.kr(5)});
+//:Debugging:
+a = (dur: 0.1, degree: Pn(Pseries(10, 1, 10))).eventStream;
+t = a.addTrig;
+t.addSynth({ Impulse.kr(1) });
+t.addSynth({ Impulse.kr(2) });
+t.addSynth({ Impulse.kr(3) });
+//:compare with:
+a = (dur: 0.1, degree: Pn(Pseries(10, 1, 10))).eventStream;
+a.addTrigSynth({ Impulse.kr(1) });
+a.addTrigSynth({ Impulse.kr(2) });
+a.addTrigSynth({ Impulse.kr(3) });
+//:
