@@ -26,14 +26,19 @@ MediatorHandler {
 		var currentValue;
 		currentValue = envir.at(key);
 		envir use: { currentValue.handleReplacement(newValue); };
-		envir.prPut(key, newValue);
+		envir.prPut(key, newValue.trackState(key, envir));
 	}
 }
 
 // other objects add more complex behavior
-+ Object { handleReplacement { this.stop } }
-+ Synth { handleReplacement { this.release(~release) } }
-// Often produces unwelcome clicks: 
-// + Synth { handleReplacement { this.free } }
++ Object {
+	handleReplacement { this.stop }
+	trackState {} // Synth and Node use this to register with nodewatcher
+}
++ Synth {
+	handleReplacement { if (this.isPlaying) { this.release(~release) } }
+	trackState { NodeWatcher.register(this) }
+}
+
 
 

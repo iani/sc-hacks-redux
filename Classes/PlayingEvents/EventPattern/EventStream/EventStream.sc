@@ -67,4 +67,7 @@ EventStream { // intentionally not a subclass of Stream
 	removeKey { | key | streamPlayer.removeKey(key); }
 	addToParent { | argEvent | streamPlayer addToParent: argEvent; }
 	setParentKey { | key, value | streamPlayer.setParentKey(key, value); }
+
+	// ================ Compatibility with Mediator
+	isPlaying { ^true } // always stop me when replacing me in a Mediator
 }

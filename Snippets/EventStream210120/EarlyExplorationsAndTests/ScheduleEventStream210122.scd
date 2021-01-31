@@ -3,7 +3,10 @@
 very simple approach to scheduling
 does not require routine
 
-Tries
+NOTE 31 Jan 2021 14:13: This approach was abadoned because it made
+tracking state and restarting and resetting complex and unreliable.
+Using routine instead, since ca 25.1.2021.
+
 */
 //:schedule something repeatedly
 AppClock.sched(1, { "hello".postln; 1; });
