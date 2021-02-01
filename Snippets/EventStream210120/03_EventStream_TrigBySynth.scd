@@ -7,13 +7,14 @@ by using SendTrig.  Makes use of OscTrig.
 //:
 ~a.next.play;
 //:
-{ 50 do: { ~a.playNext; 0.2.wait }; "done".postln; }.fork;
+{ 50 do: { ~a.playNext; 0.02.exprand(1).wait }; "done".postln; }.fork;
 //:FIXME: synth added on same default key should REPLACE previous trig synth
-~a.trigSynth({ Impulse.kr(5)});
-~a.trigSynth({ Dust.kr(5)});
+~a.trigSynth({ Impulse.kr(15)});
+~a.trigSynth({ Dust.kr(15)});
+~a.put(\degree, Pbrown(10, 20, 2));
 //:Debugging:
 a = (dur: 0.1, degree: Pn(Pseries(20, 1, 10))).eventStream;
-t = a.addTrig;
+t = a.addTrig(\newTrig);
 t.addSynth({ Impulse.kr(1) });
 t.addSynth({ Impulse.kr(2) });
 t.addSynth({ Impulse.kr(3) });
@@ -22,7 +23,7 @@ b = (dur: 1, degree: Pn(Pseries(10, 2, 10))).eventStream;
 b.trigSynth({ Impulse.kr(1) }, \trig1);
 b.trigSynth({ Impulse.kr(2) }, \trig1);
 b.trigSynth({ Impulse.kr(3) }, \trig1);
-//:
+//:alternative syntax (shorter)
 c = (amp: 0.5, dur: 0.5, degree: Pbrown(10, 20, 1)).eventStream;
 c.addTrig(\ctrig);
 \ctrig <<! { Impulse.kr(5) };
