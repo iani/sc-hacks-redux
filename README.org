@@ -32,10 +32,10 @@ Note: Wrapping functions to custom templates providing commonly used ugens (Play
 Handle playing of synths in envir.  Several features are still under consideration, but it is unclear which classes should implement these and to what extent.  
 
 - Stop previous player when replacing with a new one (already done via Mediator. OK!)
-- Auto set/map of parameters when relevant keys in the environment are set. A simpler and better version than that of the previous Player/SynthSource classes is envisaged.  Initialization at Synth creation is now delegated to SynthCache.
+- Auto set/map of parameters when relevant keys in the environment are set. A simpler and better version than that of the previous Player/SynthSource classes is envisaged.  Initialization at Synth creation is now delegated to SynthCache. Perhaps =SynthCache= should play the role of =Voice=, see below.
 - Provide capabilities for processing audio input from other sources. These may be synths or patterns (!).  
 
-/Open question:/ Although it is possible to store and handle start/stop for several synths in the one environment of one Player instance, it seems too complicated to try to do that especially in combination with the feature of processing audio input in these players.  A wrapper class (candidate name: "Voice") can be envisaged to handle a synth-pattern pair, with multiple voices in the same envir, but still there seems to be unnecessary complexity in trying to implement that. 
+/Open question:/ =SynthCache- <-> =Voice=? Although it is possible to store and handle start/stop for several synths in the one environment of one Player instance, it seems too complicated to try to do that especially in combination with the feature of processing audio input in these players.  A wrapper class (candidate name: "Voice") can be envisaged to handle a synth-pattern pair, with multiple voices in the same envir, but still there seems to be unnecessary complexity in trying to implement that.  It may become clear thought, after investigating if the functionality described for =SynthCache= should be incorporated in a container named =Voice=. Irrespective of the naming of this class, its essential role would be to store state of the latest played synth element (i.e. SynthDef) and if present also pattern element (i.e. EventStream), so that they can be restarted. 
 
 ** Phase 1: Initial Design Considerations + Preliminary work (till 25.1.2021)
 *** 19 Jan 2021 08:55: Redo SourcePlayer as dictionary of Pattern/Synth making instances
