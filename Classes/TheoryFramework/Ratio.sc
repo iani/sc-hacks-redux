@@ -19,9 +19,17 @@
 (1--2)-(1--4);
 (1--2)*(2--4);
 
+If decimals is 1000 then the following produces overflow in Integer:
+pi.ratio + pi; // error! too large integers reached
+
+Ratio.decimals = 100;
+pi.ratio;
+
+pi.ratio + pi;
 */
 
 Ratio {
+	classvar <>decimals = 100;
 	var <numerator, <denominator;
 
 	*new { | numerator, denominator |
@@ -126,7 +134,7 @@ Ratio {
 }
 
 + SimpleNumber {
-	ratio { | denominator = 1000 |
-		^Ratio(*this.asFraction(denominator));	
+	ratio { | decimals |
+		^Ratio(*this.asFraction(decimals ?? { Ratio.decimals }));	
 	}
 }
