@@ -3,6 +3,40 @@ The time has come to redo sc-hacks from scratch.
 
 Good luck...
 * Roadmap, etc.
+** Outline of Classes + Methods so far (2.1.2021)
+*** Completed
+**** Mediator, MediatorHandler: A Minimalist Proxy-space-like scheme
+**** Class:atLibKey, fromLib: General scheme for instance storage + retrieval
+**** Notifier: Observer pattern forr private object methods + asynchronous function calls
+**** EventStream: play events as patterns, start/stop and modify stream contents at any point
+**** OscTrig: Trigger EventStream (or other) events from Synths via =Sendtrig.kr=
+**** Ratio: Rational number arithmetic
+**** 6 new pattern classes
+***** Pcontinue.sc
+***** Pfseq.sc
+***** Pfser.sc
+***** Preduce.sc
+***** Prseq.sc
+***** Ptake.sc
+
+*** Planned, under development
+**** SynthCache
+
+- Create a function for playing a SynthDef in the envir of a Player/Mediator, providing argument values from envir and mapping busses when needed. (get arguments from synthdesclib). 
+- Convert Functions to SynthDefs, send these to server. If needed, start a synth from the compiled SynthDef immediately after loading it, using "sync" mechanism.
+
+Note: Wrapping functions to custom templates providing commonly used ugens (PlayBuf, GrainBuf, FFT/PV, SendTrig, etc.) should probably be done in additional methods to Function. 
+
+**** Player
+
+Handle playing of synths in envir.  Several features are still under consideration, but it is unclear which classes should implement these and to what extent.  
+
+- Stop previous player when replacing with a new one (already done via Mediator. OK!)
+- Auto set/map of parameters when relevant keys in the environment are set. A simpler and better version than that of the previous Player/SynthSource classes is envisaged.  Initialization at Synth creation is now delegated to SynthCache.
+- Provide capabilities for processing audio input from other sources. These may be synths or patterns (!).  
+
+/Open question:/ Although it is possible to store and handle start/stop for several synths in the one environment of one Player instance, it seems too complicated to try to do that especially in combination with the feature of processing audio input in these players.  A wrapper class (candidate name: "Voice") can be envisaged to handle a synth-pattern pair, with multiple voices in the same envir, but still there seems to be unnecessary complexity in trying to implement that. 
+
 ** Phase 1: Initial Design Considerations + Preliminary work (till 25.1.2021)
 *** 19 Jan 2021 08:55: Redo SourcePlayer as dictionary of Pattern/Synth making instances
 
@@ -1036,5 +1070,4 @@ Things to try:
 - Releasing synths replaced inside the Players envir can be handled by making the envir a Moderator.  Very simple.
 - Add an audio bus to player, initialized to a default number of channels (2, can be overriden by argument or method). (This is similar to NodeProxy). 
 - Add methods =addInput=, =addOutput= which add the synth of added players before or after that of the present player, and set their =in= or =out= in their envirs to route to the Player's bus.  Chains of multiple players can be created reliably this way. 
-- Expand Mediator to set or map parameters of its synths when keys are set. This reproduces the behavior of Player from the older implementation of =sc-hacks=.
-
+- Expand Mediator to set or map parameters of its synths when keys are set. This reproduces the behavior of Player from the older implementation of =sc-hacks
