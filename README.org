@@ -1068,6 +1068,14 @@ Things to try:
 - =Synth("defname", [args...]).map(...);= If map does not find the Synth, then try =Synth("defname", [args...]).sync.map(...);=
 - Delegate that to a method inside SynthCache, which adds =sync= if the SynthDef needs to be added first.
 - Releasing synths replaced inside the Players envir can be handled by making the envir a Moderator.  Very simple.
-- Add an audio bus to player, initialized to a default number of channels (2, can be overriden by argument or method). (This is similar to NodeProxy). 
 - Add methods =addInput=, =addOutput= which add the synth of added players before or after that of the present player, and set their =in= or =out= in their envirs to route to the Player's bus.  Chains of multiple players can be created reliably this way. 
 - Expand Mediator to set or map parameters of its synths when keys are set. This reproduces the behavior of Player from the older implementation of =sc-hacks
+
+***  2 Feb 2021 07:07 SynthCache -> Voice. Implementation Notes
+    :PROPERTIES:
+    :DATE:     <2021-02-02 Tue 07:07>
+    :END:
+
+
+**** 
+

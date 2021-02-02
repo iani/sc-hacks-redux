@@ -25,18 +25,26 @@ MediatorHandler {
 	value { | key, newValue |
 		var currentValue;
 		currentValue = envir.at(key);
-		envir use: { currentValue.handleReplacement(newValue); };
+		// envir use: { currentValue.handleReplacement(newValue); };
+		/* TODO: Try this instead of previous line:
+			SynthCache or Voice handle replacement inside themselves,
+			and return themselves instead.
+		*/
+		envir use: { newValue = currentValue.handleReplacement(newValue); };
 		envir.prPut(key, newValue.trackState(key, envir));
 	}
 }
 
 // other objects add more complex behavior
 + Object {
-	handleReplacement { this.stop }
-	trackState {} // Synth and Node use this to register with nodewatcher
+	handleReplacement { | newValue | this.stop; ^newValue }
+	trackState {} // Synth uses this to register with nodewatcher
 }
 + Synth {
-	handleReplacement { if (this.isPlaying) { this.release(~release) } }
+	handleReplacement { | newValue |
+		if (this.isPlaying) { this.release(~release) };
+		^newValue
+	}
 	trackState { NodeWatcher.register(this) }
 }
 
