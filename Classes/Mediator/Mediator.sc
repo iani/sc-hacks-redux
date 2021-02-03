@@ -25,26 +25,25 @@ MediatorHandler {
 	value { | key, newValue |
 		var currentValue;
 		currentValue = envir.at(key);
-		// envir use: { currentValue.handleReplacement(newValue); };
-		/* TODO: Try this instead of previous line:
-			SynthCache or Voice handle replacement inside themselves,
-			and return themselves instead.
+		envir use: { currentValue.handleReplacement(newValue); };
+		//	envir use: { newValue = currentValue.handleReplacement(newValue); };
+		/* 	NOTE: strictly use simpler version NOT THE ONE ABOVE!
+			If you want to NOT replace some value, then you should 
+			NOT use the = syntax, but send a message to that value. 
+			Trying to override the = syntax goes against
+			language semantics and opens up a can of unstoppable worms.
 		*/
-		envir use: { newValue = currentValue.handleReplacement(newValue); };
 		envir.prPut(key, newValue.trackState(key, envir));
 	}
 }
 
 // other objects add more complex behavior
 + Object {
-	handleReplacement { | newValue | this.stop; ^newValue }
+	handleReplacement { this.stop; }
 	trackState {} // Synth uses this to register with nodewatcher
 }
 + Synth {
-	handleReplacement { | newValue |
-		if (this.isPlaying) { this.release(~release) };
-		^newValue
-	}
+	handleReplacement { if (this.isPlaying) { this.release(~release) }; }
 	trackState { NodeWatcher.register(this) }
 }
 

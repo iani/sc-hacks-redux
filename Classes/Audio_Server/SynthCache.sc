@@ -9,6 +9,6 @@ Note: Wrapping functions to custom templates providing commonly used ugens (Play
 
 SynthCache {
 
-	handle
+	//	handle
 	
 }
