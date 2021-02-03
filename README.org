@@ -1076,6 +1076,19 @@ Things to try:
     :DATE:     <2021-02-02 Tue 07:07>
     :END:
 
+****  3 Feb 2021 23:00 SynthCache notes
 
-**** 
+3 Methods needed: 
+
+***** =func2Def=: 
+ - get def from defname 
+
+***** =symbol2Def=
+
+compile def fomr function
+
+***** makePlayfunc
+
+based on the results of the =func2Def= or =symbol2Def=, construct a function that uses envir to get the arguments and creates a synth. It should also map its controls if needed and connect it to future changes.
+
 
