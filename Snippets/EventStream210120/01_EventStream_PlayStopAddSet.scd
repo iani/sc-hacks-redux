@@ -28,7 +28,7 @@ a.play; // the stream resumes from where it left off.
 //:Modifying an EventStream while playing
 // run the following one line at a time.
 ~stream = (dur: 0.1).splay; // just durations
-~stream add: (degree: Pwhite(-10, 0)); // add degree pattern
+~stream add: (degree: Pwhite(-10, 0) + Prand([0, [0, 2]], inf)); // add degree pattern
 ~stream add: (degree: Pbrown(0, 10, 2)); // replace degree pattern
 
 //:put is alternative way for replacing one key in the Event:
@@ -42,3 +42,10 @@ a.play; // the stream resumes from where it left off.
 ~stream add: (dur: Prand([0.5, 0.05], inf));
 //: Replace the contents of an Event in the EventStream
 ~stream set: (dur: Prand([0.5, 0.05], inf));
+//:
+currentEnvironment;
+~stream.proto;
+//:================================================================
+//:operators
+(degree: Pwhite(0, 10, inf)) *> \stream;
+(dur: Pwhite(0.01, 0.3, inf)) +> \stream;

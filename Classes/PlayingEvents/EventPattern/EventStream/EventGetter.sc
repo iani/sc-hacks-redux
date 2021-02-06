@@ -86,7 +86,7 @@ EventGetter {
 	add { | argEvent |
 		// add all keys-values of argEvent to proto.
 		// set proto to argEvent and update sourceEvent
-		proto = argEvent.copy.parent = parent;
+		argEvent keysValuesDo: { | key, value | proto[key] = value };
 		this addEventStreams: proto;
 	}
 

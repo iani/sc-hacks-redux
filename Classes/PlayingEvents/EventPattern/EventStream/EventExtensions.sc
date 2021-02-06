@@ -1,7 +1,18 @@
 // 25 Jan 2021 10:29. Some useful event methods
 
 + Event {
-	splay { | parent, quant, clock | ^EventStream(this, parent, quant, clock).play() }
+	*> { | key | this.splay(key) }
+
+	+> { | key |
+		currentEnvironment[key] add: this;
+	}
+
+	splay { | key, parent, quant, clock |
+		var stream;
+		stream = EventStream(this, parent, quant, clock).play();
+		key !? { currentEnvironment.put(key, stream); };
+		^stream;
+	}
 	eventStream { | parent, quant, clock | ^EventStream(this, parent, quant, clock) }
 	makeStream { | argParent |
 		// return new event containing all my contents as streams
