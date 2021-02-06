@@ -73,7 +73,7 @@ Where a = 200 and b = 400, and t = trigger and - = no trigger
 	SinOsc.ar(Lag.kr(freq, 0.01) * [1, 1.01]) * Decay.kr(amp);
 }.playIn;
 //:Observe difference when using a separate dur ugen for each of the Duty ugens:
-{
+{  // Time patterns as expected (not polled in parallel):
 	var freq, freqdt, ampdt, amp;
 	freqdt = Dseq([0.2, 0.4], inf); // demand ugen as durations
 	ampdt = Dseq([0.2, 0.4], inf); // demand ugen as durations
@@ -82,7 +82,27 @@ Where a = 200 and b = 400, and t = trigger and - = no trigger
 	SinOsc.ar(Lag.kr(freq, 0.01) * [1, 1.01]) * Decay.kr(amp);
 }.mplay;
 //:================================================================
-//:================ try out different combinations of the above:
+//: For clearer behavior, use separate Demand ugens for TDuty and Duty
+{  // Time patterns as expected (not polled in parallel):
+	var freq, freqdt, ampdt, amp;
+	freqdt = Dseq([0.2, 0.4], inf); // demand ugen as durations
+	ampdt = Dseq([0.2, 0.4], inf); // demand ugen as durations
+	freq = Duty.kr(freqdt, 0, Dseq([200, 400], inf));
+	amp = 	TDuty.kr(ampdt, 0, Dseq((1..20).normalize / 11 + 0.01, inf));
+	SinOsc.ar(Lag.kr(freq, 0.01) * [1, 1.01]) * Decay.kr(amp);
+}.mplay;
+
+//: Interesting patterns can also be created this way 
+{  
+	var freq, freqdt, ampdt, amp;
+	freqdt = Dseq([0.2, 0.4, 0.4], inf); // demand ugen as durations
+	ampdt = Dseq([0.2, 0.4], inf); // demand ugen as durations
+	freq = Duty.kr(freqdt, 0, Dseq([200, 400], inf));
+	amp = TDuty.kr(ampdt, 0, Dseq((1..20).normalize / 11 + 0.01, inf));
+	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
+}.mplay;
+
+//:
 //:stream cycle sizes: dt: 2, freq; 3
 {
 	var freq, dt, amp;
