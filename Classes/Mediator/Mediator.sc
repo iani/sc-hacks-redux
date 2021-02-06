@@ -51,14 +51,23 @@ MediatorHandler {
 	// redefinition of +> operator
 	playIn { | key = \default,
 		target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args |
-		postf("playing in envir % at key %\n", currentEnvironment, key);
-		currentEnvironment.put(key,
-			this.play(target, outbus, fadeTime, addAction, args))
+		currentEnvironment use: {
+			currentEnvironment.put(key,
+				this.play(target, outbus, fadeTime, addAction, args)
+			)
+		}
 	}
 	// just because I want a different name:
-	mplay { | key = \default | this.playIn(key) }
+	splay { | key = \default | this.playIn(key) }
+
+	rplay { | key = \default, clock |
+		^currentEnvironment use: {
+			currentEnvironment[key] = Routine(this).play(clock ? SystemClock);
+		};
+	}
 
 	+> { | key = \default | this.playIn(key) }
+	*> { | key = \default | ^this.rplay(key) }
 }
 
 

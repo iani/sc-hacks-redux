@@ -80,7 +80,7 @@ Where a = 200 and b = 400, and t = trigger and - = no trigger
 	freq = Duty.kr(freqdt, 0, Dseq([200, 400], inf));
 	amp = 	TDuty.kr(ampdt, 0, Dseq((1..20).normalize / 11 + 0.01, inf));
 	SinOsc.ar(Lag.kr(freq, 0.01) * [1, 1.01]) * Decay.kr(amp);
-}.mplay;
+}.splay;
 //:================================================================
 //: For clearer behavior, use separate Demand ugens for TDuty and Duty
 {  // Time patterns as expected (not polled in parallel):
@@ -90,7 +90,7 @@ Where a = 200 and b = 400, and t = trigger and - = no trigger
 	freq = Duty.kr(freqdt, 0, Dseq([200, 400], inf));
 	amp = 	TDuty.kr(ampdt, 0, Dseq((1..20).normalize / 11 + 0.01, inf));
 	SinOsc.ar(Lag.kr(freq, 0.01) * [1, 1.01]) * Decay.kr(amp);
-}.mplay;
+}.splay;
 
 //: Interesting patterns can also be created this way 
 {  
@@ -100,7 +100,16 @@ Where a = 200 and b = 400, and t = trigger and - = no trigger
 	freq = Duty.kr(freqdt, 0, Dseq([200, 400], inf));
 	amp = TDuty.kr(ampdt, 0, Dseq((1..20).normalize / 11 + 0.01, inf));
 	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
-}.mplay;
+}.splay;
+//:Using Lag for Gamaka-like portamento
+{  
+	var freq, freqdt, ampdt, amp;
+	freqdt = Dseq([0.2, 0.4], inf); // demand ugen as durations
+	ampdt = Dseq([0.2, 0.4], inf); // demand ugen as durations
+	freq = Duty.kr(freqdt, 0, Dseq([200, 400, 500, 600, 700], inf));
+	amp = TDuty.kr(ampdt, 0, Dseq((1..20).normalize / 11 + 0.01, inf));
+	SinOsc.ar(Lag.kr(freq, 0.3) * [1, 1.01]) * Decay.kr(amp);
+}.splay;
 
 //:
 //:stream cycle sizes: dt: 2, freq; 3
@@ -110,7 +119,7 @@ Where a = 200 and b = 400, and t = trigger and - = no trigger
 	freq = Duty.kr(dt, 0, Dseq([200, 400, 500], inf));
 	amp = 	TDuty.kr(dt, 0, 0.1);
 	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
-}.mplay;
+}.splay;
 //:stream cycle sizes: dt: 2, freq; 4
 {
 	var freq, dt, amp;
@@ -118,7 +127,7 @@ Where a = 200 and b = 400, and t = trigger and - = no trigger
 	freq = Duty.kr(dt, 0, Dseq([200, 400, 500, 600], inf));
 	amp = 	TDuty.kr(dt, 0, 0.1);
 	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
-}.mplay;
+}.splay;
 //:stream cycle sizes: dt: 3, freq; 2
 {
 	var freq, dt, amp;
@@ -126,7 +135,7 @@ Where a = 200 and b = 400, and t = trigger and - = no trigger
 	freq = Duty.kr(dt, 0, Dseq([200, 400], inf));
 	amp = 	TDuty.kr(dt, 0, 0.1);
 	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
-}.mplay;
+}.splay;
 //:stream cycle sizes: dt: 3, freq; 2 - different dt ratio
 {
 	var freq, dt, amp;
@@ -134,7 +143,7 @@ Where a = 200 and b = 400, and t = trigger and - = no trigger
 	freq = Duty.kr(dt, 0, Dseq([200, 400], inf));
 	amp = 	TDuty.kr(dt, 0, 0.1);
 	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
-}.mplay;
+}.splay;
 //:stream cycle sizes: dt: 3, freq; 2 - changing dt ratio
 {
 	var freq, dt, amp;
@@ -142,7 +151,7 @@ Where a = 200 and b = 400, and t = trigger and - = no trigger
 	freq = Duty.kr(dt, 0, Dseq([200, 400], inf));
 	amp = 	TDuty.kr(dt, 0, 0.1);
 	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
-}.mplay;
+}.splay;
 //:stream cycle sizes: dt: 3, freq; 2 - changing dt ratio, studdered
 // FIXME: NEEDS RECODING OF THE nested Dseq!
 {
@@ -151,7 +160,7 @@ Where a = 200 and b = 400, and t = trigger and - = no trigger
 	freq = Duty.kr(dt, 0, Dseq([200, 400], inf));
 	amp = 	TDuty.kr(dt, 0, 0.1);
 	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
-}.mplay;
+}.splay;
 //:stream cycle sizes: dt: 3, freq; 2 - changing dt ratio, stuttered, inverted
 {
 	var freq, dt, amp, durs;
@@ -160,7 +169,7 @@ Where a = 200 and b = 400, and t = trigger and - = no trigger
 	freq = Duty.kr(dt, 0, Dseq([200, 400], inf));
 	amp = 	TDuty.kr(dt, 0, 0.1);
 	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
-}.mplay;
+}.splay;
 //:stream cycle sizes: dt: 4, freq; 3
 {
 	var freq, dt, amp;
@@ -168,7 +177,7 @@ Where a = 200 and b = 400, and t = trigger and - = no trigger
 	freq = Duty.kr(dt, 0, Dseq([200, 400, 600], inf));
 	amp = 	TDuty.kr(dt, 0, 0.1);
 	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
-}.mplay;
+}.splay;
 //:stream cycle sizes: dt: 3, freq; 2
 {
 	var freq, dt, amp;
@@ -176,7 +185,7 @@ Where a = 200 and b = 400, and t = trigger and - = no trigger
 	freq = Duty.kr(dt, 0, Dseq([200, 400, 600], inf));
 	amp = 	TDuty.kr(dt, 0, 0.1);
 	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
-}.mplay;
+}.splay;
 //:stream cycle sizes: dt: 3, freq; 2
 {
 	var freq, dt, amp;
@@ -184,7 +193,7 @@ Where a = 200 and b = 400, and t = trigger and - = no trigger
 	freq = Duty.kr(dt, 0, Dseq([200, 400, ], inf));
 	amp = 	TDuty.kr(dt, 0, 0.1);
 	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
-}.mplay;
+}.splay;
 //:
 {
 	var freq, dt, amp;
@@ -195,7 +204,7 @@ Where a = 200 and b = 400, and t = trigger and - = no trigger
 	freq = Duty.kr(dt, 0, Dseq([200, 400], inf));
 	amp = 	TDuty.kr(dt, 0, Dseq((1..20).normalize.mirror / 11 + 0.01, inf));
 	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
-}.mplay;
+}.splay;
 //:
 {
     var freq, trig, reset, amp, freq;
