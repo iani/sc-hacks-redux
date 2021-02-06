@@ -54,7 +54,7 @@ So:
 	dt = Dseq([0.2, 0.4], inf); // demand ugen as durations
 	// freq = Duty.kr(dt, 0, Dseq([204, 400, 201, 502, 300, 200], inf));
 	freq = Duty.kr(dt, 0, Dseq([200, 400], inf));
-	amp = 	TDuty.kr(dt, 0, Dseq((1..20).normalize.mirror / 11 + 0.01, inf));
+	amp = 	TDuty.kr(dt, 0, Dseq((1..20).normalize / 11 + 0.01, inf));
 	SinOsc.ar(Lag.kr(freq, 0.01) * [1, 1.01]) * Decay.kr(amp);
 }.play;
 //:Observe difference when using a separate dur ugen for each of the Duty ugens:
@@ -63,7 +63,7 @@ So:
 	freqdt = Dseq([0.2, 0.4], inf); // demand ugen as durations
 	ampdt = Dseq([0.2, 0.4], inf); // demand ugen as durations
 	freq = Duty.kr(freqdt, 0, Dseq([200, 400], inf));
-	amp = 	TDuty.kr(ampdt, 0, Dseq((1..20).normalize.mirror / 11 + 0.01, inf));
+	amp = 	TDuty.kr(ampdt, 0, Dseq((1..20).normalize / 11 + 0.01, inf));
 	SinOsc.ar(Lag.kr(freq, 0.01) * [1, 1.01]) * Decay.kr(amp);
 }.play
 //:================ try out different combinations of the above:
