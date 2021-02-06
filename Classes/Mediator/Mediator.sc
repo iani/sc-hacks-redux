@@ -47,5 +47,18 @@ MediatorHandler {
 	trackState { NodeWatcher.register(this) }
 }
 
++ Function {
+	// redefinition of +> operator
+	playIn { | key = \default,
+		target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args |
+		postf("playing in envir % at key %\n", currentEnvironment, key);
+		currentEnvironment.put(key,
+			this.play(target, outbus, fadeTime, addAction, args))
+	}
+	// just because I want a different name:
+	mplay { | key = \default | this.playIn(key) }
+
+	+> { | key = \default | this.playIn(key) }
+}
 
 
