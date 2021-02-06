@@ -39,13 +39,26 @@ To be combined with Tduty.
     SinOsc.ar(freq + [0,0.7]).cubed.cubed * 0.1;
 }.play;
 //:Combine TDuty and Duty
-/* Note interesting patterns arise when we poll a single durations demand ugen
-from two Duty-like ugens (here: one Duty and one TDuty).  
+/* Note interesting patterns arise when we poll a single demand ugen for durations
+from two Duty-like ugens (here: one Duty and one TDuty).
 This is because each Duty-like ugen fetches the next value of the duration-source
-ugen in sequence.
+ugen in sequence. So: 
 
-So: 
+freq -> (dur: 0.2, freq: 200)
+amp -> (dur: 0.4, amp: 0.01);
+freq -> (dur: 0.2, freq: 400);
+amp -> (dur: 0.4, amp: 0.015);
+freq -> (dur: 0.2, freq: 200)
+amp -> (dur: 0.4, amp: 0.20);
+freq -> (dur: 0.2, freq: 400);
+amp -> (dur: 0.4, amp: 0.025);
 
+The above have to be sorted like 2 parallel duration streams: 
+
+freq: ab ???? (TODO: need to calculate this more carefully)
+amp:  tt????
+
+Where a = 200 and b = 400, and t = trigger and - = no trigger
 */
 {
 	var freq, dt, amp;
@@ -68,15 +81,88 @@ So:
 	amp = 	TDuty.kr(ampdt, 0, Dseq((1..20).normalize / 11 + 0.01, inf));
 	SinOsc.ar(Lag.kr(freq, 0.01) * [1, 1.01]) * Decay.kr(amp);
 }.mplay;
+//:================================================================
 //:================ try out different combinations of the above:
+//:stream cycle sizes: dt: 2, freq; 3
 {
 	var freq, dt, amp;
-	//	dt = Dseq([0.1, 0.2, 0.4], inf); // demand ugen as durations
-	// dt = Dseq([0.2, 0.4], inf); // demand ugen as durations
 	dt = Dseq([0.2, 0.4], inf); // demand ugen as durations
-	// freq = Duty.kr(dt, 0, Dseq([204, 400, 201, 502, 300, 200], inf));
+	freq = Duty.kr(dt, 0, Dseq([200, 400, 500], inf));
+	amp = 	TDuty.kr(dt, 0, 0.1);
+	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
+}.mplay;
+//:stream cycle sizes: dt: 2, freq; 4
+{
+	var freq, dt, amp;
+	dt = Dseq([0.2, 0.4], inf); // demand ugen as durations
+	freq = Duty.kr(dt, 0, Dseq([200, 400, 500, 600], inf));
+	amp = 	TDuty.kr(dt, 0, 0.1);
+	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
+}.mplay;
+//:stream cycle sizes: dt: 3, freq; 2
+{
+	var freq, dt, amp;
+	dt = Dseq([0.2, 0.2, 0.4], inf); // demand ugen as durations
 	freq = Duty.kr(dt, 0, Dseq([200, 400], inf));
-	amp = 	TDuty.kr(dt, 0, Dseq((1..20).normalize.mirror / 11 + 0.01, inf));
+	amp = 	TDuty.kr(dt, 0, 0.1);
+	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
+}.mplay;
+//:stream cycle sizes: dt: 3, freq; 2 - different dt ratio
+{
+	var freq, dt, amp;
+	dt = Dseq([0.2, 0.2, 0.5], inf); // demand ugen as durations
+	freq = Duty.kr(dt, 0, Dseq([200, 400], inf));
+	amp = 	TDuty.kr(dt, 0, 0.1);
+	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
+}.mplay;
+//:stream cycle sizes: dt: 3, freq; 2 - changing dt ratio
+{
+	var freq, dt, amp;
+	dt = Dseq([0.2, 0.2, Dseries(0.2, 0.1, 7)], inf); // demand ugen as durations
+	freq = Duty.kr(dt, 0, Dseq([200, 400], inf));
+	amp = 	TDuty.kr(dt, 0, 0.1);
+	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
+}.mplay;
+//:stream cycle sizes: dt: 3, freq; 2 - changing dt ratio, studdered
+// FIXME: NEEDS RECODING OF THE nested Dseq!
+{
+	var freq, dt, amp;
+	dt = Dseq([0.2, 0.2, Dseq((0.1, 0.2 .. 0.9).stutter(16), inf)], inf);
+	freq = Duty.kr(dt, 0, Dseq([200, 400], inf));
+	amp = 	TDuty.kr(dt, 0, 0.1);
+	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
+}.mplay;
+//:stream cycle sizes: dt: 3, freq; 2 - changing dt ratio, stuttered, inverted
+{
+	var freq, dt, amp, durs;
+	durs = (0.1, 0.2 .. 0.9).stutter(16);
+	dt = Dseq([Dseq(durs.reverse, inf), Dseq(durs, inf)], inf);
+	freq = Duty.kr(dt, 0, Dseq([200, 400], inf));
+	amp = 	TDuty.kr(dt, 0, 0.1);
+	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
+}.mplay;
+//:stream cycle sizes: dt: 4, freq; 3
+{
+	var freq, dt, amp;
+	dt = Dseq([0.2, 0.2, 0.4, 0.4], inf); // demand ugen as durations
+	freq = Duty.kr(dt, 0, Dseq([200, 400, 600], inf));
+	amp = 	TDuty.kr(dt, 0, 0.1);
+	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
+}.mplay;
+//:stream cycle sizes: dt: 3, freq; 2
+{
+	var freq, dt, amp;
+	dt = Dseq([0.2, 0.2, 0.4, 0.4], inf); // demand ugen as durations
+	freq = Duty.kr(dt, 0, Dseq([200, 400, 600], inf));
+	amp = 	TDuty.kr(dt, 0, 0.1);
+	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
+}.mplay;
+//:stream cycle sizes: dt: 3, freq; 2
+{
+	var freq, dt, amp;
+	dt = Dseq([0.2, 0.2, 0.4, 0.4], inf); // demand ugen as durations
+	freq = Duty.kr(dt, 0, Dseq([200, 400, ], inf));
+	amp = 	TDuty.kr(dt, 0, 0.1);
 	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
 }.mplay;
 //:
@@ -89,7 +175,7 @@ So:
 	freq = Duty.kr(dt, 0, Dseq([200, 400], inf));
 	amp = 	TDuty.kr(dt, 0, Dseq((1..20).normalize.mirror / 11 + 0.01, inf));
 	SinOsc.ar(Lag.kr(freq, 0.1) * [1, 1.01]) * Decay.kr(amp);
-}.play;
+}.mplay;
 //:
 {
     var freq, trig, reset, amp, freq;
