@@ -47,5 +47,11 @@ currentEnvironment;
 ~stream.proto;
 //:================================================================
 //:operators
-(degree: Pwhite(0, 10, inf)) *> \stream;
-(dur: Pwhite(0.01, 0.3, inf)) +> \stream;
+(degree: Pbrown(0, 10, 1)) *> \stream;
+(dur: Prand([0.1, 0.2, 0.4], inf)) +> \stream;
+(amp: Pwhite(0.01, 0.2, inf)) +> \stream;
+//:
+~stream.stop;
+~stream.play;
+~stream.stop;
+~stream.start;
