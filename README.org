@@ -1099,7 +1099,17 @@ compile def fomr function
 
 based on the results of the =func2Def= or =symbol2Def=, construct a function that uses envir to get the arguments and creates a synth. It should also map its controls if needed and connect it to future changes.
 
-***  7 Feb 2021 12:44 Saving state to restart ("cache")
+***  7 Feb 2021 12:44 Saving process state to restart ("cache")
 
-We have 
+3 cases where we need to save process state: 
+
+- Synths :: Name of synthdef or source function + argument / target state
+- Routine :: source function
+- EventStream :: Event + current position in stream
+
+Current status of dealing with the above:
+
+- EvenStream :: already solved in EventStream, with subclasses =SimpleEventStreamPlayer= and =EventGetter=
+- Synths :: Underway - with =SynthCache= [and/or =Voice=]
+- Routine :: ??????
 
