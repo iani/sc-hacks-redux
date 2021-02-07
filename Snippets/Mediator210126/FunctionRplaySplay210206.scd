@@ -15,7 +15,12 @@ And alternative syntax using binary operators +>, *>
 //: Routines
 { loop { (dur: 0.1, degree: 0.rrand(10)).play; 0.1.wait } }.rplay;
 //:
-{ loop { (dur: 2.5, degree: -10.rrand(0) + ((0..2) * (1..4).choose)).play; 2.wait } }.rplay;
+{ loop { (dur: 2.5, degree: -10.rrand(0) + ((0..3) * (1..4).choose)).play; 2.wait } }.rplay;
+//:
+{ loop { (dur: 0.1, degree: 0.rrand(10)).play; 0.1.wait } } *> \default;
+//:
+{ loop { (dur: 2.5, degree: -10.rrand(0) + ((0..3) * (1..4).choose)).play; 2.wait } } *> \default;
 //:
 ~default;
 ~default.stop;
+~default.start; // 

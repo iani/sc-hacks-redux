@@ -50,7 +50,7 @@ currentEnvironment;
 (degree: Pbrown(0, 10, 1)) *> \stream;
 (dur: Prand([0.1, 0.2, 0.4], inf)) +> \stream;
 (amp: Pwhite(0.01, 0.2, inf)) +> \stream;
-//:
+//:Stop and start.  start == play
 ~stream.stop;
 ~stream.play;
 ~stream.stop;
