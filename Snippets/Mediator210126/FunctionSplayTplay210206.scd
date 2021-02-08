@@ -33,7 +33,13 @@ And alternative syntax using binary operators +>, *>
 ~default.reset; 
 ~default.start; 
 //:
-t = Task({ 3 do: { | i | i.postln; 0.25.wait; } });
-t.play;
-t.stop;
-t.reset;
+~t = Task({ inf do: { | i | i.postln; 0.25.wait; } }); // does not start
+~t.play; 
+~t.stop;
+~t.play; // resumes where stopped
+~t.pause; // equivalent to stop ?
+~t.play;
+// substitution at any point: 
+~t = Task({ inf do: { | i | postf("new one! % \n", i); 0.25.wait; } }).play;
+~t.reset;
+~t.play;
