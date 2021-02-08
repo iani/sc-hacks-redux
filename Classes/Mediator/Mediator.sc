@@ -60,14 +60,14 @@ MediatorHandler {
 	// just because I want a different name:
 	splay { | key = \default | this.playIn(key) }
 
-	rplay { | key = \default, clock |
+	tplay { | key = \default, clock |
 		^currentEnvironment use: {
-			currentEnvironment[key] = Routine(this).play(clock ? SystemClock);
+			currentEnvironment[key] = Task(this).play(clock ? SystemClock);
 		};
 	}
 
 	+> { | key = \default | this.playIn(key) }
-	*> { | key = \default | ^this.rplay(key) }
+	*> { | key = \default | ^this.tplay(key) }
 }
 
 

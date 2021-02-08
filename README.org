@@ -36,20 +36,40 @@ Handle playing of synths in envir.  Several features are still under considerati
 - Provide capabilities for processing audio input from other sources. These may be synths or patterns (!).  
 
 /Open question:/ =SynthCache- <-> =Voice=? Although it is possible to store and handle start/stop for several synths in the one environment of one Player instance, it seems too complicated to try to do that especially in combination with the feature of processing audio input in these players.  A wrapper class (candidate name: "Voice") can be envisaged to handle a synth-pattern pair, with multiple voices in the same envir, but still there seems to be unnecessary complexity in trying to implement that.  It may become clear thought, after investigating if the functionality described for =SynthCache= should be incorporated in a container named =Voice=. Irrespective of the naming of this class, its essential role would be to store state of the latest played synth element (i.e. SynthDef) and if present also pattern element (i.e. EventStream), so that they can be restarted. 
-** Issues Addressed: Name, State, Communication, Coordination, Templates
+** Issues Addressed: Name, State, Communication, Coordination, Techniques, Syntax
    :PROPERTIES:
    :DATE:     <2021-02-07 Sun 13:18>
    :END:
 *** Name: Storing things under names.  Using namespaces
-*** State: Storing state to restart things 
+*** State: Storing state to restart things
+
+- For Synths: =SynthCache= (Underway)
+- For Event-Patterns: =EventStream= (Completed)
+- For Routines and Tasks: Use =Task= (Completed)
+
 *** Communication: Sharing state between objects
 *** Coordination: Keeping track of state and evaluating code in order (Synchronization)
-*** Templates: Useful patterns for constructing objects
+*** Techniques (and Templates: Useful patterns for constructing objects)
 
-In the form of methods that return these templates.
+Most common form is methods that return these templates.
 Most general form of a template might be a function.
 Other object types such as Event, Dictionary or Array are also conceivable.
 
+**** Synth Templates
+
+**** UGen Templates
+
+**** New Patterns
+
+**** Recipes "Language Patterns" ("Synth Patterns?")
+
+*** Syntax
+
+**** Class(new)
+
+**** object.message
+
+**** binary operator
 ** Phase 1: Initial Design Considerations + Preliminary work (till 25.1.2021)
 *** 19 Jan 2021 08:55: Redo SourcePlayer as dictionary of Pattern/Synth making instances
 
@@ -1106,15 +1126,15 @@ based on the results of the =func2Def= or =symbol2Def=, construct a function tha
 
 ***  7 Feb 2021 12:44 Saving process state to restart ("cache")
 
-3 cases where we need to save process state: 
+2 cases where we need to save process state: 
 
 - Synths :: Name of synthdef or source function + argument / target state
-- Routine :: source function
 - EventStream :: Event + current position in stream
+
+Note: To make it possible to restart Routine-like processes, we use Task instead. Task is able to start-stop-restart and reset.
 
 Current status of dealing with the above:
 
 - EvenStream :: already solved in EventStream, with subclasses =SimpleEventStreamPlayer= and =EventGetter=
 - Synths :: Underway - with =SynthCache= [and/or =Voice=]
-- Routine :: ??????
 
