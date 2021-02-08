@@ -24,7 +24,7 @@ And alternative syntax using binary operators +>, *>
 { inf do: { | d | (dur: 0.1, degree: d % 15).play; 0.1.wait } }.tplay;
 //:
 \default.stop;
-//:Try stop-start, pause-resume, reset;
+//:Try stop-start, pause-resume, reset on the Task created by tplay;
 ~default;
 ~default.stop;
 ~default.start; 
