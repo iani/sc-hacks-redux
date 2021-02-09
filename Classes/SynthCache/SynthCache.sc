@@ -10,7 +10,8 @@ Note: Wrapping functions to custom templates providing commonly used ugens (Play
 */
 
 SynthCache {
-
+	var <defName = \default, <isTemp = false;
+	
 	makePlayFunc {
 		
 		

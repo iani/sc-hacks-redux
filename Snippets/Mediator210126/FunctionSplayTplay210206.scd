@@ -31,10 +31,10 @@ And alternative syntax using binary operators +>, *>
 ~default.pause;
 ~default.resume;
 ~default.reset; 
-~default.start; 
+~default.start;
 //:
 ~t = Task({ inf do: { | i | i.postln; 0.25.wait; } }); // does not start
-~t.play; 
+~t.play; // start here
 ~t.stop;
 ~t.play; // resumes where stopped
 ~t.pause; // equivalent to stop ?
