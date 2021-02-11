@@ -17,7 +17,7 @@ PathName(PathName(thisProcess.nowExecutingPath).pathOnly +/+ "sounds/").entries
 	~bufferFolders[q.folderName.asSymbol] = 
 	q.fullPath.audioFiles collect: { | p |
 		postf("Reading buffer at: %\n", p);
-		Buffer.read(Server.default, p)
+		Buffer.readWithInfo(Server.default, p)
 	};
 };
 //:test again:
@@ -26,7 +26,8 @@ PathName(PathName(thisProcess.nowExecutingPath).pathOnly +/+ "sounds/").entries
 		postf("playing: %, %\n", i, b.path);
 	b.play;
 	0.1.wait;
-}
+	};
+	postf("PLAYED % BUFFERS\n", ~bufferFolders.values.flat.size);
 }.fork;
 //:
 ~bufferFolders[\Tonal] do: { | b | b.numChannels.postln };
