@@ -150,3 +150,46 @@ TempoClock.default.tempo = 0.5;
 ~erhythmclick.put(\amp, Pseq([0.1, 0.02, 0.02, 0.02], inf));
 //:
 ~erhythmclick.put(\dur, 1);
+//:================================================================
+//:alternative syntax using operators
+//:Add the rest of the keys/streams
+//Note: starts immediately
+(
+	instrument: \default,
+	dur: Pseq([1/4],inf),
+	degree: Pbrown(0, 5, 1),
+	amp: Pseq([0.3, Pexprand(0.01,0.1,7)],inf),
+) *> \a;
+(
+	instrument: \default,
+	dur: Pseq([1/4],inf),
+	degree: Pbrown(0, 5, 1) - [10, 13],
+	amp: Pseq([0.05,0.1], inf),
+) *> \b;
+//:
+~a.stop;
+~b.stop;
+//:================
+//:Note: +>! stores the EventStream without playing it
+(
+	instrument: \default,
+	dur: Pseq([1/4],inf),
+	degree: Pbrown(0, 5, 1),
+	amp: Pseq([0.3, Pexprand(0.01,0.1,7)],inf),
+) *>! \subkick;
+(
+	instrument: \default,
+	dur: Pseq([1/4],inf),
+	degree: Pbrown(0, 5, 1) - [10, 13],
+	amp: Pseq([0.05,0.1], inf),
+) *>! \rhythmkick;
+//:+
+~subkick.play;
+0.2.wait;
+~rhythmkick.play;
+//:
+~subkick.put(\dur, 1);
+~rhythmkick.put(\dur, 2);
+//:
+~subkick.put(\dur, 1/3);
+~subkick.put(\amp, Pseq([0.1, 0.01, 0.01], inf));

@@ -2,6 +2,9 @@
 
 + Event {
 	*> { | key | this.splay(key) }
+	*>! { | key |
+		currentEnvironment.put(key, EventStream(this));
+	}
 
 	+> { | key |
 		currentEnvironment[key] add: this;
