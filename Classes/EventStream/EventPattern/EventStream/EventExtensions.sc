@@ -13,7 +13,7 @@
 		key !? { currentEnvironment.put(key, stream); };
 		^stream;
 	}
-	eventStream { | parent, quant, clock | ^EventStream(this, parent, quant, clock) }
+	eventStream { | parent, quant, clock | ^EventStream(this, parent, quant, clock)}
 	makeStream { | argParent |
 		// return new event containing all my contents as streams
 		^().parent_(argParent.asParent) addStreams: this;

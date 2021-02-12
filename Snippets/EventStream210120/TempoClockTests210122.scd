@@ -25,11 +25,10 @@ t = TempoClock();
 // .r returns Routine() ...:
 //:+Synchronize 2 routines to beats with quant
 {
-	10 do: { | i |
-		i.postln;
-		(dur: 0.1, degree: 20, amp: 0.5).play;
-		2.wait;
-	}	
+	10 do:  | i |
+	i.postln;
+	(dur: 0.1, degree: 20, amp: 0.5).play;
+	2.wait;
 }.r.play; // (quant: 4);
 0.25.wait;
 {
@@ -63,5 +62,4 @@ TempoClock.default.tempo = 0.5;
 ~testRoutine.(12).play(quant: 0.5);
 3.wait; // test tempo change
 TempoClock.default.tempo = 3;
-//:test synchronization routine
-~testRoutine.().play(TempoClock.default, 3);
+//:
