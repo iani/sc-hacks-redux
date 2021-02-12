@@ -118,7 +118,7 @@ TempoClock.default.tempo = 0.5;
 	degree: Pbrown(0, 5, 1),
 	amp: Pseq([0.3, Pexprand(0.01,0.1,7)],inf),
 ).eventStream;
-~rhythmclick = (
+~erhythmclick = (
 	instrument: \default,
 	dur: Pseq([1/4],inf),
 	degree: Pbrown(0, 5, 1) - [10, 13],
@@ -129,13 +129,24 @@ TempoClock.default.tempo = 0.5;
 ~erhythmclick.play;
 //:modify these on the fly
 ~esubkick.put(\dur, 1/16);
-~rhythmclick.put(\dur, 1/16);
+~erhythmclick.put(\dur, 1/16);
 //:
 ~esubkick.put(\dur, 1);
-~rhythmclick.put(\dur, 1);
+~erhythmclick.put(\dur, 1);
 //:
 ~esubkick.put(\amp, Pseq([0.1, 0.02], inf));
 //:
 ~esubkick.put(\dur, 1/3);
 //:
-~rhythmclick.put(\dur, 1);
+~erhythmclick.put(\dur, 1);
+//:
+~erhythmclick.put(\dur, 1/2);
+//:
+~esubkick.put(\dur, 1/2);
+~esubkick.put(\amp, Pseq([0.1, 0.02, 0.02], inf));
+//:
+~erhythmclick.put(\dur, 1/4);
+//:
+~erhythmclick.put(\amp, Pseq([0.1, 0.02, 0.02, 0.02], inf));
+//:
+~erhythmclick.put(\dur, 1);
