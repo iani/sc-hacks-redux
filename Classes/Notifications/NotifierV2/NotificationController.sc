@@ -17,19 +17,30 @@ NotificationController : SimpleController {
 	init {
 		super.init;
 		actions = IdentityDictionary.new(4);
+		model.addDependant(this);
 	}
 
-	// TODO: add notifier!
-	put { arg what, action;  actions.put(what, action); }
+	add { | message, listener, action |
+		this.remove(message, listener); // remove previous action if present
+		actions[message] =
+		actions[message] add: Notifier2(model, message, listener, action);
+		
+	}
 
-	update { arg theChanger, what ... moreArgs;
-		actions.at(what) do: { | n |
-			n.update(theChanger, what, moreArgs); // *moreArgs ?????
-		}
+	remove { | message, listener |
+		(actions[message] ? []) remove: this.get(message, listener);
+	}
+
+	get { | message, listener |
+		^actions[message] detect: { | n | n.listener === listener }
 	}
 	
-	remove { model.removeDependant(this); }
-
-	// TODO: remove notifier!
-	removeAt{ | what |  actions.removeAt(what); }
+	update { arg theChanger, what ... moreArgs;
+		postf("DEbugging. % received % from %\n", this, what, theChanger);
+		postf("my actions are: %\n", actions);
+		postf("my actions at % are: %\n", what, actions.at(what));
+		actions.at(what) /* .copy */ do: { | n |
+			n.update(theChanger, what, *moreArgs);
+		}
+	}
 }
