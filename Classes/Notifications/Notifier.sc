@@ -15,7 +15,11 @@ Notifier {
 	}
 
 	// respond to changed messages. Note: 'this' contains notifier and listener
-	update { | sender, message ... args | action.(this, *args); }
+	update { | sender, argMessage ... args |
+		if (argMessage === message) {
+			action.valueArray(if (args.size == 0) { [this] } { args add: this })
+		}
+	}
 
 	// store self in library
 	store { notifiers.put(notifier, message, listener, this) }
