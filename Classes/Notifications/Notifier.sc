@@ -6,19 +6,15 @@ Notifier {
 	classvar <notifiers;
 	var <notifier, <message, <listener, <action;
 
-	*initClass {
-		StartUp add: { notifiers = MultiLevelIdentityDictionary() }	
-	}
-	
+	*initClass { notifiers = MultiLevelIdentityDictionary(); }
+
 	*new { | notifier, message, listener, action |
 		^super.newCopyArgs(notifier, message, listener, action);
 	}
 
 	// respond to changed messages. Note: 'this' contains notifier and listener
 	update { | sender, argMessage ... args |
-		if (argMessage === message) {
-			action.valueArray(if (args.size == 0) { [this] } { args add: this })
-		}
+		if (argMessage === message) { action.valueArray(this, *args) }
 	}
 
 	// store self in library
