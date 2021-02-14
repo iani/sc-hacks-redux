@@ -1,10 +1,16 @@
-/* 30 Jan 2021 12:43
-Testing Notifier.
+/* 14 Feb 2021 13:51
+Perhaps storing a Dict as single dependant in a notifier is more efficient?
 */
 \listener.addNotifier(\notifier, \message, { | ... args | args.postln; });
-{ | i | \notifier.changed(\message, 2 ** i); } ! 10;
-\listener.removeNotifier(\notifier, \message);
-{ | i | \notifier.changed(\message, i); } ! 10;
+\listener.addNotifier(\notifier, \message2, { | ... args | args.postln; });
+\listener.addNotifier(\notifier2, \message, { | ... args | args.postln; });
+\listener2.addNotifier(\notifier, \message, { | ... args | args.postln; });
+//:
+Notifier.notifiers;
+Notifier.notifiers.atPath(\notifier);
+Notifier.notifiers.atPath(\notifier).keys;
+Notifier.notifiers.atPath(\notifier);
+
 
 //:
 \listener.addNotifierOneShot(\notifier, \message, { | ... args | args.postln; });
