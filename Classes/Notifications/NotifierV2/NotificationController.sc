@@ -22,9 +22,7 @@ NotificationController : SimpleController {
 
 	add { | message, listener, action |
 		this.remove(message, listener); // remove previous action if present
-		actions[message] =
-		actions[message] add: Notifier2(model, message, listener, action);
-		
+		actions[message] = actions[message] add: action;
 	}
 
 	remove { | message, listener |
@@ -36,9 +34,6 @@ NotificationController : SimpleController {
 	}
 	
 	update { arg theChanger, what ... moreArgs;
-		postf("DEbugging. % received % from %\n", this, what, theChanger);
-		postf("my actions are: %\n", actions);
-		postf("my actions at % are: %\n", what, actions.at(what));
 		actions.at(what) /* .copy */ do: { | n |
 			n.update(theChanger, what, *moreArgs);
 		}

@@ -23,13 +23,11 @@ Notifier2 {
 	*initClass { controllers = IdentityDictionary(); }
 
 	*new { | notifier, message, listener, action |
-		postf("debugging notifier2 new. action is: %\n", action);
 		^super.newCopyArgs(notifier, message, listener, action);
 	}
 
 	// respond to changed messages. Note: 'this' contains notifier and listener
 	update { | sender, argMessage ... args |
-		postf("Debugging. Notifier2, action is: %\n", action);
 		 action.valueArray(this, *args) 
 	}
 
@@ -43,7 +41,6 @@ Notifier2 {
 			controllers[notifier] = controller;
 		};
 		controller.add(message, listener, this);
-		
 	}
 
 	*get { | notifier, message, listener |
