@@ -1,15 +1,4 @@
 /* 14 Feb 2021 14:00
-Inheriting from SimpleController. 
-Adding methods for adding/removing messages and actions.
-
-Initialize actions at creation. This avoids having to check for nil
-later each time when actions are used.
-
-More work is needed: 
-- The values of actions should be Sets (or Arrays) of Notifier.
-- update should iterate over actions. 
-
-
 */
 
 NotificationController : SimpleController {
@@ -20,6 +9,12 @@ NotificationController : SimpleController {
 		model.addDependant(this);
 	}
 
+	model { ^model }
+	actions { ^actions }
+	messages { ^actions.keys }
+	notifications { ^actions.values.flat }
+	listeners { ^actions.values.flat collect: _.listener }
+	
 	add { | message, listener, action |
 		this.remove(message, listener); // remove previous action if present
 		actions[message] = actions[message] add: action;
@@ -34,7 +29,7 @@ NotificationController : SimpleController {
 	}
 	
 	update { arg theChanger, what ... moreArgs;
-		actions.at(what) /* .copy */ do: { | n |
+		actions.at(what).copy do: { | n | // copy: works even if deleting
 			n.update(theChanger, what, *moreArgs);
 		}
 	}

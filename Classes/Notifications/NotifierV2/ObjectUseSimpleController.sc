@@ -4,24 +4,24 @@ For efficiency, use SimpleController instead of Notifier.
 */
 
 + Object {
-	addNotifier2 { | notifier, message, action |
-		Notifier2(notifier, message, this, action).add;
+	addNotifier { | notifier, message, action |
+		Notification(notifier, message, this, action).add;
 	}
 
-	removeNotifier2 { | notifier, message |
-		notifier.removeDependant(Notifier2.get(notifier, message, this));
-		Notifier2.remove(notifier, message, this);
+	removeNotifier { | notifier, message |
+		//		notifier.removeDependant(Notifier2.get(notifier, message, this));
+		Notification.remove(notifier, message, this);
 	}
 
-	addNotifierOneShot2 { | notifier, message, action |
+	addNotifierOneShot { | notifier, message, action |
 		this.addNotifier2(notifier, message, { | notification ... args |
 			action.(notification, *args);
-			this.removeNotifier2(notifier, message);
+			this.removeNotifier(notifier, message);
 		})
 	}
 
-	listeners2 { ^Notifier2.listenersOf(this) }
-	notifiers2 { ^Notifier2.notifiersOf(this) }
+	listeners { ^Notification.listenersOf(this) }
+	notifiers { ^Notification.notifiersOf(this) }
 	removeListeners2 { this.listeners2 do: _.remove; } // remove all listeners
 	removeNotifiers2 { this.notifiers2 do: _.remove; } // remove all notifiers
 	removeListenersAt2 { | message |
@@ -30,17 +30,17 @@ For efficiency, use SimpleController instead of Notifier.
 	removeNotifiersAt2 { | message |
 
 	}
-	objectClosed2 {
+	objectClosed {
 		this.changed(\objectClosed);
 		this.removeListeners2;
 		this.removeNotifiers2;
-		this.releaseDependants2;
+		this.releaseDependants;
 	}
 
-	onObjectClosed2 { | listener, action |
-		listener.addNotifier2(this, \objectClosed, action);
+	onObjectClosed { | listener, action |
+		listener.addNotifier(this, \objectClosed, action);
 		if (this respondsTo: \onClose_) {
-			this.onClose = { this.objectClosed2 };
+			this.onClose = { this.objectClosed };
 		}
 	}
 }
