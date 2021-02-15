@@ -29,8 +29,20 @@ NotificationController : SimpleController {
 	}
 	
 	update { arg theChanger, what ... moreArgs;
-		actions.at(what).copy do: { | n | // copy: works even if deleting
+		actions.at(what).copy do: { | n | // copy: works when deleting
 			n.update(theChanger, what, *moreArgs);
 		}
+	}
+
+	removeListener { | listener |
+		actions.copy keysValuesDo: { | mes, lis |
+			if (lis === listener) { this.remove(mes, lis) }
+		}
+	}
+
+	free {
+		model.removeDependant(this);
+		model = nil;
+		actions = nil;
 	}
 }

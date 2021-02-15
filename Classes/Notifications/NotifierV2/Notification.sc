@@ -1,18 +1,7 @@
 /* 14 Feb 2021 22:31
 New version of Notification,
 using SimpleController to optimize speed of lookup.
-The actual performance gain may be negligible.
-This is just an exercise to prove the feasibility of the concept.
-
-Interface and steps for implementation: 
-
-listener.addNotifier(notifier, message, action):
-
-	-> Notification(notifier, message, listener, action) [NEW INSTANCE !!!!!]
-	-> Add the instance to the corresponding controller in controllers
-	-> If a previous instance exists, replace it (this just replaces the action)
-	-> Add the corresponding controller as dependant to notifier
-
+The actual performance gain may be negligible, but here it is anyway.
 */
 
 Notification {
@@ -64,7 +53,14 @@ Notification {
 		^if (controller.isNil) { ^nil } { ^controller.listeners };
 	}
 	
-	*removeNotifiersOf { | object | this.notifiersOf(object) do: _.remove; }
+	*removeNotifiersOf { | listener |
+		this.notifiersOf(listener) do: { | notifier |
+			controllers[notifier].removeListener(listener)
+		};
+	}
 
-	*removeListenersOf { | object | this.listenersOf(object) do: _.remove; }
+	*removeListenersOf { | notifier |
+		controllers[notifier].free;
+		controllers.removeAt(notifier);
+	}
 }

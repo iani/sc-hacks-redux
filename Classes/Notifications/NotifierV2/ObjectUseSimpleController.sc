@@ -14,7 +14,7 @@ For efficiency, use SimpleController instead of Notifier.
 	}
 
 	addNotifierOneShot { | notifier, message, action |
-		this.addNotifier2(notifier, message, { | notification ... args |
+		this.addNotifier(notifier, message, { | notification ... args |
 			action.(notification, *args);
 			this.removeNotifier(notifier, message);
 		})
@@ -22,20 +22,16 @@ For efficiency, use SimpleController instead of Notifier.
 
 	listeners { ^Notification.listenersOf(this) }
 	notifiers { ^Notification.notifiersOf(this) }
-	removeListeners2 { this.listeners2 do: _.remove; } // remove all listeners
-	removeNotifiers2 { this.notifiers2 do: _.remove; } // remove all notifiers
-	removeListenersAt2 { | message |
-		
-	}
-	removeNotifiersAt2 { | message |
 
-	}
 	objectClosed {
 		this.changed(\objectClosed);
-		this.removeListeners2;
-		this.removeNotifiers2;
+		this.removeListeners;
+		this.removeNotifiers;
 		this.releaseDependants;
 	}
+
+	removeListeners { Notification removeListenersOf: this }
+	removeNotifiers { Notification removeNotifiersOf: this }
 
 	onObjectClosed { | listener, action |
 		listener.addNotifier(this, \objectClosed, action);
@@ -43,4 +39,9 @@ For efficiency, use SimpleController instead of Notifier.
 			this.onClose = { this.objectClosed };
 		}
 	}
+
+	// TODO:
+	// removeListenersAt { | message | }
+	// removeNotifiersAt { | message | }
+
 }
