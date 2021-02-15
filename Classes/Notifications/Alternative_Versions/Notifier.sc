@@ -1,5 +1,7 @@
 /* 29 Jan 2021 11:49
-Replacing Notification class.
+A simpler implementation of Notification.
+Is slightly slower when many Notifier dependants are added to one 
+object. 
 */
 
 Notifier {

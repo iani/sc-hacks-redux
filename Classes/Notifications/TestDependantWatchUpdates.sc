@@ -20,11 +20,3 @@ TestDependant2 {
 	}
 }
 
-// Older version
-/*
-WatchChanges {
-	*update { | changer, changeMessage ... args |
-		postf("% brodcast '%' with args: %\n", changer, changeMessage, args);
-	}
-}
-*/

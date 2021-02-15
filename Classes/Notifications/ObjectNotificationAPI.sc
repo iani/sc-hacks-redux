@@ -2,6 +2,48 @@
 Transferred from sc-hacks.
 */
 
++ Object {
+	addNotifier { | notifier, message, action |
+		Notification(notifier, message, this, action).add;
+	}
+
+	removeNotifier { | notifier, message |
+		Notification.remove(notifier, message, this);
+	}
+
+	addNotifierOneShot { | notifier, message, action |
+		this.addNotifier(notifier, message, { | notification ... args |
+			action.(notification, *args);
+			this.removeNotifier(notifier, message);
+		})
+	}
+
+	listeners { ^Notification.listenersOf(this) }
+	notifiers { ^Notification.notifiersOf(this) }
+
+	objectClosed {
+		this.changed(\objectClosed);
+		this.removeListeners;
+		this.removeNotifiers;
+		this.releaseDependants;
+	}
+
+	removeListeners { Notification removeListenersOf: this }
+	removeNotifiers { Notification removeNotifiersOf: this }
+
+	onObjectClosed { | listener, action |
+		listener.addNotifier(this, \objectClosed, action);
+		if (this respondsTo: \onClose_) {
+			this.onClose = { this.objectClosed };
+		}
+	}
+
+	// TODO:
+	// removeListenersAt { | message | }
+	// removeNotifiersAt { | message | }
+
+}
+
 + Node {
     /* always release notified nodes when they are freed
         Note: any objects that want to be notified of the node's end, 
@@ -17,7 +59,17 @@ Transferred from sc-hacks.
 		});
     }
 
-	
+	onStart { | action, listener |
+		listener = listener ? { this };
+		NodeWatcher.register(this);
+		listener.addNotifierOneShot(this, \n_go, action);
+	}
+
+	onEnd { | action, listener |
+		listener = listener ? { this };
+		NodeWatcher.register(this);
+		listener.addNotifierOneShot(this, \n_end, action);
+	}	
 }
 
 + View {
