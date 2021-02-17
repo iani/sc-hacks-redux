@@ -314,8 +314,8 @@ Other object types such as Event, Dictionary or Array are also conceivable.
         name: SystemSynthDefs.generateTempName
       );
     }
- }
- #+end_src
+}
+#+end_src
 
  Note: Additionally GraphBuilder:wrapOut should be modified to provide a regular control argument =out= instead of scalar =i_out=, so that synths can change their output channel. 
 
