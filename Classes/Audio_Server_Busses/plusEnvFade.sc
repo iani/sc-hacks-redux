@@ -5,7 +5,9 @@ Alternnative name: wrap?
 */
 
 + Env {
-	*fade {
-		^Env.adsr.kr(2, \gate.kr(1))
-	}	
+	*fade { | fadeTime = 0.02 |
+		^Env.adsr(fadeTime, fadeTime, 1).kr(2, \gate.kr(1))
+	}
+
+	dur { ^times.sum }
 }

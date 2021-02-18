@@ -46,10 +46,24 @@ a.set(\gate2, 1);
 	2.5.wait;
 };
 ~a.release;
+// ================================================================
+//:play an indefinite sequence of breakpoints by looping
+//:Prevent jumps: first point of next env has same value as last of previous env.
+~levels = [400, 200, 600, 300, 100, 500, 200, 1200, 550, 1600, 150];
+~times = Array.rand(~levels.size - 1, 0.1, 2);
+~groups = ~levels
+.collect({ | l, i | if (i > 0 and: { i % 3 == 0 }) { l.dup } { l }})
+.flat.clump(4);
+[~groups, ~times.clump(3)].flop;
+~envs = [~groups, ~times.clump(3)].flop.collect({ | specs | Env(*specs)});
 //:
-/* 
+~a = Synth(\chainenv, [\env, envs[0], \gate2, 1]);
+//:
 
-*/
+
+~times = Array.rand(~levels.size - 1, 0.1, 2);
+~head = ~levels[..3];
+~tail = ~levels[4..].clump(3);
 //:
 //:*
 ~a = Synth(\help_Env_newClear, [\gate, 1, \env, Env({ rrand(50, 90).midicps } ! 4, [1,1,1], \exp)]);
