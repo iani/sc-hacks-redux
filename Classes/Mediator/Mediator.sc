@@ -13,6 +13,10 @@ Mediator : EnvironmentRedirect {
 		^super.new(envir).dispatch = MediatorHandler();
 	}
 
+	*initClass {
+		StartUp add: { this.push }
+	}
+
 	*push { this.default.push }
 	*pop { this.default.pop }
 	*default { ^default ?? { default = this.new } }

@@ -9,20 +9,57 @@ SynthDef(\help_Env_newClear, { |out = 0|
     envctl = \env.kr(env.asArray);
     Out.ar(out, SinOsc.ar(EnvGen.kr(envctl, \gate.tr, doneAction: 0), 0, 0.03).dup);
 }).add;
+/* Note: 
+Synths made with this synthdef are not releasable.
+- Mediator will not stop them automatically
+- Stopping them with free produces a click. 
+*/
+//:Releasable variant of above example
+SynthDef(\chainenv, { |out = 0|
+    var env, envctl;
+    env = Env.newClear(4);
+    envctl = \env.kr(env.asArray);
+    Out.ar(out,
+		SinOsc.ar(EnvGen.kr(envctl, \gate2.tr, doneAction: 0), 0,
+			Env.fade * 0.03
+		).dup
+	);
+}).add;
 
 //:
-a = Synth(\help_Env_newClear, [\gate, 1, \env, Env([700,900,900,800], [1,1,1], \exp)]);
+a = Synth(\chainenv, [\gate2, 1, \env, Env([700,900,900,800], [1,1,1], \exp)]);
+//:
+a release: 0.4;
+//:+trigger the frequency env later
+a = Synth(\chainenv, [\env, Env([700,900,900,800], [1,1,1], \exp)]);
+2.wait;
+a.set(\gate2, 1);
+//:*Create synths in a aloop. Use Mediator to release replaced synth
+~a = Synth(\chainenv, [\gate2, 1, \env, Env(Array.rand(4, 40, 90).midicps, [1,1,1], \exp)]);
+4.wait;
+//:+change the envelope without starting new syths
+~a = Synth(\chainenv, [\gate2, 1, \env, Env(Array.rand(4, 40, 90).midicps, [1,1,1], \exp)]);
+4.wait;
+10 do: { | i |
+	postf("playing env % of 10\n", i + 1);
+	~a.set(\env, Env({ rrand(50, 80).midicps } ! 4, [0.2,0.5,0.25], \exp), \gate2, 1);
+	2.5.wait;
+};
+~a.release;
+//:
+/* 
+
+*/
+//:
 //:*
-a.set(\env, Env({ rrand(50, 80).midicps } ! 4, [0.2,0.5,0.25], \exp), \gate, 1);
-1.5.wait;
-//:
-
-//:reset then play again:
-a.free;
-
-Synth(\help_Env_newClear, [\gate, 1, \env, Env({ rrand(60, 70).midicps } ! 4, [1,1,1], \exp)]);
-
+~a = Synth(\help_Env_newClear, [\gate, 1, \env, Env({ rrand(50, 90).midicps } ! 4, [1,1,1], \exp)]);
+3.wait;
+~a.free;
 //: the same written as an event:
 (instrument: \help_Env_newClear, gate: 1, env: Env({ rrand(60, 70).midicps } ! 4, [1,1,1], \exp)).play;
 
 
+//:
+currentEnvironment;
+//:
+~

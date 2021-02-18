@@ -9,7 +9,7 @@ v = ((20..30) * 3).midicps  rotate: 1;
 b = Buffer.alloc(Server.default, v.size, 1);
 b.setn(*(v.collect({ | v, c | [c, v]}).flat));
 // b.setn(*v);
-(0..7) do: { | i | b.get(i, { | v | postf("got value: %\n", v)}); };
+(0..v.size - 1) do: { | i | b.get(i, { | v | postf("got value: %\n", v)}); };
 //:
 {
 	SinOsc.ar(
@@ -17,8 +17,8 @@ b.setn(*(v.collect({ | v, c | [c, v]}).flat));
 		0, 0.1).dup
 } +> \test;
 //:as above, with stepper
-{ arg out=0;
-        SinOsc.ar(
+{
+	SinOsc.ar(
 			Index.kr(
 				b.bufnum,
 				Stepper.kr(Impulse.kr(2), 0, 0, v.size - 1, 1),
@@ -26,5 +26,55 @@ b.setn(*(v.collect({ | v, c | [c, v]}).flat));
 			0, 0.05
     ).dup
 } +> \test;
-//:
-v.rotate(-1);
+//:================================================================
+//:Use tduty as producer of the impulses for the Stepper
+{
+	var trig;
+	trig = TDuty.kr(Dseq([0.1, 0.2, 0.4, 0.8, 0.4, 0.2, 0.2, 0.1], inf));
+	SinOsc.ar(
+			Index.kr(
+				b.bufnum,
+				Stepper.kr(trig, 0, 0, v.size - 1, 1),
+			),
+			0, 0.05
+    ).dup
+} +> \test;
+//:================================================================
+/*
+NEXT: Explore 2 ways to set the rythm of TDuty from the outside. 
+1. Use a control ugen for the times of TDuty instead of a Demand ugen, 
+and use Index to cycle through a buffer which provides the control values of that ugen.
+2. Instead of duty, use Impulse (quasi steady beat), but: 
+Use a buffer to select which of the impulses will be 1 (beats, triggers)
+and which will be 0 (no trigger).
+*/
+//:================ Solution 1: control ugen with stepper to produce values
+//: A : setup data
+// b = Buffer.alloc(Server.default, 8, 1);
+~durs = [0.2, 0.4, 0.8, 0.4, 0.4];
+// Since Stepper/Index start at 1, rotate the data to make 1 be the
+// first element. 
+~buf = Buffer.alloc(Server.default, ~durs.size, 1);
+~buf.setn(*(~durs.collect({ | v, c | [c, v]}).flat));
+// b.setn(*v);
+(0..~buf.size - 1) do: { | i | ~buf.get(i, { | v | postf("got value: %\n", v)}); };
+//: B : play the synth
+{
+	var times, trig;
+	times = Index.kr(
+		~buf.bufnum,
+		Stepper.kr(trig, 0, 0, ~durs.size - 1, 1),
+	);
+	
+	trig = TDuty.kr(times);
+	WhiteNoise.kr(Decay.kr(trig) * 0.05).dup
+} +> \test;
+//:================ Solution 2: ugen produces  values 0 / 1 to enable/cancel impulses
+//:start with something simple
+{
+	var times, beats, trig;
+	times = 1;
+	beats = 1;
+	trig = TDuty.kr(times);
+	WhiteNoise.kr(Decay.kr(trig * beats) * 0.05).dup
+} +> \test;
