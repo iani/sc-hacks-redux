@@ -115,6 +115,15 @@ and which will be 0 (no trigger).
 	var pulse, index, beats;
 	pulse = Impulse.kr(freq);
 	index = PulseCount.kr(pulse);
-	beats = WrapIndex.kr(~beats.bufnum, index);
-	WhiteNoise.kr(Decay.kr(beats * pulse * 0.05)).dup	
+	beats = WrapIndex.kr(~buf.bufnum, index);
+	WhiteNoise.ar(Decay.kr(beats * pulse * 0.05)).dup;
+	// WhiteNoise.ar(Decay.kr(pulse * 0.05)).dup;
 } +> \test;
+//:
+~test.set(\freq, 5);
+//:
+~beats = [1, 0, 1, 0, 1, 1, 1];
+// Since Stepper/Index start at 1, rotate the data to make 1 be the
+// first element.
+~beats = ~beats rotate: 1;
+~buf.setn(*(~beats.collect({ | v, c | [c, v]}).flat));
