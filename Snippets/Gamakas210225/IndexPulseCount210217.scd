@@ -70,11 +70,21 @@ and which will be 0 (no trigger).
 	WhiteNoise.kr(Decay.kr(trig) * 0.05).dup
 } +> \test;
 //:================ Solution 2: ugen produces  values 0 / 1 to enable/cancel impulses
-//:start with something simple
+//:start with something simple: just the trigger without the erasing signal
 {
 	var times, beats, trig;
 	times = 1;
 	beats = 1;
 	trig = TDuty.kr(times);
-	WhiteNoise.kr(Decay.kr(trig * beats) * 0.05).dup
+	WhiteNoise.ar(Decay.kr(trig * beats) * 0.05).dup;
 } +> \test;
+
+//:Add a simple erasing signal
+{
+	var times, beats, trig;
+	times = 1/4;
+	beats = LFPulse.kr(1/4).abs;
+	trig = TDuty.kr(times);
+	WhiteNoise.ar(Decay.kr(trig * beats) * 0.05).dup;
+} +> \test;
+//:
