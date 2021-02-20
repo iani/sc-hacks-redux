@@ -35,17 +35,17 @@ b = Bus.control;
 //:
 { | i | { Synth(\default, [freq: i * 100 + 1000, amp: 0.8]) }.sync; } ! 5;	
 //: test if adding an action without server async will not block
-Que add: { "just testing".postln; };
+Queue add: { "just testing".postln; };
 //: test adding an action several times.
 3 do: { | i |
-	Que add: { postf("Testing. Iteration count is: %\n", i + 1) };
+	Queue add: { postf("Testing. Iteration count is: %\n", i + 1) };
 }
 //:
 { postf("Testing. Iteration count is: %\n", 1)}.sync;
 
 //: test adding an action several times, large number of iterations.
 300 do: { | i |
-	Que add: { postf("Testing. Iteration count is: %\n", i + 1) };
+	Queue add: { postf("Testing. Iteration count is: %\n", i + 1) };
 }
 //:Buffer.readSync test 1
 var path;
