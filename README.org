@@ -1138,3 +1138,7 @@ Current status of dealing with the above:
 - EvenStream :: already solved in EventStream, with subclasses =SimpleEventStreamPlayer= and =EventGetter=
 - Synths :: Underway - with =SynthCache= [and/or =Voice=]
 
+*** 20 Feb 2021 20:04 Reviewing Queue
+
+
+
