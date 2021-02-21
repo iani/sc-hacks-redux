@@ -10,7 +10,7 @@ Execute each action in the que only after receiving \synced message from
 */
 
 Queue {
-	classvar <default;
+	//	classvar <default;
 	var <actions;   // list of actions to execute sequentially
 	var <server;    // send sync and expect responses from this server
 	var <id;        // used to match separate sequential synced message receipts
@@ -19,6 +19,7 @@ Queue {
 	var <next, <result; // last executed code and the result it returned.
 	var <preboot;  // Function to execute before booting server. (Set options, etc)/
 
+	/*
 	*initClass {
 		// { "will init Queue".postln; } ! 100;
 		Class.initClassTree(Server);
@@ -28,7 +29,8 @@ Queue {
 		// Class.initClassTree(Notification);
 		default = this.new(Server.default);
 	}
-	
+	*/
+	/*
 	*add { | action |
 		this.new add: action;
 	}
@@ -36,16 +38,9 @@ Queue {
 	*at { | server |
 		^this.obtain(server ?? { Server.default });
 	}
-
+	*/
 	*new { | server |
-		^this.newCopyArgs(List(), server).init;
-		// { postf("server is now: %\n", server); } ! 100;
-		// one Que instance per server;
-		/*
-		^Registry(\Queue, server, { // initialize empty que as List
-			this.newCopyArgs(List(), server).init;
-		});
-		*/
+		^this.newCopyArgs(List(), server.asTarget.server).init;
 	}
 
 	init {
@@ -111,16 +106,16 @@ Queue {
 	}
 
 	// for debugging order only
-	*sendSync { this.new.sendSync; }
+	//	*sendSync { this.new.sendSync; }
 	sendSync { // for debugging order only
 		// simulate synced response from server
 		NetAddr.localAddr.sendMsg('/synced', this.id);
 	}
 
 	// watch execution messages broadcast via changed
-	*watch { | watcher, onStart, onSync, onStop |
-		this.new.watch(watcher, onStart, onSync, onStop);
-	}
+	//	*watch { | watcher, onStart, onSync, onStop |
+	//	this.new.watch(watcher, onStart, onSync, onStop);
+	// }
 
 	watch { | watcher, onStart, onSync, onStop |
 		// default functionality provided here:

@@ -23,12 +23,10 @@ Singleton {
 	}
 
 	*named { | name ... args |
-		^Registry(this, name, {
-			this.new().init(name, *args);
-		})
+		^this.class.fromLib(name, *args);
 	}
 
-	*all { ^Registry.allAt(this) }
+	// *all { ^Registry.allAt(this) }
 	
 	init { | name ... args |
 		// use init to customize state in your subclass
