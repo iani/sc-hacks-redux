@@ -23,7 +23,7 @@ Singleton {
 	}
 
 	*named { | name ... args |
-		^this.class.fromLib(name, *args);
+		^this.fromLib(name, *args);
 	}
 
 	// *all { ^Registry.allAt(this) }

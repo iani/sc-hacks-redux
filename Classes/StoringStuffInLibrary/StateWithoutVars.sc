@@ -11,7 +11,7 @@ See discussion in https://github.com/iani/sc-hacks-redux/blob/master/README.org
 		var new;
 		new = this.atLibKey(key);
 		new ?? {
-			new = this.new(*args);
+			new = this.new(key).init(*args);
 			Library.global.put(this, key, new);
 		};
 		^new;
@@ -19,4 +19,8 @@ See discussion in https://github.com/iani/sc-hacks-redux/blob/master/README.org
 	removeLibKey { | key | Library.global.put(this, key, nil) }
 	// return what has been stored in Library under me
 	libTree { ^Library.global.at(this) }
+
+	*default {
+		^this.fromLib(\default);		
+	}
 }

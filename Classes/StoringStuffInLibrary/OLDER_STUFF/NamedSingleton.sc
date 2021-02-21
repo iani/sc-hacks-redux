@@ -15,7 +15,7 @@ NamedSingleton : Singleton {
 	// we don't know if this can be inherited yet.
 	// testing!:::::
 	*all {
-		postf("testing 'all' method. my class is: %\n", this);
-		
+		//postf("testing 'all' method. my class is: %\n", this);
+		^this.libTree;
 	}
 }

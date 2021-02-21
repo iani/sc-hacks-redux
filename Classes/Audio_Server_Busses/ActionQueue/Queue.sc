@@ -9,7 +9,7 @@ Execute each action in the que only after receiving \synced message from
 
 */
 
-Queue {
+Queue : NamedSingleton {
 	//	classvar <default;
 	var <actions;   // list of actions to execute sequentially
 	var <server;    // send sync and expect responses from this server
@@ -39,12 +39,11 @@ Queue {
 		^this.obtain(server ?? { Server.default });
 	}
 	*/
-	*new { | server |
-		^this.newCopyArgs(List(), server.asTarget.server).init;
-	}
 
-	init {
+	prInit { | argServer |
 		// create id and OSCFunc. Do not start. Start only when adding.
+		actions = List();
+		server = argServer.asTarget.server;
 		responder = OSCFunc({ | msg |
 			if (msg[1] == this.id) {
 				{ this.prNext; }.defer; // (5); // (5);
