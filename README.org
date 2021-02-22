@@ -1143,5 +1143,36 @@ Current status of dealing with the above:
     :DATE:     <2021-02-21 Sun 22:44>
     :END:
 
+Sync is needed to ensure that an object exists on the Server before trying to do something with that object.  The main cases are: 
 
+- Buffer :: =aBuffer.setn(...)= works only if the buffer exists.
+- SynthDef / Synth :: =Synth(\newdef)=; works only if the SynthDef has been loaded.
+- Synth set, map, free etc. :: Commands sent to a Synth require that the synth exists.
+- Node set, after etc. :: Commands set to a Node require that the node exists.
 
+Next sections discuss each of the above cases, giving examples.
+
+**** Sync required to set values in new Buffer
+
+When sending values to a buffer with =setn=, one must make sure that the buffer exists. Otherwise the values are not sent to the buffer.  Example: 
+
+#+begin_src sclang
+b = Buffer.alloc(Server.default, 2 ** 9, 1);
+b.setn(0, 127); // no error message is issued, but the value was not set!
+// error message is issued: /b_get index out of range:
+b.get(0, { | val | postf("my value at 0 was %\n", val )});
+#+end_src
+
+The above works if one syncs: 
+
+#+begin_src sclang
+{
+	b = Buffer.alloc(Server.default, 2 ** 9, 1);
+	Server.default.sync; // ensure that buffer exists before setting values
+	b.setn(0, 127);
+	// the value is set and accessed. 
+	b.get(0, { | val | postf("my value at 0 was %\n", val )});	
+}.fork;
+#+end_src
+
+Furthermore 
