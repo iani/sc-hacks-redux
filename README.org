@@ -923,7 +923,7 @@ See files =Notifier.sc= and =StateWithoutVars.sc=
 See EventStream:addTrig and OscTrig for use case ...
 
 The following notes are obsolete.
-**** 27 Jan 2021 17:06 Store and retrieve additional objects for any objezct
+**** 27 Jan 2021 17:06 Store and retrieve additional objects for any object
      CLOSED: [2021-01-28 Thu 18:38]
 
 30 Jan 2021 11:29: *These are earlier notes and should be scrapped - replaced by better description:*
@@ -1175,4 +1175,16 @@ The above works if one syncs:
 }.fork;
 #+end_src
 
-Furthermore 
+Interestingly, getting and plotting after setting does not require an extra sync:
+
+#+begin_src sclang
+{
+	var b;
+	b = Buffer.alloc(Server.default, 2 ** 9, 1);
+	Server.default.sync; // ensure that buffer exists before setting values
+	b.setn(*[(0..(2**9-1)), Signal.sineFill(2**9, [1, 1], [0, pi])].flop.flat);
+        b.get(5, { | val | "value at 5 was: %\n", postln; });
+	b.plot;
+}.fork(AppClock); // AppClock required to enable plot. (Alternative: 'defer')
+#+end_src
+
