@@ -923,7 +923,7 @@ See files =Notifier.sc= and =StateWithoutVars.sc=
 See EventStream:addTrig and OscTrig for use case ...
 
 The following notes are obsolete.
-**** 27 Jan 2021 17:06 Store and retrieve additional objects for any object
+**** 27 Jan 2021 17:06 Store and retrieve additional objects for any objezct
      CLOSED: [2021-01-28 Thu 18:38]
 
 30 Jan 2021 11:29: *These are earlier notes and should be scrapped - replaced by better description:*
