@@ -30,3 +30,15 @@ b.plot;
 	        b.get(5, { | val | "value at 5 was: %\n", postln; });
 	b.plot;
 }.fork(AppClock); // AppClock required to enable plot. (Alternative: 'defer')
+//:================================================================
+//:Test qalloc, qsetn, qget
+b = Buffer.qalloc(Server.default, 2 ** 9, 1); // ensure server is booted
+b.qsetn(0, 127); // ensure that buffer exists
+// ensure that the value has been sent to the buffer
+b.qget(0, { | val | postf("my value at 0 was %\n", val )});
+
+//:Counterexample: omitting sync here sends the get too soon:
+b = Buffer.qalloc(Server.default, 2 ** 9, 1); // ensure server is booted
+b.qsetn(0, 127); // ensure that buffer exists
+// omitting sync here sends the get too soon:
+b.get(0, { | val | postf("my value at 0 was %\n", val )}); 

@@ -29,34 +29,10 @@ N.B. 2: Buffer
 		}.sync(target.asTarget.server);
 		^synth; // RETURN THE SYNTH IMMEDIATELY FOR FURTHER USE!
 	}
-	*sync { | defName, args, target, addAction=\addToHead |
-		/* Rewrite this to return the synth immediately and 
-			send the synth bundle to the server later.
-			See SynthPlayer:makeSynth in sc-hacks.
-		*/
-		// var synth;
-		// synth = Synth.basicNew(...)
-		{
-			/*
-				source.doSend (
-					server, // TODO: remove \out, outbus from args and check
-					process.newMsg(target, [\i_out, outbus, \out, outbus] ++ args,
-						envir [\addAction] ? \addToHead);
-				);
-			*/
-			Synth(defName, args, target, addAction)
-			
-		}.sync(target.asTarget.server);
-		// ^synth; // RETURN THE SYNTH IMMEDIATELY FOR FURTHER USE!
-	}
 
-	syncSet { | ... args |
-		{ this.set(*args) }.sync(this.server);
-	}
-
-	syncMap { | ... args |
-		{ this.map(*args) }.sync(this.server);
-	}
+	// maybe these are not needed!:
+	syncSet { | ... args | { this.set(*args) }.sync(this.server); }
+	syncMap { | ... args | { this.map(*args) }.sync(this.server); }
 }
 
 + Function {
@@ -75,7 +51,16 @@ N.B. 2: Buffer
 }
 
 + Buffer {
-	*allocSync { | server, numFrames, numChannels = 1, completionMessage, bufnum |
+	qsetn { | ... args | // ensure that buffer exists before calling setn
+		{ this.setn(*args) }.sync(this.server);
+	}
+
+	qget { | index, action | // ensure that buffer is synced before calling get
+		{ this.get(index, action) }.sync(this.server);
+	}
+
+	// Ensures that server is booted before allocating buffer
+	*qalloc { | server, numFrames, numChannels = 1, completionMessage, bufnum |
 		/*
 			Create new buffer and return it.
 			Postpone the allocation on the server to happen in synced order,
@@ -94,7 +79,7 @@ N.B. 2: Buffer
 		^buffer; 
 	}
 
-	*readSync { | server, path, startFrame = 0, numFrames = -1, action, bufnum |
+	*qread { | server, path, startFrame = 0, numFrames = -1, action, bufnum |
 		/*
 			Create new buffer and return it.
 			Postpone the reading from file on the server 
@@ -107,6 +92,7 @@ N.B. 2: Buffer
 		server = server ? Server.default;
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
 		buffer = super.newCopyArgs(server, bufnum);
+		// TODO: rewrite this properly.  Use Buffer:readWithInfo
 		{
 			buffer.doOnInfo_(action).cache
 			.allocRead(path, startFrame, numFrames, {|buf|["/b_query", buf.bufnum] });
