@@ -2,12 +2,14 @@
 	Testing sync requirements of Synth 
 */
 //:Must wait for SynthDef to load in server before starting synth with it.
-SynthDef("synctest", { | freq = 440 |
+var defname; // make sure to create new synthdef for each test.
+defname = format("synctest%", UniqueID.next);
+SynthDef(defname, { | freq = 440 |
 	var src;
 	src = SinOsc.ar(freq, 0, 0.1).dup;
 	Out.ar(0, src * Env.adsr.kr(2, \gate.kr(1)));
 }).add;
-a = Synth("synctest"); /* getting error:
+a = Synth(defname); /* getting error:
 	*** ERROR: SynthDef synctest not found
 	FAILURE IN SERVER /s_new SynthDef not found
 */
@@ -15,13 +17,15 @@ a = Synth("synctest"); /* getting error:
 a.release;
 //:Using sync
 {
-	SynthDef("synctest", { | freq = 440 |
+	var defname; // make sure to create new synthdef for each test.
+	defname = format("synctest%", UniqueID.next);
+	SynthDef(defname, { | freq = 440 |
 		var src;
 		src = SinOsc.ar(freq, 0, 0.1).dup;
 		Out.ar(0, src * Env.adsr.kr(2, \gate.kr(1)));
 	}).add;
 	Server.default.sync;
-	a = Synth("synctest")
+	a = Synth(defname);
 }.fork;
 //:
 a.release;
@@ -48,7 +52,6 @@ a.set(\freq, 1200); // sync needed
 	}.play;
 	Server.default.sync;
 	a.set(\freq, 1200); // sync needed	
-	
 }.fork;
 //: ================ sync also needed for map
 b = Bus.control;

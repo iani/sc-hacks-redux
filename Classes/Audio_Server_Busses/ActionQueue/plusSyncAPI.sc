@@ -16,7 +16,20 @@ N.B. 2: Buffer
 */
 
 + Synth {
-	sync { | defName, args, target, addAction=\addToHead |
+	*q { | defName, args, target, addAction=\addToHead |
+		var synth;
+		// experimental. 22 Feb 2021 14:56
+		synth = Synth.basicNew(defName, target);
+		{
+			var msg;
+			msg = synth.newMsg(target, args, addAction);
+			target = target.asTarget.server;
+			target.sendMsg(*msg);
+			//	synth ... send the synth the bundle needed to actuall start it!
+		}.sync(target.asTarget.server);
+		^synth; // RETURN THE SYNTH IMMEDIATELY FOR FURTHER USE!
+	}
+	*sync { | defName, args, target, addAction=\addToHead |
 		/* Rewrite this to return the synth immediately and 
 			send the synth bundle to the server later.
 			See SynthPlayer:makeSynth in sc-hacks.
@@ -47,7 +60,9 @@ N.B. 2: Buffer
 }
 
 + Function {
-	sync { | server | Queue(server).add(this) }
+	sync { | server |
+		Queue.named(server.asTarget.server).add(this)
+	}
 	syncPlay { | target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args |
 		{
 			this.play(target.asTarget, outbus, fadeTime, addAction, args)

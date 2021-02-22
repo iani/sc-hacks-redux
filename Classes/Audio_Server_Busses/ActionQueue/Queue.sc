@@ -40,6 +40,10 @@ Queue : NamedSingleton {
 	}
 	*/
 
+	*default { | ... args |
+		^this.named(Server.default, *args );
+	}
+
 	prInit { | argServer |
 		// create id and OSCFunc. Do not start. Start only when adding.
 		actions = List();
@@ -141,5 +145,10 @@ Queue : NamedSingleton {
 		watcher.addNotifier(this, \stopped, { | time |
 			onStop.(time, watcher, this);
 		});
+	}
+
+	test {
+		"testing".postln;
+		
 	}
 }
