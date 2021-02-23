@@ -7,32 +7,30 @@ Methods for syncing various kinds of objects.
 N.B. 1: server always defaults to Server.default.
 N.B. 2: Buffer 
 
-- aFunction.sync(optional: server) :: Add the function to Que for synced allocation.
+- aFunction.sync(optional: server) :: Add the function to Queue for synced allocation.
 - aSynthDef.sync(opitonal: server) :: Add a function that adds the synthdef to the server for synced allocation.
 - aString.sync(optional: server) :: Add a function that loads the file given by path aString.
-- Buffer.allocSync :: Like Buffer.alloc, but execution is synced by Que.  Returns the new buffer.  The buffer instance is created immediately on sclang and returned, but the message for allocating the buffer on the server is sent later in the order given by the Que sync.
-- Buffer.readSync :: Like Buffer.read, but execution is synced by Que.  Returns the new buffer.  The buffer instance is created immediately on sclang and returned, but the message for reading the buffer on the server is sent later in the order given by the Que sync.
+- Buffer.allocSync :: Like Buffer.alloc, but execution is synced by Queue.  Returns the new buffer.  The buffer instance is created immediately on sclang and returned, but the message for allocating the buffer on the server is sent later in the order given by the Que sync.
+- Buffer.readSync :: Like Buffer.read, but execution is synced by Queue.  Returns the new buffer.  The buffer instance is created immediately on sclang and returned, but the message for reading the buffer on the server is sent later in the order given by the Que sync.
 
 */
 
 + Synth {
 	*q { | defName, args, target, addAction=\addToHead |
 		var synth;
-		// experimental. 22 Feb 2021 14:56
-		synth = Synth.basicNew(defName, target);
+		synth = Synth.basicNew(defName, target); // create the synth
 		{
 			var msg;
 			msg = synth.newMsg(target, args, addAction);
 			target = target.asTarget.server;
-			target.sendMsg(*msg);
-			//	synth ... send the synth the bundle needed to actuall start it!
+			target.sendMsg(*msg); // start the synth
 		}.sync(target.asTarget.server);
-		^synth; // RETURN THE SYNTH IMMEDIATELY FOR FURTHER USE!
+		^synth; // return the synth immediately for further use!
 	}
 
 	// maybe these are not needed!:
-	syncSet { | ... args | { this.set(*args) }.sync(this.server); }
-	syncMap { | ... args | { this.map(*args) }.sync(this.server); }
+	qSet { | ... args | { this.set(*args) }.sync(this.server); }
+	qMap { | ... args | { this.map(*args) }.sync(this.server); }
 }
 
 + Function {
@@ -54,6 +52,15 @@ N.B. 2: Buffer
 + Buffer {
 	qsetn { | ... args | // ensure that buffer exists before calling setn
 		{ this.setn(*args) }.sync(this.server);
+	}
+
+	qsetRange { | array, index = 0 |
+		// Set all values of the array, starting in the buffer at index.
+		//	Clip the array to fit within the size of the buffer.
+		var indices, maxIndex;
+		maxIndex = index + array.size - 1 min: (buffer.numFrames - 1);
+		indices = (index .. maxIndex);
+		this.qsetn(*indices.collect({ | i | [i, array[i - index]] }).flat);
 	}
 
 	qget { | index, action | // ensure that buffer is synced before calling get
