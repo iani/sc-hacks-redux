@@ -47,6 +47,7 @@ N.B. 2: Buffer
 }
 
 + String {
+	// q { | server | this.sync(server) }
 	sync { | server | Queue(server).add({ this.load }) }
 }
 
@@ -57,6 +58,12 @@ N.B. 2: Buffer
 
 	qget { | index, action | // ensure that buffer is synced before calling get
 		{ this.get(index, action) }.sync(this.server);
+	}
+
+	qplot { | name, bounds, minval, maxval, separately = false |
+		{
+			{ this.plot(name, bounds, minval, maxval, separately)}.defer
+		}.sync(this.server)
 	}
 
 	// Ensures that server is booted before allocating buffer

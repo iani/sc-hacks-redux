@@ -1175,91 +1175,111 @@ The above works if one syncs:
 }.fork;
 #+end_src
 
-Interestingly, getting and plotting after setting does not require an extra sync:
+Interestingly, if running within a forked thread with Server.default.sync, then getting and plotting after setting does not require an extra sync. The reason for this is that in this case the Server.default.sync statement inside the fork delays the entire thread of execution, so it is guaranteed that the setn and get and plot statements are executed in order after the buffer is allocated.
+
+(By contrast, the q methods (q, qsetn, qget, etc.) execute the corresponding operation on the buffer independently from the main thread. This means that all of them have to be used if not running in a thread with a sync statement inserted after the Buffer was created.)
 
 #+begin_src sclang
 {
-	var b;
-	b = Buffer.alloc(Server.default, 2 ** 9, 1);
-	Server.default.sync; // ensure that buffer exists before setting values
-	b.setn(*[(0..(2**9-1)), Signal.sineFill(2**9, [1, 1], [0, pi])].flop.flat);
+        var b;
+        b = Buffer.alloc(Server.default, 2 ** 9, 1);
+        Server.default.sync; // ensure that buffer exists before setting values
+        b.setn(*[(0..(2**9-1)), Signal.sineFill(2**9, [1, 1], [0, pi])].flop.flat);
         b.get(5, { | val | "value at 5 was: %\n", postln; });
-	b.plot;
+        b.plot;
 }.fork(AppClock); // AppClock required to enable plot. (Alternative: 'defer')
 #+end_src
 
+Expla 
 **** Sync required when sending a new SynthDef, before making a Synth from it
 
+***** Wait for SynthDef to load in server before starting synth with it
+
+****** Wrong: No waiting
 #+begin_src sclang
 //:Must wait for SynthDef to load in server before starting synth with it.
 var defname; // make sure to create new synthdef for each test.
 defname = format("synctest%", UniqueID.next);
 SynthDef(defname, { | freq = 440 |
-	var src;
-	src = SinOsc.ar(freq, 0, 0.1).dup;
-	Out.ar(0, src * Env.adsr.kr(2, \gate.kr(1)));
+	  var src;
+	  src = SinOsc.ar(freq, 0, 0.1).dup;
+	  Out.ar(0, src * Env.adsr.kr(2, \gate.kr(1)));
 }).add;
 a = Synth(defname); /* getting error:
-	*** ERROR: SynthDef synctest not found
-	FAILURE IN SERVER /s_new SynthDef not found
+	  *** ERROR: SynthDef synctest not found
+	  FAILURE IN SERVER /s_new SynthDef not found
 */
 #+end_src
 
+****** Correct: Using sync in a routine
+
+This is correct:
 #+begin_src sclang
 //:
 a.release;
 //:Using sync
 {
-	var defname; // make sure to create new synthdef for each test.
-	defname = format("synctest%", UniqueID.next);
-	SynthDef(defname, { | freq = 440 |
-		var src;
-		src = SinOsc.ar(freq, 0, 0.1).dup;
-		Out.ar(0, src * Env.adsr.kr(2, \gate.kr(1)));
-	}).add;
-	Server.default.sync;
-	a = Synth(defname);
+	  var defname; // make sure to create new synthdef for each test.
+	  defname = format("synctest%", UniqueID.next);
+	  SynthDef(defname, { | freq = 440 |
+		  var src;
+		  src = SinOsc.ar(freq, 0, 0.1).dup;
+		  Out.ar(0, src * Env.adsr.kr(2, \gate.kr(1)));
+	  }).add;
+	  Server.default.sync;
+	  a = Synth(defname);
 }.fork;
 //:
 // a.release;
 #+end_src
 
-#+begin_src sclang
+***** Wait for synth to start before setting or mapping (only if using ={ }.play=)
 
-//:================================================================
-//:set after starting a synth - no sync needed after Synth.new:
-a = Synth("synctest");
-a.set(\freq, 1200); // no sync needed
-//:mapping. Testing Bus sync + map sync.
-b = Bus.control;
-b.set(60.rrand(70).midicps);
-a = Synth("synctest");
-a.map(\freq, b.index);
-#+end_src
+When creating a Synth with =Synth.new()= (or: =Synth(...)=), one can set or map its controls immediately, and it is not necessary to sync:
 
+ #+begin_src sclang
+
+ //:================================================================
+ //:set after starting a synth - no sync needed after Synth.new:
+ a = Synth("synctest");
+ a.set(\freq, 1200); // no sync needed
+ //:mapping. Testing Bus sync + map sync.
+ b = Bus.control;
+ b.set(60.rrand(70).midicps);
+ a = Synth("synctest");
+ a.map(\freq, b.index);
+ #+end_src
+
+When creating a Synth with ={ /* function */ }.play=, sync is needed to set or map its controls. However, there is a noticeable time interval between the actual start of the synth and the receipt of the synth signal in sclang. This results in an audible jump in the control parameters:
+
+****** Trying without sync (does not work)
 #+begin_src sclang
 
 //: ================================================================
 //:Sync needed if creating the synth with Function:play
 //: sync needed for set:
 a = { | freq = 440 |
-	SinOsc.ar(freq, 0, 0.1).dup * Env.adsr.kr(2, \gate.kr(1));
+	  SinOsc.ar(freq, 0, 0.1).dup * Env.adsr.kr(2, \gate.kr(1));
 }.play;
 a.set(\freq, 1200); // sync needed
 #+end_src
+
+****** Using sync (works, but with audible jump)
 
 #+begin_src sclang
 
 //:Above example, synced - glitch is audible because of delay in receiving sync
 {
-	a = { | freq = 440 |
-		SinOsc.ar(freq, 0, 0.1).dup * Env.adsr.kr(2, \gate.kr(1));
-	}.play;
-	Server.default.sync;
-	a.set(\freq, 1200); // sync needed	
+	  a = { | freq = 440 |
+		  SinOsc.ar(freq, 0, 0.1).dup * Env.adsr.kr(2, \gate.kr(1));
+	  }.play;
+	  Server.default.sync;
+	  a.set(\freq, 1200); // sync needed	
 	
 }.fork;
 #+end_src
+
+****** Similar examples using map
 
 #+begin_src sclang
 
@@ -1267,7 +1287,7 @@ a.set(\freq, 1200); // sync needed
 b = Bus.control;
 b.set(60.rrand(70).midicps);
 a = { | freq = 440 |
-	SinOsc.ar(freq, 0, 0.1).dup * Env.adsr.kr(2, \gate.kr(1));
+	  SinOsc.ar(freq, 0, 0.1).dup * Env.adsr.kr(2, \gate.kr(1));
 }.play;
 a.map(\freq, b.index); // sync needed
 #+end_src
@@ -1276,14 +1296,14 @@ a.map(\freq, b.index); // sync needed
 
 //:above mapping example, synced
 {
-	var b;
-	b = Bus.control;
-	b.set(80.midicps);
-	a = { | freq = 440 |
-		SinOsc.ar(freq, 0, 0.1).dup * Env.adsr.kr(2, \gate.kr(1));
-	}.play;
-	Server.default.sync;
-	a.map(\freq, b.index); // glitch is audible because of delay in receiving sync
+	  var b;
+	  b = Bus.control;
+	  b.set(80.midicps);
+	  a = { | freq = 440 |
+		  SinOsc.ar(freq, 0, 0.1).dup * Env.adsr.kr(2, \gate.kr(1));
+	  }.play;
+	  Server.default.sync;
+	  a.map(\freq, b.index); // glitch is audible because of delay in receiving sync
 	
 }.fork;
 #+end_src
