@@ -58,7 +58,7 @@ N.B. 2: Buffer
 		// Set all values of the array, starting in the buffer at index.
 		//	Clip the array to fit within the size of the buffer.
 		var indices, maxIndex;
-		maxIndex = index + array.size - 1 min: (buffer.numFrames - 1);
+		maxIndex = index + array.size - 1 min: (numFrames - 1);
 		indices = (index .. maxIndex);
 		this.qsetn(*indices.collect({ | i | [i, array[i - index]] }).flat);
 	}
