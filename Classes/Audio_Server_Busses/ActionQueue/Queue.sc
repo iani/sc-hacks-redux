@@ -5,7 +5,8 @@ the functionality of Server.sync.
 Ensures that each function in the queue will be run after the server has 
 synced (completed) any async commands resulting from the previous action. 
 
-Execute each action in the que only after receiving \synced message from
+Execute each action in the queue only after receiving \synced message from
+the server.
 
 */
 
