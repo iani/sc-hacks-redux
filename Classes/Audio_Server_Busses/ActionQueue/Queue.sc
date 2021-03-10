@@ -20,27 +20,6 @@ Queue : NamedSingleton {
 	var <next, <result; // last executed code and the result it returned.
 	var <preboot;  // Function to execute before booting server. (Set options, etc)/
 
-	/*
-	*initClass {
-		// { "will init Queue".postln; } ! 100;
-		Class.initClassTree(Server);
-		Class.initClassTree(OSCFunc);
-		Class.initClassTree(Library);
-		//		Class.initClassTree(Registry);
-		// Class.initClassTree(Notification);
-		default = this.new(Server.default);
-	}
-	*/
-	/*
-	*add { | action |
-		this.new add: action;
-	}
-
-	*at { | server |
-		^this.obtain(server ?? { Server.default });
-	}
-	*/
-
 	*default { | ... args |
 		^this.named(Server.default, *args );
 	}

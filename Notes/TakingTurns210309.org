@@ -1,0 +1,36 @@
+#  9 Mar 2021 15:22
+* Objective
+Initial exploration of possible combinations when taking turns between two processes A and B. 
+* Concepts
+** States and transition events
+ A and B can each have two *states*: 1. playing, 2: stopped (i.e. not playing). 
+ The transitions between these two states in each player are marked by two kinds of *events*: 
+
+ - Start :: Transition from stopped to playing.
+ - Stop :: Transition playing to stopped.
+
+** Possible combinations of states
+
+There are following combinations of states of players A and B.
+
+1. Both A and B are playing.
+2. Both A and B are stopped.
+3. Only one of A or B is playing.
+
+The 4 possible combinations of A and P playing/stopped states are:
+
+|   |      Players: | A | B |
+|---+---------------+---+---|
+|   | Combinations: |   |   |
+|---+---------------+---+---|
+|   |             1 | 1 | 1 |
+|   |             2 | 1 | 0 |
+|   |             3 | 0 | 1 |
+|   |             4 | 0 | 0 |
+
+(Where 0 means the player is stopped and 1 means the player is playing)
+
+** Proposed experiments
+
+1. A and B keep playing together
+   1. Case 1: B follows A. When A starts, B also starts, when A ... 
