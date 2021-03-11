@@ -2,11 +2,12 @@
 NamedSingleton : Singleton {
 	var <name;
 
-	init { | argName ... args |
-		/* postf("% NamedSingleton.init argName: %\n",
-			this, argName;
-			); */
-		name = argName;
+	*new { | name |
+		postf("NamedSingleton NEW. name is: %\n", name);
+		^this.newCopyArgs(name);
+	}
+	
+	init { | ... args |
 		this.prInit(*args); // subclasses add more init here if needed
 	}
 
