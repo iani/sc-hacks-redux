@@ -3,7 +3,6 @@ NamedSingleton : Singleton {
 	var <name;
 
 	*new { | name |
-		postf("NamedSingleton NEW. name is: %\n", name);
 		^this.newCopyArgs(name);
 	}
 	
