@@ -41,6 +41,15 @@ Handle playing of synths in envir.  Several features are still under considerati
    :DATE:     <2021-02-07 Sun 13:18>
    :END:
 *** Name: Storing things under names.  Using namespaces
+**** Storing things in Library
+Previous approach: Registry, Singleton, NamedSingleton
+
+Proposed new approach: Methods for Class: atLibKey, fromLib, removeLibKey. Define methods for getting instances of different classes by sending different messages to a symbol (buffer, window, filelist ...)
+
+**** Storing things in Environments/Events
+
+Using EnvironmentRedirect
+
 *** State: Storing state to restart things
 
 - For Synths: =SynthCache= (Underway)
