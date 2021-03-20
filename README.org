@@ -1316,3 +1316,44 @@ a.map(\freq, b.index); // sync needed
 	
 }.fork;
 #+end_src
+* Ideas to follow/develop
+  :PROPERTIES:
+  :DATE:     <2021-03-20 Sat 11:16>
+  :END:
+** Cycles
+*** Yann - ICS cycle project
+    :PROPERTIES:
+    :DATE:     <2021-03-20 Sat 11:18>
+    :END:
+
+https://scsynth.org/t/supercollider-extension-cycle/2389
+#+begin_quote
+Hi SuperCollider users,
+
+I had the idea a few years ago to collect all numerical algorithm forming cycle.
+
+I started the work as a lisp library called cl-cycle 4 and it is still under development.
+
+Then, as a SuperCollider user, I wanted to implement these algorithms to use it directly in SC language and naturally share it.
+
+All the algorithms return an array with the cycle itself prepended by its `path’ if it exists. In this way, to access to the cycle, you have just to select the last item of the array, and for the path — or the cycle by default — the first item.
+
+This SuperCollider extension cycle 10 can be installed directly on the Platform.userExtensionDir or with the package manager Quarks by evaluating Quarks.install("https://github.com/yannics/cycle")
+
+An Instance of use:
+
+Pbind(\degree, [1,2,3,4,1].kaprekar(5).pattern(inf, true, false), \dur, 3.euclidean(8, true).pattern(inf)/4).play;
+
+You are welcome to participate in this work by completing or improving the existing algorithms, and adding any algorithm fitting the theme of cyclicity.
+Any contribution will be mentioned.
+Any suggestions and feedback are welcome.
+
+Enjoy!
+#+end_quote
+*** Chaotic sound synthesis, cybernetics, feedback
+    :PROPERTIES:
+    :DATE:     <2021-03-20 Sat 11:24>
+    :END:
+
+See folder Code4Porting/cybernetics_and_feedback.
+
