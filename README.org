@@ -1356,4 +1356,23 @@ Enjoy!
     :END:
 
 See folder Code4Porting/cybernetics_and_feedback.
+*** Wave Terrain Synthesis
+    :PROPERTIES:
+    :DATE:     <2021-03-20 Sat 11:52>
+    :END:
+
+https://scsynth.org/t/wave-terrain-synthesis/3424/9
+
+#+begin_quote
+A very first step in a attempt to get turbulence in a terrain is to see what Perlin noise does. It is quite wild. I just “displaced” the <x,y> based on the value of the noise. As it is a deterministic noise the resulting value will always be the same given the same input. I should not use the actual value of the noise itself, but the rate of change of the noise value. Then apply a few steps of it.
+
+Perlin: The Book of Shaders: Noise 1
+
+Turbulence algorithm description: Reference Section 4 1
+
+An other nice noise to have in SuperCollider is Worley noise aka cellular noise: The Book of Shaders: More noise
+
+(Can we use images for terrain? 16 bit grey scale, linear gamma. *.pgm files would be the simplest format. The “scan range” in the synth would have to be limited <0,1> and with interpolation between pixels.) EDIT: got a WaveTerrain from CSV file working.
+
+#+end_quote
 
