@@ -19,7 +19,7 @@ OscGroups {
 			// "now i am going to execute the code".postln;
 			result = thisProcess.interpreter.interpret(code.asString);
 			// postf("the result of the evaluation is: %\n", result);
-			result;
+			postf("remote: -> %\n", result);
 		}, "/code", recvPort: 22245).fix;
 		
 		thisProcess.interpreter.preProcessor = { | code |
