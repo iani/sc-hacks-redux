@@ -33,7 +33,7 @@ Notification {
 		^controllers.at(notifier).at(message, listener);
 	}
 
-	*remove { | argNotifier, message, listener |		
+	*remove { | argNotifier, message, listener |
 		controllers[argNotifier].remove(message, listener);
 	}
 
