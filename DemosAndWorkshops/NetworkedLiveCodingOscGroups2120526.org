@@ -1,0 +1,6 @@
+
+For the workshop at IU/AVARTS on May 26 2021.
+
+* URL for audio streaming server
+
+http://64.225.77.85:8000/stream.mp3
