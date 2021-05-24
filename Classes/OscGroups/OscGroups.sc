@@ -15,6 +15,8 @@ Example:
 
 OscGroups {
 	classvar <sendAddress, <oscRecvFunc;
+	classvar <>username = "user";
+	//	classvar <>
 
 	*initClass {
 		StartUp add: { this.init };
@@ -40,4 +42,10 @@ OscGroups {
 			sendAddress.sendMsg('/code', message);
 		});
 	}
+
+	*startClient {
+		
+		
+	}
+	
 }
