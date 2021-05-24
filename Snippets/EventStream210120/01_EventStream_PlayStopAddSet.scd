@@ -31,6 +31,12 @@ a.play; // the stream resumes from where it left off.
 ~stream add: (degree: Pwhite(-10, 0) + Prand([0, [0, 2]], inf)); // add degree pattern
 ~stream add: (degree: Pbrown(0, 10, 2)); // replace degree pattern
 
+~stream.stop;
+
+~stream.play;
+
+~stream.start;
+
 //:put is alternative way for replacing one key in the Event:
 ~stream.put(\amp, Pbrown(0, 0.1, 0.01)); // replace amp pattern
 ~stream.put(\dur, Pbrown(0.01, 0.1, 0.01)); // replace dur pattern
