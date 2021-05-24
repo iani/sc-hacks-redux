@@ -21,7 +21,9 @@ Mediator : EnvironmentRedirect {
 	*pop { this.default.pop }
 	*default { ^default ?? { default = this.new } }
 	put { | key, obj | dispatch.value(key, obj); }
-	prPut { | key, obj | envir.put (key, obj) }
+	prPut { | key, obj |
+		envir.put (key, obj);
+	}
 }
 
 MediatorHandler {
@@ -56,10 +58,10 @@ MediatorHandler {
 	playIn { | key = \default,
 		target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args |
 		currentEnvironment use: {
-			currentEnvironment.put(key,
+			currentEnvironment.put(key.postln,
 				this.play(target, outbus, fadeTime, addAction, args)
-			)
-		}
+			).postln;
+		};
 	}
 	// just because I want a different name:
 	splay { | key = \default | this.playIn(key) }

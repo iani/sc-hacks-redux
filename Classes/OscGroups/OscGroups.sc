@@ -3,6 +3,14 @@ Share evaluated code via OSCGroups
 (see link Ross Bencina...)
 
 This could be a NamedSingleton, but let's keep things simple for now.
+
+Note: You should have compiled OscGroupsClient and have started it via command line.
+
+Example: 
+
+./OscGroupClient 64.225.97.89 22242 22243 22244 22245 username userpass nikkgroup nikkpass
+
+
 */
 
 OscGroups {
