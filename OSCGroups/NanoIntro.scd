@@ -30,12 +30,12 @@ stops anything currently playing in that player, and starts something new.
 (dur: 0.05) ++> \test; // Add a stream tp the eventstream while it is playing
 
 // Add a stream tp the eventstream while it is playing
-(dur: Prand([0.05 !! 20, 0.1 !! 10, 0.2 !! 5, 0.5 !! 2, 1]) ++> \test;
+(dur: Prand([0.05 !! 20, 0.1 !! 10, 0.2 !! 5, 0.5 !! 2, 1])) ++> \test;
 
 // ================================================================
 // PART 2  messages: =stop=, =start=
 
-(degree: Pseq((0..7)), dur: 0.1) +> \test; // start a pattern in player \test;
+(degree: Pseq((0..7), inf), dur: 0.1) +> \test; // start a pattern in player \test;
 \test.stop // stop player \test
 \test.start // start player \test
 
