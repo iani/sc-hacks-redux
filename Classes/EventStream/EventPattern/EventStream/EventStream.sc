@@ -9,7 +9,14 @@ Changes take effect immediately.
 EventStream { // intentionally not a subclass of Stream
 	classvar >defaultParent; // avoid modifying default from SCClassLibrary
 	var <streamPlayer, <triggers;
-
+	/*
+	clone {
+		// not yet tested
+		// TODO : clone currentEvent of my SimpleEventStreamPlayer?
+		^this.class.new(this.event, this.parent, this.quant, this.tempoClock);
+	}
+	*/
+	
 	*new { | event, parent, quant = 1, tempoClock |
 		^super.new().init(event, parent, quant, tempoClock);
 	}

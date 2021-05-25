@@ -2,8 +2,8 @@
 NamedSingleton : Singleton {
 	var <name;
 
-	*new { | name |
-		^this.newCopyArgs(name);
+	*new { | name ... args |
+		^this.newCopyArgs(name); // .init(*args);
 	}
 	
 	init { | ... args |

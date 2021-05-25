@@ -1,0 +1,110 @@
+
+* Current status for experiments: 25 May 2021 12:44
+
+The following instructions are for trying out OscGroups with a server that we have set up and is running from 25 May 2021 for the next week.
+
+We will update the present info when we change the location of the server.
+
+* Installing OSCGroups program (binaries)
+
+Binaries for arch linux are provided here in a subfolder of bin in the present folder.
+More binaries will be added as we manage to test them, afte 25 May 2021 12:24. 
+
+Compiling your own binaries is relatively easy according to our experiende. Here is how to:
+
+First have a look at the instructions by the author of OSCGroups here: http://www.rossbencina.com/code/oscgroups
+
+Our own tested method consists of these steps:
+
+1. Create a folder =OSCGRoupsInstall=
+2. Inside the folder =OSCGRoupsInstall=, clone the following 2 repositories, using =git clone --recursive <repository git url>=.
+   Note: The clone should use the option =--recursive= to ensure that submodules are also included.
+   1. oscgroups by Ross Bencina - https://github.com/RossBencina/oscgroups.git
+   2. oscpack by Ross Bencina - https://github.com/RossBencina/oscpack.git
+3. go inside the folder =oscgroups= (=cd oscgroups=)
+4. run shell command =make=
+
+The above produces the executables for server and client, and stores them in a new folder =bin= inside the oscgroups folder. 
+
+* Running OSCGroupsServer
+
+You can skip this step if you only want to connect to an existing server hosted by someone else.
+The PEARL group currently provides such a server. Instructions for connecting to the server are given below under [[Running OSCGroupClient]].
+
+If you still want to run your own server, that would be a useful experience both for you and for the community. See instructions http://www.rossbencina.com/code/oscgroups
+If you just want to use our server, read the next section. 
+
+* Running OSCGroupClient
+
+Copy the binary file =OscGroupClient= from your bin folder (or from this repository) into your bin folder. Under arch linux this is: =/usr/bin=.  This makes it possible for both you and SuperCollider to start the OscGroupClient from the shell or using =.unixCmd=.  
+
+To connect to the group we are using for experiments with the currently running server as of May 2021, use this command: 
+
+#+begin_src bash
+./bin/OscGroupClient 64.225.97.89 22242 22243 22244 22245 uname upass nikkgroup nikkpass
+#+end_src
+
+*IMPORTANT: In the command above, substitute your own user name instead of uname and your own password for upass.  If you use a user name that also someone in the group is using, then there will be confusion. Therefore choose the user name wisely.  DO NOT CHANGE ANYTHING ELSE. The workshop sessions will run with the server and group above*
+
+** Detailed info on the arguments of =OscGroupClient=
+
+ #+BEGIN_SRC bash
+     usage: oscgroupclient serveraddress serverport localtoremoteport localtxport localrxport username password groupname grouppassword
+ #+END_SRC
+
+Users should send data to localhost:localtxport and listen on localhost:localrxport
+
+     *servername*
+     an internet name such as oscgroups.iua.upf.edu or an ip address
+ such as 193.145.55.19
+
+     *serverport*
+     the udp port which the server is listening on, the server
+ defaults to 22242
+
+     *localtoremoteport*
+     the local port used to connect with the server and to other
+ group members.
+
+     *localtxport*
+     this is the port which OscGroupClient listens to and forwards
+ to other group members. direct your OSC traffic to this port.
+
+     *localrxport*
+     this is the port which OscGroupClient forwards trafic from
+ other users to. you should configure your OSC application to listen
+ to this port.
+
+     *username*
+     a unique user name used to identify you with other clients.
+
+     *password*
+     a password which is used to try to make sure that no one else
+ pretends to be you on the server. this isn't secure but it helps.
+
+     *groupname*
+     a name that all group members agree on, like a user name it
+ should be unique. By choosing an groupname that is not already in use the group is created.
+
+     *grouppassword*
+     a password for the group. users without the correct password
+ won't be admitted to the group. The group password is chosen by the client creating the group.
+
+* Using OSCGroups in SuperCollider
+
+First you should have started OscGroupsClient on your own computer using the instructions listed above in the previous section.
+
+The class =OscGroups= provided in the present library is configured to connect automatically to the server noted above.  To use the class do the following: 
+
+1. Clone the current repository (https://github.com/iani/sc-hacks-redux) on your computer.
+2. Place the entire folder of the repository =sc-hacks-redux= in the =Extensions= folder of your user's SuperCollider directory.  To get the path of your extensions folder, evaluate this code in your own SuperCollider environment: 
+
+#+begin_src sclang
+Platform.userExtensionDir;
+#+end_src
+
+3. In SuperCollider, recompile sclang library.
+
+This automatically connects to the OSCGroupsServer via your OscGroupClient.
+
+
