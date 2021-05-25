@@ -55,12 +55,13 @@ currentEnvironment;
 //:operators
 (degree: Pbrown(-10, 10, 3)) ++> \stream;
 (dur: Prand([0.1, 0.2, 0.4], inf)) ++> \stream;
-g(dur: Prand([0.1, Pn(0.05, 10), 0.4], inf)) ++> \stream;
+(dur: Prand([0.1, 0.05 !! 8, 0.4], inf)) ++> \stream;
 (degree: Pbrown(0, 10, 1)) +> \stream;
 (amp: Pwhite(0.01, 0.2, inf)) ++> \stream; // adds contents to pattern!!!
-(amp: Prand([Pn(0.05, 10), 0.2], inf)) ++> \stream; // replaces contents of pattern!!!
+(amp: Prand([0.05 !! 10, 0.2], inf)) ++> \stream; // replaces contents of pattern!!!
 //:Stop and start.  start == play
 ~stream.stop;
 ~stream.play;
 ~stream.stop;
 ~stream.start;
+
