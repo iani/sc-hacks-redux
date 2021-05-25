@@ -7,7 +7,7 @@ We will update the present info when we change the location of the server.
 
 * Installing OSCGroups program (binaries)
 
-Binaries for arch linux are provided here in a subfolder of bin in the present folder.
+Binaries for *arch linux* and *macos* are provided here in a subfolder of bin in the present folder.
 More binaries will be added as we manage to test them, after 25 May 2021 12:24. 
 
 Compiling your own binaries is relatively easy according to our experience. Here is how to:
