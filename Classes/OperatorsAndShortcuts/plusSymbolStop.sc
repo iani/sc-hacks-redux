@@ -2,6 +2,15 @@
 
 */
 
-+ Symbol { stop { currentEnvironment[this].stop; } }
++ Symbol {
+	stop { currentEnvironment[this].stop; }
+	start { currentEnvironment[this].start; }
+	play { this.start }
+}
 
-+ Synth { stop { this.release } }
++ Synth {
+	stop { this.release }
+	start {
+		"Synth does not know how to start yet. Use this only with streams".postln;
+	}
+}
