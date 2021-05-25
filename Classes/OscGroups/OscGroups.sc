@@ -57,8 +57,7 @@ OscGroups {
 	}
 
 	*startClient {
-		
-		
+		"OscGroupClient 64.225.97.89 22242 22243 22244 22245 iani ianipass nikkgroup nikkpass".unixCmd;
 	}
 	
 }

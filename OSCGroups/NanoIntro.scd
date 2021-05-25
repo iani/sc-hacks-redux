@@ -13,8 +13,8 @@ also as a way of sharing code via OSCGroups.
 // =+>= sends a Function or an Event to a player, and starts playing it. 
 
 { PinkNoise.ar(0.1).dup } +> \test; // play a function. creates a synth
-(degree: Pseq((0..7)), dur: 0.1) +> \test; // play an event. creates EventStream
-(degree: Pbrown(-10, 10, 2, dur: 1/3) +> \test; // play a different event
+(degree: Pseq((0..7), 5), dur: 0.1) +> \test; // play an event. creates EventStream
+(degree: Pbrown(-10, 10, 2, dur: 1/3)) +> \test; // play a different event
 { WhiteNoise.ar(0.1).dup } +> \test; // play a different function
 
 
