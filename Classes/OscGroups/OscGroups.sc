@@ -14,6 +14,7 @@ Example:
 */
 
 OscGroups {
+	classvar <oscSendPort = 22244, <oscRecvPort = 22245;
 	classvar <sendAddress, <oscRecvFunc;
 	classvar <>username = "user";
 	//	classvar <>
@@ -24,14 +25,14 @@ OscGroups {
 
 	*init {
 		"INITING OSCGROUPS =====================================".postln;
-		sendAddress = NetAddr("127.0.0.1", 22244);
+		sendAddress = NetAddr("127.0.0.1", oscSendPort);
 		oscRecvFunc = OSCFunc({ | msg |
 			var code, result;
 			code = msg[1];
 			postf("REMOTE EVALUATION: %\n", code);
 			result = thisProcess.interpreter.interpret(code.asString);
 			postf("remote: -> %\n", result);
-		}, "/code", recvPort: 22245).fix;
+		}, "/code", recvPort: oscRecvPort).fix;
 		
 		thisProcess.interpreter.preProcessor = { | code |
 			\tester.changed(\code, code);
@@ -41,6 +42,18 @@ OscGroups {
 		\forwarder.addNotifier(\tester, \code, { | notifier, message |
 			sendAddress.sendMsg('/code', message);
 		});
+	}
+
+	*startClientIfNeeded {
+		/* only start client if you have not received any ping messages 
+			for 10 seconds. */
+		var pingReceived = false;
+		var pingListener;
+		pingListener = OSCFunc({
+			
+			
+		}, "/...", recvPort: oscRecvPort).fix;
+		
 	}
 
 	*startClient {

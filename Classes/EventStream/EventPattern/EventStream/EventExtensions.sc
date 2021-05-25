@@ -1,13 +1,17 @@
 // 25 Jan 2021 10:29. Some useful event methods
 
 + Event {
-	*> { | key | this.splay(key) }
-	*>! { | key |
+	+> { | key | this.splay(key) }
+	+>! { | key |
 		currentEnvironment.put(key, EventStream(this));
 	}
 
-	+> { | key |
-		currentEnvironment[key] add: this;
+	++> { | key |
+		if (currentEnvironment[key] isKindOf: EventStream) {
+			currentEnvironment[key].play add: this;
+		}{
+			this +> key
+		}
 	}
 
 	splay { | key = \default, parent, quant, clock |

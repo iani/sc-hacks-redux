@@ -159,13 +159,13 @@ TempoClock.default.tempo = 0.5;
 	dur: Pseq([1/4],inf),
 	degree: Pbrown(0, 5, 1),
 	amp: Pseq([0.3, Pexprand(0.01,0.1,7)],inf),
-) *> \a;
+) +> \a;
 (
 	instrument: \default,
 	dur: Pseq([1/4],inf),
 	degree: Pbrown(0, 5, 1) - [10, 13],
 	amp: Pseq([0.05,0.1], inf),
-) *> \b;
+) +> \b;
 //:
 ~a.stop;
 ~b.stop;
@@ -176,13 +176,13 @@ TempoClock.default.tempo = 0.5;
 	dur: Pseq([1/4],inf),
 	degree: Pbrown(0, 5, 1),
 	amp: Pseq([0.3, Pexprand(0.01,0.1,7)],inf),
-) *>! \subkick;
+) +>! \subkick;
 (
 	instrument: \default,
 	dur: Pseq([1/4],inf),
 	degree: Pbrown(0, 5, 1) - [10, 13],
 	amp: Pseq([0.05,0.1], inf),
-) *>! \rhythmkick;
+) +>! \rhythmkick;
 //:+
 ~subkick.play;
 0.2.wait;
