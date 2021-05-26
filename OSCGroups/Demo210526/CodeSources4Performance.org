@@ -1,0 +1,5 @@
+
+* Performance code by Alexandra Charalambidi: When the Sky Turns Black
+
+https://github.com/alexxcharr/WhenTheSkyTurnsBlack/blob/master/whenTheSkyTurnsBlack.scd
+
