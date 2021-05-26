@@ -1,6 +1,9 @@
 25 May 2021 16:08
 Nano introduction to trying sc-hacks-redux, 
 also as a way of sharing code via OSCGroups.
+
+A copy of this file in scd is also found in folder Demo210526.
+
 * operators: =+>=, =++>=
 ** =+>= Send a new sound to a player and start playing
 

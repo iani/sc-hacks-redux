@@ -26,6 +26,14 @@ Our own tested method consists of these steps:
 
 The above produces the executables for server and client, and stores them in a new folder =bin= inside the oscgroups folder. 
 
+* OSCGroups Quark for SuperCollider
+
+You can find Quark (Library extension) for OSCGroups here:
+
+http://quark.sccode.org/OscGroupClient/OscGroupClient.html
+
+We have tested compatibility of using both the =OscGroupClient= quark and the present =sc-hacks-redux= library at the same time. There are no conflicts in compiling the library.  The OscGroups Class of =sc-hacks-redux= works without problems as before, when the OscGroupClient quark is present.  As of 26 May 2021 13:14 we are not yet acquainted with the OscGroupClient quark enough to assess it. 
+
 * Running OSCGroupsServer
 
 You can skip this step if you only want to connect to an existing server hosted by someone else.

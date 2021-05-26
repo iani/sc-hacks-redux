@@ -10,7 +10,8 @@ Example:
 
 ./OscGroupClient 64.225.97.89 22242 22243 22244 22245 username userpass nikkgroup nikkpass
 
-
+OscGroups.disable;
+OscGroups.enable;
 */
 
 OscGroups {
@@ -32,6 +33,7 @@ OscGroups {
 			postf("REMOTE EVALUATION: %\n", code);
 			result = thisProcess.interpreter.interpret(code.asString);
 			postf("remote: -> %\n", result);
+			msg.postln;
 		}, "/code", recvPort: oscRecvPort).fix;
 		
 		thisProcess.interpreter.preProcessor = { | code |
@@ -39,9 +41,27 @@ OscGroups {
 			code;
 		};
 
+
+	}
+
+	*enable {
+		oscRecvFunc !? { oscRecvFunc.free };
+		oscRecvFunc = OSCFunc({ | msg |
+			var code, result;
+			code = msg[1];
+			postf("REMOTE EVALUATION: %\n", code);
+			result = thisProcess.interpreter.interpret(code.asString);
+			postf("remote: -> %\n", result);
+			msg.postln;
+		}, "/code", recvPort: oscRecvPort).fix;
 		\forwarder.addNotifier(\tester, \code, { | notifier, message |
 			sendAddress.sendMsg('/code', message);
-		});
+		});		
+	}
+
+	*disable {
+		oscRecvFunc.free;
+		\forwarder.addNotifier(\tester, \code, {});
 	}
 
 	*startClientIfNeeded {
@@ -59,5 +79,5 @@ OscGroups {
 	*startClient {
 		"OscGroupClient 64.225.97.89 22242 22243 22244 22245 iani ianipass nikkgroup nikkpass".unixCmd;
 	}
-	
+
 }
