@@ -2,7 +2,6 @@
 // SuperCollider Workspace
 // =====================================================================
 
-
 // 63 ms is the auditory limit for discrete events (see Snyder, 2000; p. 13)
 //: as Ndef
 Ndef(\limits, { x = Impulse; Pan2.ar(Ringz.ar(x.ar(1/(0.063+(Stepper.kr(x.kr(13),0,0,60)/1000))), 200+(Stepper.kr(x.kr(7),0,1,5)*20), Stepper.kr(x.kr(11),0,3,7)/10), SinOsc.kr(12 + SinOsc.kr(5)),level:0.5) }).play;
@@ -14,6 +13,7 @@ Ndef(\limits).stop;
 //:
 \limits.stop;
 
+'hello from iani'
 
 // and a liquid one
 //:as NDef

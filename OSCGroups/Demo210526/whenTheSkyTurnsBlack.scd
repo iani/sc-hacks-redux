@@ -118,7 +118,11 @@ instrument: \sine,
 \dur: Pseq([1, 1, 1], inf),
 \midinote: Pseq([64, 68, 71], inf),
 \amp: 0.20,
-)
+) +> \sine;
+//:
+\sine.stop;
+//:
+\sine.play;
 
 //:
 
