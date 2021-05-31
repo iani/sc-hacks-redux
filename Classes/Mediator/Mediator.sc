@@ -55,12 +55,12 @@ MediatorHandler {
 
 + Function {
 	// redefinition of +> operator
-	playIn { | key = \default,
-		target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args |
+	playIn { | key = \default |
+		// target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args
+		
 		currentEnvironment use: {
-			currentEnvironment.put(key,
-				this.play(target, outbus, fadeTime, addAction, args)
-			).postln;
+						//, outbus, fadeTime, addAction, args ... 
+			currentEnvironment.put(key, SynthPlayer(this))
 		};
 	}
 	// just because I want a different name:
