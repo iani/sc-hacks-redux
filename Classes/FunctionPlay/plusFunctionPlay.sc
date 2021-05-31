@@ -12,7 +12,7 @@ If server not running, return dummy synth to store in Mediator.
 		if(server.serverRunning.not) {
 			("server '" ++ server.name ++ "' not running.").warn;
 			// make this work with sc-hacks-redux
-			Synth.basicNew(def.name, server);
+			^Synth.basicNew(def.name, server);
 			// ^nil
 		};
 		def = this.asSynthDef(
