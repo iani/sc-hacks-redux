@@ -17,8 +17,8 @@ SynthPlayer {
 	}
 
 	play { // TODO: should play in envir, getting parameters from it
-		if (this.isPlaying) { this.stop };
-		synth = sourceFunc.play;
+		this.stop; // always replace previous synth
+		synth = sourceFunc.playInEnvir;
 		NodeWatcher.register(synth);
 	}
 	

@@ -27,8 +27,14 @@ If server not running, return dummy synth to store in Mediator.
 				server.sendMsg(\d_free, def.name);
 			}, '/n_end', server.addr, argTemplate: [synth.nodeID]).oneShot;
 		};
-		synthMsg = synth.newMsg(target, [\i_out, outbus, \out, outbus] ++ args, addAction);
+		synthMsg = synth.newMsg(target,
+			[\i_out, outbus, \out, outbus] ++ args, addAction
+		);
 		def.doSend(server, synthMsg);
 		^synth
+	}
+
+	playInEnvir { | name |
+		^this.asSynthDef(fadeTime: ~fadeTime, name: name).doSendFromEnvir;
 	}
 }
