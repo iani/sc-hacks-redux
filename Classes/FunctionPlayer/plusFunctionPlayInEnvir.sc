@@ -2,6 +2,9 @@
 For using OSCGroups:
 Make Function:play work even if server is not running.
 If server not running, return dummy synth to store in Mediator.
+
+For sc-hacks-redux: playInEnvir.  Create synth, providing arguments from currentEnvironment.
+
 */
 
 + Function {
@@ -35,6 +38,6 @@ If server not running, return dummy synth to store in Mediator.
 	}
 
 	playInEnvir { | name |
-		^this.asSynthDef(fadeTime: ~fadeTime, name: name).doSendFromEnvir;
+		^this.asSynthDef(fadeTime: ~fadeTime, name: name).synthFromEnvir;
 	}
 }

@@ -3,7 +3,7 @@ Get arguments for synth message from currentEnvironment.
 */
 
 + SynthDef {
-	doSendFromEnvir {
+	synthFromEnvir {
 		var server, target, synth;
 		"hullo".postln;
 		target = ~target.asTarget;
