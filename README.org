@@ -1316,6 +1316,33 @@ a.map(\freq, b.index); // sync needed
 	
 }.fork;
 #+end_src
+** Phase 3: Simple +> operator, SynthPlayer
+   :PROPERTIES:
+   :DATE:     <2021-06-02 Wed 16:18>
+   :END:
+
+New operators - radical simplification:
+*** =+>= Play event or function. Always start new process
+    :PROPERTIES:
+    :DATE:     <2021-06-02 Wed 16:23>
+    :END:
+
+#+begin_src sclang
+() +> \test;  // play event in EventStream \test. Always start new EventStream
+{ WhiteNoise.ar(0.1) } +> \test;  // play Function in  \test
+#+end_src
+
+*** =++>= Add / modify parameter value(s) in existing process
+
+#+begin_src sclang
+440 ++>.freq \test; // set freq parameter of test to 400
+0.1 ++>.dur \test; // set dur parameter of test to 0.1;
+#+end_src
+
+*** A player playing in a symbol must have its own environment
+
+
+
 * Ideas to follow/develop
   :PROPERTIES:
   :DATE:     <2021-03-20 Sat 11:16>

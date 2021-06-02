@@ -60,7 +60,7 @@ MediatorHandler {
 		
 		currentEnvironment use: {
 						//, outbus, fadeTime, addAction, args ... 
-			currentEnvironment.put(key, SynthPlayer(this))
+			currentEnvironment.put(key, SynthPlayer(this, key))
 		};
 	}
 	// just because I want a different name:

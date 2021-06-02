@@ -9,20 +9,28 @@ from the environment.
 */
 
 SynthPlayer {
-	var <sourceFunc; // produces the synth with .play
+	var <def; // produces the synth with .play
+	var <name;
+	var <desc, <args;
 	var <synth;      // the synth produced by the function
 
-	*new { | sourceFunc |
-		^this.newCopyArgs(sourceFunc).play;
+	*new { | sourceFunc, name |
+		^this.newCopyArgs(sourceFunc, name.asSymbol).initDef.play;
+	}
+
+	initDef { // replace function initially stored in def by new def
+		def = def.asSynthDef(fadeTime: ~fadeTime, name: name);
+		desc = def.asSynthDesc;
+		postf("Created def: %, named: % and got desc: %\n", def, name, desc);
 	}
 
 	play { // TODO: should play in envir, getting parameters from it
-		this.stop; // always replace previous synth
-		synth = sourceFunc.playInEnvir;
-		NodeWatcher.register(synth);
+		"This is SynthPlayer:play. I am doing nothing for now.".postln;
+		//		this.stop; // always replace previous synth
+		// synth = sourceFunc.playInEnvir;
+		// NodeWatcher.register(synth);
 	}
-	
-	
+
 	isPlaying {
 		^synth.isPlaying;	
 	}

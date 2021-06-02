@@ -25,7 +25,7 @@ For sc-hacks-redux: playInEnvir.  Create synth, providing arguments from current
 		synth = Synth.basicNew(def.name, server);
 		// if notifications are enabled on the server,
 		// use the n_end signal to remove the temp synthdef
-		if(server.notified) {
+		if (server.notified) {
 			OSCFunc({
 				server.sendMsg(\d_free, def.name);
 			}, '/n_end', server.addr, argTemplate: [synth.nodeID]).oneShot;
