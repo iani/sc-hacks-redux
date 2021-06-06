@@ -8,9 +8,27 @@ See README.
 
 Mediator : EnvironmentRedirect {
 	classvar default;
-	
-	*new { | envir |
-		^super.new(envir).dispatch = MediatorHandler();
+	var <name;
+
+	*new { | name, envir |
+			^this.newCopyArgs(
+				envir ?? { Environment.new(32, Environment.new) },
+				nil, name
+			).dispatch = MediatorHandler();
+			// ^super.newCopyArgs(envir ?? { Environment.new(32, Environment.new) })
+	}
+		//		^super.new(envir).dispatch = MediatorHandler();
+
+
+	init { | ... args |
+		// postf("my iit args are: %\n", args);
+	}
+
+	printOn { | stream |
+		if (stream.atLimit) { ^this };
+		stream << "<" << this.name << ">:[ " ;
+		envir.printItemsOn(stream);
+		stream << " ]" ;
 	}
 
 	*initClass {
@@ -19,11 +37,13 @@ Mediator : EnvironmentRedirect {
 
 	*push { this.default.push }
 	*pop { this.default.pop }
-	*default { ^default ?? { default = this.new } }
+	*default { ^default ?? { default = this.fromLib(\default) } }
 	put { | key, obj | dispatch.value(key, obj); }
 	prPut { | key, obj |
 		envir.put (key, obj);
 	}
+
+	
 }
 
 MediatorHandler {
