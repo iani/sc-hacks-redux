@@ -3,8 +3,21 @@ All sc-hacks-redux operators for all classes, in one file.
 */
 
 + SimpleNumber {
-	+> { | key |
-		postf("Yep! This is % +> %\n", this, key);
+	+> { | envir, param |
+		param ?? { ^"SimpleNumber +> requires a parameter adverb".warn };
+		envir.push.put(param, this);
+	}
+}
+
++ Function {
+	+> { | envir |
+		
+	}
+}
+
++ Event {
+	+> { | envir |
+		
 	}
 }
 
@@ -13,4 +26,26 @@ All sc-hacks-redux operators for all classes, in one file.
 	push {
 		^Mediator.fromLib(this).push;
 	}
-} 
+
+	synth { }
+
+	src {
+		
+		
+	}
+
+	fx {
+		
+		
+	}
+
+	stream { } // evstream?
+
+	bus {}
+
+	playBuf {}
+
+	grainBuf {}
+
+}
+	
