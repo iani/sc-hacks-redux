@@ -10,13 +10,13 @@ All sc-hacks-redux operators for all classes, in one file.
 }
 
 + Function {
-	+> { | envir |
+	+> { | envir, player |
 		
 	}
 }
 
 + Event {
-	+> { | envir |
+	+> { | envir, player |
 		
 	}
 }
@@ -27,7 +27,11 @@ All sc-hacks-redux operators for all classes, in one file.
 		^Mediator.fromLib(this).push;
 	}
 
-	synth { }
+	synth { | func, varName |
+		var envir;
+		envir = this.push; // Stops what is replaced, if playing:
+		envir[varName ? this] = func.asSynth(envir, \addToHead);
+	}
 
 	src {
 		

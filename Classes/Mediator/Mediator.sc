@@ -38,7 +38,10 @@ Mediator : EnvironmentRedirect {
 	*push { this.default.push }
 	*pop { this.default.pop }
 	*default { ^default ?? { default = this.fromLib(\default) } }
-	put { | key, obj | dispatch.value(key, obj); }
+	put { | key, obj |
+		dispatch.value(key, obj);
+		this.changed(key, obj);
+	}
 	prPut { | key, obj |
 		envir.put (key, obj);
 	}
@@ -52,20 +55,16 @@ MediatorHandler {
 		var currentValue;
 		currentValue = envir.at(key);
 		envir use: { currentValue.handleReplacement(newValue); };
-		//	envir use: { newValue = currentValue.handleReplacement(newValue); };
-		/* 	NOTE: strictly use simpler version NOT THE ONE ABOVE!
-			If you want to NOT replace some value, then you should 
-			NOT use the = syntax, but send a message to that value. 
-			Trying to override the = syntax goes against
-			language semantics and opens up a can of unstoppable worms.
-		*/
 		envir.prPut(key, newValue.trackState(key, envir));
 	}
 }
 
 // other objects add more complex behavior
 + Object {
-	handleReplacement { this.stop; }
+	handleReplacement {
+		
+		this.stop;
+	}
 	trackState {} // Synth uses this to register with nodewatcher
 }
 + Synth {
