@@ -27,10 +27,12 @@ All sc-hacks-redux operators for all classes, in one file.
 		^Mediator.fromLib(this).push;
 	}
 
-	synth { | func, varName |
-		var envir;
+	synth { | func, key |
+		var envir, defName;
+		key = key ? this;
 		envir = this.push; // Stops what is replaced, if playing:
-		envir[varName ? this] = func.asSynth(envir, \addToHead);
+		defName = (envir ++ '_' ++ key).asSymbol;
+		envir[key] = func.asSynth(envir, defName, \addToHead);
 	}
 
 	src {

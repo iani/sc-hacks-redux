@@ -25,7 +25,14 @@ currentEnvironment.addDependant({ | envir, param, val |
 	~a.set(param, val);
 })
 //:
+~freq = 1000;
+//:*
+~freq = 100 rrand: 1000.0;
+0.1.wait;
+//: Note: setting parameter that does not exist will not issue an error.
 ~notfreq = 1000;
 //:*
 ~notfreq = 100 rrand: 1000.0;
 0.1.wait;
+//================================================================
+//: Using register (see Node:onFree) !!!

@@ -1343,6 +1343,14 @@ New operators - radical simplification:
 
 
 
+*** SynthPlayer?: hold synthdef name?
+    :PROPERTIES:
+    :DATE:     <2021-06-14 Mon 10:10>
+    :END:
+
+Not needed. Get SynthDef name from synth.
+Allocation of new nodeID is done in Synth:startInEnvir.
+
 * Ideas to follow/develop
   :PROPERTIES:
   :DATE:     <2021-03-20 Sat 11:16>

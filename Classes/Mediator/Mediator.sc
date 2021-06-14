@@ -55,7 +55,10 @@ MediatorHandler {
 		var currentValue;
 		currentValue = envir.at(key);
 		envir use: { currentValue.handleReplacement(newValue); };
-		envir.prPut(key, newValue.trackState(key, envir));
+		envir.prPut(key,
+			// trackState is done in asSynth. Other stuff?
+			//	newValue.trackState(key, envir)
+		);
 	}
 }
 
@@ -65,20 +68,28 @@ MediatorHandler {
 		
 		this.stop;
 	}
-	trackState {} // Synth uses this to register with nodewatcher
+	// asSynth handles this. Check!?:
+	// trackState {} // Synth uses this to register with nodewatcher
 }
 + Synth {
 	handleReplacement { if (this.isPlaying) { this.release(~release) }; }
-	trackState { NodeWatcher.register(this) }
+	// asSynth handles this. Check!?:
+	// trackState { NodeWatcher.register(this) }
+}
+
++ Bus {
+	handleReplacement { this.free }
 }
 
 + Function {
 	// redefinition of +> operator
-	playIn { | key = \default |
+	playIn { | key = \default |  // as of  9 Jun 2021 21:37
+		// trying to substitute SynthPlayer with plain synth.
 		// target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args
-		
 		currentEnvironment use: {
-						//, outbus, fadeTime, addAction, args ... 
+			//, outbus, fadeTime, addAction, args ...
+			// SynthPlayer: UNDER DEVELOPMENT 
+			//  9 Jun 2021 17:52 - may be avoided... just use synth?
 			currentEnvironment.put(key, SynthPlayer(this, key))
 		};
 	}

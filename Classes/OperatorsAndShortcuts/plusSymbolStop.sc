@@ -4,8 +4,8 @@
 
 + Symbol {
 	stop { currentEnvironment[this].stop; }
+	play { this.start } // synonym for start
 	start { currentEnvironment[this].start; }
-	play { this.start }
 }
 
 + Synth {

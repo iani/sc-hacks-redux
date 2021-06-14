@@ -4,21 +4,14 @@ Get arguments for synth message from currentEnvironment.
 
 + SynthDef {
 	synthFromEnvir {
-		var server, target, synth;
-		"hullo. This is synthFromEnvir".postln;
-		target = ~target.asTarget;
-		server = target.server;
-		postf("the server is: %\n", server);
-		synth = Synth.basicNew(name, server);
+		var synth;
+		"Hullo. This is synthFromEnvir".postln;
+		synth = Synth.newCopyArgs.defName_(name);
 		postf("the synth is: %\n", synth);
-		if (server.serverRunning.not) {
-			("Server '" ++ server.name ++ "' not running. Cannot start synth").warn;
-			"Returning basic synth".postln;
-			^synth;
-		};
 		//Now get the synth arg names from the desc of the def
 		//	First get the desc
-		this.desc.postln;
+		postf("Checking the desc of the def: %\n", this.desc);
+		synth.startInEnvir;
 		^synth
 	}
 	/*
@@ -40,3 +33,4 @@ Get arguments for synth message from currentEnvironment.
 	*/
 
 }
+
