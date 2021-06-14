@@ -3,9 +3,19 @@ Get parameters and arguments from currentEnvironment.
 */
 
 + Synth {
-	startInEnvir {
-		
-		
+	startInEnvir { | addAction = \addToHead, def |
+		var synthMsg;
+		def ?? { def = defName.asDef };
+		if (server.serverRunning.not) {
+			postf("% is not running. Cannot start %\n", server, this);
+			^this;
+		};
+		/*
+		synthMsg = this.newMsg(
+			target,
+			[\i_out, outbus, \out, outbus] ++ args,
+			addAction
+			
+		*/
 	}
-	
 }

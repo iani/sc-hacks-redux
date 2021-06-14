@@ -1316,7 +1316,7 @@ a.map(\freq, b.index); // sync needed
 	
 }.fork;
 #+end_src
-** Phase 3: Simple +> operator, SynthPlayer
+** Phase 3: Simple +> operator
    :PROPERTIES:
    :DATE:     <2021-06-02 Wed 16:18>
    :END:
@@ -1327,10 +1327,14 @@ New operators - radical simplification:
     :DATE:     <2021-06-02 Wed 16:23>
     :END:
 
-#+begin_src sclang
-() +> \test;  // play event in EventStream \test. Always start new EventStream
-{ WhiteNoise.ar(0.1) } +> \test;  // play Function in  \test
-#+end_src
+ #+begin_src sclang
+ () +> \test;  // play event in EventStream \test. Always start new EventStream
+ { WhiteNoise.ar(0.1) } +> \test;  // play Function in  \test
+ #+end_src
+
+*** A player playing in a symbol must have its own environment
+
+
 
 *** =++>= Add / modify parameter value(s) in existing process
 
@@ -1339,10 +1343,6 @@ New operators - radical simplification:
 0.1 ++>.dur \test; // set dur parameter of test to 0.1;
 #+end_src
 
-*** A player playing in a symbol must have its own environment
-
-
-
 *** SynthPlayer?: hold synthdef name?
     :PROPERTIES:
     :DATE:     <2021-06-14 Mon 10:10>
@@ -1350,6 +1350,64 @@ New operators - radical simplification:
 
 Not needed. Get SynthDef name from synth.
 Allocation of new nodeID is done in Synth:startInEnvir.
+** Playing Functions and Synths in currentEnvironment
+   :PROPERTIES:
+   :DATE:     <2021-06-14 Mon 17:04>
+   :END:
+*** First thing to implement: SynthDef:synthMsgFromEnvir
+
+Construct the message for starting a synth, obtaining initial argument values from currentEnvir.
+
+This *must* be done in SynthDef, because SynthDef must send it with =doSend= in order to start a synth. 
+The message array must be sent together with =doSend= as an argument, because this is required by Server interface.
+See: http://doc.sccode.org/Reference/Server-Command-Reference.html
+
+#+begin_quote
+/d_recv
+
+Receive a synth definition file.
+bytes	buffer of data.
+bytes	an OSC message to execute upon completion. (optional)
+#+end_quote
+
+*** List of steps, methods, etc
+ to help distribute the code in appropriate methods between SynthDef, Synth and Symbol:
+
+**** SynthDef:synthMsgFromEnvir
+
+(See above)
+
+**** Function:playInEnvir
+***** create synthdef
+
+ Note: Requires access to =~fadeTime= in =currentEnvironment=.
+
+***** send synthdef to server
+
+**** Synth:startInEnvir
+
+ Arguments: =def=, =addAction=. Their defaults are as follows:
+
+ - def: Obtain from value of =defName= inside Synth.
+ - addAction: =\addToHead=
+
+***** obtain synthDesc from synthDef
+
+
+
+***** obtain arguments from synthdesc
+***** obtain values for arguments from environment
+***** obtain target + server + addAction from environment or method arguments
+
+ addAction should be argument to startInEnvir
+
+***** create synth creation message from arguments
+***** send synth creation message to server
+***** register synth to track its state
+***** map buses to synth parameters
+***** add synth as dependant of envirionment
+
+
 
 * Ideas to follow/develop
   :PROPERTIES:

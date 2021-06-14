@@ -11,6 +11,10 @@
 + Synth {
 	stop { this.release }
 	start {
-		"Synth does not know how to start yet. Use this only with streams".postln;
+		if (this.isPlaying) {
+			postf("% is already playing\n", this);
+		}{ 
+			this.startInEnvir;
+		}
 	}
 }
