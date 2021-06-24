@@ -1371,7 +1371,8 @@ bytes	an OSC message to execute upon completion. (optional)
 #+end_quote
 
 *** List of steps, methods, etc
- to help distribute the code in appropriate methods between SynthDef, Synth and Symbol:
+
+to help distribute the code in appropriate methods between SynthDef, Synth and Symbol:
 
 **** SynthDef:synthMsgFromEnvir
 
@@ -1380,11 +1381,11 @@ bytes	an OSC message to execute upon completion. (optional)
 **** Function:playInEnvir
 ***** create synthdef
 
- Note: Requires access to =~fadeTime= in =currentEnvironment=.
+Note: Requires access to =~fadeTime= in =currentEnvironment=.
 
 ***** send synthdef to server
 
-**** Synth:startInEnvir
+**** Synth:playInEnvir
 
  Arguments: =def=, =addAction=. Their defaults are as follows:
 
