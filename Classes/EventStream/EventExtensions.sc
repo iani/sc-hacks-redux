@@ -14,11 +14,11 @@
 		}
 	}
 
-	splay { | key = \default, parent, quant, clock |
+	splay { | key, parent, quant, clock |
 		var stream;
 		stream = EventStream(this, parent, quant, clock).play();
-		// key !? { currentEnvironment.put(key, stream); };
-		currentEnvironment.put(key, stream);
+		key !? {  currentEnvironment.put(key, stream); };
+		// currentEnvironment.put(key, stream);
 		^stream;
 	}
 	eventStream { | parent, quant, clock | ^EventStream(this, parent, quant, clock)}

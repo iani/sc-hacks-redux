@@ -55,7 +55,7 @@ MediatorHandler {
 		var currentValue;
 		currentValue = envir.at(key);
 		envir use: { currentValue.handleReplacement(newValue); };
-		envir.prPut(key,
+		envir.prPut(key, newValue
 			// trackState is done in asSynth. Other stuff?
 			//	newValue.trackState(key, envir)
 		);

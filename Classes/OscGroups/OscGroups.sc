@@ -26,6 +26,24 @@ OscGroups {
 
 	*init {
 		"INITING OSCGROUPS =====================================".postln;
+		// sendAddress = NetAddr("127.0.0.1", oscSendPort);
+		/*
+		oscRecvFunc = OSCFunc({ | msg |
+			var code, result;
+			code = msg[1];
+			postf("REMOTE EVALUATION: %\n", code);
+			result = thisProcess.interpreter.interpret(code.asString);
+			postf("remote: -> %\n", result);
+			msg.postln;
+		}, "/code", recvPort: oscRecvPort).fix;
+		*/
+		sendAddress ?? {
+			"To enable OscGroups evaluate:\nOscGroups.enable;\n".postln;
+		}
+	}
+
+	*enable {
+		oscRecvFunc !? { oscRecvFunc.free };
 		sendAddress = NetAddr("127.0.0.1", oscSendPort);
 		oscRecvFunc = OSCFunc({ | msg |
 			var code, result;
@@ -35,35 +53,43 @@ OscGroups {
 			postf("remote: -> %\n", result);
 			msg.postln;
 		}, "/code", recvPort: oscRecvPort).fix;
-		
+		\forwarder.addNotifier(this, \code, { | notifier, message |
+			postf("% sending %\n", this, message);
+			sendAddress.sendMsg('/code', message);
+		});
 		thisProcess.interpreter.preProcessor = { | code |
-			\tester.changed(\code, code);
+			// \tester.changed(\code, code);
+			this.changed(\code, code);
 			code;
 		};
-
-
-	}
-
-	*enable {
-		oscRecvFunc !? { oscRecvFunc.free };
-		oscRecvFunc = OSCFunc({ | msg |
-			var code, result;
-			code = msg[1];
-			postf("REMOTE EVALUATION: %\n", code);
-			result = thisProcess.interpreter.interpret(code.asString);
-			postf("remote: -> %\n", result);
-			msg.postln;
-		}, "/code", recvPort: oscRecvPort).fix;
-		\forwarder.addNotifier(\tester, \code, { | notifier, message |
-			sendAddress.sendMsg('/code', message);
-		});		
+		"OscGroups enabled".postln;
 	}
 
 	*disable {
 		oscRecvFunc.free;
-		\forwarder.addNotifier(\tester, \code, {});
+		this.addNotifier(this, \code, {});
 	}
 
+	*enableCodeEvaluation {
+		
+		
+	}
+
+	*disableCodeEvaluation {
+		
+		
+	}
+	
+	*enableCodeForwarding {
+		
+		
+	}
+
+	*disableCodeForwarding {
+		
+		
+	}
+	
 	*startClientIfNeeded {
 		/* only start client if you have not received any ping messages 
 			for 10 seconds. */

@@ -68,11 +68,11 @@ TempoClock.default.tempo = 0.5;
 // Why? Debug!
 ~esubkick.play;
 ~erhythmclick.play;
-//:================================================================
-//:Simpler examples .... just examples
-//:play immediately
+//:===============5================================================
+//:Simpler ex5mple6 .... just examples
+//:play im6edi0ely
 ~a = (degree: [3, 5]).splay;
-~b = (degree: -5).splay;
+~b = (degree: 0).splay;
 //:+try stopping, then restarting and see if quant sync works
 ~a.stop;
 ~b.stop;
@@ -80,6 +80,25 @@ TempoClock.default.tempo = 0.5;
 ~a.play;
 0.2.wait;
 ~b.play;
+//:
+//:
+~a.put(\dur, 2);
+~a.quant = 2;~b.put(\dur, 2);
+~b.quant = 2;
+
+~a.quant = 2;
+6~b.q4an+t = 2;
+
+(degree: [3, 5]) +> \a;
+
+(degree: -4) ++> \b;
+//:
+
+currentEnvironment;
+
+~a = 1;
+
+
 
 //:create, then play
 ~a1 = (degree: [3, 5]).eventStream;

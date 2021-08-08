@@ -6,7 +6,7 @@ EventGetter {
 	// this should go to class EventHistory:
 	// classvar <>horizon = 10; // number of future events to look up
 
-	var <stream; // the stream that produces the events
+	var <stream; // the EventStream that this EventGetter is playing
 	var <proto; // the prototype event producing the event source.
 	var <parent; // parent event for the event source	
 
