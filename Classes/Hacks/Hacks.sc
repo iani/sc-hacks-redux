@@ -9,31 +9,56 @@ Hacks {
 		StartUp add: {
 			startupFolder = "~/sc-hacks-config";
 			this.serverConfig;
-			Server.default doWhenBooted: {
-				{ "hello world".postln; } ! 100;
+			Server.default doWhenReallyBooted: {
 				this.loadBuffers;
 				this.loadSynthDefs;
-			}
+			};
+			ServerQuit.add({
+				Library.put(Buffer, nil);
+			}, Server.default);
 		}
 	}
 
 	*serverConfig {
-		var loadPath;
-		loadPath = startupFolder +/+ "/serveroptions/*.scd";
-		"Loading server option config files".postln;
-		postf("Server option directory is: \n%\n", loadPath);
-		loadPath.pathMatch do: { | p |
-			postf("Loading: %\n", p);
-			p.load;
-		};
+		this.subdirDo(
+			"Loading Hacks server config scripts...",
+			"... Hacks server config done",
+			"serveroptions",
+			{ | p |
+				postf("loading: %\n", p);
+				p.load;
+			},
+			"scd"
+		);
+	}
+
+	*subdirDo { | startmessage, endmessage, subfolder, action ... filetypes |
+		startmessage.postln;
+		(startupFolder +/+ subfolder).filesFoldersDo(
+			action, *filetypes
+		);
+		endmessage.postln;
 	}
 
 	*loadBuffers {
-		"loading buffers ...".postln;
+		// "loading buffers ...".postln;
+		this.subdirDo(
+			"loading audio files ...",
+			"... buffers loaded",
+			"audiofiles",
+			{ | p |
+				postf("loading: %\n", p);
+				p.loadAudiofile;
+				// p.load;
+			},
+			"wav",
+			"WAV",
+			"aif",
+			"aiff"
+		)
 	}
 
 	*loadSynthDefs {
 		"loading synthdefs ...".postln;
 	}
-
 }

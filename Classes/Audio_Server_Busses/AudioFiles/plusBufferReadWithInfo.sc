@@ -9,7 +9,7 @@ from file in sclang, instead of waiting for that info to arrive
 from the server.
 */
 
-+Buffer { 
++ Buffer {
 	*readWithInfo { | server, path, startFrame = 0, numFrames = -1 |
 		/*
 			This guarantees that buffer info exists before the buffer is on the server.
@@ -30,4 +30,8 @@ from the server.
 			buffer.allocRead(path, startFrame, numFrames)
 		}
 	}
+
+	dur { ^numFrames / sampleRate }
+
+	durString { ^this.dur.formatTime }
 }
