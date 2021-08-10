@@ -9,9 +9,13 @@ Hacks {
 		StartUp add: {
 			startupFolder = "~/sc-hacks-config";
 			this.serverConfig;
-			Server.default doWhenReallyBooted: {
+			Server.default doWhenReallyBooted:  { | server |
 				this.loadBuffers;
+				server.sync;
+				postf("% finished loading buffers\n", server);
 				this.loadSynthDefs;
+				postf("% finished loading synthdefs\n", server);
+				this.loadPostload;
 			};
 			ServerQuit.add({
 				Library.put(Buffer, nil);
@@ -59,6 +63,32 @@ Hacks {
 	}
 
 	*loadSynthDefs {
-		"loading synthdefs ...".postln;
+		var def;
+		this.subdirDo(
+			"loading synthdefs ...".postln,
+			"... synthdefs loaded".postln,
+			"synthdefs",
+			{ | p |
+				postf("loading: %\n", p);
+				def = p.load;
+				postf("testing what def is. it is: %\n", def);
+			},
+			"scd"
+		)
+	}
+
+	*loadPostload {
+		var def;
+		this.subdirDo(
+			"loading postload ...".postln,
+			"... postload loaded".postln,
+			"postload",
+			{ | p |
+				postf("loading: %\n", p);
+				def = p.load;
+				postf("testing what postload is. it is: %\n", def);
+			},
+			"scd"
+		)
 	}
 }
