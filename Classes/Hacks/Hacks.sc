@@ -19,6 +19,7 @@ Hacks {
 			};
 			ServerQuit.add({
 				Library.put(Buffer, nil);
+				Library.put(\synthdefs, nil);
 			}, Server.default);
 		}
 	}
@@ -63,30 +64,31 @@ Hacks {
 	}
 
 	*loadSynthDefs {
-		var def;
+		var def, name;
 		this.subdirDo(
 			"loading synthdefs ...".postln,
 			"... synthdefs loaded".postln,
 			"synthdefs",
 			{ | p |
 				postf("loading: %\n", p);
+				name = PathName(p).fileNameWithoutExtension.asSymbol;
 				def = p.load;
-				postf("testing what def is. it is: %\n", def);
+				def = def.asSynthDef(name: name);
+				def.add;
+				Library.put(\synthdefs, name, def);
 			},
 			"scd"
 		)
 	}
 
 	*loadPostload {
-		var def;
 		this.subdirDo(
 			"loading postload ...".postln,
 			"... postload loaded".postln,
 			"postload",
 			{ | p |
 				postf("loading: %\n", p);
-				def = p.load;
-				postf("testing what postload is. it is: %\n", def);
+				p.load;
 			},
 			"scd"
 		)
