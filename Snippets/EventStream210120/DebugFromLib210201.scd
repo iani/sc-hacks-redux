@@ -12,10 +12,17 @@ b = OscTrig.fromLib(\test1, 1);
 //:
 b === a;
 //:
+a = (amp: 0.5, dur: 0.1, degree: Pn(Pseries(10, 1, 10))).eventStream;
+a.play;
+a.trigSynth({ Impulse.kr(1) });
+a.trigSynth({ Impulse.kr(1) });
+//:
 a = (dur: 0.1, degree: Pn(Pseries(10, 1, 10))).eventStream;
 t = a.addTrig;
-t.addSynth({ Impulse.kr(1)});
+t.addSynth({ Impulse.kr(2)});
 MyLibrary.global;
+
+a.set(amp: 0.5);
 
 t.dependants;
 

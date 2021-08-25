@@ -17,6 +17,9 @@ Good luck...
 ***** Preduce.sc
 ***** Prseq.sc
 ***** Ptake.sc
+**** Hacks: setup buffers + synthdefs at server boot
+
+Load server options
 
 *** Planned, under development
 **** SynthCache

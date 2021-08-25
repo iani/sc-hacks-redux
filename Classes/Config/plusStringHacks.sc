@@ -37,7 +37,7 @@ Utility: Iterate an action on all files that match a search.
 		var val;
 		server ?? { server = Server.default };
 		val = this.load;
- postf("the value of \n%\nis %\n", this, val);
+		postf("the value of \n%\nis %\n", this, val);
 	}
 
 	loadAudiofile { | server |

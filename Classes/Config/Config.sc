@@ -3,7 +3,7 @@
 	Configure Server Options
 	Load synthdefs and audio files
 */
-Hacks {
+Config {
 	classvar <startupFolder;
 	*initClass {
 		StartUp add: {
@@ -14,6 +14,7 @@ Hacks {
 				server.sync;
 				postf("% finished loading buffers\n", server);
 				this.loadSynthDefs;
+				server.sync;
 				postf("% finished loading synthdefs\n", server);
 				this.loadPostload;
 			};
@@ -26,8 +27,8 @@ Hacks {
 
 	*serverConfig {
 		this.subdirDo(
-			"Loading Hacks server config scripts...",
-			"... Hacks server config done",
+			"Loading server config scripts...",
+			"... server config done",
 			"serveroptions",
 			{ | p |
 				postf("loading: %\n", p);
