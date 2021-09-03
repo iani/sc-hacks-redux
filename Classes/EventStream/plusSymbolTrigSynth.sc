@@ -12,5 +12,4 @@ See EventStream:trigSynth
 	trigSynth { | source, synthKey = \default |
 		OscTrig.fromLib(this).addSynth(source, synthKey);
 	}
-	
 }
