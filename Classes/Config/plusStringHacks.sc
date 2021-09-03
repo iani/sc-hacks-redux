@@ -43,7 +43,7 @@ Utility: Iterate an action on all files that match a search.
 	loadAudiofile { | server |
 		var name, buffer;
 		server ?? { server = Server.default };
-		name = PathName(this).fileNameWithoutExtension.asSymbol;
+		name = PathName(this).bufferName;
 		// postf("loadBuffer: name is: %\n", name);
 		if (Library.at(Buffer, name).notNil) {
 			"A buffer named '%' already exists. Skipping this".format(name).warn;
@@ -55,5 +55,19 @@ Utility: Iterate an action on all files that match a search.
 				Library.put(Buffer, name, buffer)
 			};
 		}
+	}
+}
+
++ PathName {
+	bufferName {
+		// return fileNameWithoutExtension.asSymbol, or:
+		// if buffer already exists with that name, then:
+		// return (folderName ++ "_" ++ fileNameWithoutExtension).asSymbol
+		var bufName;
+		bufName = this.fileNameWithoutExtension;
+		if (Library.at(Buffer, bufName.asSymbol).notNil) {
+			bufName = this.folderName ++ "_" ++ bufName;
+		};
+		^bufName.asSymbol;
 	}
 }
