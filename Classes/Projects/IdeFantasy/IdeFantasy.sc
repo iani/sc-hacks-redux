@@ -4,6 +4,7 @@
 IdeFantasy {
 	// computers sending sensor data to OSCGroups:
 	classvar <nodes = #[\corfu, \sapporo];
+	classvar <localNode = \corfu;
 
 	*gui {
 		this.tr_.v(
@@ -12,6 +13,10 @@ IdeFantasy {
 			ListView()
 			.font_(Font("Helvetica", 24))
 			.items_(nodes)
+			.action_({ | me |
+				localNode = me.items[me.value]
+			})
+			.valueAction_(0)
 		);
 	}
 }
