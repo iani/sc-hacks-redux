@@ -67,7 +67,7 @@ OscGroups {
 
 	*disable {
 		oscRecvFunc.free;
-		this.addNotifier(this, \code, {});
+		\forwarder.addNotifier(this, \code, {});
 	}
 
 	*enableCodeEvaluation {
