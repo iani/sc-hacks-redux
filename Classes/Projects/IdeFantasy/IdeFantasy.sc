@@ -7,13 +7,15 @@ IdeFantasy {
 	classvar <localNode = '/corfu';
 	classvar <remoteNode; // later this will be a list of remote nodes
 	// we will make an OSCFunc for each of these nodes.
+	classvar <dataMessage; // osc message sent by sensestage
 	classvar <remoteResponder, <localResponder; // OSCFuncs
 	classvar <ofAddress, <oscGroupsAddress;
 
-	*classInit {
+	*initClass {
 		StartUp add: {
 			ofAddress = NetAddr("127.0.0.1", 12345);
 			oscGroupsAddress = NetAddr("127.0.0.1", 22244);
+			dataMessage = '/minibee/data';
 		}
 	}
 
@@ -51,6 +53,7 @@ IdeFantasy {
 
 	*start {
 		"Starting IDE Fantasy".postln;
+		thisProcess.openUDPPort(22245);
 		this.makeRemoteResponder;
 		this.makeLocalResponder;
 	}
@@ -62,10 +65,10 @@ IdeFantasy {
 			"freeing remoteResponder".postln;
 			remoteResponder.free;
 		};
-		remoteResponder = OSCFunc({ | msg |
+		remoteResponder = OSCdef(remoteNode, { | msg |
 			this.changed(remoteResponder);
 			ofAddress.sendMsg(*msg);
-		}, remoteNode)
+		}, remoteNode).add.fix;
 	}
 
 	*makeLocalResponder {
@@ -77,15 +80,42 @@ IdeFantasy {
 			"freeing localResponder".postln;
 			localResponder.free;
 		};
+		postf("addding responder listening to: %\n", localNode);
 		localResponder = OSCFunc({ | msg |
+			// postf("received local sensestage data: %\n", msg);
 			this.changed(localResponder);
+			msg[0] = '/TESTING'; // localNode;
 			ofAddress.sendMsg(*msg);
+			// postf("broadcasting message: %, to %\n", msg, oscGroupsAddress);
+			// oscGroupsAddress.postln;
 			oscGroupsAddress.sendMsg(*msg);
-		}, remoteNode)
+			// }, dataMessage).add.fix;
+		}, '/minibee/data').add.fix;
+		// localResponder = OSCdef(\test, { | msg |
+		// 	postf("received local sensestage data: %\n", msg);
+		// }, '/minibee/data'
+		// ).x;
+		/*
+			localResponder = OSCFunc({ | msg |
+			this.changed(localResponder);
+			msg[0] = localNode;
+			ofAddress.sendMsg(*msg);
+			postf('broadcasting message: %\n', msg);
+			oscGroupsAddress.sendMsg(*msg);
+			}, dataMessage).add.fix;
+		*/
 	}
 
 	*stop {
 		"Stopping IDE Fantasy".postln;
+		remoteResponder !? {
+			"freeing remoteResponder".postln;
+			remoteResponder.free;
+		};
+		localResponder !? {
+			"freeing localResponder".postln;
+			localResponder.free;
+		};
 	}
 
 	*startOscTrace {

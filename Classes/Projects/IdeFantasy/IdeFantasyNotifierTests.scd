@@ -15,5 +15,8 @@ IdeFantasy addDependant: { | ... args | args.postln; };
 IdeFantasy.changed(\alpha, 2, 3, 4);
 //:
 
-\test +++> { "yes".postln; };
-\test.remove;
+'/corfu' +++> { "yes".postln; };
+'/corfu' +++>.somethingelse { "yes".postln; };
+'/corfu' ---> \default2;
+'/corfu'.remove;
+'/corfu' remove: \somethingelse;
