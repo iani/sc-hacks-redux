@@ -83,27 +83,11 @@ IdeFantasy {
 		postf("addding responder listening to: %\n", localNode);
 		localResponder = OSCFunc({ | msg |
 			// postf("received local sensestage data: %\n", msg);
-			this.changed(localResponder);
-			msg[0] = '/TESTING'; // localNode;
-			ofAddress.sendMsg(*msg);
-			// postf("broadcasting message: %, to %\n", msg, oscGroupsAddress);
-			// oscGroupsAddress.postln;
-			oscGroupsAddress.sendMsg(*msg);
-			// }, dataMessage).add.fix;
-		}, '/minibee/data').add.fix;
-		// localResponder = OSCdef(\test, { | msg |
-		// 	postf("received local sensestage data: %\n", msg);
-		// }, '/minibee/data'
-		// ).x;
-		/*
-			localResponder = OSCFunc({ | msg |
-			this.changed(localResponder);
+			this.changed(localNode);
 			msg[0] = localNode;
 			ofAddress.sendMsg(*msg);
-			postf('broadcasting message: %\n', msg);
 			oscGroupsAddress.sendMsg(*msg);
-			}, dataMessage).add.fix;
-		*/
+		}, '/minibee/data').add.fix;
 	}
 
 	*stop {
