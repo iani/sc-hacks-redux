@@ -14,3 +14,6 @@ IdeFantasy addDependant: { | ... args | args.postln; };
 //:
 IdeFantasy.changed(\alpha, 2, 3, 4);
 //:
+
+\test +++> { "yes".postln; };
+\test.remove;
