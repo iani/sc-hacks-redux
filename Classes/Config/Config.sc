@@ -67,8 +67,8 @@ Config {
 	*loadSynthDefs {
 		var def, name;
 		this.subdirDo(
-			"loading synthdefs ...".postln,
-			"... synthdefs loaded".postln,
+			"loading synthdefs ...",
+			"... synthdefs loaded",
 			"synthdefs",
 			{ | p |
 				postf("loading: %\n", p);
@@ -84,14 +84,14 @@ Config {
 
 	*loadPostload {
 		this.subdirDo(
-			"loading postload ...".postln,
-			"... postload loaded".postln,
+			"loading postload ...",
+			"... postload loaded",
 			"postload",
 			{ | p |
 				postf("loading: %\n", p);
 				p.load;
 			},
 			"scd"
-		)
+		);
 	}
 }

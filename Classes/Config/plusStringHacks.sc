@@ -25,6 +25,8 @@ Utility: Iterate an action on all files that match a search.
 	}
 
 	subDirsDo { | action ... fileTypes |
+		postf("iterating over sudirs of %\n\n", this);
+		postf("found following subdirs: %\n", this.subDirs);
 		this.subDirs do: { | p |
 			p.fileTypesDo(action, *fileTypes);
 		}
