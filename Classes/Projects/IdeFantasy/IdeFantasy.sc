@@ -68,7 +68,7 @@ IdeFantasy {
 		remoteResponder = OSCdef(remoteNode, { | msg |
 			this.changed(remoteResponder);
 			ofAddress.sendMsg(*msg);
-		}, remoteNode).add.fix;
+		}, remoteNode).fix;
 	}
 
 	*makeLocalResponder {
@@ -87,7 +87,7 @@ IdeFantasy {
 			msg[0] = localNode;
 			ofAddress.sendMsg(*msg);
 			oscGroupsAddress.sendMsg(*msg);
-		}, '/minibee/data').add.fix;
+		}, '/minibee/data').fix;
 	}
 
 	*stop {
