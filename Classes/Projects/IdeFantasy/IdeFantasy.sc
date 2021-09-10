@@ -16,6 +16,7 @@ IdeFantasy {
 			ofAddress = NetAddr("127.0.0.1", 12345);
 			oscGroupsAddress = NetAddr("127.0.0.1", 22244);
 			dataMessage = '/minibee/data';
+			Config.projectName = "ide_fantasy_210911";
 		}
 	}
 
@@ -57,16 +58,17 @@ IdeFantasy {
 		this.makeRemoteResponder;
 		this.makeLocalResponder;
 		// load piece from scripts.
-		Config.subdirDo(
-			"runnig IDE Fantasy startup scripts ... ",
-			"... scripts loaded",
-			"share/projects/ide_fantasy_210911/start",
-			{ | p |
-				postf("loading: %\n", p);
-				p.load;
-			},
-			"scd"
-		)
+		Config.startProject;
+		// Config.subdirDo(
+		// 	"runnig IDE Fantasy startup scripts ... ",
+		// 	"... scripts loaded",
+		// 	"share/projects/ide_fantasy_210911/start",
+		// 	{ | p |
+		// 		postf("loading: %\n", p);
+		// 		p.load;
+		// 	},
+		// 	"scd"
+		// )
 	}
 
 	*makeRemoteResponder {
@@ -111,6 +113,7 @@ IdeFantasy {
 			"freeing localResponder".postln;
 			localResponder.free;
 		};
+		Config.stopProject;
 	}
 
 	*startOscTrace {

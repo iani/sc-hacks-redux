@@ -66,21 +66,6 @@ Config {
 		)
 	}
 
-	*loadScScriptFiles { | subdir,
-		beforeMessage = "loading scripts ...",
-		afterMessage = "... scripts loaded" |
-		this.subdirDo(
-			beforeMessage,
-			afterMessage,
-			subdir,
-			{ | p |
-				postf("loading: %\n", p);
-				p.load;
-			},
-			"scd"
-		)
-	}
-
 	*loadSynthDefs {
 		var def, name;
 		this.subdirDo(
@@ -100,41 +85,48 @@ Config {
 	}
 
 	*loadPostload {
-		this.subdirDo(
-			"loading postload ...",
-			"... postload loaded",
+		this.loadScScriptFiles(
 			"postload",
+			"loading postload ...",
+			"... postload loaded")
+	}
+
+	*loadScScriptFiles { | subdir,
+		beforeMessage = "loading scripts ...",
+		afterMessage = "... scripts loaded" |
+		this.subdirDo(
+			beforeMessage,
+			afterMessage,
+			subdir,
 			{ | p |
 				postf("loading: %\n", p);
 				p.load;
 			},
 			"scd"
-		);
+		)
 	}
 
-
-
 	*startProject {
-
+		this.loadScScriptFiles(
+			("share/projects" +/+ projectName +/+ "start"),
+			format("loading start scripts for: % ...", projectName),
+			format("... start scripts for % loaded", projectName)
+		)
 	}
 
 	*stopProject {
-
+		this.loadScScriptFiles(
+			("share/projects" +/+ projectName +/+ "stop"),
+			format("loading stop scripts for: % ...", projectName),
+			format("... stop scripts for % loaded", projectName)
+		)
 	}
 
 	*loadProjectServerScripts {
-		postf("Loading server scripts for project: %\n", projectName);
-		// postf("Project name size is: %\n", projectName.size);
-		if (projectName.size == 0) {
-			"No project is specified. Not loading project scripts.".postln;
-		}{
-			this.subdirDo(
-				format("loading server boot scripts for project: % ...\n", projectName),
-				"... server boot scripts loaded",
-				(),
-				{  },
-			)
-		};
-
+		this.loadScScriptFiles(
+			("share/projects" +/+ projectName +/+ "stop"),
+			format("loading server scripts for: % ...", projectName),
+			format("... server scripts for % loaded", projectName)
+		);
 	}
 }
