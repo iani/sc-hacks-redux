@@ -5,6 +5,7 @@
 */
 Config {
 	classvar <startupFolder;
+	classvar <>projectName = "";
 	*initClass {
 		StartUp add: {
 			startupFolder = "~/sc-hacks-config";
@@ -16,6 +17,7 @@ Config {
 				this.loadSynthDefs;
 				server.sync;
 				postf("% finished loading synthdefs\n", server);
+				this.loadProjectServerScripts;
 				this.loadPostload;
 			};
 			ServerQuit.add({
@@ -64,6 +66,21 @@ Config {
 		)
 	}
 
+	*loadScScriptFiles { | subdir,
+		beforeMessage = "loading scripts ...",
+		afterMessage = "... scripts loaded" |
+		this.subdirDo(
+			beforeMessage,
+			afterMessage,
+			subdir,
+			{ | p |
+				postf("loading: %\n", p);
+				p.load;
+			},
+			"scd"
+		)
+	}
+
 	*loadSynthDefs {
 		var def, name;
 		this.subdirDo(
@@ -93,5 +110,31 @@ Config {
 			},
 			"scd"
 		);
+	}
+
+
+
+	*startProject {
+
+	}
+
+	*stopProject {
+
+	}
+
+	*loadProjectServerScripts {
+		postf("Loading server scripts for project: %\n", projectName);
+		// postf("Project name size is: %\n", projectName.size);
+		if (projectName.size == 0) {
+			"No project is specified. Not loading project scripts.".postln;
+		}{
+			this.subdirDo(
+				format("loading server boot scripts for project: % ...\n", projectName),
+				"... server boot scripts loaded",
+				(),
+				{  },
+			)
+		};
+
 	}
 }

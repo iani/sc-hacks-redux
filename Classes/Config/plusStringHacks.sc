@@ -16,6 +16,10 @@ Utility: Iterate an action on all files that match a search.
 	}
 
 	fileTypeDo { | action, type = "scd" |
+		//		"testing fileTypeDo".postln;
+		postf("iterating over file type: %\n", type);
+		postf("path is: %\n", (this +/+ ("*." ++ type)));
+		postf("pathmatch is: %\n",  (this +/+ ("*." ++ type)).pathMatch);
 		(this +/+ ("*." ++ type)) pathMatchDo: action;
 	}
 
@@ -25,7 +29,7 @@ Utility: Iterate an action on all files that match a search.
 	}
 
 	subDirsDo { | action ... fileTypes |
-		postf("iterating over sudirs of %\n\n", this);
+		postf("iterating over sudirs of %\n", this);
 		postf("found following subdirs: %\n", this.subDirs);
 		this.subDirs do: { | p |
 			p.fileTypesDo(action, *fileTypes);

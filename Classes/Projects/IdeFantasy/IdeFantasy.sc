@@ -56,6 +56,17 @@ IdeFantasy {
 		thisProcess.openUDPPort(22245);
 		this.makeRemoteResponder;
 		this.makeLocalResponder;
+		// load piece from scripts.
+		Config.subdirDo(
+			"runnig IDE Fantasy startup scripts ... ",
+			"... scripts loaded",
+			"share/projects/ide_fantasy_210911/start",
+			{ | p |
+				postf("loading: %\n", p);
+				p.load;
+			},
+			"scd"
+		)
 	}
 
 	*makeRemoteResponder {
