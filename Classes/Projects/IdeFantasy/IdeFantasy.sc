@@ -66,7 +66,7 @@ IdeFantasy {
 			remoteResponder.free;
 		};
 		remoteResponder = OSCdef(remoteNode, { | msg |
-			this.changed(remoteResponder);
+			this.changed(*msg);
 			ofAddress.sendMsg(*msg);
 		}, remoteNode).fix;
 	}
@@ -83,7 +83,7 @@ IdeFantasy {
 		postf("addding responder listening to: %\n", localNode);
 		localResponder = OSCFunc({ | msg |
 			// postf("received local sensestage data: %\n", msg);
-			this.changed(localNode);
+			this.changed(*msg);
 			msg[0] = localNode;
 			ofAddress.sendMsg(*msg);
 			oscGroupsAddress.sendMsg(*msg);
