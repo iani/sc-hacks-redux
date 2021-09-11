@@ -12,24 +12,27 @@
 		^("/" ++ myString).asSymbol;
 	}
 
-	fox { | action, key = \x |
-		this +++> { | notification, id, x, y, z | action.(x) }
+	fox { | action, sender |
+		\x.addNotifier(sender ? IdeFantasy, this.oscify, { | notification, id, x, y z |
+			action.(x)
+		});
 	}
 
-	foy { | action, key = \y |
-		this +++> { | notification, id, x, y, z | action.(y) }
+	foy { | action, sender |
+		\y.addNotifier(sender ? IdeFantasy, this.oscify, { | notification, id, x, y z |
+			action.(y)
+		});
 	}
 
-	foz { | action, key = \z |
-		this +++> { | notification, id, x, y, z | action.(z) }
-	}
-
-	xyz { | action, key = \xyz |
-		this +++> { | notification, id, x, y, z | action.(x, y, z) }
+	foz { | action, sender |
+		\z.addNotifier(sender ? IdeFantasy, this.oscify, { | notification, id, x, y z |
+			action.(z)
+		});
 	}
 
 	+++> { | action, key = \default |
 		postf("adding IDE action named % to %\n", key, this);
+		// TODO: make customizable sender (project name?)
 		key.addNotifier(IdeFantasy, this.oscify, action);
 	}
 
@@ -37,6 +40,8 @@
 
 	remove { | key = \default |
 		postf("removing IDE action named % from %\n", key, this);
+		// TODO: make customizable sender (project name?)
+		// also: better method name?
 		key.removeNotifier(IdeFantasy, this.oscify);
 	}
 }
