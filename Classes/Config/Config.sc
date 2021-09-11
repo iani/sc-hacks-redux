@@ -124,9 +124,13 @@ Config {
 
 	*loadProjectServerScripts {
 		this.loadScScriptFiles(
-			("share/projects" +/+ projectName +/+ "stop"),
+			("share/projects" +/+ projectName +/+ "server_boot"),
 			format("loading server scripts for: % ...", projectName),
 			format("... server scripts for % loaded", projectName)
 		);
+	}
+	//========== utilities
+	*bufferNames {
+		^Library.at(Buffer).keys.asArray.sort;
 	}
 }
