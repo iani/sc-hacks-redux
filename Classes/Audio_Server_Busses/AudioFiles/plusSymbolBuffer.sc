@@ -22,5 +22,6 @@
 	// synonyms:
 	b { ^this.buffer; }
 	buf { ^this.buffer; }
+	bufnum { ^this.buf.bufnum }
 
 }

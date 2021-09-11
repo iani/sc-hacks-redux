@@ -73,6 +73,7 @@ MediatorHandler {
 }
 + Synth {
 	handleReplacement {
+		postf("releasing %\n", this);
 		this.release(~release);
 		// postf("debugging synth handlereplacement %\n", this);
 		// postf("check is playing. state: %\n", this.isPlaying);

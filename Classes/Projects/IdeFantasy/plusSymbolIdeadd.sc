@@ -40,8 +40,10 @@
 
 	remove { | key = \default |
 		postf("removing IDE action named % from %\n", key, this);
-		// TODO: make customizable sender (project name?)
-		// also: better method name?
+		// TODO: make customizable sender (project name?) + use better method name
 		key.removeNotifier(IdeFantasy, this.oscify);
+	}
+	set { | param = \trig, value = 1 |
+		currentEnvironment[this].set(param, value)
 	}
 }
