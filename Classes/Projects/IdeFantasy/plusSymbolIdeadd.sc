@@ -12,6 +12,22 @@
 		^("/" ++ myString).asSymbol;
 	}
 
+	fox { | action, key = \x |
+		this +++> { | notification, id, x, y, z | action.(x) }
+	}
+
+	foy { | action, key = \y |
+		this +++> { | notification, id, x, y, z | action.(y) }
+	}
+
+	foz { | action, key = \z |
+		this +++> { | notification, id, x, y, z | action.(z) }
+	}
+
+	xyz { | action, key = \xyz |
+		this +++> { | notification, id, x, y, z | action.(x, y, z) }
+	}
+
 	+++> { | action, key = \default |
 		postf("adding IDE action named % to %\n", key, this);
 		key.addNotifier(IdeFantasy, this.oscify, action);
