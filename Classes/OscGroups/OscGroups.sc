@@ -26,17 +26,6 @@ OscGroups {
 
 	*init {
 		"INITING OSCGROUPS =====================================".postln;
-		// sendAddress = NetAddr("127.0.0.1", oscSendPort);
-		/*
-		oscRecvFunc = OSCFunc({ | msg |
-			var code, result;
-			code = msg[1];
-			postf("REMOTE EVALUATION: %\n", code);
-			result = thisProcess.interpreter.interpret(code.asString);
-			postf("remote: -> %\n", result);
-			msg.postln;
-		}, "/code", recvPort: oscRecvPort).fix;
-		*/
 		sendAddress ?? {
 			"To enable OscGroups evaluate:\nOscGroups.enable;\n".postln;
 		}
@@ -54,7 +43,7 @@ OscGroups {
 			msg.postln;
 		}, "/code", recvPort: oscRecvPort).fix;
 		\forwarder.addNotifier(this, \code, { | notifier, message |
-			postf("% sending %\n", this, message);
+			postf("/* % sending: */ %\n", this, message);
 			sendAddress.sendMsg('/code', message);
 		});
 		thisProcess.interpreter.preProcessor = { | code |
@@ -62,13 +51,22 @@ OscGroups {
 			this.changed(\code, code);
 			code;
 		};
+		CmdPeriod add: this;
 		"OscGroups enabled".postln;
 	}
 
 	*disable {
 		oscRecvFunc.free;
 		\forwarder.addNotifier(this, \code, {});
+		CmdPeriod remove: this;
+		"OscGroups disabled".postln;
 	}
+
+	*cmdPeriod {
+		// "running cmd period - TEST ONLY".postln;
+		thisProcess.interpreter.preProcessor.("CmdPeriod.run;");
+	}
+
 
 	*enableCodeEvaluation {
 		
