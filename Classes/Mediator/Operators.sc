@@ -11,8 +11,8 @@ All sc-hacks-redux operators for all classes, in one file.
 
 + Function {
 	+> {| envir, player |
-		// TODO: make a real implementation ...
-		Library.put(envir, this.play);
+		// TODO: add arguments setting, bus mapping
+		currentEnvironment[envir] = this.play.onStart({});
 	}
 }
 

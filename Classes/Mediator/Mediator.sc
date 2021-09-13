@@ -73,15 +73,8 @@ MediatorHandler {
 }
 + Synth {
 	handleReplacement {
-		postf("releasing %\n", this);
-		this.release(~release);
-		// postf("debugging synth handlereplacement %\n", this);
-		// postf("check is playing. state: %\n", this.isPlaying);
-		// if (this.isPlaying) { this.release(~release) }; }
-		// asSynth handles this. Check!?:
-		// trackState { NodeWatcher.register(this) }
-		// "registering synth to track state".postln;
-		// NodeWatcher.register(this);
+		// requires synth state to be tracked with with onStart
+		if (this.isPlaying) { this.release(~release); }
 	}
 }
 
