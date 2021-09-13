@@ -47,6 +47,13 @@ IdeFantasy {
 			.action_({ | me |
 				this.perform([\stopOscTrace, \startOscTrace][me.value])
 			}),
+			Button()
+			.font_(Font("Helvetica", 24))
+			.states_([["Start Project Trace", Color.blue, Color(0.0, 0.9, 0.9)],
+				["Stop Project Trace", Color.blue, Color(0.9, 0.9, 0.9)]])
+			.action_({ | me |
+				this.perform([\stopProjectTrace, \startProjectTrace][me.value])
+			})
 			//		CheckBox()
 			// .font
 		);
@@ -114,5 +121,17 @@ IdeFantasy {
 	*stopOscTrace {
 		"Stopping OSC Tracing".postln;
 		OSCFunc.trace(false);
+	}
+	*startProjectTrace {
+		"Starting Project Tracing".postln;
+		this addDependant: this;
+	}
+	*stopProjectTrace {
+		"Stopping OSC Tracing".postln;
+		this removeDependant: this;
+	}
+
+	*update { | ... args |
+		postf("% received update with: %\n", this, args);
 	}
 }

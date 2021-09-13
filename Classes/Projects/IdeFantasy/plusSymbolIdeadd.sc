@@ -17,6 +17,19 @@
 			action.(x)
 		});
 	}
+	unfox { | sender | \x.removeNotifier(sender ? IdeFantasy, this.oscify); }
+	unfoy { | sender | \y.removeNotifier(sender ? IdeFantasy, this.oscify); }
+	unfoz { | sender | \z.removeNotifier(sender ? IdeFantasy, this.oscify); }
+	unfoxyz { | sender | \xyz.removeNotifier(sender ? IdeFantasy, this.oscify); }
+
+	foxyz { | action, sender |
+		\xyz.addNotifier(sender ? IdeFantasy,
+			this.oscify,
+			{ | notification, id, x, y z | action.(x, y, z)}
+		)
+	}
+
+
 
 	foy { | action, sender |
 		\y.addNotifier(sender ? IdeFantasy, this.oscify, { | notification, id, x, y z |
