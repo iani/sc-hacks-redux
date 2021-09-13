@@ -1,4 +1,8 @@
 /*  8 Sep 2021 05:40
+TODO: Enable choice of different config/share/project folders with new class Project.
+	All class methods of IdeFantasy can be rewritten as scripts
+	which are placed in startup, serverboot, start and quit subfolders
+	of the share/project folder.
 
 */
 IdeFantasy {

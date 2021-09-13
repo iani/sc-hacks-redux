@@ -18,6 +18,7 @@ OscGroups {
 	classvar <oscSendPort = 22244, <oscRecvPort = 22245;
 	classvar <sendAddress, <oscRecvFunc;
 	classvar <>username = "user";
+	classvar <>verbose = false;
 	//	classvar <>
 
 	*initClass {
@@ -43,7 +44,9 @@ OscGroups {
 			msg.postln;
 		}, "/code", recvPort: oscRecvPort).fix;
 		\forwarder.addNotifier(this, \code, { | notifier, message |
-			postf("/* % sending: */ %\n", this, message);
+			if (verbose) {
+				postf("/* % sending: */ %\n", this, message);
+			};
 			sendAddress.sendMsg('/code', message);
 		});
 		thisProcess.interpreter.preProcessor = { | code |
