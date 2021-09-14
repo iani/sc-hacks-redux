@@ -59,6 +59,10 @@ All sc-hacks-redux operators for all classes, in one file.
 		^bus;
 	}
 
+	get { ^this.bus.get }
+	index { ^this.bus.index }
+	in { In.kr(this.index) }
+
 	bkr { ^In.kr(this.bus.index) }
 
 	playBuf {}
