@@ -15,13 +15,13 @@ Synths made with this synthdef are not releasable.
 - Stopping them with free produces a click. 
 */
 //:Releasable variant of above example
-SynthDef(\chainenv, { |out = 0|
+SynthDef(\chainenv, { |out = 0, amp = 0.5|
     var env, envctl;
     env = Env.newClear(4);
     envctl = \env.kr(env.asArray);
     Out.ar(out,
 		SinOsc.ar(EnvGen.kr(envctl, \gate2.tr, doneAction: 0), 0,
-			Env.fade * 0.03
+			Env.fade * amp
 		).dup
 	);
 }).add;
