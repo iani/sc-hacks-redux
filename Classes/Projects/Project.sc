@@ -34,3 +34,22 @@ Subfolder structure:
 	Project creates a gui with buttons for each file or folder
 	Folders containing files create buttons with one state per file.
 */
+
+Project {
+	classvar <>root = "~/sc-projects/";
+	classvar <>currentProject = "default";
+
+	*globalPath { ^root +/+ "global/" }
+	*globalSetupPath { ^this.globalPath +/+ "setup/" }
+	*globalAudiofilesPath { ^this.globalPath +/+ "audiofiles/" }
+	*globalStartPath { ^this.globalPath +/+ "setup/" }
+	*globalServer_bootPath { ^this.globalPath +/+ "server_boot/" }
+	*globalServer_quitPath { ^this.globalPath +/+ "server_quit/" }
+	*globalSetupPath { ^this.globalPath +/+ "setup/" }
+	*globalSetupPath { ^this.globalPath +/+ "setup/" }
+
+	*projectListGui {
+
+	}
+
+}
