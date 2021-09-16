@@ -42,11 +42,11 @@ Project {
 	*globalPath { ^root +/+ "global/" }
 	*globalSetupPath { ^this.globalPath +/+ "setup/" }
 	*globalAudiofilesPath { ^this.globalPath +/+ "audiofiles/" }
-	*globalStartPath { ^this.globalPath +/+ "setup/" }
+	*globalStartPath { ^this.globalPath +/+ "start/" }
 	*globalServer_bootPath { ^this.globalPath +/+ "server_boot/" }
 	*globalServer_quitPath { ^this.globalPath +/+ "server_quit/" }
-	*globalSetupPath { ^this.globalPath +/+ "setup/" }
-	*globalSetupPath { ^this.globalPath +/+ "setup/" }
+	*globalStopPath { ^this.globalPath +/+ "stop/" }
+	*globalScriptsPath { ^this.globalPath +/+ "scripts/" }
 
 	*projectListGui {
 
