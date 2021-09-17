@@ -67,7 +67,13 @@ OscGroups {
 
 	*cmdPeriod {
 		// "running cmd period - TEST ONLY".postln;
-		thisProcess.interpreter.preProcessor.("CmdPeriod.run;");
+		CmdPeriod.run;
+		thisProcess.interpreter.preProcessor.("OscGroups.remoteCmdPeriod;");
+
+	}
+
+	*remoteCmdPeriod {
+		CmdPeriod.run;
 	}
 
 
