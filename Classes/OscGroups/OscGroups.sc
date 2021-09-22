@@ -61,26 +61,23 @@ OscGroups {
 	*disable {
 		oscRecvFunc.free;
 		\forwarder.addNotifier(this, \code, {});
-		CmdPeriod remove: this;
 		"OscGroups disabled".postln;
 	}
 
 	*cmdPeriod {
 		// Remotely only execute core CmdPeriod method.
 		"Sending CmdPeriod to OscGroups".postln;
-		sendAddress.sendMsg('/code', "OscGroups.remoteCmdPeriod.")
+		sendAddress.sendMsg('/code', "OscGroups.remoteCmdPeriod")
 	}
 
 	*remoteCmdPeriod {
 		// run basic cmdperiod actions when called via OscGroups
 		// Skip cmdPeriod as it would loop sending cmd period to OscGroups
-
 		SystemClock.clear;
 		AppClock.clear;
 		TempoClock.default.clear;
-		// This would cause endless loop inside OscGroups:
+		// Following would cause endless loop inside OscGroups:
 		// objects.copy.do({ arg item; item.doOnCmdPeriod;  });
-
 		Server.hardFreeAll; // stop all sounds on local servers
 		Server.resumeThreads;
 	}
