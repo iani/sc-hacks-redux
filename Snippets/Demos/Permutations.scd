@@ -18,6 +18,19 @@ set = IdentitySet();
 set do: _.postln;
 set.size;
 // set.asArray.sort.reverse do: _.postln;
+//: Ελληνικά ...
+var pre, post, set;
+pre = ["μ", "ν", "στ", "ρ", "κ"];
+post = ["ο", "α", "ι", "α", "ι"];
+set = IdentitySet();
+{ | i |
+	{ | j |
+		set add: "".catList([pre.permute(i), post.permute(j)].flop.flat).asSymbol;
+	} ! 120;
+} ! 120;
+set do: { | t | postf("%.\n", t); };
+set.size;
+// set.asArray.sort.reverse do: _.postln;
 //:
 var pre, set, perm;
 pre = ["m", "n", "st", "r", "k"];

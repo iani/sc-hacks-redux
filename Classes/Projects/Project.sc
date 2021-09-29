@@ -14,8 +14,9 @@ Subfolder structure:
 ?????? (maybe?)  ~/sc-projects/global/server_quit : loaded after server quits
 ~/sc-projects/global/stop : loaded at Project.stop;
 ~/sc-projects/global/scripts : loaded from gui buttons
-	Project creates a gui with buttons for each file or folder
-	Folders containing files create buttons with one state per file.
+	Project creates a gui with buttons for each file or subfolder.
+	Subfolders containing files create buttons with one state per file.
+	One can cycle between executing each of the files
 
 ~/sc-projects/projects/ : contains one subfolder per project
 	Each subfolder has the same structure as the global folder
@@ -37,7 +38,8 @@ Subfolder structure:
 
 Project {
 	classvar <>root = "~/sc-projects/";
-	classvar <>currentProject = "default";
+	classvar <>currentProject; //  = "default";
+	var <name, <path;
 
 	*globalPath { ^root +/+ "global/" }
 	*globalSetupPath { ^this.globalPath +/+ "setup/" }
