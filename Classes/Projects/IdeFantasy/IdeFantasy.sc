@@ -7,7 +7,7 @@ TODO: Enable choice of different config/share/project folders with new class Pro
 */
 IdeFantasy {
 	// computers sending sensor data to OSCGroups:
-	classvar <nodes = #['/corfu', '/sapporo'];
+	classvar <nodes = #['/corfu', '/sapporo', '/athens', '/lisbon'];
 	classvar <localNode = '/corfu';
 	classvar <remoteNode; // later this will be a list of remote nodes
 	// we will make an OSCFunc for each of these nodes.
@@ -20,7 +20,7 @@ IdeFantasy {
 			ofAddress = NetAddr("127.0.0.1", 12345);
 			oscGroupsAddress = NetAddr("127.0.0.1", 22244);
 			dataMessage = '/minibee/data';
-			Config.projectName = "ide_fantasy_210926";
+			Config.projectName = "ide_fantasy_211013";
 		}
 	}
 
