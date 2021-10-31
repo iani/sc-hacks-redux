@@ -22,7 +22,7 @@ IdeFantasy {
 			ofAddress = NetAddr("127.0.0.1", 12345);
 			oscGroupsAddress = NetAddr("127.0.0.1", 22244);
 			dataMessage = '/minibee/data';
-			Config.projectName = "ide_fantasy_211029";
+			Config.projectName = "ide_fantasy_211101";
 		}
 	}
 
