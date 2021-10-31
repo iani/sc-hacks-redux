@@ -23,6 +23,7 @@ IdeFantasy {
 			oscGroupsAddress = NetAddr("127.0.0.1", 22244);
 			dataMessage = '/minibee/data';
 			Config.projectName = "ide_fantasy_211101";
+			{ OscGroups.enable }.defer(1); // fix ...
 		}
 	}
 
