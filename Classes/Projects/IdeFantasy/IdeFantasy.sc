@@ -3,16 +3,18 @@ TODO: Enable choice of different config/share/project folders with new class Pro
 	All class methods of IdeFantasy can be rewritten as scripts
 	which are placed in startup, serverboot, start and quit subfolders
 	of the share/project folder.
-
+	TODO: fix gui for selecting remote node correctly.
+	TODO: Multiple remote nodes????
 */
 IdeFantasy {
 	// computers sending sensor data to OSCGroups:
-	classvar <nodes = #['/corfu', '/sapporo', '/athens', '/lisbon'];
 	classvar <localNode = '/corfu';
-	classvar <remoteNode; // later this will be a list of remote nodes
-	// we will make an OSCFunc for each of these nodes.
+	// 31 Oct 2021: all nodes will now create responders
+	classvar <nodes = #['/corfu', '/athens'];
+	classvar <remoteNode; // 31 Oct 2021: obsolete. all nodes create responders.
 	classvar <dataMessage; // osc message sent by sensestage
-	classvar <remoteResponder, <localResponder; // OSCFuncs
+	classvar <localResponder; // OSCFunc listening to local data from sensors
+	classvar <remoteResponders; // Array of OSCFuncs listening to messages from all nodes
 	classvar <ofAddress, <oscGroupsAddress;
 
 	*initClass {
@@ -66,30 +68,31 @@ IdeFantasy {
 	*start {
 		"Starting IDE Fantasy".postln;
 		thisProcess.openUDPPort(22245);
-		this.makeRemoteResponder;
+		this.makeRemoteResponders;
 		this.makeLocalResponder;
 		// load piece from scripts.
 		Config.startProject;
 	}
 
-	*makeRemoteResponder {
-		// broadcast received data internally with \changed
-		// + send received data locally to openFrameworks
-		remoteResponder !? {
-			"freeing remoteResponder".postln;
-			remoteResponder.free;
-		};
-		remoteResponder = OSCdef(remoteNode, { | msg |
-			this.changed(*msg);
-			ofAddress.sendMsg(*msg);
-		}, remoteNode).fix;
+	*makeRemoteResponders { | argResponder |
+		this.freeRemoteResponders;
+		// make new responders;
+		remoteResponders = nodes collect: { | name |
+			OSCdef(name, { | msg |
+				this.changed(*msg);
+				ofAddress.sendMsg(*msg);
+			}, name).fix;
+		}
 	}
 
-	*makeLocalResponder {
-		// broadcast received data iternally with \changed
-		// + send received data locally to openFrameworks @ 12345
-		// + send received data to osdGroups @ 22244
+	*freeRemoteResponders {
+		"Freeing remote responders".postln;
+		remoteResponders do: _.free; // free remote responders, if any
+	}
 
+ 	*makeLocalResponder {
+		// make received data known to local system using this.changed
+		// + send received data locally to openFrameworks
 		localResponder !? {
 			"freeing localResponder".postln;
 			localResponder.free;
@@ -106,10 +109,7 @@ IdeFantasy {
 
 	*stop {
 		"Stopping IDE Fantasy".postln;
-		remoteResponder !? {
-			"freeing remoteResponder".postln;
-			remoteResponder.free;
-		};
+		this.freeRemoteResponders;
 		localResponder !? {
 			"freeing localResponder".postln;
 			localResponder.free;
