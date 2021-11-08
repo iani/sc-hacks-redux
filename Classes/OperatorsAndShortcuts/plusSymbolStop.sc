@@ -3,13 +3,15 @@
 */
 
 + Symbol {
-	stop { currentEnvironment[this].stop; }
+	stop { | fadeTime = 1.0 |
+		currentEnvironment[this].stop(fadeTime);
+	}
 	play { this.start } // synonym for start
 	start { currentEnvironment[this].start; }
 }
 
 + Synth {
-	stop { this.release }
+	stop { | fadeTime = 1.0 | this.release(fadeTime) }
 	start {
 		if (this.isPlaying) {
 			postf("% is already playing\n", this);
