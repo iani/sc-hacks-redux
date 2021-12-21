@@ -1,10 +1,14 @@
 /* 15 Sep 2021 18:26
-Generalization/extension of class Config.
-Load project scripts and audio files from subfolders of ~/sc-projects.
+Load project scripts and audio files from subfolders of a folder.
+
+
+	~/sc-projects.
 
 Subfolder structure:
 
 ~/sc-projects/global : files used by all projects
+
+~/sc-projects/
 ~/sc-projects/projects : each subfolder is a project
 
 ~/sc-projects/global/setup : loaded at sclang StartUp

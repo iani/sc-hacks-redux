@@ -1,0 +1,5 @@
+#+TITLE: Ping_211201
+
+Monitor the state of a process  repeatedly sending it a message and waiting for its reply.
+
+Given a process p,
