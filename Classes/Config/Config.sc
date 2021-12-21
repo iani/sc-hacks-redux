@@ -8,7 +8,7 @@ Config {
 	classvar <>projectName = "";
 	*initClass {
 		StartUp add: {
-			startupFolder = "~/sc-hacks-config";
+			startupFolder = "~/sc-projects";
 			this.serverConfig;
 			Server.default doWhenReallyBooted:  { | server |
 				this.loadBuffers;
