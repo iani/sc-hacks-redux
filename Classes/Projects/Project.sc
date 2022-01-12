@@ -58,4 +58,7 @@ Project {
 
 	}
 
+	*gui {
+		this.window;
+	}
 }

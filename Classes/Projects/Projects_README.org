@@ -1,0 +1,7 @@
+#+TITLE: Projects_readme
+
+Contents of this folder as of 12 Jan 2022 09:07
+
+* IdeFantasy: First working draft used for IDE Fantasy project
+* Config: Draft taken from IdeFantasy and currently used
+* Project: Draft for future version
