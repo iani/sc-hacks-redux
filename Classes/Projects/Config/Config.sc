@@ -4,8 +4,9 @@
 	Load synthdefs and audio files
 */
 Config {
-	classvar <startupFolder;
-	classvar <>projectName = "";
+	classvar <>startupFolder;
+	classvar <projectName = "";
+	classvar <projectPath;
 	*initClass {
 		StartUp add: {
 			startupFolder = "~/sc-projects";
@@ -51,9 +52,9 @@ Config {
 	*loadBuffers {
 		// "loading buffers ...".postln;
 		this.subdirDo(
-			"loading audio files ...",
-			"... buffers loaded",
-			"audiofiles",
+			"loading global audio files ...",
+			"... global buffers loaded",
+			"global/audiofiles",
 			{ | p |
 				postf("loading: %\n", p);
 				p.loadAudiofile;
@@ -69,9 +70,9 @@ Config {
 	*loadSynthDefs {
 		var def, name;
 		this.subdirDo(
-			"loading synthdefs ...",
-			"... synthdefs loaded",
-			"synthdefs",
+			"loading global synthdefs ...",
+			"... global synthdefs loaded",
+			"global/synthdefs",
 			{ | p |
 				postf("loading: %\n", p);
 				name = PathName(p).fileNameWithoutExtension.asSymbol;
@@ -106,9 +107,19 @@ Config {
 		)
 	}
 
+	*start {
+		"starting Project".postln;
+		this.startProject;
+	}
+
+	*stop {
+		"stopping Project".postln;
+		this.stopProject;
+	}
 	*startProject {
 		this.loadScScriptFiles(
-			("share/projects" +/+ projectName +/+ "start"),
+			(projectName +/+ "start"),
+			// ("share/projects" +/+ projectName +/+ "start"),
 			format("loading start scripts for: % ...", projectName),
 			format("... start scripts for % loaded", projectName)
 		)
@@ -116,7 +127,7 @@ Config {
 
 	*stopProject {
 		this.loadScScriptFiles(
-			("share/projects" +/+ projectName +/+ "stop"),
+			(projectName +/+ "stop"),
 			format("loading stop scripts for: % ...", projectName),
 			format("... stop scripts for % loaded", projectName)
 		)
@@ -132,5 +143,61 @@ Config {
 	//========== utilities
 	*bufferNames {
 		^Library.at(Buffer).keys.asArray.sort;
+	}
+	*projectListGui {
+		/* open a panel with a list view,
+			listing all project folders.
+			Selecting a project and pressing RETURN sets it as current project.
+			A start-stop button runs the scripts contained in the start and stop folder
+			A "scripts" button opens a different gui list for selecting and running scripts.
+		*/
+		postf("Startup folder: %, project name: %\n",
+			startupFolder, projectName
+		);
+		this.window({ | w |
+			var projectNameWidget;
+			w.name = "Project List";
+			w.layout = VLayout(
+				ListView()
+				.items_(this.projectList)
+				.action_({ | me |
+					me.item.postln;
+				})
+				.keyDownAction_({ | me, char |
+					if (char === Char.ret) {
+						me.item.postln;
+						projectPath = me.item;
+						projectName = this.folderName(projectPath);
+						projectNameWidget.string = projectName;
+						postf("Switched to project: %\n", projectName);
+					}
+				}),
+				projectNameWidget = StaticText().string_("-"),
+				Button()
+				.states_([["start", Color.red, Color.green], ["stop", Color.green, Color.red]])
+				.action_({ | me |
+					this.perform([\stop, \start][me.value].postln);
+				})
+			)
+		}, \projects);
+	}
+
+	*scriptListGui { // Under development!
+		/*  Open a panel listing all scripts contained
+			in the first level of the current project's folder.
+			Selecting a script and pressing "return" runs that script.
+		*/
+	}
+
+
+
+	*folderName { | path |
+		postf("the path is: %\n", path);
+		^PathName(path).folderName;
+
+	}
+
+	*projectList {
+		^(startupFolder +/+ "*").pathMatch;
 	}
 }
