@@ -4,7 +4,6 @@ If no object exists under that path, then create it using a function passed as a
 */
 
 Registry {
-
 	*add { | ... pathAndObject |
 		^this.new(*(pathAndObject[0..pathAndObject.size-2]
 			add: { List() })) add: pathAndObject.last;
@@ -21,10 +20,12 @@ Registry {
 	*new { | ... pathAndFunc |
 		var path, makeFunc, instance;
 		makeFunc = pathAndFunc.last;
+		instance = makeFunc.value;
 		path = pathAndFunc[0..pathAndFunc.size-2];
 		instance = Library.global.atPath(path);
 		if (instance.isNil) {
 			instance = makeFunc.value;
+		path = pathAndFunc[0..pathAndFunc.size-2];
 			Library.global.putAtPath(path, instance);
 			instance.onObjectClosed(this, {
 				this.remove(*path)

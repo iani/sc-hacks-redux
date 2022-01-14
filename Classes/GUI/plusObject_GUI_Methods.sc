@@ -56,21 +56,12 @@
 	}
 
 	bounds_ { | rect, key = \default |
-		// postf("putting % in % at key %\n", rect, this, key);
 		Registry.put(\windowRects, this, key, rect);
-		// "many tests after putting follow:".postln;
-		// "Registry at windowrects".postln;
-		// Registry(\windowRects).postln;
-		// "Registry at windowrects this".postln;
-		// Registry(\windowRects, this).postln;
-		// Registry(\windowRects, this, key);
-		// postf("TEST AFTER putting % in % at key %, \n RESULT: %\n",
-			// rect, this, key, Registry(\windowRects, this, key));
 	}
 
 	bounds { | key = \default |
 		^Registry(\windowRects, this, key, {
-			GuiDefaults.bounds
+			GuiDefaults.bounds;
 		})
 	}
 
