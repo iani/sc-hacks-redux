@@ -19,13 +19,19 @@ Registry {
 
 	*new { | ... pathAndFunc |
 		var path, makeFunc, instance;
-		makeFunc = pathAndFunc.last;
-		instance = makeFunc.value;
 		path = pathAndFunc[0..pathAndFunc.size-2];
 		instance = Library.global.atPath(path);
 		if (instance.isNil) {
+			// postf("debugging return value. pathAndFunc: %\n", pathAndFunc);
+
+			makeFunc = pathAndFunc.last;
+			// postf("debugging return value. makeFunc is: %\n", makeFunc);
 			instance = makeFunc.value;
-		path = pathAndFunc[0..pathAndFunc.size-2];
+			// postf("debugging return value. instance is: %\n", instance);
+			if (instance.isNil) {
+				"Attempt to store nil in Registry.".error;
+			};
+			path = pathAndFunc[0..pathAndFunc.size-2];
 			Library.global.putAtPath(path, instance);
 			instance.onObjectClosed(this, {
 				this.remove(*path)
