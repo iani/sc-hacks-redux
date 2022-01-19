@@ -2,15 +2,15 @@
 /*
 	Configure Server Options
 	Load synthdefs and audio files
+	As of 17 Jan 2022 01:35 this class is superseeded by class Project.
 */
 Config {
-	classvar <>startupFolder;
+	classvar >startupFolder = "~/sc-projects";
 	classvar <projectName = "";
 	classvar <projectPath;
-	*initClass {
+	*initClassDisabled {
 		StartUp add: {
-			startupFolder = "~/sc-projects";
-			this.serverConfig;
+			// this.serverConfig;
 			Server.default doWhenReallyBooted:  { | server |
 				this.loadBuffers;
 				server.sync;
@@ -28,6 +28,8 @@ Config {
 		}
 	}
 
+	*startupFolder { ^PathName(startupFolder) }
+	*projectListPaths { ^this.startupFolder.entries.select(_.isFolder).collect(_.fullPath).postln }
 	*serverConfig {
 		this.subdirDo(
 			"Loading server config scripts...",
@@ -159,7 +161,7 @@ Config {
 			w.name = "Project List";
 			w.layout = VLayout(
 				ListView()
-				.items_(this.projectList)
+				.items_(this.projectListPaths)
 				.action_({ | me |
 					me.item.postln;
 				})
@@ -197,7 +199,4 @@ Config {
 
 	}
 
-	*projectList {
-		^(startupFolder +/+ "*").pathMatch;
-	}
 }

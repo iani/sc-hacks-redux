@@ -15,9 +15,9 @@
 + Server {
 	doWhenReallyBooted { | action |
 		ServerBoot.add({ | server |
-			postf("server boot server is: %\n", server);
+			// postf("server boot server is: %\n", server);
 			server.doWhenBooted({
-			postf("dowhenbooted server is: %\n", server);
+				// postf("dowhenbooted server is: %\n", server);
 			action.(server)
 			});
 		}, this);

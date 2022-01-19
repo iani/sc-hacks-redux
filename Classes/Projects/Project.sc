@@ -1,64 +1,225 @@
 /* 15 Sep 2021 18:26
 Load project scripts and audio files from subfolders of a folder.
+Default folder path is: ~/sc-projects.
 
+Any subfolder of this folder is a project folder.
+The folder named "global" has special status:
+audio files and synthdefs contained in that folder are also
+used in all other projects.
 
-	~/sc-projects.
+Special subfolders:
 
-Subfolder structure:
+audiofiles: Audio files (wav, aiff) contained in this folder are
+always loaded to the server when it boots.
 
-~/sc-projects/global : files used by all projects
+synthdefs: All scd files contained in this folder are always
+loaded to the server when it boots.
 
-~/sc-projects/
-~/sc-projects/projects : each subfolder is a project
+GUI interface:
 
-~/sc-projects/global/setup : loaded at sclang StartUp
-~/sc-projects/global/audiofiles : loaded at scsynth boot
-~/sc-projects/global/start : loaded at Project.start;
-~/sc-projects/global/server_boot : loaded after server boots
-?????? (maybe?)  ~/sc-projects/global/server_quit : loaded after server quits
-~/sc-projects/global/stop : loaded at Project.stop;
-~/sc-projects/global/scripts : loaded from gui buttons
-	Project creates a gui with buttons for each file or subfolder.
-	Subfolders containing files create buttons with one state per file.
-	One can cycle between executing each of the files
+window:
 
-~/sc-projects/projects/ : contains one subfolder per project
-	Each subfolder has the same structure as the global folder
-	There is a default folder with default scripts.
-	It can be used as template and copied to create own projects
-	Here is the structure of the default folder, showing how
-	to make project folders:
+|  project list     | file and folder list |
+|  selected project | selected file/folder |
 
-~/sc-projects/projects/default/setup : loaded at sclang StartUp
-~/sc-projects/projects/default/audiofiles : loaded at scsynth boot
-~/sc-projects/projects/default/start : loaded at Project.start;
-~/sc-projects/projects/default/server_boot : loaded after server boots
-?????? (maybe?)  ~/sc-projects/projects/default/server_quit : loaded after server quits
-~/sc-projects/projects/default/stop : loaded at Project.stop;
-~/sc-projects/projects/default/scripts : loaded from gui buttons
-	Project creates a gui with buttons for each file or folder
-	Folders containing files create buttons with one state per file.
+Clicking on a project or file / folder from
+one of the above lists selects the that item
+and shows its name on the selected project or selected
+file / folder button.
+
+Clcking on the selected project makes that project the current projecet.
+Clicking on the selected file/folder button executes the corresponding file(s)
+
 */
 
 Project {
-	classvar <>root = "~/sc-projects/";
-	classvar <>currentProject; //  = "default";
-	var <name, <path;
+	classvar >startupFolder = "sc-projects", >globalFolder = "global";
+	classvar <projects, <selectedProject;
+	classvar <projectItems, <selectedProjectItem;
 
-	*globalPath { ^root +/+ "global/" }
-	*globalSetupPath { ^this.globalPath +/+ "setup/" }
-	*globalAudiofilesPath { ^this.globalPath +/+ "audiofiles/" }
-	*globalStartPath { ^this.globalPath +/+ "start/" }
-	*globalServer_bootPath { ^this.globalPath +/+ "server_boot/" }
-	*globalServer_quitPath { ^this.globalPath +/+ "server_quit/" }
-	*globalStopPath { ^this.globalPath +/+ "stop/" }
-	*globalScriptsPath { ^this.globalPath +/+ "scripts/" }
+	*initClass {
+		StartUp add: {
+			Server.default doWhenReallyBooted:  { | server |
+				this.loadGlobalBuffers;
+				server.sync;
+				this.loadLocalBuffers;
+				server.sync;
+				postf("% finished loading buffers\n", server);
+				this.loadGlobalSynthdefs;
+				server.sync;
+				this.loadLocalSynthdefs;
+				server.sync;
+				postf("% finished loading synthdefs\n", server);
+			}
+		}
+	}
 
-	*projectListGui {
+	*matchingFilesDo { | pathName, func ... types |
+		types = types collect: _.asSymbol;
+		if (pathName.isNil) { ^nil };
+		pathName filesDo: { | p | // ! filesDo recurses over subfolders!
+			if (types includes: p.extension.asSymbol) { func.(p.fullPath) }
+		}
+	}
+
+	*loadAudioFiles { | pathName |
+		this.matchingFilesDo(
+			pathName,
+			{ | p | p.loadAudiofile },
+			"wav", "WAV", "aiff", "aif"
+		)
+	}
+
+	*loadScdFiles { | pathName |
+		this.matchingFilesDo(
+			pathName,
+			{ | p |
+				postf("Loading : %\n", p);
+				p.load;
+			},
+			"scd"
+		);
+	}
+
+	*loadGlobalBuffers {
+		"loading global buffers".postln;
+		this.loadAudioFiles(this.globalAudiofilePath);
+	}
+
+	*loadLocalBuffers {
+		"loading local buffers".postln;
+		this.loadAudioFiles(this.localAudiofilePath);
+	}
+
+	*loadGlobalSynthdefs {
+		"loading global synthdefs".postln;
+		this.loadScdFiles(this.globalSynthdefPath);
+	}
+
+	*loadLocalSynthdefs {
+		"loading local synthdefs".postln;
+		this.loadScdFiles(this.localSynthdefPath);
+	}
+
+	*projectHomePath { ^PathName(Platform.userHomeDir +/+ startupFolder); }
+	*globalProjectPath { ^this.projectHomePath +/+ globalFolder }
+	*globalAudiofilePath { ^this.globalProjectPath +/+ "audiofiles" }
+	*globalSynthdefPath { ^this.globalProjectPath +/+ "synthdefs" }
+
+	*localAudiofilePath {
+		if (selectedProject.isNil) { ^nil };
+		^selectedProject +/+ "audiofiles";
+	}
+
+	*localSynthdefPath {
+		if (selectedProject.isNil) { ^nil };
+		^selectedProject +/+ "synthdefs";
+	}
+
+
+
+	*scdFilesDo { | pathName, func |
+
+	}
+
+	*globalAudioFiles {
+
+	}
+
+	*globalSynthdefFiles {
+
+	}
+
+	*localAudioFiles {
+
+	}
+
+	*localSynthdefFiles {
 
 	}
 
 	*gui {
-		this.window;
+		this.window({ | w |
+			w.name = "Projects in ~/" ++ startupFolder;
+			w.layout = HLayout(
+				VLayout(
+					StaticText().string_("Projects"),
+					ListView()
+					.addNotifier(this, \projects, { | n |
+						// postf("% will set my items to projects: %\n", n.listener, projects);
+						n.listener.items =  projects.collect(_.folderName);
+					})
+					.enterKeyAction_({ | me |
+						this.selectProject(projects[me.value]);
+					}),
+					Button().states_([["-"]])
+					.addNotifier(this, \selectedProject, { | n |
+						n.listener.states_([[selectedProject.folderName]])
+					})
+				),
+				VLayout(
+					StaticText().string_("Project Items"),
+					ListView()
+					.addNotifier(this, \projectItems, { | n |
+						n.listener.items = projectItems.collect({ | i |
+							if (i.isFolder) {
+								i.folderName
+							}{
+								i.fileNameWithoutExtension
+							}
+						})
+					})
+					.enterKeyAction_({ | me |
+						postf("Loading selected item: %\n", projectItems[me.value]);
+						this.runProjectItem(projectItems[me.value]);
+					}),
+					Button().states_([["-"]])
+					.addNotifier(this, \selectedProject, { | n |
+						n.listener.states_([["-"]])
+					})
+					.addNotifier(this, \selectedProjectItem, { | n |
+						n.listener.states_([[this.selectedProjectItemName]])
+					})
+				)
+			);
+			this.getProjects;
+		});
 	}
+
+	*getProjects {
+		projects = this.projectHomePath.entries.select(_.isFolder);
+		this.changed(\projects);
+	}
+	*selectProject { | projectPathName |
+		selectedProject = projectPathName;
+		this.getProjectItems;
+		this.changed(\selectedProject);
+	}
+	*getProjectItems {
+		postf("testing getProjectItems.  selectedProject is: %\n", selectedProject);
+		projectItems = selectedProject.entries.reject({ | e | e.isFile and: { e.extension != "scd" } });
+		this.changed(\projectItems);
+	}
+	*runProjectItem { | projectItem |
+		selectedProjectItem = projectItem;
+		if(selectedProjectItem.isFolder) {
+			postf("Running items in folder: %\n", selectedProjectItem.fullPath);
+			selectedProjectItem.filesDo({ | f |
+				postf("loading file: %\n", f.fileName);
+				f.fullPath.load;
+			})
+	}{
+			postf("loading file: %\n", selectedProjectItem.fileName);
+			selectedProjectItem.fullPath.load;
+		};
+		this.changed(\selectedProjectItem);
+	}
+	*selectedProjectItemName {
+		if(selectedProjectItem.isFolder) {
+			^selectedProjectItem.folderName
+		}{
+			^selectedProjectItem.fileNameWithoutExtension
+		}
+	}
+
 }

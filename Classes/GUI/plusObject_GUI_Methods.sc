@@ -22,7 +22,7 @@
 			var window;
 			// when window closes it removes itself from registry.
 			// see Notification:onObjectClosed, and Regsitry class.
-			window = Window(this.asString, rect, false);
+			window = Window(this.asString, rect);
 			// save window rect for use when re-opening:
 			window.view.mouseLeaveAction_({ | topview |
 				Registry.put(\windowRects, this, key, topview.findWindow.bounds)
@@ -48,11 +48,11 @@
 	}
 
 	bl_ { | width, height = 200, key = \default |
-		{ this.bounds_(Rect.bl(GuiDefaults.width, height), key) }.defer;
+		{ this.bounds_(Rect.bl(width ?? { GuiDefaults.width }, height), key) }.defer;
 	}
 
 	br_ { | width, height = 200, key = \default |
-		{ this.bounds_(Rect.br(GuiDefaults.width, height), key) }.defer;
+		{ this.bounds_(Rect.br(width ?? { GuiDefaults.width }, height), key) }.defer;
 	}
 
 	bounds_ { | rect, key = \default |
