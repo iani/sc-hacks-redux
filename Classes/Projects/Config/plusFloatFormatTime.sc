@@ -6,10 +6,18 @@
 
 + SimpleNumber {
 	formatTime {
-		var hrs, mins;
+		var hrs, mins, hString, mString;
 		hrs = (this / 60 / 60).floor;
 		mins = (this - (hrs * 60 * 60) / 60).floor;
-		^format("%:%:%", hrs.asInteger, mins.asInteger, this % 60);
+		hrs = hrs.asInteger;
+		mins = mins.asInteger;
+		if (hrs == 0) { hString = "" } { hString = format("%:", hrs) };
+		if(mins == 0) {
+			if (hrs > 0) { hString = hString ++ "0:" }
+		}{
+			hString = hString ++ format("%:", mins);
+		};
+		^hString ++ (this % 60).round(0.001).asString;
 	}
 	hrs { ^this * 60 * 60 }
 	mins { ^this * 60 }
