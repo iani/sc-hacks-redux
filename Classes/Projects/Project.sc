@@ -257,17 +257,22 @@ Project {
 							rate = file.sampleRate;
 							frames = file.numFrames;
 							chan = file.numChannels;
-
 						});
 						format("% : % ch, % Hz, % sec",
 							p.fileName, chan, rate, ((frames/rate) round: 0.001).formatTime
 						)
 					})
 				)
-				.enterKeyAction_({ | me |
+				.enterKeyAction_({ | me ... args |
 					// must write method to play the file from disk
 					// to enable browsing audio files even if they are not yet loaded.
+					SoundFile(localAudioFiles[me.value].fullPath).postln.cue(playNow: true);
 				})
+				.keyDownAction_({ | me key |
+					if (key === Char.space) { CmdPeriod.run }
+				}),
+				Button().states_([["Stop Synths and Routines (space)"]])
+				.action_({ CmdPeriod.run })
 			)
 		});
 	}
