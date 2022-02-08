@@ -151,53 +151,55 @@ Project {
 	}
 
 	*gui {
-		this.window({ | w |
-			w.name = "Projects in ~/" ++ startupFolder;
-			w.layout = HLayout(
-				VLayout(
-					StaticText().string_("Projects"),
-					ListView()
-					.hiliteColor_(Color(0.9, 0.9, 1.0))
-					.addNotifier(this, \projects, { | n |
-						// postf("% will set my items to projects: %\n", n.listener, projects);
-						n.listener.items =  projects.collect(_.folderName);
-					})
-					.enterKeyAction_({ | me |
-						this.selectProject(projects[me.value]);
-					}),
-					Button().states_([["-"]])
-					.addNotifier(this, \selectedProject, { | n |
-						n.listener.states_([[selectedProject.folderName]])
-					})
-				),
-				VLayout(
-					StaticText().string_("Project Items"),
-					ListView()
-					.hiliteColor_(Color(0.9, 0.9, 1.0))
-					.addNotifier(this, \projectItems, { | n |
-						n.listener.items = projectItems.collect({ | i |
-							if (i.isFolder) {
-								i.folderName
-							}{
-								i.fileNameWithoutExtension
-							}
+		{
+			this.window({ | w |
+				w.name = "Projects in ~/" ++ startupFolder;
+				w.layout = HLayout(
+					VLayout(
+						StaticText().string_("Projects"),
+						ListView()
+						.hiliteColor_(Color(0.9, 0.9, 1.0))
+						.addNotifier(this, \projects, { | n |
+							// postf("% will set my items to projects: %\n", n.listener, projects);
+							n.listener.items =  projects.collect(_.folderName);
 						})
-					})
-					.enterKeyAction_({ | me |
-						postf("Loading selected item: %\n", projectItems[me.value]);
-						this.runProjectItem(projectItems[me.value]);
-					}),
-					Button().states_([["-"]])
-					.addNotifier(this, \selectedProject, { | n |
-						n.listener.states_([["-"]])
-					})
-					.addNotifier(this, \selectedProjectItem, { | n |
-						n.listener.states_([[this.selectedProjectItemName]])
-					})
-				)
-			);
-			this.getProjects;
-		});
+						.enterKeyAction_({ | me |
+							this.selectProject(projects[me.value]);
+						}),
+						Button().states_([["-"]])
+						.addNotifier(this, \selectedProject, { | n |
+							n.listener.states_([[selectedProject.folderName]])
+						})
+					),
+					VLayout(
+						StaticText().string_("Project Items"),
+						ListView()
+						.hiliteColor_(Color(0.9, 0.9, 1.0))
+						.addNotifier(this, \projectItems, { | n |
+							n.listener.items = projectItems.collect({ | i |
+								if (i.isFolder) {
+									i.folderName
+								}{
+									i.fileNameWithoutExtension
+								}
+							})
+						})
+						.enterKeyAction_({ | me |
+							postf("Loading selected item: %\n", projectItems[me.value]);
+							this.runProjectItem(projectItems[me.value]);
+						}),
+						Button().states_([["-"]])
+						.addNotifier(this, \selectedProject, { | n |
+							n.listener.states_([["-"]])
+						})
+						.addNotifier(this, \selectedProjectItem, { | n |
+							n.listener.states_([[this.selectedProjectItemName]])
+						})
+					)
+				);
+				this.getProjects;
+			});
+		}.fork(AppClock);
 	}
 
 	*getProjects {

@@ -12,7 +12,7 @@ All sc-hacks-redux operators for all classes, in one file.
 + Function {
 	+> {| envir, player |
 		// TODO: add arguments setting, bus mapping
-		currentEnvironment[envir] = this.play.onStart({});
+		currentEnvironment[envir] = this.play.onStart({}); // onStart: init running status!
 	}
 }
 
@@ -24,6 +24,10 @@ All sc-hacks-redux operators for all classes, in one file.
 
 
 + Symbol {
+	+> { | envir, player |
+		currentEnvironment[envir] = Synth(this).onStart({}); // onStart: init running status!
+    }
+
 	push {
 		^Mediator.fromLib(this).push;
 	}
