@@ -187,14 +187,17 @@ Project {
 						.hiliteColor_(Color(0.9, 0.9, 1.0))
 						.addNotifier(this, \projects, { | n |
 							// postf("% will set my items to projects: %\n", n.listener, projects);
-							n.listener.items =  projects.collect(_.folderName);
+							{ n.listener.items =  projects.collect(_.folderName); }.defer;
 						})
 						.selectionAction_({ | me |
 							this.selectProject(projects[me.value]);
 						}),
 						Button().states_([["-"]])
 						.addNotifier(this, \selectedProject, { | n |
-							n.listener.states_([[selectedProject.folderName]])
+							{ n.listener.states_([[selectedProject.folderName]]) }.defer;
+						})
+						.action_({
+							this.broadcastSelectedProject;
 						})
 					),
 					VLayout(
@@ -202,6 +205,7 @@ Project {
 						ListView()
 						.hiliteColor_(Color(0.9, 0.9, 1.0))
 						.addNotifier(this, \projectItems, { | n |
+							{
 							n.listener.items = projectItems.collect({ | i |
 								if (i.isFolder) {
 									i.folderName
@@ -209,6 +213,7 @@ Project {
 									i.fileNameWithoutExtension
 								}
 							})
+							}.defer;
 						})
 						.selectionAction_({ | me |
 							this.selectProjectItem(projectItems[me.value]);
@@ -220,11 +225,11 @@ Project {
 						HLayout(
 							Button().states_([["-"]])
 							.addNotifier(this, \selectedProject, { | n |
-								n.listener.states_([["-"]])
+								{ n.listener.states_([["-"]]) }.defer;
 							})
 							.action_({ this.loadSelectedProjectItem })
 							.addNotifier(this, \selectedProjectItem, { | n |
-								n.listener.states_([[this.selectedProjectItemName]])
+								{ n.listener.states_([[this.selectedProjectItemName]]) }.defer;
 							}),
 							Button().maxWidth_(30).states_([["O"]])
 							.action_({ this.openSelectedProjectItem })
@@ -234,6 +239,22 @@ Project {
 				this.getProjects;
 			});
 		}.fork(AppClock);
+	}
+
+	*broadcastSelectedProject {
+		var pathname;
+		OscGroups.enable;
+		"Broadcasting selected project ".postln;
+		pathname = format("PathName(%)", Project.selectedProject.fullPath.asCompileString);
+		pathname.postln;
+		format("Project.selectProject(%)", pathname).postln;
+		format("Project.selectProject(%)", pathname).interpret;
+
+		// OscGroups.forceBroadcastCode("10000.rand.postln;");
+		OscGroups.forceBroadcastCode(format("Project.selectProject(%)", pathname));
+		// "Project.selectedProject.postln".interpret;
+		// format("Project.selectProject(%);", selectedProject.asCompileString).interpret;
+		// "Project.selectedProject.postln".interpret;
 	}
 
 	*getProjects {

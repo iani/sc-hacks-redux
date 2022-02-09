@@ -70,6 +70,12 @@ OscGroups {
 		this.changed(\status);
 	}
 
+	*forceBroadcastCode { | string |
+		// send string to sendAddress independently of current status.
+		// Sends even if OscGroups is disabled.
+		sendAddress.sendMsg(\code, string);
+	}
+
 	*runLocally { | func |
 		this.disableCodeBroadcasting;
 		func.value;
