@@ -263,8 +263,9 @@ Project {
 	}
 	*selectProject { | projectPathname |
 		selectedProject = projectPathname;
-		this.getProjectItems;
-		this.changed(\selectedProject);
+		postf("the selected project is: %\n", selectedProject);
+		// this.getProjectItems;
+		// this.changed(\selectedProject);
 	}
 	*getProjectItems {
 		postf("testing getProjectItems.  selectedProject is: %\n", selectedProject);
