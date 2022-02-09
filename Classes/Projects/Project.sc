@@ -67,7 +67,7 @@ Project {
 	*globalProjectPath { ^this.projectHomePath +/+ globalFolder }
 	*globalAudiofilePath { ^this.globalProjectPath +/+ "audiofiles" }
 	*globalSynthdefPath { ^this.globalProjectPath +/+ "synthdefs" }
-	*globalStartupFilePath { ^this.projectHomePath +/+ "startup.scd" }
+	*globalStartupFilePath { ^this.globalProjectPath +/+ "startup.scd" }
 	/*
 	*localAudiofilePath {
 		if (selectedProject.isNil) { ^nil };
