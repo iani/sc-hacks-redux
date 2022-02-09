@@ -180,7 +180,7 @@ Project {
 							// postf("% will set my items to projects: %\n", n.listener, projects);
 							n.listener.items =  projects.collect(_.folderName);
 						})
-						.enterKeyAction_({ | me |
+						.selectionAction_({ | me |
 							this.selectProject(projects[me.value]);
 						}),
 						Button().states_([["-"]])
@@ -201,17 +201,25 @@ Project {
 								}
 							})
 						})
+						.selectionAction_({ | me |
+							this.selectProjectItem(projectItems[me.value]);
+						})
 						.enterKeyAction_({ | me |
 							postf("Loading selected item: %\n", projectItems[me.value]);
-							this.runProjectItem(projectItems[me.value]);
+							this.loadSelectedProjectItem;
 						}),
-						Button().states_([["-"]])
-						.addNotifier(this, \selectedProject, { | n |
-							n.listener.states_([["-"]])
-						})
-						.addNotifier(this, \selectedProjectItem, { | n |
-							n.listener.states_([[this.selectedProjectItemName]])
-						})
+						HLayout(
+							Button().states_([["-"]])
+							.addNotifier(this, \selectedProject, { | n |
+								n.listener.states_([["-"]])
+							})
+							.action_({ this.loadSelectedProjectItem })
+							.addNotifier(this, \selectedProjectItem, { | n |
+								n.listener.states_([[this.selectedProjectItemName]])
+							}),
+							Button().maxWidth_(30).states_([["O"]])
+							.action_({ this.openSelectedProjectItem })
+						)
 					)
 				);
 				this.getProjects;
@@ -223,8 +231,8 @@ Project {
 		projects = this.projectHomePath.entries.select(_.isFolder);
 		this.changed(\projects);
 	}
-	*selectProject { | projectPathName |
-		selectedProject = projectPathName;
+	*selectProject { | projectPathname |
+		selectedProject = projectPathname;
 		this.getProjectItems;
 		this.changed(\selectedProject);
 	}
@@ -233,28 +241,36 @@ Project {
 		projectItems = selectedProject.entries.reject({ | e | e.isFile and: { e.extension != "scd" } });
 		this.changed(\projectItems);
 	}
-	*runProjectItem { | projectItem |
+
+	*selectProjectItem { | projectItem |
 		selectedProjectItem = projectItem;
-		if(selectedProjectItem.isFolder) {
-			postf("folder name is: %, and audiofiles match is: %\n",
-			projectItem.folderName, projectItem.folderName == "audiofiles"
-			);
-			if (projectItem.folderName == "audiofiles") {
-				this.audiofilesGui(projectItem)
-			}{
-			postf("Running items in folder: %\n", selectedProjectItem.fullPath);
-			this.loadScdFiles(selectedProjectItem);
-			}
-			// selectedProjectItem.filesDo({ | f |
-			// 	postf("loading file: %\n", f.fileName);
-			// 	f.fullPath.load;
-			// })
-	}{
-			postf("loading file: %\n", selectedProjectItem.fileName);
-			selectedProjectItem.fullPath.load;
-		};
 		this.changed(\selectedProjectItem);
 	}
+
+	*loadSelectedProjectItem {
+		postf("loading project item: %\n", selectedProjectItem);
+		// TODO: TRANSLATE FOLLOWING PSEUDOCODE TO sclang
+		/*
+		if (selectedProjectItem.isFolder) {
+			if (this.isAudioFileFolder(selectedProjectItem) {
+			      this.loadAudioFiles(selectedProjectItem);
+			}{
+       			postf("% is a folder. opening extra window");
+			    this.openFolderInSeparateWindow(selectedProjectItem);
+			}
+		}
+		*/
+	}
+
+	*isAudioFileFolder { | pathName |
+		// TODO: check implementation!
+		^pathName.isFolder and: { pathName.baseName == "audiofiles" };
+	}
+
+	*openSelectedProjectItem { | projectItem |
+		postf("opening project item: %\n", selectedProjectItem);
+	}
+	
 	*selectedProjectItemName {
 		if(selectedProjectItem.isFolder) {
 			^selectedProjectItem.folderName

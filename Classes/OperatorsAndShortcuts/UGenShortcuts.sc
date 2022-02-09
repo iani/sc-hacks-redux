@@ -21,5 +21,10 @@ To explore:
 		Env.adsr(attackTime, decayTime, sustainLevel, releaseTime, peakLevel, curve, bias)
 		.kr(doneAction: 2, gate: \gate.kr(1))
 	}
-
+	// attackTime=0.01, releaseTime=1.0, level=1.0, curve = -4.0
+	perc { | attackTime=0.01, releaseTime=1.0, level=1.0, curve = -4.0 |
+		^this *
+		Env.perc(attackTime, releaseTime, level, curve)
+		.kr(doneAction: 2, gate: \gate.kr(1))
+	}
 }
