@@ -39,6 +39,9 @@ Project {
 
 	*initClass {
 		StartUp add: {
+			OscGroups runLocally: {
+				this.globalStartupFilePath.fullPath.pathMatch do: _.load
+			};
 			Server.default doWhenReallyBooted:  { | server |
 		 		this.loadGlobalBuffers;
 				server.sync;
@@ -55,13 +58,17 @@ Project {
 				"====== The default server quit ======".postln;
 				"Removing buffer entries from lib".postln;
 				Library.put(Buffer, nil);
-			}
+			};
+
 	 	}
 	}
 
 	*matchingFilesDo { | pathName, func ... types |
 		types = types collect: _.asSymbol;
 		if (pathName.isNil) { ^nil };
+		"debugging matchingfiles do for startup".postln;
+		pathName.postln;
+		pathName.files.postln;
 		pathName filesDo: { | p | // ! filesDo recurses over subfolders!
 			// postf("types is: %, extension is: %\n", types, p.extension);
 			if (types includes: p.extension.asSymbol) {
@@ -119,6 +126,7 @@ Project {
 	*globalProjectPath { ^this.projectHomePath +/+ globalFolder }
 	*globalAudiofilePath { ^this.globalProjectPath +/+ "audiofiles" }
 	*globalSynthdefPath { ^this.globalProjectPath +/+ "synthdefs" }
+	*globalStartupFilePath { ^this.projectHomePath +/+ "startup.scd" }
 
 	*localAudiofilePath {
 		if (selectedProject.isNil) { ^nil };
