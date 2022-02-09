@@ -63,6 +63,32 @@ Project {
 	 	}
 	}
 
+	*projectHomePath { ^PathName(Platform.userHomeDir +/+ startupFolder); }
+	*globalProjectPath { ^this.projectHomePath +/+ globalFolder }
+	*globalAudiofilePath { ^this.globalProjectPath +/+ "audiofiles" }
+	*globalSynthdefPath { ^this.globalProjectPath +/+ "synthdefs" }
+	*globalStartupFilePath { ^this.projectHomePath +/+ "startup.scd" }
+	/*
+	*localAudiofilePath {
+		if (selectedProject.isNil) { ^nil };
+		^selectedProject +/+ "audiofiles";
+	}
+
+	*localSynthdefPath {
+		if (selectedProject.isNil) { ^nil };
+		^selectedProject +/+ "synthdefs";
+	}
+
+	*getAudioFilePaths { | pathName |
+		// return PathNames of all audiofiles
+		// contained in folder pathName or its subfolders
+		var types;
+		types = ['wav', 'WAV', 'aif', 'aiff'];
+		^pathName.deepFiles select: { | p | types includes: p.extension.asSymbol }
+	}
+
+	*/
+
 	*matchingFilesDo { | pathName, func ... types |
 		types = types collect: _.asSymbol;
 		if (pathName.isNil) { ^nil };
@@ -87,8 +113,17 @@ Project {
 		)
 	}
 
+	*loadScdFile { | pathName |
+		if (pathName.extension == "scd") {
+			pathName.fullPath.load;
+		}{
+			postf("% is not an scd file.\n", pathName.fileName);
+		}
+	}
+
 	*loadScdFiles { | pathName, broadcast = true |
 		var restoreBroadcasting;
+		// FIXME: Perhaps broadcast switching should be done a different way.
 		restoreBroadcasting = OscGroups.isBroadcasting;
 		if (broadcast.not) { OscGroups.disableCodeBroadcasting };
 		this.matchingFilesDo(
@@ -122,12 +157,6 @@ Project {
 		this.loadScdFiles(this.localSynthdefPath, false);
 	}
 
-	*projectHomePath { ^PathName(Platform.userHomeDir +/+ startupFolder); }
-	*globalProjectPath { ^this.projectHomePath +/+ globalFolder }
-	*globalAudiofilePath { ^this.globalProjectPath +/+ "audiofiles" }
-	*globalSynthdefPath { ^this.globalProjectPath +/+ "synthdefs" }
-	*globalStartupFilePath { ^this.projectHomePath +/+ "startup.scd" }
-
 	*localAudiofilePath {
 		if (selectedProject.isNil) { ^nil };
 		^selectedProject +/+ "audiofiles";
@@ -146,26 +175,6 @@ Project {
 		^pathName.deepFiles select: { | p | types includes: p.extension.asSymbol }
 	}
 
-
-	*scdFilesDo { | pathName, func |
-
-	}
-
-	*globalAudioFiles {
-
-	}
-
-	*globalSynthdefFiles {
-
-	}
-
-	*localAudioFiles {
-
-	}
-
-	*localSynthdefFiles {
-
-	}
 
 	*gui {
 		{
@@ -249,22 +258,27 @@ Project {
 
 	*loadSelectedProjectItem {
 		postf("loading project item: %\n", selectedProjectItem);
-		// TODO: TRANSLATE FOLLOWING PSEUDOCODE TO sclang
-		/*
+		// selectedProjectItem.fullPath.postln;
+		// selectedProjectItem.isFolder.postln;
+
 		if (selectedProjectItem.isFolder) {
-			if (this.isAudioFileFolder(selectedProjectItem) {
-			      this.loadAudioFiles(selectedProjectItem);
+			// selectedProjectItem.folderName.postln;
+			if (this.isAudioFileFolder(selectedProjectItem)) {
+				this.loadLocalBuffers;
 			}{
-       			postf("% is a folder. opening extra window");
-			    this.openFolderInSeparateWindow(selectedProjectItem);
+				this.loadScdFiles(selectedProjectItem);
 			}
+		} {
+			this.loadScdFile(selectedProjectItem);
 		}
-		*/
+
 	}
 
 	*isAudioFileFolder { | pathName |
 		// TODO: check implementation!
-		^pathName.isFolder and: { pathName.baseName == "audiofiles" };
+		^pathName.isFolder and: {
+			pathName.folderName == "audiofiles"
+		};
 	}
 
 	*openSelectedProjectItem { | projectItem |
@@ -311,4 +325,11 @@ Project {
 			)
 		});
 	}
+	// some early drafts.
+	*scdFilesDo { | pathName, func | }
+	*globalAudioFiles { }
+	*globalSynthdefFiles { }
+	*localAudioFiles { }
+	*localSynthdefFiles { }
+
 }
