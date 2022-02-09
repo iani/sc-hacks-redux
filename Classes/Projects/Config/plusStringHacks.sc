@@ -56,7 +56,7 @@ Utility: Iterate an action on all files that match a search.
 		}{
 			buffer = Buffer.readWithInfo(server, this);
 			buffer !? {
-				postf("buffer %, % channels, % seconds\n",
+				postf("Loaded buffer %, % channels, %\n",
 					name, buffer.numChannels, buffer.dur.formatTime);
 				Library.put(Buffer, name, buffer)
 			};

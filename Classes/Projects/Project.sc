@@ -40,7 +40,7 @@ Project {
 	*initClass {
 		StartUp add: {
 			Server.default doWhenReallyBooted:  { | server |
-				this.loadGlobalBuffers;
+		 		this.loadGlobalBuffers;
 				server.sync;
 				this.loadLocalBuffers;
 				server.sync;
@@ -50,6 +50,11 @@ Project {
 				this.loadLocalSynthdefs;
 				server.sync;
 				postf("% finished loading synthdefs\n", server);
+			};
+			ServerQuit add: {
+				"====== The default server quit ======".postln;
+				"Removing buffer entries from lib".postln;
+				Library.put(Buffer, nil);
 			}
 	 	}
 	}
@@ -75,7 +80,10 @@ Project {
 		)
 	}
 
-	*loadScdFiles { | pathName |
+	*loadScdFiles { | pathName, broadcast = true |
+		var restoreBroadcasting;
+		restoreBroadcasting = OscGroups.isBroadcasting;
+		if (broadcast.not) { OscGroups.disableCodeBroadcasting };
 		this.matchingFilesDo(
 			pathName,
 			{ | p |
@@ -84,6 +92,7 @@ Project {
 			},
 			"scd"
 		);
+		if (restoreBroadcasting) { OscGroups.enableCodeBroadcasting }
 	}
 
 	*loadGlobalBuffers {
@@ -98,12 +107,12 @@ Project {
 
 	*loadGlobalSynthdefs {
 		"loading global synthdefs".postln;
-		this.loadScdFiles(this.globalSynthdefPath);
+		this.loadScdFiles(this.globalSynthdefPath, false);
 	}
 
 	*loadLocalSynthdefs {
 		"loading local synthdefs".postln;
-		this.loadScdFiles(this.localSynthdefPath);
+		this.loadScdFiles(this.localSynthdefPath, false);
 	}
 
 	*projectHomePath { ^PathName(Platform.userHomeDir +/+ startupFolder); }
@@ -278,5 +287,4 @@ Project {
 			)
 		});
 	}
-
 }

@@ -11,13 +11,13 @@
 		mins = (this - (hrs * 60 * 60) / 60).floor;
 		hrs = hrs.asInteger;
 		mins = mins.asInteger;
-		if (hrs == 0) { hString = "" } { hString = format("%:", hrs) };
+		if (hrs == 0) { hString = "" } { hString = format("%h:", hrs) };
 		if(mins == 0) {
-			if (hrs > 0) { hString = hString ++ "0:" }
+			if (hrs > 0) { hString = hString ++ "0'" }
 		}{
-			hString = hString ++ format("%:", mins);
+			hString = hString ++ format("%'", mins);
 		};
-		^hString ++ (this % 60).round(0.001).asString;
+		^hString ++ (this % 60).round(0.001).asString ++ "\"";
 	}
 	hrs { ^this * 60 * 60 }
 	mins { ^this * 60 }
