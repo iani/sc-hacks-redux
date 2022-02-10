@@ -63,6 +63,15 @@ Project {
 	 	}
 	}
 
+	*getProjects {
+		projects = this.projectHomePath.folders collect: { | p | p.folderName.asSymbol };
+		if (projects.size == 0) {
+			Warn(format("ERROR: No projects found in %\n", this.projectHomePath.fullPath))
+		}{
+			this changed: \projects;
+		}
+	}
+
 	*projectHomePath { ^PathName(Platform.userHomeDir +/+ startupFolder); }
 	*globalProjectPath { ^this.projectHomePath +/+ globalFolder }
 	*globalAudiofilePath { ^this.globalProjectPath +/+ "audiofiles" }
@@ -91,12 +100,7 @@ Project {
 
 	*matchingFilesDo { | pathName, func ... types |
 		types = types collect: _.asSymbol;
-		if (pathName.isNil) { ^nil };
-		"debugging matchingfiles do for startup".postln;
-		pathName.postln;
-		pathName.files.postln;
 		pathName filesDo: { | p | // ! filesDo recurses over subfolders!
-			// postf("types is: %, extension is: %\n", types, p.extension);
 			if (types includes: p.extension.asSymbol) {
 				func.(p.fullPath)
 			}{
@@ -177,6 +181,7 @@ Project {
 
 
 	*gui {
+		// "OPPENING PROJECT GUI".postln;	//
 		{
 			this.window({ | w |
 				w.name = "Projects in ~/" ++ startupFolder;
@@ -186,15 +191,16 @@ Project {
 						ListView()
 						.hiliteColor_(Color(0.9, 0.9, 1.0))
 						.addNotifier(this, \projects, { | n |
-							// postf("% will set my items to projects: %\n", n.listener, projects);
-							{ n.listener.items =  projects.collect(_.folderName); }.defer;
+							n.listener.items = projects;
+							this.selectProject;
 						})
 						.selectionAction_({ | me |
 							this.selectProject(projects[me.value]);
-						}),
+						})
+						.enterKeyAction_({ this.broadcastSelectedProject }),
 						Button().states_([["-"]])
 						.addNotifier(this, \selectedProject, { | n |
-							{ n.listener.states_([[selectedProject.folderName]]) }.defer;
+							n.listener.states_([[selectedProject]]);
 						})
 						.action_({
 							this.broadcastSelectedProject;
@@ -205,7 +211,6 @@ Project {
 						ListView()
 						.hiliteColor_(Color(0.9, 0.9, 1.0))
 						.addNotifier(this, \projectItems, { | n |
-							{
 							n.listener.items = projectItems.collect({ | i |
 								if (i.isFolder) {
 									i.folderName
@@ -213,7 +218,6 @@ Project {
 									i.fileNameWithoutExtension
 								}
 							})
-							}.defer;
 						})
 						.selectionAction_({ | me |
 							this.selectProjectItem(projectItems[me.value]);
@@ -225,11 +229,11 @@ Project {
 						HLayout(
 							Button().states_([["-"]])
 							.addNotifier(this, \selectedProject, { | n |
-								{ n.listener.states_([["-"]]) }.defer;
+								n.listener.states_([["-"]]);
 							})
 							.action_({ this.loadSelectedProjectItem })
 							.addNotifier(this, \selectedProjectItem, { | n |
-								{ n.listener.states_([[this.selectedProjectItemName]]) }.defer;
+								n.listener.states_([[this.selectedProjectItemName]]);
 							}),
 							Button().maxWidth_(30).states_([["O"]])
 							.action_({ this.openSelectedProjectItem })
@@ -242,36 +246,30 @@ Project {
 	}
 
 	*broadcastSelectedProject {
-		var pathname;
-		OscGroups.enable;
-		"Broadcasting selected project ".postln;
-		pathname = format("PathName(%)", Project.selectedProject.fullPath.asCompileString);
-		pathname.postln;
-		format("Project.selectProject(%)", pathname).postln;
-		format("Project.selectProject(%)", pathname).interpret;
-
-		// OscGroups.forceBroadcastCode("10000.rand.postln;");
-		OscGroups.forceBroadcastCode(format("Project.selectProject(%)", pathname));
-		// "Project.selectedProject.postln".interpret;
-		// format("Project.selectProject(%);", selectedProject.asCompileString).interpret;
-		// "Project.selectedProject.postln".interpret;
+		postf("Broadcasting selected project %\n", selectedProject);
+		// Send to OscGroups net address even if OscGroups is disabled:
+		OscGroups.forceBroadcastCode(
+			format("Project.selectProject(%)", selectedProject.asCompileString)
+		);
 	}
 
-	*getProjects {
-		projects = this.projectHomePath.entries.select(_.isFolder);
-		this.changed(\projects);
-	}
-	*selectProject { | projectPathname |
-		selectedProject = projectPathname;
+	*selectProject { | projectName |
+		selectedProject = projectName;
 		postf("the selected project is: %\n", selectedProject);
 		this.getProjectItems;
 		projectItems.postln;
-		// this.changed(\selectedProject);
+		this.changed(\selectedProject);
 	}
+
 	*getProjectItems {
-		postf("testing getProjectItems.  selectedProject is: %\n", selectedProject);
-		projectItems = selectedProject.entries.reject({ | e | e.isFile and: { e.extension != "scd" } });
+		projectItems = this.selectedProjectPath.entries.reject({ | e |
+			e.isFile and: { e.extension != "scd" }
+		});
 		this.changed(\projectItems);
+	}
+
+	*selectedProjectPath {
+		^this.projectHomePath +/+ selectedProject.asString;
 	}
 
 	*selectProjectItem { | projectItem |
@@ -306,8 +304,13 @@ Project {
 
 	*openSelectedProjectItem { | projectItem |
 		postf("opening project item: %\n", selectedProjectItem);
+		if (Platform.ideName == "scel") {
+			ScelDocument.open(selectedProjectItem.fullPath);
+		}{
+			Document.open(selectedProjectItem.fullPath)
+		}
 	}
-	
+
 	*selectedProjectItemName {
 		if(selectedProjectItem.isFolder) {
 			^selectedProjectItem.folderName

@@ -38,9 +38,8 @@ OscGroups {
 
 	*init {
 		"INITING OSCGROUPS =====================================".postln;
-		sendAddress ?? {
-			"To enable OscGroups evaluate:\nOscGroups.enable;\n".postln;
-		}
+		sendAddress = NetAddr("127.0.0.1", oscSendPort);
+		"To enable OscGroups evaluate:\nOscGroups.enable;\n".postln;
 	}
 
 	*enable {

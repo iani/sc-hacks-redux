@@ -77,7 +77,10 @@ Transferred from sc-hacks.
 
 + View {
 	addNotifier { | notifier, message, action |
-		super.addNotifier(notifier, message, action);
+		super.addNotifier(notifier, message, { | ... args |
+		// defer needed when called from OSC or other SystemClock based process
+			{ action.value(*args) }.defer
+		});
 		// release view when closed
 		this.onClose = { this.objectClosed };
     }
