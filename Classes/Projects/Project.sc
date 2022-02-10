@@ -161,7 +161,17 @@ Project {
 				w.name = "Projects in ~/" ++ startupFolder;
 				w.layout = HLayout(
 					VLayout(
-						StaticText().string_("Projects"),
+						HLayout(
+							StaticText().string_("Projects"),
+							Button()
+							.states_([
+								["Boot", Color.green],
+								["Quit", Color.red]
+							])
+							.action_({ | me |
+
+							});
+						),
 						ListView()
 						.hiliteColor_(Color(0.9, 0.9, 1.0))
 						.addNotifier(this, \projects, { | n |
@@ -286,9 +296,9 @@ Project {
 
 	}
 
-	*openSelectedProjectItem { | projectItem |
+	*openSelectedProjectItem {
 		var path;
-		path = projectItem.fullPath;
+		path = selectedProjectItem.fullPath;
 		postf("opening: %\n", path);
 		if (selectedProjectItem.isFolder) {
 			this.openFolder(selectedProjectItem.fullPath);
