@@ -194,6 +194,9 @@ Project {
 							n.listener.items = projects;
 							this.selectProject;
 						})
+						.addNotifier(this, \selectedProject, { | n |
+							n.listener.value_(projects indexOf: selectedProject);
+						})
 						.selectionAction_({ | me |
 							this.selectProject(projects[me.value]);
 						})
