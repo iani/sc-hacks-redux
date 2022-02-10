@@ -76,30 +76,13 @@ Project {
 	*globalProjectPath { ^this.projectHomePath +/+ globalFolder }
 	*globalAudiofilePath { ^this.globalProjectPath +/+ "audiofiles" }
 	*globalSynthdefPath { ^this.globalProjectPath +/+ "synthdefs" }
+	*localSynthdefPath { ^this.selectedProjectPath +/+ "synthdefs" }
 	*globalStartupFilePath { ^this.globalProjectPath +/+ "startup.scd" }
-	/*
-	*localAudiofilePath {
-		if (selectedProject.isNil) { ^nil };
-		^selectedProject +/+ "audiofiles";
-	}
-
-	*localSynthdefPath {
-		if (selectedProject.isNil) { ^nil };
-		^selectedProject +/+ "synthdefs";
-	}
-
-	*getAudioFilePaths { | pathName |
-		// return PathNames of all audiofiles
-		// contained in folder pathName or its subfolders
-		var types;
-		types = ['wav', 'WAV', 'aif', 'aiff'];
-		^pathName.deepFiles select: { | p | types includes: p.extension.asSymbol }
-	}
-
-	*/
 
 	*matchingFilesDo { | pathName, func ... types |
 		types = types collect: _.asSymbol;
+		postf("Looking for files in %\n", pathName);
+		(pathName +/+ "*").fullPath.pathMatch.postln;
 		pathName filesDo: { | p | // ! filesDo recurses over subfolders!
 			if (types includes: p.extension.asSymbol) {
 				func.(p.fullPath)
@@ -147,7 +130,7 @@ Project {
 	}
 
 	*loadLocalBuffers {
-		"loading local buffers".postln;
+		postf("loading local buffers from: %\n", this.localAudiofilePath);
 		this.loadAudioFiles(this.localAudiofilePath);
 	}
 
@@ -161,15 +144,8 @@ Project {
 		this.loadScdFiles(this.localSynthdefPath, false);
 	}
 
-	*localAudiofilePath {
-		if (selectedProject.isNil) { ^nil };
-		^selectedProject +/+ "audiofiles";
-	}
-
-	*localSynthdefPath {
-		if (selectedProject.isNil) { ^nil };
-		^selectedProject +/+ "synthdefs";
-	}
+	*localAudiofilePath { ^this.selectedProjectPath +/+ "audiofiles"; }
+	// *localSynthdefPath { ^this.selectedProjectPath +/+ "synthdefs"; }
 
 	*getAudioFilePaths { | pathName |
 		// return PathNames of all audiofiles
@@ -179,9 +155,7 @@ Project {
 		^pathName.deepFiles select: { | p | types includes: p.extension.asSymbol }
 	}
 
-
 	*gui {
-		// "OPPENING PROJECT GUI".postln;	//
 		{
 			this.window({ | w |
 				w.name = "Projects in ~/" ++ startupFolder;
@@ -195,7 +169,9 @@ Project {
 							this.selectProject;
 						})
 						.addNotifier(this, \selectedProject, { | n |
-							n.listener.value_(projects indexOf: selectedProject);
+							n.listener.value_(
+								projects.indexOf(selectedProject) ? 0
+							);
 						})
 						.selectionAction_({ | me |
 							this.selectProject(projects[me.value]);
@@ -288,7 +264,7 @@ Project {
 		if (selectedProjectItem.isFolder) {
 			// selectedProjectItem.folderName.postln;
 			if (this.isAudioFileFolder(selectedProjectItem)) {
-				this.loadLocalBuffers;
+				this.loadAudioFiles(selectedProjectItem);
 			}{
 				this.loadScdFiles(selectedProjectItem);
 			}
@@ -305,12 +281,35 @@ Project {
 		};
 	}
 
+	*loadProjectBuffers {
+		postf("Loading project buffers from: %\n", selectedProjectItem.fullPath);
+
+	}
+
 	*openSelectedProjectItem { | projectItem |
-		postf("opening project item: %\n", selectedProjectItem);
-		if (Platform.ideName == "scel") {
-			ScelDocument.open(selectedProjectItem.fullPath);
+		var path;
+		path = projectItem.fullPath;
+		postf("opening: %\n", path);
+		if (selectedProjectItem.isFolder) {
+			this.openFolder(selectedProjectItem.fullPath);
 		}{
-			Document.open(selectedProjectItem.fullPath)
+			this.openFile(path);
+		}
+	}
+
+	*openFolder { | path |
+		if (this.isAudioFileFolder(path)) {
+			this loadAudioBuffers: path;
+		}{
+			this loadScdFiles: path;
+		}
+	}
+
+	*openFile { | path |
+		if (Platform.ideName == "scel") {
+			ScelDocument.open(path);
+		}{
+			Document.open(path)
 		}
 	}
 
