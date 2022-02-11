@@ -136,12 +136,16 @@ Project {
 
 	*loadGlobalSynthdefs {
 		"loading global synthdefs".postln;
+		OscGroups.disableCodeBroadcasting;
 		this.loadScdFiles(this.globalSynthdefPath, false);
+		OscGroups.enableCodeBroadcasting;
 	}
 
 	*loadLocalSynthdefs {
 		"loading local synthdefs".postln;
-		this.loadScdFiles(this.localSynthdefPath, false);
+		OscGroups.disableCodeBroadcasting;
+		this.loadScdFiles(this.localSynthdefPath);
+		OscGroups.enableCodeBroadcasting;
 	}
 
 	*localAudiofilePath { ^this.selectedProjectPath +/+ "audiofiles"; }
@@ -164,13 +168,9 @@ Project {
 						HLayout(
 							StaticText().string_("Projects"),
 							Button()
-							.states_([
-								["Boot", Color.green],
-								["Quit", Color.red]
-							])
-							.action_({ | me |
-
-							});
+							.maxWidth_(30)
+							.states_([["*", Color.red, Color.black]])
+							.action_({ | me | this.startProjectInGroup });
 						),
 						ListView()
 						.hiliteColor_(Color(0.9, 0.9, 1.0))
@@ -196,7 +196,24 @@ Project {
 						})
 					),
 					VLayout(
-						StaticText().string_("Project Items"),
+						HLayout(
+							StaticText().string_("Project Items"),
+							// Button()
+							// .maxWidth_(30)
+							// .states_([
+							// 	["B", Color.black, Color.green],
+							// 	["Q", Color.black, Color.red]
+							// ])
+							// .action_({ | me |
+							// }
+							// ),
+							Button()
+							.maxWidth_(50)
+							.states_([
+								["Cmd-.", Color.black, Color.white]
+							])
+							.action_({ CmdPeriod.run }),
+						),
 						ListView()
 						.hiliteColor_(Color(0.9, 0.9, 1.0))
 						.addNotifier(this, \projectItems, { | n |
@@ -232,6 +249,17 @@ Project {
 				this.getProjects;
 			});
 		}.fork(AppClock);
+	}
+
+	*startProjectInGroup {
+		{
+			this.broadcastSelectedProject;
+			0.1.wait; // wait for everyone to switch project before booting;
+			Server.default.boot;
+			OscGroups.forceBroadcastCode(
+				"Server.default.boot;"
+			);
+		}.fork;
 	}
 
 	*broadcastSelectedProject {
