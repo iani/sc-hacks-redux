@@ -162,6 +162,7 @@ Project {
 	*gui {
 		{
 			this.window({ | w |
+				w.bounds = w.bounds.height_(300);
 				w.name = "Projects in ~/" ++ startupFolder;
 				w.layout = HLayout(
 					VLayout(
@@ -169,6 +170,7 @@ Project {
 							StaticText().string_("Projects"),
 							Button()
 							.maxWidth_(30)
+							.canFocus_(false)
 							.states_([["*", Color.red, Color.black]])
 							.action_({ | me | this.startProjectInGroup });
 						),
@@ -193,20 +195,35 @@ Project {
 						})
 						.action_({
 							this.broadcastSelectedProject;
-						})
+						}),
+						HLayout(
+							StaticText().string_("OscGroups:"),
+							Button()
+							.states_([["On"], ["Off"]])
+							.action_({ | me |
+								OscGroups.perform([
+									\enable,
+									\disable
+								][me.value]);
+							})
+							.addNotifier(OscGroups, \status, { | n |
+								// "Checking OscGroups gui status button".postln;
+								// n.notifier.postln;
+								postf(
+									"osc groups enabled? %\n",
+									n.notifier.isEnabled
+								);
+								if (n.notifier.isEnabled) {
+									n.listener.value = 0
+								}{
+									n.listener.value = 1
+								}
+							})
+						)
 					),
 					VLayout(
 						HLayout(
 							StaticText().string_("Project Items"),
-							// Button()
-							// .maxWidth_(30)
-							// .states_([
-							// 	["B", Color.black, Color.green],
-							// 	["Q", Color.black, Color.red]
-							// ])
-							// .action_({ | me |
-							// }
-							// ),
 							Button()
 							.maxWidth_(50)
 							.states_([
@@ -243,9 +260,38 @@ Project {
 							}),
 							Button().maxWidth_(30).states_([["O"]])
 							.action_({ this.openSelectedProjectItem })
+						),
+						HLayout(
+							StaticText().string_("Broadcasting:"),
+							Button()
+							.states_([["On"], ["Off"]])
+							.action_({ | me |
+								OscGroups.perform([
+									\enableCodeBroadcasting,
+									\disableCodeBroadcasting
+								][me.value]);
+							})
+							.addNotifier(OscGroups, \status, { | n |
+								// "Checking OscGroups gui broadcasting button".postln;
+								// n.notifier.postln;
+								postf(
+									"osc groups notifier? % broadcasting? %\n",
+									n.notifier.notifier,
+									n.notifier.isBroadcasting
+								);
+								if (n.notifier.isBroadcasting) {
+									n.listener.value = 0
+								}{
+									n.listener.value = 1
+								}
+							})
 						)
-					)
+					);
 				);
+				{
+					OscGroups.changed(\status);
+					"polled oscgroups status now".postln;
+				} .defer(0.15);
 				this.getProjects;
 			});
 		}.fork(AppClock);
@@ -253,7 +299,8 @@ Project {
 
 	*startProjectInGroup {
 		{
-			this.broadcastSelectedProject;
+			OscGroups.enable; // so we are ready here for what comes next
+			this.broadcastSelectedProject; // works also without enable. Just making sure
 			0.1.wait; // wait for everyone to switch project before booting;
 			Server.default.boot;
 			OscGroups.forceBroadcastCode(
