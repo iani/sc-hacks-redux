@@ -272,18 +272,22 @@ Project {
 								][me.value]);
 							})
 							.addNotifier(OscGroups, \status, { | n |
-								// "Checking OscGroups gui broadcasting button".postln;
-								// n.notifier.postln;
-								postf(
-									"osc groups notifier? % broadcasting? %\n",
-									n.notifier.notifier,
-									n.notifier.isBroadcasting
-								);
+								 if (n.notifier.isEnabled) {
+									n.listener.states_([
+										["On", Color.red, Color.black],
+										["Off", Color.gray, Color.black]
+									])
+								}{
+									n.listener.states_([
+										// ["On", Color.gray, Color.white],
+										["Off", Color.gray, Color.white]
+									])
+								};
 								if (n.notifier.isBroadcasting) {
 									n.listener.value = 0
 								}{
 									n.listener.value = 1
-								}
+								};
 							})
 						)
 					);
@@ -310,7 +314,7 @@ Project {
 	}
 
 	*broadcastSelectedProject {
-		postf("Broadcasting selected project %\n", selectedProject);
+		postf("\n**** Broadcasting selected project % ****\n\n", selectedProject);
 		// Send to OscGroups net address even if OscGroups is disabled:
 		OscGroups.forceBroadcastCode(
 			format("Project.selectProject(%)", selectedProject.asCompileString)
