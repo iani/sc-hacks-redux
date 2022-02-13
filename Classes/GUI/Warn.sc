@@ -8,12 +8,7 @@ Warn {
 				StaticText()
 				.backColor_(Color.red)
 				.string_(text)
-				.addNotifier(this, \warn, { | n, warning |
-					n.listener.string = warning;
-					warning.postln;
-				})
 			)
 		});
-		this.changed(\warn, text);
 	}
 }

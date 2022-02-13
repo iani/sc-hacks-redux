@@ -25,12 +25,12 @@ DisabledOscGroups {
 OscGroups {
 	classvar <oscSendPort = 22244, <oscRecvPort = 22245;
 	classvar <sendAddress, <oscRecvFunc;
-	classvar <>username = "user";
 	classvar <>verbose = false;
 	classvar <changedMessage = \code;
 	classvar <>notifier; // Only if notifier is OscGroups, then
 	// the message is broadcast via OscGroups
 	// See methods enableCodeBroadcasting, disableCodeBroadcasting
+	classvar <>localUser;
 
 	*initClass {
 		StartUp add: { this.init };
@@ -44,30 +44,43 @@ OscGroups {
 
 	*enable {
 		oscRecvFunc !? { oscRecvFunc.free };
-		sendAddress = NetAddr("127.0.0.1", oscSendPort);
-		oscRecvFunc = OSCFunc({ | msg |
-			var code, result;
-			code = msg[1];
+		// sendAddress = NetAddr("127.0.0.1", oscSendPort);
+		oscRecvFunc = OSCFunc({ | msg, time |
+			var user, code, result;
+			#user, code = msg[1..];
+			code = code.asString;
 			postf("REMOTE EVALUATION: %\n", code);
-			result = thisProcess.interpreter.interpret(code.asString);
-			postf("remote: -> %\n", result);
+			result = thisProcess.interpreter.interpret(code);
 			msg.postln;
+			postf("remote: -> %\n", result);
+			// Record this with OscHistory:
+			OscHistory.addEntry(user, code, result, time);
 		}, "/code", recvPort: oscRecvPort).fix;
 		this.enableCodeBroadcasting;
 		\forwarder.addNotifier(this, changedMessage, { | notifier, message |
 			if (verbose) {
-				postf("/* % sending: */ %\n", this, message);
+				postf("/* % sending: */ %\n", localUser, message);
 			};
-			sendAddress.sendMsg('/code', message);
+			sendAddress.sendMsg('/code', localUser, message);
 		});
 		thisProcess.interpreter.preProcessor = { | code |
 			this.changed(changedMessage, code);
 			code;
 		};
 		CmdPeriod add: this;
+		localUser ?? { this.askLocalUser; };
 		"OscGroups enabled".postln;
 		this.changed(\status);
 	}
+
+	*askLocalUser {
+		Ask({})
+	}
+
+	*setLocalUserFromString { | argString |
+		localUser = OscUser(argString.asSymbol);
+	}
+
 
 	*forceBroadcastCode { | string |
 		// send string to sendAddress independently of current status.
@@ -129,9 +142,7 @@ OscGroups {
 	*disableCodeEvaluation {
 		// TODO: Implement this method
 	}
-	
 
-	
 	*startClientIfNeeded {
 		/* only start client if you have not received any ping messages 
 			for 10 seconds. */

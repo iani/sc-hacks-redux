@@ -188,7 +188,12 @@ Project {
 						.selectionAction_({ | me |
 							this.selectProject(projects[me.value]);
 						})
-						.enterKeyAction_({ this.broadcastSelectedProject }),
+						.enterKeyAction_({ this.broadcastSelectedProject })
+						.keyDownAction_({ | me, char |
+							if (char === Char.space) {
+								this.selectProject(selectedProject);
+							};
+						}),
 						Button().states_([["-"]])
 						.addNotifier(this, \selectedProject, { | n |
 							n.listener.states_([[selectedProject]]);
@@ -323,9 +328,9 @@ Project {
 
 	*selectProject { | projectName |
 		selectedProject = projectName;
-		postf("the selected project is: %\n", selectedProject);
+		postf("Selecting project: %\n", selectedProject);
 		this.getProjectItems;
-		projectItems.postln;
+		// projectItems.postln;
 		this.changed(\selectedProject);
 	}
 
