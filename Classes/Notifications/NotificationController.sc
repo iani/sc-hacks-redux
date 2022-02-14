@@ -18,6 +18,8 @@ NotificationController : SimpleController {
 	add { | message, listener, action |
 		this.remove(message, listener); // remove previous action if present
 		actions[message] = actions[message] add: action;
+		// This is needed if model.releaseDependants has been called:
+		model.addDependant(this);
 	}
 
 	remove { | message, listener |
