@@ -4,15 +4,14 @@ Use Notification to add OSC functions.
 
 + Symbol {
 	>>> { | func, receiver |
-		receiver = receiver ? this;
-		receiver.addNotifier(\OSC, this, func);
+		OSC.add(receiver ? this, this, func)
 	}
 
 	removeOSC { | receiver |
-		this <<< (this ? receiver);
+		OSC.remove(receiver ? this, this);
 	}
 
 	<<< { | receiver |
-		receiver.removeNotifier(\OSC, this);
+		this.removeOSC(receiver);
 	}
 }

@@ -9,7 +9,7 @@ Add \OSC.changed(\osc)
 
 	recvOSCmessage { arg time, replyAddr, recvPort, msg;
 		// this method is called when an OSC message is received.
-		\OSC.changed(msg[0], msg, time, replyAddr, recvPort);
+		OSC.changed(msg[0], msg, time, replyAddr, recvPort);
 		recvOSCfunc.value(time, replyAddr, msg);
 		prRecvOSCFunc.value(msg, time, replyAddr, recvPort); // same order as OSCFunc
 		OSCresponder.respond(time, replyAddr, msg);
