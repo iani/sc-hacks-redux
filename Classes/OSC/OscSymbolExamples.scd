@@ -22,3 +22,9 @@ OSC.activeMessages;
 OSC.clear;
 //:
 '/status.reply' >>@ NetAddr("127.0.0.1", 12000);
+
+
+//: sharing evaluated code via oscgroups
+\code.share;
+//:
+1 + 10;

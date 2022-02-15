@@ -1,5 +1,8 @@
 /* 14 Feb 2022 11:17
 Alternative scheme for OSC reception
+
+OscGroupClient 139.162.184.97 22242 22246 22244 22245 <USERNAME> <USER_PASSWORD> checkGroup test
+
 */
 
 OSC {

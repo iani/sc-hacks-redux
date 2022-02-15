@@ -44,18 +44,42 @@ Use Notification to add OSC functions.
 	}
 
 	share { | address, message = \code, userName |
-		thisProcess.interpreter.preprocessor = { | code |
+		var sendFunc;
+		if (userName.isNil) {
+			sendFunc = { | code |
+				postf(
+					"I will send this code %
+to this address: %\n with this message %
+and this user name: %\n",
+					code.asCompileString, address, message, userName
+				);
+				code;
+			}
+		}{
+			sendFunc = { | code |
+				postf(
+					"I will send this code %
+to this address: %\n with this message %
+and this user name: %\n",
+					code.asCompileString, address, message, userName
+				);
+				code;
+			}
+		};
+		address = address ?? { OscGroups.sendAddress };
+		thisProcess.interpreter.preProcessor = { | code |
 			postf(
 				"I will send this code %
 to this address: %\n with this message %
 and this user name: %\n",
-				code, address, message, userName
-			)
+				code.asCompileString, address, message, userName
+			);
+			code;
 		}
 	}
 
 	unshare {
-		thisProcess.interpreter.preprocessor = nil;
+		thisProcess.interpreter.preProcessor = nil;
 		"Stopped sharing code with OSCGroups".postln;
 	}
 
