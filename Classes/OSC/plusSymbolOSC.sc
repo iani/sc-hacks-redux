@@ -19,24 +19,52 @@ Use Notification to add OSC functions.
 		this.forwardOSC(address)
 	}
 
-	/*
-	forwardOSC { | address, preprocessor |
-		preprocessor ?? {
-			^this >>> { | ... args |
-				address.sendMsg(preprocessor.(*args))
-			}
-		}{
-			address.sendMsg({ | ... args | })
+	forwardOSC { | address, receiver = \forward |
+		OSC.add(receiver, this, { | notification, message |
+			// postf("received this over osc: %\n", message);
+			// postf("I'll be forwarding it to: %\n", address);
+			address.sendMsg(*message);
+		});
+	}
+
+	unforwardOSC { | receiver = \forward |
+		this.removeOSC(receiver);
+	}
+
+	evalOSC { | index = 1, receiver = \eval |
+		OSC.add(receiver, this, { | notification, message |
+			// postf("received this over osc: %\n", message);
+			// postf("I'll be forwarding it to: %\n", address);
+			thisProcess.interpreter.interpret(message[index]);
+		})
+	}
+
+	unevalOSC { | receiver = \eval |
+		this.removeOSC(receiver);
+	}
+
+	share { | address, message = \code, userName |
+		thisProcess.interpreter.preprocessor = { | code |
+			postf(
+				"I will send this code %
+to this address: %\n with this message %
+and this user name: %\n",
+				code, address, message, userName
+			)
 		}
 	}
 
-	connect {
-		this.forwardOSC(OscGroups.sendAddress);
+	unshare {
+		thisProcess.interpreter.preprocessor = nil;
+		"Stopped sharing code with OSCGroups".postln;
 	}
 
-	disconnect {
+	record {
 
 	}
-	*/
+
+	stopRecording {
+
+	}
 
 }

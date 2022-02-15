@@ -1,0 +1,24 @@
+/* 14 Feb 2022 12:04
+Examples for using symbol operators to add functions to received
+	osc messages.
+
+	Try these with booted local server to listen to '/status.reply'
+*/
+//:
+Server.default.boot;
+//:
+'/status.reply' >>> { "STATUSREPLY RECEIVED".postln; };
+//:
+OSC.activeMessages;
+//:
+'/status.reply' >>>.more { "more STATUSREPLY RECEIVED".postln; };
+//:
+'/status.reply'.removeOSC;
+//:
+'/status.reply'.removeOSC(\more);
+//:
+'/status.reply' <<< '/status.reply';
+//: remove all osc messages:
+OSC.clear;
+//:
+'/status.reply' >>@ NetAddr("127.0.0.1", 12000);
