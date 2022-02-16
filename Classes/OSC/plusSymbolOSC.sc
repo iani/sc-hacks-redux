@@ -43,37 +43,14 @@ Use Notification to add OSC functions.
 		this.removeOSC(receiver);
 	}
 
-	share { | address, message = \code, userName |
-		var sendFunc;
-		if (userName.isNil) {
-			sendFunc = { | code |
-				postf(
-					"I will send this code %
-to this address: %\n with this message %
-and this user name: %\n",
-					code.asCompileString, address, message, userName
-				);
-				code;
-			}
-		}{
-			sendFunc = { | code |
-				postf(
-					"I will send this code %
-to this address: %\n with this message %
-and this user name: %\n",
-					code.asCompileString, address, message, userName
-				);
-				code;
-			}
-		};
+	share { | address, message = \code |
+		// share with message and user name
 		address = address ?? { OscGroups.sendAddress };
+		postf("Start sending, addr: %, message %, user %\n",
+			address, message.asCompileString, this.asCompileString
+		);
 		thisProcess.interpreter.preProcessor = { | code |
-			postf(
-				"I will send this code %
-to this address: %\n with this message %
-and this user name: %\n",
-				code.asCompileString, address, message, userName
-			);
+			address.sendMsg(message, code.asCompileString, this);
 			code;
 		}
 	}
