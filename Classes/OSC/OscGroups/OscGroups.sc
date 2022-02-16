@@ -24,91 +24,79 @@ DisabledOscGroups {
 
 OscGroups {
 	classvar <oscSendPort = 22244, <oscRecvPort = 22245;
-	classvar <sendAddress, <oscRecvFunc;
+	classvar sendAddress, <oscRecvFunc;
 	classvar <>verbose = false;
-	classvar <changedMessage = \code;
+	classvar <oscMessage = \code;
 	classvar <>notifier; // Only if notifier is OscGroups, then
 	// the message is broadcast via OscGroups
 	// See methods enableCodeBroadcasting, disableCodeBroadcasting
-	classvar <>localUser;
-
-	*initClass {
-		StartUp add: { this.init };
-	}
-
-	*init {
-		"INITING OSCGROUPS =====================================".postln;
-		sendAddress = NetAddr("127.0.0.1", oscSendPort);
-		"To enable OscGroups evaluate:\nOscGroups.enable;\n".postln;
-	}
+	classvar <>localUser = \localuser;
 
 	*enable {
-		oscRecvFunc !? { oscRecvFunc.free };
-		// sendAddress = NetAddr("127.0.0.1", oscSendPort);
-		oscRecvFunc = OSCFunc({ | msg, time |
-			var user, code, result;
-			#user, code = msg[1..];
-			code = code.asString;
-			postf("REMOTE EVALUATION: %\n", code);
-			result = thisProcess.interpreter.interpret(code);
-			msg.postln;
-			postf("remote: -> %\n", result);
-			// Record this with OscHistory:
-			OscHistory.addEntry(user, code, result, time);
-		}, "/code", recvPort: oscRecvPort).fix;
-		this.enableCodeBroadcasting;
-		\forwarder.addNotifier(this, changedMessage, { | notifier, message |
-			if (verbose) {
-				postf("/* % sending: */ %\n", localUser, message);
-			};
-			sendAddress.sendMsg('/code', localUser, message);
-		});
-		thisProcess.interpreter.preProcessor = { | code |
-			this.changed(changedMessage, code);
-			code;
-		};
-		CmdPeriod add: this;
-		localUser ?? { this.askLocalUser; };
+		this.makeSendAddress;
+		this.enableCodeForwarding;
+		this.enableCodeReception;
 		"OscGroups enabled".postln;
-		this.changed(\status);
+		this.changedStatus;
+	}
+	*disable {
+		this.disableCodeForwarding;
+		this.disableCodeReception;
+		"OscGroups disabled".postln;
+		this.changedStatus;
 	}
 
-	*askLocalUser {
-		Ask({})
+	*changedStatus {  this.changed(\status) }
+
+	*sendAddress { ^sendAddress ?? { sendAddress = this.makeSendAddress } }
+
+	*makeSendAddress {
+		sendAddress = NetAddr("127.0.0.1", oscSendPort);
+		postf("OscGroups set OSC send port to: %\n", oscSendPort);
 	}
 
-	*setLocalUserFromString { | argString |
-		localUser = OscUser(argString.asSymbol);
+	*enableCodeForwarding {
+		oscMessage.share(sendAddress);
+		this.changedStatus;
 	}
+
+	*disableCodeForwarding {
+		oscMessage.unshare;
+		this.changedStatus;
+	}
+
+	*enableCodeReception {
+		oscMessage.evalOSC;
+		this.changedStatus;
+	}
+
+	*disableCodeReception {
+		oscMessage.unevalOSC;
+		this.changedStatus;
+	}
+
+	*askLocalUser { "OscGroups askLocalUser method disabled" }
 
 
 	*forceBroadcastCode { | string |
 		// send string to sendAddress independently of current status.
 		// Sends even if OscGroups is disabled.
-		sendAddress.sendMsg(\code, string);
+		sendAddress.sendMsg(oscMessage, string, localUser);
 	}
 
 	*runLocally { | func |
-		this.disableCodeBroadcasting;
+		this.disableCodeForwarding;
 		func.value;
-		this.enableCodeBroadcasting;
+		this.enableCodeForwarding;
 	}
 
-	*disable {
-		oscRecvFunc.free;
-		oscRecvFunc = nil;
-		\forwarder.addNotifier(this, \code, {});
-		"OscGroups disabled".postln;
-		this.changed(\status);
-	}
-
-	*isEnabled { ^oscRecvFunc.notNil; }
-	*isBroadcasting { ^notifier === this }
+	*isEnabled { ^OSC.respondsTo(oscMessage, oscMessage); }
+	*isForwarding { ^thisProcess.interpreter.preProcessor.notNil; }
 
 	*cmdPeriod {
 		// Remotely only execute core CmdPeriod method.
 		"Sending CmdPeriod to OscGroups".postln;
-		sendAddress.sendMsg('/code', "OscGroups.remoteCmdPeriod")
+		sendAddress.sendMsg(oscMessage, "OscGroups.remoteCmdPeriod")
 	}
 
 	*remoteCmdPeriod {
@@ -123,40 +111,9 @@ OscGroups {
 		Server.resumeThreads;
 	}
 
-	*enableCodeBroadcasting  {
-		notifier = this;
-		"OSC broadcasting enabled.".postln;
-		this.changed(\status);
-	}
-
-	*disableCodeBroadcasting {
-		notifier = DisabledOscGroups;
-		"OSC broadcasting disabled.".postln;
-		this.changed(\status);
-	}
-
-	*enableCodeEvaluation {
-		// TODO: Implement this method
-	}
-
-	*disableCodeEvaluation {
-		// TODO: Implement this method
-	}
-
-	*startClientIfNeeded {
-		/* only start client if you have not received any ping messages 
-			for 10 seconds. */
-		var pingReceived = false;
-		var pingListener;
-		pingListener = OSCFunc({
-			
-			
-		}, "/...", recvPort: oscRecvPort).fix;
-		
-	}
-
 	*startClient {
-		"OscGroupClient 64.225.97.89 22242 22243 22244 22245 iani ianipass nikkgroup nikkpass".unixCmd;
+		// 22243 port number should be different for each computer running in one LAN
+		"OscGroupClient 64.225.97.89 22242 22243 22244 22245 iani ianipass nikkgroup nikkpass".runInTerminal;
 	}
 
 	*gui { // Window with button to enable / disable code broadcasting
@@ -190,23 +147,23 @@ OscGroups {
 				}),
 				Button()
 				.states_([
-					["Disable code broadcasting"],
-					["Enable code broadcasting"]
+					["Disable code forwarding"],
+					["Enable code forwarding"]
 				])
 				.action_({ | me |
 					myself.perform([
-						\enableCodeBroadcasting,
-						\disableCodeBroadcasting
+						\enableCodeForwarding,
+						\disableCodeForwarding
 					][me.value]);
 				})
 				.addNotifier(this, \status, { | n |
-					// "Checking OscGroups gui broadcasting button".postln;
+					// "Checking OscGroups gui forwarding button".postln;
 					// n.notifier.postln;
 					postf(
-						"osc groups broadcasting? %\n",
-						n.notifier.isBroadcasting
+						"osc groups forwarding? %\n",
+						n.notifier.isForwarding
 					);
-					if (n.notifier.isBroadcasting) {
+					if (n.notifier.isForwarding) {
 						n.listener.value = 0
 					}{
 						n.listener.value = 1

@@ -3,12 +3,17 @@ Use Notification to add OSC functions.
 */
 
 + Symbol {
-	>>> { | func, receiver |
-		OSC.add(receiver ? this, this, func)
+	>>> { | func, key | // add OSC response to this message under key
+		// One can add different functions for the same message under different keys
+		OSC.add(key ? this, this, func)
 	}
 
-	<<< { | receiver |
-		this.removeOSC(receiver);
+	<<< { | key | // remove action registered under this message and key pair.
+		this.removeOSC(key);
+	}
+
+	>>? { | key | // does OSC respond to this message under this key?
+
 	}
 
 	removeOSC { | receiver |

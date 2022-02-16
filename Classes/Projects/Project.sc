@@ -111,8 +111,8 @@ Project {
 	*loadScdFiles { | pathName, broadcast = true |
 		var restoreBroadcasting;
 		// FIXME: Perhaps broadcast switching should be done a different way.
-		restoreBroadcasting = OscGroups.isBroadcasting;
-		if (broadcast.not) { OscGroups.disableCodeBroadcasting };
+		restoreBroadcasting = OscGroups.isForwarding;
+		if (broadcast.not) { OscGroups.disableCodeForwarding };
 		this.matchingFilesDo(
 			pathName,
 			{ | p |
@@ -121,7 +121,7 @@ Project {
 			},
 			"scd"
 		);
-		if (restoreBroadcasting) { OscGroups.enableCodeBroadcasting }
+		if (restoreBroadcasting) { OscGroups.enableCodeForwarding }
 	}
 
 	*loadGlobalBuffers {
@@ -136,16 +136,16 @@ Project {
 
 	*loadGlobalSynthdefs {
 		"loading global synthdefs".postln;
-		OscGroups.disableCodeBroadcasting;
+		OscGroups.disableCodeForwarding;
 		this.loadScdFiles(this.globalSynthdefPath, false);
-		OscGroups.enableCodeBroadcasting;
+		OscGroups.enableCodeForwarding;
 	}
 
 	*loadLocalSynthdefs {
 		"loading local synthdefs".postln;
-		OscGroups.disableCodeBroadcasting;
+		OscGroups.disableCodeForwarding;
 		this.loadScdFiles(this.localSynthdefPath);
-		OscGroups.enableCodeBroadcasting;
+		OscGroups.enableCodeForwarding;
 	}
 
 	*localAudiofilePath { ^this.selectedProjectPath +/+ "audiofiles"; }
@@ -272,8 +272,8 @@ Project {
 							.states_([["On"], ["Off"]])
 							.action_({ | me |
 								OscGroups.perform([
-									\enableCodeBroadcasting,
-									\disableCodeBroadcasting
+									\enableCodeForwarding,
+									\disableCodeForwarding
 								][me.value]);
 							})
 							.addNotifier(OscGroups, \status, { | n |
@@ -288,7 +288,7 @@ Project {
 										["Off", Color.gray, Color.white]
 									])
 								};
-								if (n.notifier.isBroadcasting) {
+								if (n.notifier.isForwarding) {
 									n.listener.value = 0
 								}{
 									n.listener.value = 1
