@@ -1,0 +1,69 @@
+#+TITLE: Osc Groups
+
+Notes for version 2.
+
+
+* Sending Evaluated Code to OscGroupsClient
+
+#+begin_sra sclang
+OscGroups.enableCodeForwarding
+#+end_src
+
+- Set the preprocessor of the Interpreter to a function that sends the code to oscSendPort.
+
+Prepend oscMessage as message to send the code.
+Append localUser as extra argument to the message sent.
+
+This is done using =Symbol:share= method.
+
+#+begin_src sclang
+		// send evaluated code to sendAddress using oscMessage and adding localUser
+		// as extra argument. Before each code evaluation, the preprocesso runs:
+		// sendAddess.sendMsg(oscMessage, code, localUser);
+		localUser.share(sendAddress, oscMessage)
+#+end_src
+
+To stop sharing, use =Symbol:unshare=.
+This deactivates sharing by settging Interpreter's preprocessor to nil.
+
+* Evaluating Code received from OscGroupsClient
+
+#+begin_src sclang
+OscGroups.enableCodeReception
+#+end_src
+
+Implementation:
+
+** Prepare: Enable OSC message reception from OscGroupsClient
+Enable reception at the port where OscGroupsClient sends the messages to SuperCollider.
+The port number is set as argument given to the terminal command =OscGroupsClient=.
+The default value is 22245 and is stored in classvar =oscRecvPort= of =OscGroups=.
+
+#+begin_src sclang
+		thisProcess.openUDPPort(22245);
+#+end_src
+
+** Setup: Bind the evaluation function to the OSC message expected from OscGroupsClient
+
+*** Mechanism / Principle
+
+This is done by method =OscGroups:enableCodeReception=.  This method uses =OSC= class to create a notification that will execute the code received from OscGroupsClient with the message =oscMessage=. The Symbol stored in =oscMessage= is the name of the OSC message that sclang expects the code to be received in. The default value of =oscMessage= is =\code=.  Thus, =OscGroups:enableCodeReception= has the same effect as creating an =OSCFunc= that listens to message =/code= and takes the first argument from the data sent together with =/code= and interprets it as code.
+
+*** Implementation
+
+Instead of using =OSCFunc=, OscGroups uses OSC, because the coding is simpler. Thus, changes and tests can be done more easily. The code is:
+
+#+begin_src sclang
+		oscMessage.evalOSC;
+#+end_src
+
+=Symbol:evalOSC= delegates the implementation to OSC thus:
+
+#+begin_src sclang
+		OSC.add(receiver, this, { | notification, message |
+			thisProcess.interpreter.interpret(message[index]);
+		})
+#+end_src
+
+- =receiver= :: the message to listen to. =OscGroups= sets this to =code=.  OSC adds the required =/=, and therefore =/code= becomes the message that OscGroups is listening to.
+- =this= :: This is the localUser and is the receiver to which the action is bound (see Notification documentation).

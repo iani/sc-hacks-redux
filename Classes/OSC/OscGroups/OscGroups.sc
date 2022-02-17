@@ -32,6 +32,34 @@ OscGroups {
 	// See methods enableCodeBroadcasting, disableCodeBroadcasting
 	classvar <>localUser = \localuser;
 
+	*enableCodeForwarding {
+		// send evaluated code to sendAddress using oscMessage and adding localUser
+		// as extra argument. Before each code evaluation, the preprocesso runs:
+		// sendAddess.sendMsg(oscMessage, code, localUser);
+		localUser.share(sendAddress, oscMessage);
+		this.changedStatus;
+	}
+
+	*disableCodeForwarding {
+		 // deactivate sharing by settging Interpreter's preprocessor to nil.
+		localUser.unshare;
+		this.changedStatus;
+	}
+
+	*enableCodeReception {
+		thisProcess.openUDPPort(22245);
+		oscMessage.evalOSC;
+		this.changedStatus;
+	}
+
+	*disableCodeReception {
+		oscMessage.unevalOSC;
+		this.changedStatus;
+	}
+
+	*isEnabled { ^OSC.listensTo(oscMessage, oscMessage); }
+	*isForwarding { ^thisProcess.interpreter.preProcessor.notNil; }
+
 	*enable {
 		this.makeSendAddress;
 		this.enableCodeForwarding;
@@ -56,26 +84,6 @@ OscGroups {
 		^sendAddress;
 	}
 
-	*enableCodeForwarding {
-		oscMessage.share(sendAddress);
-		this.changedStatus;
-	}
-
-	*disableCodeForwarding {
-		oscMessage.unshare;
-		this.changedStatus;
-	}
-
-	*enableCodeReception {
-		thisProcess.openUDPPort(22245);
-		oscMessage.evalOSC;
-		this.changedStatus;
-	}
-
-	*disableCodeReception {
-		oscMessage.unevalOSC;
-		this.changedStatus;
-	}
 
 	*askLocalUser { "OscGroups askLocalUser method disabled" }
 
@@ -91,9 +99,6 @@ OscGroups {
 		func.value;
 		this.enableCodeForwarding;
 	}
-
-	*isEnabled { ^OSC.respondsTo(oscMessage, oscMessage); }
-	*isForwarding { ^thisProcess.interpreter.preProcessor.notNil; }
 
 	*cmdPeriod {
 		// Remotely only execute core CmdPeriod method.

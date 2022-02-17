@@ -50,6 +50,14 @@ OSC {
 		Notification.removeListenersOf(this);
 	}
 
+	*actionsAt { | message | // all keys responding to this message
+		"OSC actionsAt has not been implemented.".postln;
+	}
+
+	*listensTo { | message, key |
+		^Notification.matches(OSC, key ? message, message.asOscMessage);
+	}
+
 	*activeMessages {
 		// Return all messages that OSC intercepts
 		^this.dependants.asArray.select({ | n | n isKindOf: NotificationController })

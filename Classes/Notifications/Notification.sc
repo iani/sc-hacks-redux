@@ -37,9 +37,19 @@ Notification {
 		controllers[argNotifier].remove(message, listener);
 	}
 
-	*notifications { ^controllers.values; }
+	*notifications { ^controllers.values.collect({|nc|nc.actions.values}).flat; }
 	*notifiers { ^controllers collect: _.model; }
 	*listeners { ^controllers.collect({ | c | c.listeners }).flat; }
+
+	*matches { | notifier, listener, message |
+		^this.notifications.detect({|n| n.matches(notifier, listener, message)}).notNil
+	}
+
+	matches { | argNotifier, argListener, argMessage |
+		^notifier == argNotifier and:
+		{ listener == argListener } and:
+		{ message == argMessage }
+	}
 
 	*notifiersOf { | listener |
 		^this.notifications.select({ | n |
@@ -47,10 +57,16 @@ Notification {
 		}).collect({ | n | n.model })
 	}
 
+	*messagesOf { | notifier |
+		var controller;
+		controller = controllers[notifier];
+		if (controller.isNil) { ^nil } { ^controller.messages };
+	}
+
 	*listenersOf { | notifier |
 		var controller;
 		controller = controllers[notifier];
-		^if (controller.isNil) { ^nil } { ^controller.listeners };
+		^if (controller.isNil) { ^nil } { ^controller.actions.keys };
 	}
 	
 	*removeNotifiersOf { | listener |
