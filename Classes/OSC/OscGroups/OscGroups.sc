@@ -67,6 +67,7 @@ OscGroups {
 	}
 
 	*enableCodeReception {
+		thisProcess.openUDPPort(22245);
 		oscMessage.evalOSC;
 		this.changedStatus;
 	}

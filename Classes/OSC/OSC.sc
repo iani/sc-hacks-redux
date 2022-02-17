@@ -63,10 +63,8 @@ OSC {
 		^reportingFunc ?? { reportingFunc = { | ... args | args.postln; } };
 	}
 
-	// for tests
-	*sendLocal { | message ... args |
+	*sendLocal { | message ... args | // for testing
 		// asOscMessage: prepend / to message if needed.
 		NetAddr.localAddr.sendMsg(message.asOscMessage, *args);
 	}
-
 }
