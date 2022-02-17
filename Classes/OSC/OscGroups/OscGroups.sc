@@ -53,6 +53,7 @@ OscGroups {
 	*makeSendAddress {
 		sendAddress = NetAddr("127.0.0.1", oscSendPort);
 		postf("OscGroups set OSC send port to: %\n", oscSendPort);
+		^sendAddress;
 	}
 
 	*enableCodeForwarding {
