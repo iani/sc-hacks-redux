@@ -40,16 +40,16 @@ Use Notification to add OSC functions.
 		this.removeOSC(receiver);
 	}
 
-	evalOSC { | index = 1, receiver = \eval |
-		OSC.add(receiver, this, { | notification, message |
+	evalOSC { | receiver, index = 1 |
+		OSC.add(receiver ? this, this, { | notification, message |
 			// postf("received this over osc: %\n", message);
 			// postf("I'll be forwarding it to: %\n", address);
 			thisProcess.interpreter.interpret(message[index]);
 		})
 	}
 
-	unevalOSC { | receiver = \eval |
-		this.removeOSC(receiver);
+	unevalOSC { | receiver |
+		this.removeOSC(receiver ? this);
 	}
 
 	share { | address, message = \code |

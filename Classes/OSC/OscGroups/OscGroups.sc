@@ -32,6 +32,23 @@ OscGroups {
 	// See methods enableCodeBroadcasting, disableCodeBroadcasting
 	classvar <>localUser = \localuser;
 
+	*isEnabled { ^OSC.listensTo(oscMessage, oscMessage); }
+	*isForwarding { ^thisProcess.interpreter.preProcessor.notNil; }
+
+	*enable {
+		this.makeSendAddress;
+		this.enableCodeForwarding;
+		this.enableCodeReception;
+		"OscGroups enabled".postln;
+		this.changedStatus;
+	}
+	*disable {
+		this.disableCodeForwarding;
+		this.disableCodeReception;
+		"OscGroups disabled".postln;
+		this.changedStatus;
+	}
+
 	*enableCodeForwarding {
 		// send evaluated code to sendAddress using oscMessage and adding localUser
 		// as extra argument. Before each code evaluation, the preprocesso runs:
@@ -57,23 +74,6 @@ OscGroups {
 		this.changedStatus;
 	}
 
-	*isEnabled { ^OSC.listensTo(oscMessage, oscMessage); }
-	*isForwarding { ^thisProcess.interpreter.preProcessor.notNil; }
-
-	*enable {
-		this.makeSendAddress;
-		this.enableCodeForwarding;
-		this.enableCodeReception;
-		"OscGroups enabled".postln;
-		this.changedStatus;
-	}
-	*disable {
-		this.disableCodeForwarding;
-		this.disableCodeReception;
-		"OscGroups disabled".postln;
-		this.changedStatus;
-	}
-
 	*changedStatus {  this.changed(\status) }
 
 	*sendAddress { ^sendAddress ?? { sendAddress = this.makeSendAddress } }
@@ -84,9 +84,7 @@ OscGroups {
 		^sendAddress;
 	}
 
-
 	*askLocalUser { "OscGroups askLocalUser method disabled" }
-
 
 	*forceBroadcastCode { | string |
 		// send string to sendAddress independently of current status.

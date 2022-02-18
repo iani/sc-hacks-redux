@@ -64,6 +64,12 @@ OSC {
 		.collect({ | nc | nc.actions.keys.asArray })
 		.flat
 	}
+	*activeMessagePairs {
+		// Return all messages that OSC intercepts
+		^this.dependants.asArray.select({ | n | n isKindOf: NotificationController })
+		.collect({ | nc | nc.notifications.collect({|n| [n.message, n.listener]}) })
+		// .flat
+	}
 
 	*verbose { this addDependant: this.reportingFunc; }
 	*silent { this removeDependant: this.reportingFunc; }
