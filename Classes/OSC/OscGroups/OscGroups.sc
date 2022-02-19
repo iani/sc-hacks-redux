@@ -39,12 +39,14 @@ OscGroups {
 		this.makeSendAddress;
 		this.enableCodeForwarding;
 		this.enableCodeReception;
+		CmdPeriod add: this;
 		"OscGroups enabled".postln;
 		this.changedStatus;
 	}
 	*disable {
 		this.disableCodeForwarding;
 		this.disableCodeReception;
+		CmdPeriod remove: this;
 		"OscGroups disabled".postln;
 		this.changedStatus;
 	}
