@@ -46,7 +46,7 @@ Use Notification to add OSC functions.
 			// postf("I'll be forwarding it to: %\n", address);
 			postf("Remote evaluation: /* \%\n */\n", message[index]);
 			postf("The interpreter is: %", thisProcess.interpreter);
-			thisProcess.interpreter.interpret(message[index]);
+			postf("-> %", thisProcess.interpreter.interpret(message[index]));
 		})
 	}
 
