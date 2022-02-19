@@ -21,7 +21,7 @@ EventGetter {
 	*new { | stream, proto, parent |
 		^this.newCopyArgs(stream,
 			proto.copy,
-			parent.asParent
+			parent;
 		).reset;
 	}
 

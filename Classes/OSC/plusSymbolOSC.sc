@@ -44,7 +44,8 @@ Use Notification to add OSC functions.
 		OSC.add(receiver ? this, this, { | notification, message |
 			// postf("received this over osc: %\n", message);
 			// postf("I'll be forwarding it to: %\n", address);
-			thisProcess.interpreter.interpret(message[index]);
+			postf("Remote evaluation: /* \%\n */\n", message[index]);
+			thisProcess.interpreter.interpret(message[index].asString);
 		})
 	}
 

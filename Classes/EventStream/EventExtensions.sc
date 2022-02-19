@@ -46,8 +46,16 @@
 		^nextEvent;		
 	}
 
+	// following method probably oboslete? 19 Feb 2022 14:03
 	asParent { ^this.copy } // 'copy' also copies the parent!
 
 }
 
-+ Nil { asParent { ^EventStream.defaultParent.asParent } }
++ Nil {
+	asParent { | event |
+		var parent;
+		event !? { parent = event.parent; };
+		parent ?? { ^EventStream.defaultParent.asParent };
+		^parent
+	}
+}
