@@ -46,16 +46,20 @@ Use Notification to add OSC functions.
 			// postf("received this over osc: %\n", message);
 			// postf("I'll be forwarding it to: %\n", address);
 			postf("Remote evaluation: /* \%\n */\n", message[index]);
-			postf("The interpreter is: %", thisProcess.interpreter);
+			postf("The interpreter is: %\n", thisProcess.interpreter);
 			codeReceived = message[index];
 			postf("the code received is: %\n", codeReceived);
 			"now I will evaluate".postln;
 
 			// result = thisProcess.interpreter.interpret("10000.rand");
+			// result = thisProcess.interpreter.interpret("1 + 1;");
 			result = thisProcess.interpreter.interpret(codeReceived);
 			"I have evaluated and now I will try posting the result".postln;
 			result.postln;
 			"I posted the result. How was it?".postln;
+			"One more try below".postln;
+			codeReceived.postln;
+			codeReceived.asString.interpret.postln;
 			postf("-> %", );
 		})
 	}
@@ -71,7 +75,7 @@ Use Notification to add OSC functions.
 			address, message.asCompileString, this.asCompileString
 		);
 		thisProcess.interpreter.preProcessor = { | code |
-			address.sendMsg(message, code.asCompileString, this);
+			address.sendMsg(message, code, this);
 			code;
 		}
 	}
