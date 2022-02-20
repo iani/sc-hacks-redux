@@ -2,6 +2,18 @@
 All sc-hacks-redux operators for all classes, in one file.
 */
 
++ Nil {
+	addEvent { | event, key |
+		event +> key
+	}
+}
+
++ Synth {
+	addEvent { | event, key |
+		event +> key
+	}
+}
+
 + SimpleNumber {
 	+> { | envir, param |
 		param ?? { ^"SimpleNumber +> requires a parameter adverb".warn };
@@ -18,7 +30,17 @@ All sc-hacks-redux operators for all classes, in one file.
 
 + Event {
 	+> { | envir, player |
-		
+		currentEnvironment[envir] = this.splay; // onStart: init running status!
+	}
+
+	++> { | envir, player |
+		currentEnvironment[envir].addEvent(this, envir);
+	}
+}
+
++ EventStream {
+	addEvent { | argEvent |
+		this add: argEvent
 	}
 }
 

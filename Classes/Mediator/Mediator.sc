@@ -15,9 +15,7 @@ Mediator : EnvironmentRedirect {
 				envir ?? { Environment.new(32, Environment.new) },
 				nil, name
 			).dispatch = MediatorHandler();
-			// ^super.newCopyArgs(envir ?? { Environment.new(32, Environment.new) })
 	}
-		//		^super.new(envir).dispatch = MediatorHandler();
 
 
 	init { | ... args |
@@ -65,7 +63,6 @@ MediatorHandler {
 // other objects add more complex behavior
 + Object {
 	handleReplacement {
-		
 		this.stop;
 	}
 	// asSynth handles this. Check!?:
