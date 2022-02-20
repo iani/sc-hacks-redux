@@ -33,18 +33,4 @@ Thereby ensure that:
 		 parent = (parent ? defaultParentEvent).copy;
 		 parent.put(key, newValue);
 	}
-	/*
-	// NOT USED:
-	initParent { | argParent |
-		parent = (argParent ? defaultParentEvent).copy;
-		postf("inited parent. new parent is: %\n", parent);
-		"================================================================".postln;
-		postf("I am: %\n", this);
-		"================================================================".postln;
-		postf("my parent is: %\n", this.parent);
-	}
-	*/
 }
-
-
-

@@ -16,6 +16,10 @@
 
 	splay { | key, parent, quant, clock |
 		var stream;
+		parent ?? {
+			parent = this.parent;
+		};
+		parent ?? { parent = Event.default.parent.copy };
 		stream = EventStream(this, parent, quant, clock).play();
 		key !? {  currentEnvironment.put(key, stream); };
 		// currentEnvironment.put(key, stream);
@@ -24,7 +28,7 @@
 	eventStream { | parent, quant, clock | ^EventStream(this, parent, quant, clock)}
 	makeStream { | argParent |
 		// return new event containing all my contents as streams
-		^().parent_(argParent.asParent) addStreams: this;
+		^().parent_(argParent) addStreams: this;
 	}
 
 	// add argEvent's contents as streams to myself
@@ -47,10 +51,11 @@
 	}
 
 	// following method probably oboslete? 19 Feb 2022 14:03
-	asParent { ^this.copy } // 'copy' also copies the parent!
+	//	asParent { ^this.copy } // 'copy' also copies the parent!
 
 }
 
+/*
 + Nil {
 	asParent { | event |
 		var parent;
@@ -59,3 +64,4 @@
 		^parent
 	}
 }
+*/
