@@ -24,15 +24,14 @@ Shortcuts for using BeatCounter.
 
 + EventStream {
 	addBeat { | beat |
-		beat.beat.add(this,
-			{ this.postln; "this works".postln; this.next.play; }
-		);
+		// FIXME: avoid adding self to same beat.
+		// removee previous actions bound to this beat and self:
+		beat.beat.remove(this); // remove previous action for self if it exists
+		beat.beat.add(this, { this.next.play; }); // add new play action
 	}
 	removeBeat { | beat |
 		beat.beat.remove(this);
 	}
-	// update { this.next.play; }
-	// value { this.next.play; }
 }
 
 + Event {

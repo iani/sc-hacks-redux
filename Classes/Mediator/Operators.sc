@@ -29,12 +29,23 @@ All sc-hacks-redux operators for all classes, in one file.
 }
 
 + Event {
+	// FIXME: STOP PREVIOUS EVENTS!
 	+> { | envir, player |
+		var result;
+		result = this.splay;
 		currentEnvironment[envir] = this.splay; // onStart: init running status!
+		^result;
+	}
+
+	+>! { | envir | // do not start
+		var result;
+		result = this.splay;
+		currentEnvironment[envir] = this; // Do not stert
+		^result;
 	}
 
 	++> { | envir, player |
-		currentEnvironment[envir].addEvent(this, envir);
+		^currentEnvironment[envir].addEvent(this, envir);
 	}
 }
 
