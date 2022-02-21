@@ -32,26 +32,28 @@ All sc-hacks-redux operators for all classes, in one file.
 	// FIXME: STOP PREVIOUS EVENTS!
 	+> { | envir, player |
 		var result;
+		currentEnvironment[envir].stop;
 		result = this.splay;
-		currentEnvironment[envir] = this.splay; // onStart: init running status!
+		currentEnvironment[envir] = result; // onStart: init running status!
 		^result;
 	}
 
 	+>! { | envir | // do not start
 		var result;
-		result = this.splay;
+		//		currentEnvironment[envir].stop;
+		result = EventStream(this);
 		currentEnvironment[envir] = this; // Do not stert
 		^result;
 	}
 
 	++> { | envir, player |
-		^currentEnvironment[envir].addEvent(this, envir);
+		^currentEnvironment[envir].add(this);
 	}
 }
 
 + EventStream {
 	addEvent { | argEvent |
-		this.start add: argEvent;
+		this /* .start */ add: argEvent;
 	}
 }
 
