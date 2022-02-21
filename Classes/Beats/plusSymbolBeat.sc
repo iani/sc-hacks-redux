@@ -17,6 +17,7 @@ Shortcuts for using BeatCounter.
 }
 
 + Function {
+	// there is no way to remove the function unless you have stored it somewhere
 	beat { | beatName, actionName, dt |
 		^beatName.beat(dt).add(actionName ? beatName, this);
 	}
@@ -29,6 +30,7 @@ Shortcuts for using BeatCounter.
 		beat.beat.remove(this); // remove previous action for self if it exists
 		beat.beat.add(this, { this.next.play; }); // add new play action
 	}
+
 	removeBeat { | beat |
 		beat.beat.remove(this);
 	}

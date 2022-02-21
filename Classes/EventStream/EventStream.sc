@@ -81,4 +81,14 @@ EventStream {
 			stream[key] = value.asStream;
 		}
 	}
+
+	addBeat { | beatKey |
+		postf("debugging dependants before: %\n", beatKey.beat.dependants);
+		beatKey.beat.addDependant(this);
+		postf("debugging dependants after: %\n", beatKey.beat.dependants);
+	}
+
+	removeBeat { | beatKey |
+		beatKey.beat.removeDependant(this)
+	}
 }

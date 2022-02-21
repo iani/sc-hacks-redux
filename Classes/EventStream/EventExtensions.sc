@@ -30,43 +30,25 @@
 		}
 	}
 
-	@> { | eventKey, beatsKey |
-		this.addBeat(eventKey, beatsKey)
+	@> { | beatKey |
+		beatKey.beat.addDependant(EventStream(this));
 	}
 
-	addBeat { | eventKey, beatKey |
-		var new;
-		beatKey = beatKey ? eventKey;
-		new = this +>! eventKey;
-		beatKey.beat.addDependant(new);
-		^new;
+	addBeat { | beatKey |
+		this @> (beatKey ? this);
 	}
 }
 
-/*
-+ Event {
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// FIXME: debug this. Do not add new eventsstreams if same name event name
-	@> { | beat, name = \eventStream |
-		var es;
-		es = ~eventStream;
-		if (es.isNil) {
-			es = EventStream(this)
-		}{
-			es.add(this)
-		};
-		es addBeat: beat;
++ Symbol {
+	@> { | beatKey |
+		beatKey.beat.addDependant(currentEnvironment[this]);
 	}
 
-	@>> { | beat, name = \eventStream |
-		var es;
-		es = ~eventStream;
-		if (es.isNil) {
-			es = EventStream(this)
-		}{
-			es.add(this)
-		};
-		es addBeat: beat.beat.start;
+	addBeat { | beatKey |
+		this @> (beatKey ? this);
+	}
+
+	removeBeat { | beatKey |
+		currentEnvironment[this].removeBeat(beatKey ? this);
 	}
 }
-*/
