@@ -28,36 +28,6 @@ All sc-hacks-redux operators for all classes, in one file.
 	}
 }
 
-+ Event {
-	// FIXME: STOP PREVIOUS EVENTS!
-	+> { | envir, player |
-		var result;
-		currentEnvironment[envir].stop;
-		result = this.splay;
-		currentEnvironment[envir] = result; // onStart: init running status!
-		^result;
-	}
-
-	+>! { | envir | // do not start
-		var result;
-		//		currentEnvironment[envir].stop;
-		result = EventStream(this);
-		currentEnvironment[envir] = this; // Do not stert
-		^result;
-	}
-
-	++> { | envir, player |
-		^currentEnvironment[envir].add(this);
-	}
-}
-
-+ EventStream {
-	addEvent { | argEvent |
-		this /* .start */ add: argEvent;
-	}
-}
-
-
 + Symbol {
 	+> { | envir, player |
 		currentEnvironment[envir] = Synth(this).onStart({}); // onStart: init running status!

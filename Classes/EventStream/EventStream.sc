@@ -1,86 +1,75 @@
-//: 21 Jan 2021 21:29
-/*
-Play an event, converting its values to streams.
-Play with methods: start, stop, reset
-Modify the stream before or during playing with methods:
-set, put, add, removeKey, addToParent, setParentKey.
-Changes take effect immediately.
+/* 21 Feb 2022 13:14
+Redo EventStream, removing all extras.
 */
-EventStream { // intentionally not a subclass of Stream
-	classvar >defaultParent; // avoid modifying default from SCClassLibrary
-	var <streamPlayer, <triggers;
-	/*
-	clone {
-		// not yet tested
-		// TODO : clone currentEvent of my SimpleEventStreamPlayer?
-		^this.class.new(this.event, this.parent, this.quant, this.tempoClock);
-	}
-	*/
-	
-	*new { | event, parent, quant = 1, tempoClock |
-		^super.new().init(event, parent, quant, tempoClock);
+
+EventStream {
+	var <event, <stream, <routine;
+
+	*new { | event |
+		^this.newCopyArgs(event).reset;
 	}
 
-	*defaultParent { // avoid modifying default from SCClassLibrary!
-		^defaultParent ?? { defaultParent = Event.default.parent.copy };
+	start {
+		// postf("troubleshooting. isRunnign? %\n", this.isRunning);
+		if (this.isRunning) { ^postf("% is running. will not restart it\n", this) };
+		this.makeRoutine;
 	}
 
-	init { | argEvent, argParent, argQuant, argClock |
-		triggers = IdentityDictionary();
-		streamPlayer = SimpleEventStreamPlayer(
-			this, argEvent, argParent, argQuant ? 1, argClock
-		);
-		CmdPeriod add: { streamPlayer.cmdPeriod }
+	stop {
+		routine.stop;
+		routine = nil;
 	}
 
-	// ================ playing
-	reset { this.resetStream }
-	resetStream { streamPlayer.history.reset; }
-	playNext { this.next.play } // avoid this while playing with routine
-	next { ^streamPlayer.next } // get next event (for playing)
-	start { this.play }
-	play { streamPlayer.play; }
-	stop { streamPlayer.stop }
-	// ==== play using a tr synth for timing (instead of own dur stream).
-	addTrig { | key = \default, action |
-		var trig;
-		trig = OscTrig.fromLib(key);
-		trig.addListener(this, action ?? {{ this.playNext }});
-		triggers[key] = trig;
-		^trig;
+	makeRoutine {
+		var nextEvent;
+		CmdPeriod add: this;
+		routine = {
+			this.changed(\started);
+			while {
+				(nextEvent = this.getNextEvent).notNil;
+			}{
+				nextEvent.play;
+				this.changed(\played);
+				nextEvent[\dur].wait;
+			};
+			this.changed(\stopped);
+			routine = nil;
+			this.reset;
+		}.fork;
 	}
-	removeTrig { | key = \default |
-		var trig;
-		if ((trig = triggers[key]).notNil) {
-			this.removeNotifier(trig);
-			triggers[key] = nil;
+
+	getNextEvent {
+		var nextEvent, nextValue;
+		nextEvent = ().parent_(event.parent);
+		stream keysValuesDo: { | key, value |
+			nextValue = value.next;
+			if (nextValue.isNil) { ^nil };
+			nextEvent[key] = nextValue;
+
+		};
+		^nextEvent;
+	}
+
+	// preparing
+	value { "value was called".postln; }
+	next { "next was called".postln; }
+	reset { this.makeStream }
+
+	makeStream {
+		stream = ().parent_(event.parent);
+		event keysValuesDo: { | key, value |
+			stream[key] = value.asStream;
 		}
 	}
-	trigSynth { | source, trigKey = \default, synthKey = \default |
-		// NOTE: Perhaps better use a method like:
-		// \trigKey.trigSynth(source, synthKey)!
-		this.addTrig(trigKey).addSynth(source, synthKey);
-	}
-	remSynth { | trigKey = \default, synthKey = \default |
-		// TODO: Implement this
-		// remove synth - best done perhaps via OscTrig directly?
-		"remSynth not yet implemented".postln;
-	}
 
-	// ================ access
-	event { ^streamPlayer.event } 	// source event
-	proto { ^streamPlayer.proto }   // source event's prototype
-	atProto { | key | ^this.proto.at(key) } // prototype's value at key
-	currentEvent { ^streamPlayer.currentEvent } // currently played event
-	parent { ^streamPlayer.parent } // parent
+	isRunning { ^routine.notNil }
 
-	// ================ modifying
-	set { | inEvent | streamPlayer.set(inEvent); }
-	put { | key, value | this add: ().put(key, value); }
-	add { | inEvent | streamPlayer.add(inEvent); }
-	removeKey { | key | streamPlayer.removeKey(key); }
-	addToParent { | argEvent | streamPlayer addToParent: argEvent; }
-	setParentKey { | key, value | streamPlayer.setParentKey(key, value); }
-	quant_ { | quant = 1 | streamPlayer.quant = quant }
-	isPlaying { ^streamPlayer.isRunning }
+	cmdPeriod { routine = nil; }
+
+	addEvent { | inEvent |
+		inEvent keysValuesDo: { | key, value |
+			event[key] = value;
+			stream[key] = value.asStream;
+		}
+	}
 }
