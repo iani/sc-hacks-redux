@@ -4,10 +4,18 @@ Redo EventStream, removing all extras.
 
 EventStream {
 	var <event, <stream, <routine;
-	var <>beatFilter = true; // select beats from BeatCounter to play;
 
 	*new { | event |
 		^this.newCopyArgs(event).reset;
+	}
+
+	reset { this.makeStream }
+
+	makeStream {
+		stream = ().parent_(event.parent);
+		event keysValuesDo: { | key, value |
+			stream[key] = value.asStream;
+		}
 	}
 
 	start {
@@ -54,23 +62,6 @@ EventStream {
 		^nextEvent;
 	}
 
-	// adding self as dependant to BeatCounter is a safe simple
-	// way to add / remove.
-	update { | counter, message, count |
-		if (message === \beat and: { beatFilter.(count) }) {
-			this.getNextEvent.play;
-		}
-	}
-
-	reset { this.makeStream }
-
-	makeStream {
-		stream = ().parent_(event.parent);
-		event keysValuesDo: { | key, value |
-			stream[key] = value.asStream;
-		}
-	}
-
 	isRunning { ^routine.notNil }
 
 	cmdPeriod { routine = nil; }
@@ -82,11 +73,13 @@ EventStream {
 		}
 	}
 
-	addBeat { | beatKey |
-		beatKey.beat.addDependant(this);
+	addBeat { | beat |
+		this.addNotifier(beat.beat, \beat, {
+			this.getNextEvent.play;
+		});
 	}
 
-	removeBeat { | beatKey |
-		beatKey.beat.removeDependant(this)
+	removeBeat { | beat |
+		this.removeNotifier(beat.beat, \beat);
 	}
 }
