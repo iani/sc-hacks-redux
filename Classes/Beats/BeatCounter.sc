@@ -56,4 +56,6 @@ BeatCounter {
 	remove { | listener |
 		listener.removeNotifier(this, beatMessage);
 	}
+
+	beat { ^this }
 }
