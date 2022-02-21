@@ -34,28 +34,3 @@ Shortcuts for using BeatCounter.
 	}
 }
 
-+ Event {
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// FIXME: debug this. Do not add new eventsstreams if same name event name
-	@> { | beat, name = \eventStream |
-		var es;
-		es = ~eventStream;
-		if (es.isNil) {
-			es = EventStream(this)
-		}{
-			es.add(this)
-		};
-		es addBeat: beat;
-	}
-
-	@>> { | beat, name = \eventStream |
-		var es;
-		es = ~eventStream;
-		if (es.isNil) {
-			es = EventStream(this)
-		}{
-			es.add(this)
-		};
-		es addBeat: beat.beat.start;
-	}
-}

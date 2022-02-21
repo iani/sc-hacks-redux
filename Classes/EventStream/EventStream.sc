@@ -4,6 +4,7 @@ Redo EventStream, removing all extras.
 
 EventStream {
 	var <event, <stream, <routine;
+	var <>beatFilter = true; // select beats from BeatCounter to play;
 
 	*new { | event |
 		^this.newCopyArgs(event).reset;
@@ -43,16 +44,24 @@ EventStream {
 		nextEvent = ().parent_(event.parent);
 		stream keysValuesDo: { | key, value |
 			nextValue = value.next;
-			if (nextValue.isNil) { ^nil };
+			if (nextValue.isNil) {
+				postf("% has ended\n", this);
+				^nil
+			};
 			nextEvent[key] = nextValue;
 
 		};
 		^nextEvent;
 	}
 
-	// preparing
-	value { "value was called".postln; }
-	next { "next was called".postln; }
+	// adding self as dependant to BeatCounter is a safe simple
+	// way to add / remove.
+	update { | counter, message, count |
+		if (message === \beat and: { beatFilter.(count) }) {
+			this.getNextEvent.play;
+		}
+	}
+
 	reset { this.makeStream }
 
 	makeStream {

@@ -14,7 +14,10 @@
 	splay { | key  | ^EventStream(this).start; }
 
 	+>! { | key |
-		currentEnvironment.put(key, EventStream(this));
+		var new;
+		new = EventStream(this);
+		currentEnvironment.put(key, new);
+		^new;
 	}
 
 	++> { | key |
@@ -27,4 +30,43 @@
 		}
 	}
 
+	@> { | eventKey, beatsKey |
+		this.addBeat(eventKey, beatsKey)
+	}
+
+	addBeat { | eventKey, beatKey |
+		var new;
+		beatKey = beatKey ? eventKey;
+		new = this +>! eventKey;
+		beatKey.beat.addDependant(new);
+		^new;
+	}
 }
+
+/*
++ Event {
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// FIXME: debug this. Do not add new eventsstreams if same name event name
+	@> { | beat, name = \eventStream |
+		var es;
+		es = ~eventStream;
+		if (es.isNil) {
+			es = EventStream(this)
+		}{
+			es.add(this)
+		};
+		es addBeat: beat;
+	}
+
+	@>> { | beat, name = \eventStream |
+		var es;
+		es = ~eventStream;
+		if (es.isNil) {
+			es = EventStream(this)
+		}{
+			es.add(this)
+		};
+		es addBeat: beat.beat.start;
+	}
+}
+*/
