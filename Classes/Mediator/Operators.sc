@@ -40,7 +40,7 @@ All sc-hacks-redux operators for all classes, in one file.
 
 + EventStream {
 	addEvent { | argEvent |
-		this add: argEvent
+		this.start add: argEvent;
 	}
 }
 

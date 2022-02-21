@@ -82,6 +82,5 @@ EventStream { // intentionally not a subclass of Stream
 	addToParent { | argEvent | streamPlayer addToParent: argEvent; }
 	setParentKey { | key, value | streamPlayer.setParentKey(key, value); }
 	quant_ { | quant = 1 | streamPlayer.quant = quant }
-	// ================ Compatibility with Mediator
-	isPlaying { ^true } // always stop me when replacing me in a Mediator
+	isPlaying { ^streamPlayer.isRunning }
 }
