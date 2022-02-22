@@ -64,7 +64,7 @@ Transferred from sc-hacks.
 		NodeWatcher.register(this);
 		listener.addNotifierOneShot(this, \n_go, {
 			this.isPlaying = true;
-			action.value;
+			action.(this);
 		});
 	}
 

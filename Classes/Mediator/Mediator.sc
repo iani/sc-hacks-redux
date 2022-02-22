@@ -71,7 +71,8 @@ MediatorHandler {
 + Synth {
 	handleReplacement {
 		// requires synth state to be tracked with with onStart
-		if (this.isPlaying) { this.release(~release); }
+		// release 0.001 stops trigger kr synths fast to prevent overlaps
+		if (this.isPlaying) { this.release(~release ? 0.001); }
 	}
 }
 

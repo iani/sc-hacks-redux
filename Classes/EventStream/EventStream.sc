@@ -79,7 +79,28 @@ EventStream {
 		});
 	}
 
-	removeBeat { | beat |
-		this.removeNotifier(beat.beat, \beat);
+	removeBeat { | beat | this.removeNotifier(beat.beat, \beat); }
+
+	// This adds a listener to all trigger messages. To listen to just
+	// one node, there should be a way to make OSC send a custom message
+	// bound to one synth environment variable - even when the synth is replaced.
+	// See method addSymbolTr below
+	addTr {
+		this.addNotifier(OSC, '/tr', { this.getNextEvent.play });
 	}
+	removeTr { this.removeNotifier(OSC, '/tr'); }
+
+	// TODO: Test this and rename to addTr
+	addSymbolTr { | symbol = \synth |
+		// EXPERIMENTAL! Track updates from synths starting
+		// in environment variable named by symbol
+		this.addNotifier(symbol, \synth, { | n, message, id |
+			this.addNotifier(OSC, '/tr', { | n, msg |
+				if (msg[2] == id) {
+					this.getNextEvent.play
+				}
+			});
+		})
+	}
+
 }

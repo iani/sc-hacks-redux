@@ -12,6 +12,12 @@ All sc-hacks-redux operators for all classes, in one file.
 	addEvent { | event, key |
 		event +> key
 	}
+	notifyIdOnStart { | notifier = \synth |
+		this.onStart({ | synth |
+			// track state and broadcast id for use with tr
+			notifier.changed(\synth, synth.nodeID)
+		})
+	}
 }
 
 + SimpleNumber {
@@ -24,13 +30,13 @@ All sc-hacks-redux operators for all classes, in one file.
 + Function {
 	+> {| envir, player |
 		// TODO: add arguments setting, bus mapping
-		currentEnvironment[envir] = this.play.onStart({}); // onStart: init running status!
+		currentEnvironment[envir] = this.play.notifyIdOnStart(envir);
 	}
 }
 
 + Symbol {
 	+> { | envir, player |
-		currentEnvironment[envir] = Synth(this).onStart({}); // onStart: init running status!
+		currentEnvironment[envir] = Synth(this).notifyIdOnStart(envir); // onStart: init running status!
     }
 
 	push {

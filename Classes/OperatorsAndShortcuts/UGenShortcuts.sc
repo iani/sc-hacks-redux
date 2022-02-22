@@ -21,6 +21,14 @@ To explore:
 		Env.adsr(attackTime, decayTime, sustainLevel, releaseTime, peakLevel, curve, bias)
 		.kr(doneAction: 2, gate: \gate.kr(1))
 	}
+
+	// hack: use this for control rate functions, to ensure fast release
+	kdsr { | attackTime=0.001, decayTime=0.001, sustainLevel=1, releaseTime=1.0,
+		peakLevel=1.0, curve = -4.0, bias = 0.0 |
+		^this *
+		Env.adsr(attackTime, decayTime, sustainLevel, releaseTime, peakLevel, curve, bias)
+		.kr(doneAction: 2, gate: \gate.kr(1))
+	}
 	// attackTime=0.01, releaseTime=1.0, level=1.0, curve = -4.0
 	perc { | attackTime=0.01, releaseTime=1.0, level=1.0, curve = -4.0 |
 		^this *
