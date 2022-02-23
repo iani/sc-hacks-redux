@@ -81,4 +81,12 @@ OSC {
 		// asOscMessage: prepend / to message if needed.
 		NetAddr.localAddr.sendMsg(message.asOscMessage, *args);
 	}
+
+	*trace1 { | message |
+		Trace.addNotifier(this, message.asOscMessage, { | ... args | args.postln; })
+	}
+
+	*untrace1 { | message |
+		Trace.removeNotifier(this, message.asOscMessage)
+	}
 }

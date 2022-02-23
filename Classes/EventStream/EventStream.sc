@@ -94,9 +94,17 @@ EventStream {
 	addSymbolTr { | symbol = \synth |
 		// EXPERIMENTAL! Track updates from synths starting
 		// in environment variable named by symbol
-		this.addNotifier(symbol, \synth, { | n, message, id |
+		this.addNotifier(symbol, \synth, { | n, msg |
+			var id;
+			id = msg; // msg[1];
+			postf("% received 'synth' from %. new id is: %\n",
+				this, symbol, id
+			);
 			this.addNotifier(OSC, '/tr', { | n, msg |
-				if (msg[2] == id) {
+				postf("received /tr with msg %. id is: %, needs to match id %\n",
+					msg, msg[1], id
+				);
+				if (msg[1] == id) {
 					this.getNextEvent.play
 				}
 			});
