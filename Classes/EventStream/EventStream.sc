@@ -50,15 +50,19 @@ EventStream {
 	getNextEvent {
 		var nextEvent, nextValue;
 		nextEvent = ().parent_(event.parent);
-		stream keysValuesDo: { | key, value |
-			nextValue = value.next;
-			if (nextValue.isNil) {
-				postf("% has ended\n", this);
-				^nil
-			};
-			nextEvent[key] = nextValue;
+		// perhaps add stream use to run this within the stream environment,
+		// to make the stream event available to any functions running in it?
+		stream use: { // stream use: EXPERIMENTAL
+			stream keysValuesDo: { | key, value |
+				nextValue = value.next;
+				if (nextValue.isNil) {
+					postf("% has ended\n", this);
+					^nil
+				};
+				nextEvent[key] = nextValue;
 
-		};
+			};
+		} // stream use: EXPERIMENTAL
 		^nextEvent;
 	}
 
