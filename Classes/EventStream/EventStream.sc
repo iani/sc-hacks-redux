@@ -97,13 +97,13 @@ EventStream {
 		this.addNotifier(symbol, \synth, { | n, msg |
 			var id;
 			id = msg; // msg[1];
-			postf("% received 'synth' from %. new id is: %\n",
-				this, symbol, id
-			);
+			// postf("% received 'synth' from %. new id is: %\n",
+			// 	this, symbol, id
+			// );
 			this.addNotifier(OSC, '/tr', { | n, msg |
-				postf("received /tr with msg %. id is: %, needs to match id %\n",
-					msg, msg[1], id
-				);
+				// postf("received /tr with msg %. id is: %, needs to match id %\n",
+				// 	msg, msg[1], id
+				// );
 				if (msg[1] == id) {
 					this.getNextEvent.play
 				}

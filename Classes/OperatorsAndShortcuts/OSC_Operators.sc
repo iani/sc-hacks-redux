@@ -7,9 +7,6 @@
 
 	trace {
 		Listener(OSC, { | model, msg, msgplusdata, time, replyAddr, recvPort  |
-			// OSC.changed(msg[0], msg, time, replyAddr, recvPort);
-			// postln("listener heard: model" + model + " message " + msg
-			// 	+ " time " + time + " addr " + replyAddr + " recvPort " + recvPort);
 			if (replyAddr.port == this) {
 				postln("Received: " + msgplusdata + " from " + replyAddr + " at time: " + time);
 			}
@@ -23,13 +20,8 @@
 	}
 
 	forward  { | netAddr |
-		// Forward
-		// this should be a symbol method
-		// it should imitate Route object from pd/MAX
+		// Forward messages from receiver port to another address
 		Listener(OSC, { | model, msg, msgplusdata, time, replyAddr, recvPort  |
-			// OSC.changed(msg[0], msg, time, replyAddr, recvPort);
-			// postln("listener heard: model" + model + " message " + msg
-			// 	+ " time " + time + " addr " + replyAddr + " recvPort " + recvPort);
 			if (replyAddr.port == this) {
 				netAddr.sendMsg(*msgplusdata);
 			};
@@ -48,18 +40,20 @@
 
 + Symbol {
 
-	|>|  { | index |
-		// this should be a symbol method
-		// it should imitate Route object from pd/MAX
-		"operator not yet implemented".postln;
-		// prototype:
-		// OSCFunc.addNotifier(this, { | msg |
-		//     msg[index] ... do something here?????
-		//     // how to make this chainable to a function?
-		//     maybe: |>| { | action, index | } ???????
- 		// })
-		//
-		// or maybe set a bus?
-		// { | [lo, hi], index | }
+	|>|  { | action, key |
+		// run an action when receiving osc message
+		// this: the name of the message ("/" is prepended if needed).
+		// key: can be used to add many different actions to one message
+		// Defaults to this.
+		// Action: A function to run.
+		this.addOsc(action, key);
+	}
+
+	addOsc { | action, key |
+		(key ? this).addNotifier(OSC, this.asOscMessage, action);
+	}
+
+	removeOsc { | key |
+		(key ? this).removeNotifier(OSC, this.asOscMessage);
 	}
 }
