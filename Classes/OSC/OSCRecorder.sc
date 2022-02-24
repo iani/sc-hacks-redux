@@ -17,13 +17,14 @@ Saving to file, reading from file, replaying, sorting into groups
 
 */
 
-RecordOSC {
+OSCRecorder {
 	classvar recordings, <currentRecording;
 	classvar <>messages; // messages that we want to record.
 	// If empty, then record everything.
+	classvar <directory;
 
 	*recordings {
-		recordings ?? { recordings = IdentityDictionary;  };
+		recordings ?? { recordings = IdentityDictionary();  };
 		^recordings;
 	}
 
@@ -36,10 +37,10 @@ RecordOSC {
 
 	*initRecording {
 		currentRecording = List();
-		this.recordings[Main.getDate.stamp.asSymbol] = currentRecording;
+		this.recordings[Date.getDate.stamp.asSymbol] = currentRecording;
 	}
 
-	isRecording { ^currentRecording.notNil; }
+	*isRecording { ^currentRecording.notNil; }
 
 	*stop {
 		OSC removeDependant: this;
@@ -60,10 +61,19 @@ RecordOSC {
 	}
 
 	*save { | path |
-
+		var savePath;
+		savePath = ((this.getDirectory +/+ ("OscData_" ++ Date.getDate.stamp)).fullPath ++ ".scd").postln;
+		this.recordings.writeArchive(savePath);
 	}
 
 	*load { | path |
 
 	}
+
+	*getDirectory {
+		directory ?? { directory = PathName(Platform.userAppSupportDir); };
+		^directory;
+	}
+
+
 }
