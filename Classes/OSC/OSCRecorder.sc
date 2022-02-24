@@ -61,9 +61,22 @@ OSCRecorder {
 	}
 
 	*save { | path |
-		var savePath;
-		savePath = ((this.getDirectory +/+ ("OscData_" ++ Date.getDate.stamp)).fullPath ++ ".scd").postln;
-		this.recordings.writeArchive(savePath);
+		/* // OLD VERSION.  Saving-loading all sessions as one object on one file
+			// In this version the file would keep getting larger as it accumulates sessinos.
+			var savePath;
+			savePath = ((this.getDirectory +/+ ("OscData_" ++ Date.getDate.stamp)).fullPath ++ ".scd").postln;
+			this.recordings.writeArchive(savePath);
+
+		*/
+		// new version: write each recording session to separate file.
+		// Enables reloading single recording sessions.
+
+		recordings keysValuesDo: { | sessionName, data |
+			var savePath;
+			savePath = ((this.getDirectory +/+ ("OscData_" ++ sessionName.asString)).fullPath ++ ".scd").postln;
+			data.writeArchive(savePath);
+		}
+
 	}
 
 	*load { | path |
