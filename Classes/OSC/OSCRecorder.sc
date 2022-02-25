@@ -1,39 +1,40 @@
 /* 23 Feb 2022 20:36
-Record all incoming messages in an array.
-Either record dall incoming messages, or record only those
-messages that are included in instance variable messages.
-For example:
-
-If messages is nil, record everything.
-If messages is ['/tr', '/n_go'] then only record messages
-that match '/tr' or '/n_go'.
-
-Initial implementation: Just record everything.
-
-Features to add later - possibly delegated to other Classes (!):
-
-Saving to file, reading from file, replaying, sorting into groups
-
-
+See OSCRecorder.org
 */
 
 OSCRecorder {
 	classvar recordings, <currentRecording;
+	// this should be moved to OSCDataSession:
 	classvar <>messages; // messages that we want to record.
 	// If empty, then record everything.
 	classvar <directory;
+	classvar <activeSessions; //  Dictionary of OSCDataSession.key -> OSCDataSession
 
 	*recordings {
 		recordings ?? { recordings = IdentityDictionary();  };
 		^recordings;
 	}
 
-	*start {
-		if (this.isRecording) { ^"RecordOSC is already running. Will not restart".postln; };
-		this.initRecording;
-		OSC addDependant: this;
-		this.changed(\started);
+	*start { | ... messages | // messages to record.
+		var key, session;
+		key = this makeSessionKey: messages;
+		session = activeSessions[key];
+		session ?? {
+			session = OSCData(*messages);
+			activeSessions[key] = session;
+			session.start;
+		};
+		^session;
 	}
+
+	*stop { | ... messages |
+		^activeSessions[this makeSessionKey: messages].stop;
+	}
+
+	*makeSessionKey { | messages |
+		^Set.newFrom(messages collect: _.asOscMessage);
+	}
+
 
 	*initRecording {
 		currentRecording = List();
@@ -41,24 +42,6 @@ OSCRecorder {
 	}
 
 	*isRecording { ^currentRecording.notNil; }
-
-	*stop {
-		OSC removeDependant: this;
-		currentRecording = nil;
-		this.changed(\stopped);
-	}
-
-	*update { | osc, changedmsg ... args |
-		// Id there no messages then add args to recording
-		if (messages.size == 0) {
-			currentRecording add: args;
-		}{ // else only add them if changedmsg
-			// is included in the messages hhat we want to record.
-			if (messages includes: changedmsg) {
-				currentRecording add: args;
-			}
-		}
-	}
 
 	*save { | path |
 		/* // OLD VERSION.  Saving-loading all sessions as one object on one file
