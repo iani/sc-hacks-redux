@@ -84,10 +84,15 @@ All sc-hacks-redux operators for all classes, in one file.
 
 	bkr { ^In.kr(this.bus.index) }
 
+	// Buffer play ugens ================
+
 	playBuf { | loop = 0 |
+		var bufnum, numChannels;
+		bufnum = this.buf.bufnum;
+		numChannels = this.buf.numChannels;
 		^PlayBuf.ar(
-			this.buf.numChannels,
-			this.buf.bufnum,
+			numChannels,
+			\bufnum.kr(bufnum),
 			\rate.kr(1),
 			\trigger.tr(1),
 			\startPos.kr(0),

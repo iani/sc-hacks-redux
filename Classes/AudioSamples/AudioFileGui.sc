@@ -11,8 +11,15 @@ AudioFileGui {
 				ListView()
 				.items_(Buffer.all)
 				.enterKeyAction_({ | me |
-					me.item.postln;
-					me.item.class.postln;
+					// me.item.postln;
+					// me.item.class.postln;
+					if (currentEnvironment[me.item].isPlaying) {
+						me.item.stop;
+					} {
+						Mediator.wrap({
+							{ me.item.playBuf } +> me.item;
+						}, \buffers)
+					}
 				});
 			)
 		}, \list)
