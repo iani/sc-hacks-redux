@@ -108,11 +108,8 @@ Project {
 		}
 	}
 
-	*loadScdFiles { | pathName, broadcast = true |
+	*loadScdFiles { | pathName |
 		var restoreBroadcasting;
-		// FIXME: Perhaps broadcast switching should be done a different way.
-		restoreBroadcasting = OscGroups.isForwarding;
-		if (broadcast.not) { OscGroups.disableCodeForwarding };
 		this.matchingFilesDo(
 			pathName,
 			{ | p |
@@ -121,7 +118,6 @@ Project {
 			},
 			"scd"
 		);
-		if (restoreBroadcasting) { OscGroups.enableCodeForwarding }
 	}
 
 	*loadGlobalBuffers {
@@ -136,16 +132,18 @@ Project {
 
 	*loadGlobalSynthdefs {
 		"loading global synthdefs".postln;
-		OscGroups.disableCodeForwarding;
+		if (OscGroups.isEnabled) { OscGroups.disableCodeForwarding; };
 		this.loadScdFiles(this.globalSynthdefPath, false);
-		OscGroups.enableCodeForwarding;
-	}
+		if (OscGroups.isEnabled) { OscGroups.enableCodeForwarding; }; }
 
 	*loadLocalSynthdefs {
 		"loading local synthdefs".postln;
 		OscGroups.disableCodeForwarding;
+		if (OscGroups.isEnabled) { OscGroups.disableCodeForwarding; };
 		this.loadScdFiles(this.localSynthdefPath);
-		OscGroups.enableCodeForwarding;
+		if (OscGroups.isEnabled) {
+			// "DEBUGGING".postln;
+			OscGroups.enableCodeForwarding; };
 	}
 
 	*localAudiofilePath { ^this.selectedProjectPath +/+ "audiofiles"; }
@@ -352,9 +350,6 @@ Project {
 
 	*loadSelectedProjectItem {
 		postf("loading project item: %\n", selectedProjectItem);
-		// selectedProjectItem.fullPath.postln;
-		// selectedProjectItem.isFolder.postln;
-
 		if (selectedProjectItem.isFolder) {
 			// selectedProjectItem.folderName.postln;
 			if (this.isAudioFileFolder(selectedProjectItem)) {
