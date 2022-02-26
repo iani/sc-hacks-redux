@@ -44,6 +44,17 @@ Mediator : EnvironmentRedirect {
 		envir.put (key, obj);
 	}
 
+	*all { ^Library.at(this) }
+
+	*at { | envirName |
+		if (envirName.isNil) { ^this.default; }{ ^this.fromLib(envirName); }
+	}
+
+	*wrap { | func, envirName |
+		// eval aMediator use: func
+		// Where aMediator is obtained from envirName
+		this.at(envirName) use: func;
+	}
 	
 }
 

@@ -1,13 +1,14 @@
 // 25 Jan 2021 10:29. Some useful event methods
 
 + Event {
-	+> { | key |
-		//
+	+> { | key, envir |
 		var atKey, new;
-		atKey = currentEnvironment[key];
-		atKey.stop;
-		new = this.splay(key);
-		currentEnvironment[key] = new;
+		Mediator.wrap({
+			atKey = currentEnvironment[key];
+			atKey.stop;
+			new = this.splay(key);
+			currentEnvironment[key] = new;
+		}, envir);
 		^new;
 	}
 

@@ -28,15 +28,19 @@ All sc-hacks-redux operators for all classes, in one file.
 }
 
 + Function {
-	+> {| envir, player |
+	+> { | player, envir |
 		// TODO: add arguments setting, bus mapping
-		currentEnvironment[envir] = this.play.notifyIdOnStart(envir);
+		Mediator.wrap({
+			currentEnvironment[player] = this.play.notifyIdOnStart(player)
+		}, envir);
 	}
 }
 
 + Symbol {
-	+> { | envir, player |
-		currentEnvironment[envir] = Synth(this).notifyIdOnStart(envir); // onStart: init running status!
+	+> { | player, envir |
+		Mediator.wrap({
+			currentEnvironment[player] = Synth(this).notifyIdOnStart(player); // onStart: init running status!
+		}, envir);
     }
 
 	push {
