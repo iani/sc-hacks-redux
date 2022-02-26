@@ -34,6 +34,7 @@ OSCData {
 			this.changed(\started);
 			OSCRecorder.changed(\started, this);
 		};
+		postln("Started OSC data recording:" + name)
 	}
 	stop {
 		OSCRecorder.activeSessions[key] ?? { ^this };
@@ -47,6 +48,7 @@ OSCData {
 		var savePath;
 		savePath = ((this.directory +/+ ("OscData_" ++ name.asString)).fullPath ++ ".scd").postln;
 		this.writeArchive(savePath);
+		postln("Saved OSC Data in: " + PathName(savePath).fileName);
 	}
 
 	directory { ^this.class.directory }
@@ -78,13 +80,11 @@ OSCData {
 	remove { OSC removeDependant: this }
 
 	update { | osc, inMsg ... args |
-		postln(messages.asString + inMsg + args);
 		if ((messages.size == 0) or: { messages includes: inMsg }) {
 			data add: args;
-			data.postln;
 			if (data.size >= maxsize) {
-				// cause OSCRecorder to start a new session:
-				this.changed(\sizelimit)
+				this.stop;
+				this.class.new(messages).start;
 			}
 		}
 	}
