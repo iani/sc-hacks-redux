@@ -9,6 +9,10 @@ Use Notification to add OSC functions.
 		// The key can optionally be used to add several actions for the same message.
 		// The key becomes a Notification's listener, and the receiver becomes
 		// the Notification's message.
+		this.addAction(func, key);
+	}
+
+	addAction { | func, key |
 		OSC.add(key ? this, this, func)
 	}
 

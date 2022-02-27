@@ -26,6 +26,19 @@ EventStream((degree: (-10..10).pseq), dur: 0.1)
 (degree: (-10..10).pseq, dur: 0.1) +>! \test;
 ~test.addTr(\mytrigger);
 
+(degree: (-10..10).pseq, dur: 1) ++> \test;
+
+~test.event.put(\degree, 1);
+
+
+//: debug getNextEvent when modifying the stream with ++>
+(degree: (-10..10).pseq, dur: 0.1) +>! \test;
+~test;
+~test.getNextEvent;
+(degree: 0) ++> \test;
+//:
+
+
 
 \test.start;
 (degree: (10..-10).pseq, dur: 0.1) +>! \test;

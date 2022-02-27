@@ -50,9 +50,9 @@ EventStream {
 	getNextEvent {
 		var nextEvent, nextValue;
 		nextEvent = ().parent_(event.parent);
-		// perhaps add stream use to run this within the stream environment,
+		// run this within the stream environment,
 		// to make the stream event available to any functions running in it?
-		stream use: { // stream use: EXPERIMENTAL
+		stream use: {
 			stream keysValuesDo: { | key, value |
 				nextValue = value.next;
 				if (nextValue.isNil) {
@@ -87,10 +87,19 @@ EventStream {
 
 	// Trigger the next event when receiving message from OSC./
 	// Use with Symbol:makeTrig.
+	// THIS VERSION IGNORES SUBSEQUENT STREAM MODIFICATIONS
+	// USE Symbol.addTr instead ...
+	/*
 	addTr { | message = \trigger |
-		this.addNotifier(OSC, message.asOscMessage, { this.getNextEvent.play });
+		this.addNotifier(OSC, message.asOscMessage, {
+			// TODO: DEBUG WHY STREAM MODIFICATIONS DO NOT WORK HERE
+			// Add extra debug statements to follow the contents
+			// of event and stream before and after getNextEvent
+			this.getNextEvent.play;
+		});
 	}
 	removeTr { | message = \trigger |
 		this.removeNotifier(OSC, message.asOscMessage);
 	}
+	*/
 }

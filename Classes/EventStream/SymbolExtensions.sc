@@ -4,7 +4,8 @@ See EventStream:trigSynth
 */
 
 + Symbol {
-	removeBeat { | beatKey |
+	// simple prototype. needs review and completion
+	removeTr { | beatKey |
 		// remove EventStream from dependants of BeatCounter
 		var eventStream;
 		eventStream = currentEnvironment[this];
@@ -16,6 +17,25 @@ See EventStream:trigSynth
 			);
 		}
 		^eventStream;
+	}
+
+	// simple prototype
+	// TODO: envir -> actionKey
+	// TODO:  Use same syntax / semantics as Symbol >>>
+	+>> { | player, key | this.addTr(player, key) }
+	addTr { | player, key |
+		key ?? { key = this };
+		this.addAction({
+			currentEnvironment[player].getNextEvent.play;
+		}, key);
+	}
+
+	<<+ { | trigKey, envir | this.removeTr(trigKey, envir) }
+
+	removeTr { | trigkey = \trigger, envir |
+		// TODO: rewrite to add actionKey
+		// Use same syntax / semantics as Symbol >>>
+		this <<< this;
 	}
 
 	// OLDER STUFF - NEEDS REVISION
