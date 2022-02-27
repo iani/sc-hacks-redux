@@ -1,47 +1,49 @@
-/*  4 Jun 2021 17:56
-All sc-hacks-redux operators for all classes, in one file.
+/* 27 Feb 2022 09:50
+
 */
-
-+ Nil {
-	addEvent { | event, key |
-		event +> key
-	}
-}
-
-+ Synth {
-	addEvent { | event, key |
-		event +> key
-	}
-	notifyIdOnStart { | notifier = \synth |
-		this.onStart({ | synth |
-			// track state and broadcast id for use with tr
-			notifier.changed(\synth, synth.nodeID)
-		})
-	}
-}
-
-+ SimpleNumber {
-	+> { | envir, param |
-		param ?? { ^"SimpleNumber +> requires a parameter adverb".warn };
-		envir.push.put(param, this);
-	}
-}
-
-+ Function {
-	+> { | player, envir |
-		// TODO: add arguments setting, bus mapping
-		Mediator.wrap({
-			currentEnvironment[player] = this.play.notifyIdOnStart(player)
-		}, envir);
-	}
-}
 
 + Symbol {
 	+> { | player, envir |
-		Mediator.wrap({
-			currentEnvironment[player] = Synth(this).notifyIdOnStart(player); // onStart: init running status!
-		}, envir);
+		^this.playInEnvir(player, envir);
     }
+
+	playInEnvir { | player, envir |
+		var synth;
+		Mediator.wrap({
+			currentEnvironment[player] = synth = Synth(this).notifyIdOnStart(player); // onStart: init running status!
+		}, envir);
+		^synth;
+	}
+
+	@> { | beatKey |
+		beatKey.beat.addDependant(currentEnvironment[this]);
+	}
+
+	addBeat { | beatKey |
+		this @> (beatKey ? this);
+	}
+
+	removeBeat { | beatKey |
+		currentEnvironment[this].removeBeat(beatKey ? this);
+	}
+
+	// toggle
+	+>? { | player, envir |
+		^this.toggle(player, envir);
+	}
+
+	toggle { | player, envir |
+		var process;
+		Mediator.wrap({
+			process = currentEnvironment[this];
+			if (process.isPlaying) {
+				process.stop
+			}{
+				process = player.playInEnvir(this, envir);
+			}
+		}, envir);
+		^process;
+	}
 
 	push {
 		^Mediator.fromLib(this).push;
@@ -56,13 +58,13 @@ All sc-hacks-redux operators for all classes, in one file.
 	}
 
 	src {
-		
-		
+
+
 	}
 
 	fx {
-		
-		
+
+
 	}
 
 	stream { } // evstream?

@@ -38,13 +38,9 @@ Transferred from sc-hacks.
 		}
 	}
 
-	addSynthStates { | node, onStart, onEnd |
-		onStart !? {
-			node.onStart({ onStart.(this, node) }, this)
-		};
-		onEnd !? {
-			node.onStart({ onStart.(this, node) }, this)
-		}
+	addNodeActions { | node, onStart, onEnd |
+		node.onStart({ onStart.(this, node) }, this);
+		node.onEnd({ onEnd.(this, node) }, this);
 	}
 	// TODO:
 	// removeListenersAt { | message | }
@@ -68,6 +64,7 @@ Transferred from sc-hacks.
     }
 
 	onStart { | action, listener |
+		if (this.isPlaying) { ^action.(this) };
 		listener = listener ? { this }; // DO NOT CHANGE THIS!
 		NodeWatcher.register(this);
 		listener.addNotifierOneShot(this, \n_go, {

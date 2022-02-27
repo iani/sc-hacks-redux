@@ -36,11 +36,25 @@ Notification.removeNotifiersOf(2);
 //:
 Notification.notifications.first.remove;
 //:
-2.addNotifier(2, \x, { "x received".postln; });
-3.addNotifier(2, \x, { "x received".postln; });
-1.addNotifier(1, \x, { "x received".postln; });
-1.addNotifier(3, \x, { "x received".postln; });
-1.addNotifier(2, \y, { "x received".postln; });
-1.addNotifier(4, \z, { "x received".postln; });
-2.addNotifier(5, \y, { "x received".postln; });
-1.addNotifier(5, \y, { "x received".postln; });
+var a;
+a = { | n |
+	postln(n.listener + "received" + n.message + "from" + n.notifier);
+};
+2.addNotifier(2, \x, a);
+3.addNotifier(2, \x, a);
+1.addNotifier(1, \x, a);
+1.addNotifier(3, \x, a);
+1.addNotifier(2, \y, a);
+1.addNotifier(4, \z, a);
+2.addNotifier(5, \y, a);
+1.addNotifier(5, \y, a);
+//:
+2.changed(\x);
+//:
+2.removeListeners;
+//:
+5.changed(\y);
+//:
+2.removeNotifiers;
+//:
+Notification.clear;

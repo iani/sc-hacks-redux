@@ -39,6 +39,8 @@ Notification {
 		controllers[argNotifier].remove(message, listener);
 	}
 
+	*clear { this.notifications do: _.remove }
+
 	*notifications { ^controllers.values.collect({|nc|nc.actions.values}).flat; }
 
 	*listeningto { | notifier |
