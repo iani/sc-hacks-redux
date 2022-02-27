@@ -39,6 +39,11 @@
 
 
 + Symbol {
+	trace {
+		this >>> { | ... args | args.postln; };
+	}
+
+	untrace { this <<< this }
 
 	|>|  { | action, key |
 		// run an action when receiving osc message

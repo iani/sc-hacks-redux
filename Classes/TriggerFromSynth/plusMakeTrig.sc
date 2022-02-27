@@ -14,11 +14,20 @@ Convert a trigger source to a synth function.
 			Env.adsr.kr(gate: \gate.kr(1), doneAction: 2);
 		}
 	}
-	
 }
 
-+ Array {
-	makeTrig {
-		^this[0] makeTrig: this[1]
++ Symbol {
+	// 27 Feb 2022 16:25 : this is better!
+	// This does not yet work. Need to rebuild the code in detail
+	makeTrig { | trigger, values |
+		var message;
+		message = this.asOscMessage;
+		trigger ?? { trigger = { Impulse.kr(2) } };
+		values ?? { values = 0 };
+		{
+			//			Env.adsr.kr(gate: \gate.kr(1), doneAction: 2);
+			SendReply.kr(trigger.value, message, values.value);
+			Env.adsr.kr(gate: \gate.kr(1), doneAction: 2);
+		}.play;
 	}
 }

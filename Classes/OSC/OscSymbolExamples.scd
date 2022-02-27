@@ -8,14 +8,18 @@ Examples for using symbol operators to add functions to received
 Server.default.boot;
 //:
 '/status.reply' >>> { "STATUSREPLY RECEIVED".postln; };
+'status.reply' >>> { "STATUSREPLY RECEIVED".postln; };
 //:
 OSC.activeMessages;
 //:
 '/status.reply' >>>.more { "more STATUSREPLY RECEIVED".postln; };
+'status.reply' >>>.more { "more STATUSREPLY RECEIVED".postln; };
 //:
 '/status.reply'.removeOSC;
+'status.reply'.removeOSC;
 //:
 '/status.reply'.removeOSC(\more);
+'status.reply'.removeOSC(\more);
 //:
 '/status.reply' <<< '/status.reply';
 //: remove all osc messages:
