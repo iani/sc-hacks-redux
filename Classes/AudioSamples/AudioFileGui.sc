@@ -18,6 +18,7 @@ AudioFileGui {
 					} {
 						Mediator.wrap({
 							{ me.item.playBuf } +> me.item;
+
 						}, \buffers)
 					}
 				});
