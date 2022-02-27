@@ -38,7 +38,7 @@ Mediator : EnvironmentRedirect {
 	*default { ^default ?? { default = this.fromLib(\default) } }
 	put { | key, obj |
 		dispatch.value(key, obj);
-		this.changed(key, obj);
+		// this.changed(key, obj);
 	}
 	prPut { | key, obj |
 		envir.put (key, obj);
@@ -55,65 +55,11 @@ Mediator : EnvironmentRedirect {
 		// Where aMediator is obtained from envirName
 		^this.at(envirName) use: func;
 	}
-	
-}
 
-MediatorHandler {
-	var <>envir;
-	value { | key, newValue |
-		var currentValue;
-		currentValue = envir.at(key);
-		envir use: { currentValue.handleReplacement(newValue); };
-		envir.prPut(key, newValue
-			// trackState is done in asSynth. Other stuff?
-			//	newValue.trackState(key, envir)
-		);
+	playerGui { // TODO: IMPLEMENT THIS.
+		/* List with all players.
+			names of players that are playing are enclosed in *.
+		*/
+		"Mediator playerGui NOT YET IMPLEMENTED".postln;
 	}
 }
-
-// other objects add more complex behavior
-+ Object {
-	handleReplacement {
-		this.stop;
-	}
-	// asSynth handles this. Check!?:
-	// trackState {} // Synth uses this to register with nodewatcher
-}
-+ Synth {
-	handleReplacement {
-		// requires synth state to be tracked with with onStart
-		// release 0.001 stops trigger kr synths fast to prevent overlaps
-		if (this.isPlaying) { this.release(~release ? 0.001); }
-	}
-}
-
-+ Bus {
-	handleReplacement { this.free }
-}
-
-+ Function {
-	// redefinition of +> operator
-	playIn { | key = \default |  // as of  9 Jun 2021 21:37
-		// trying to substitute SynthPlayer with plain synth.
-		// target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args
-		currentEnvironment use: {
-			//, outbus, fadeTime, addAction, args ...
-			// SynthPlayer: UNDER DEVELOPMENT 
-			//  9 Jun 2021 17:52 - may be avoided... just use synth?
-			currentEnvironment.put(key, SynthPlayer(this, key))
-		};
-	}
-	// just because I want a different name:
-	splay { | key = \default | this.playIn(key) }
-
-	tplay { | key = \default, clock |
-		^currentEnvironment use: {
-			currentEnvironment[key] = Task(this).play(clock ? SystemClock);
-		};
-	}
-
-	+> { | key = \default | this.playIn(key) }
-	*> { | key = \default | ^this.tplay(key) }
-}
-
-

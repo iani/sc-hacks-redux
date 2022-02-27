@@ -10,7 +10,7 @@
 		// TODO: add arguments setting, bus mapping
 		var synth;
 		Mediator.wrap({
-			currentEnvironment[player] = synth = this.play.notifyIdOnStart(player)
+			currentEnvironment[player] = synth = this.play.notify(player, envir)
 		}, envir);
 		^synth;
 	}

@@ -77,7 +77,7 @@ Transferred from sc-hacks.
 	onEnd { | action, listener |
 		listener = listener ? { this }; // DO NOT CHANGE THIS!
 		NodeWatcher.register(this);
-		listener.addNotifierOneShot(this, \n_end, action);
+		listener.addNotifierOneShot(this, \n_end, { action.(this) });
 	}	
 }
 

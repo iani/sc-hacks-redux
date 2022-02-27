@@ -15,7 +15,7 @@
 	playInEnvir { | player, envir |
 		var synth;
 		Mediator.wrap({
-			currentEnvironment[player] = synth = Synth(this).notifyIdOnStart(player); // onStart: init running status!
+			currentEnvironment[player] = synth = Synth(this).notify(player, envir);
 		}, envir);
 		^synth;
 	}
