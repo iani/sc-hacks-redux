@@ -3,13 +3,21 @@
 */
 
 + Synth {
-	addEvent { | event, key |
+	addEvent { | event, key | // used??????
 		event +> key
 	}
-	notifyIdOnStart { | notifier = \synth |
+	notify { | playerName, envirName |
 		this.onStart({ | synth |
 			// track state and broadcast id for use with tr
-			notifier.changed(\synth, synth.nodeID)
+			Mediator.wrap({
+				currentEnvironment.changed(\started, playerName, synth);
+			}, envirName)
+		});
+		this.onEnd({ | synth |
+			// track state and broadcast id for use with tr
+			Mediator.wrap({
+				currentEnvironment.changed(\stopped, playerName, synth);
+			}, envirName)
 		})
 	}
 }
