@@ -3,6 +3,11 @@
 */
 
 + Symbol {
+	playingp { | envir |
+		^Mediator.wrap({
+			currentEnvironment[this].isPlaying;
+		}, envir)
+	}
 	+> { | player, envir |
 		^this.playInEnvir(player, envir);
     }

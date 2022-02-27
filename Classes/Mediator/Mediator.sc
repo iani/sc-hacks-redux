@@ -53,7 +53,7 @@ Mediator : EnvironmentRedirect {
 	*wrap { | func, envirName |
 		// eval aMediator use: func
 		// Where aMediator is obtained from envirName
-		this.at(envirName) use: func;
+		^this.at(envirName) use: func;
 	}
 	
 }

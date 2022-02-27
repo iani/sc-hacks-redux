@@ -17,22 +17,45 @@
 \x.window({|w|
 	w.layout = VLayout(
 		ListView()
-		.items_([\1, \2, \3])
+		.items_(Buffer.all)
 		.enterKeyAction_({ | me |
-
 			me.addNodeActions(
-				{ WhiteNoise.ar(0.1).dup } +> me.item.postln,
-				{ me.background_(Color.red) },
-				{ me.background_(Color.blue) }
+				Buffer.all[me.value] toggle: { SinOsc.ar(400.rrand(1000), 0, 0.1).dup },
+				{ me.items_(
+					Buffer.all.collect({| b |
+						if (b.playingp) { "*" + b + "*" }{ b }
+					})
+				)
+				},
+				{ me.items_(
+					Buffer.all.collect({| b |
+						if (b.playingp) { "*" + b + "*" }{ b }
+					})
+				)
+				}
 			)
 		})
 	)
 })
 //:
+\x.window({|w|
+	w.layout = VLayout(
+		ListView()
+		.items_(["blah"])
+		.selectionMode_(\multi)
+		.colors_([Color.red])
+	)
+})
+//:
 currentEnvironment['1'].isPlaying;
 //:
-\test +>? { WhiteNoise.ar(0.1).dup }
+\test +>? { WhiteNoise.ar(0.1).dup };
+//:
+\test.playingp;
 //:
 currentEnvironment;
 //:
 { WhiteNoise.ar(0.1).dup } +> \test;
+//:
+Buffer.all;
+wrap

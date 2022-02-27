@@ -58,3 +58,5 @@ a = { | n |
 2.removeNotifiers;
 //:
 Notification.clear;
+//:
+("*" + \b + "*").class;
