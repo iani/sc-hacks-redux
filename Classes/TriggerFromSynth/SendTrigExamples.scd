@@ -9,10 +9,33 @@
 OSC.verbose;
 OSC.silent;
 //:
-\tr.trace;
-\tr.untrace;
+\trigger.trace;
+\trigger.untrace;
 //:
-\tr.makeTrig({ Impulse.kr(5) });
+\trigger.makeTrig({ Impulse.kr(5) });
+//:
+EventStream((degree: (-10..10).pseq, dur: 0.1)).addTr(\trigger);
+//:
+EventStream((degree: (-10..10).pseq), dur: 0.1)
+//:
+\trigger.makeTr({ Impulse.kr(5) }) +> \mytrigger;
+\trigger.makeTr({ Impulse.kr(15) }) +> \mytrigger;
+
+\trigger.makeTr({ Impulse.kr(2.5) }) +> \mytrigger;
+//:
+(degree: (-10..10).pseq, dur: 0.1) +>! \test;
+~test.addTr(\mytrigger);
+
+
+\test.start;
+(degree: (10..-10).pseq, dur: 0.1) +>! \test;
+//:
+(degree: (10..-10).pseq, dur: 0.5) +> \test2;
+(degree: (-10..10).pseq, dur: 0.3) ++> \test2;
+(degree: ((0..5)*2).pseq, dur: 0.2) ++> \test2;
+
+
+// ======== OLDER STUFF =========
 //:
 {
 	//			Env.adsr.kr(gate: \gate.kr(1), doneAction: 2);

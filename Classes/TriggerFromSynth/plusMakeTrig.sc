@@ -30,4 +30,16 @@ Convert a trigger source to a synth function.
 			Env.adsr.kr(gate: \gate.kr(1), doneAction: 2);
 		}.play;
 	}
+	// Return synth func to use with +>
+	makeTr { | trigger, values |
+		var message;
+		message = this.asOscMessage;
+		trigger ?? { trigger = { Impulse.kr(2) } };
+		values ?? { values = 0 };
+		^{
+			//			Env.adsr.kr(gate: \gate.kr(1), doneAction: 2);
+			SendReply.kr(trigger.value, message, values.value);
+			Env.adsr.kr(gate: \gate.kr(1), doneAction: 2);
+		};
+	}
 }
