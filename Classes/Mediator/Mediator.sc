@@ -62,4 +62,7 @@ Mediator : EnvironmentRedirect {
 		*/
 		"Mediator playerGui NOT YET IMPLEMENTED".postln;
 	}
+	players {
+		^this.values select: _.isPlayer;
+	}
 }

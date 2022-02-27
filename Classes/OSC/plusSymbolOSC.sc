@@ -20,8 +20,8 @@ Use Notification to add OSC functions.
 
 	}
 
-	removeOSC { | receiver |
-		OSC.remove(receiver ? this, this);
+	removeOSC { | key |
+		OSC.remove(this, key ? this);
 	}
 
 	>>@ { | address |

@@ -19,6 +19,14 @@ OSC.activeMessages;
 //:
 '/status.reply' <<< '/status.reply';
 //: remove all osc messages:
+'more' <<< '/status.reply';
+
+'/status.reply' <<< 'more'
+
+
+
+
+
 OSC.clear;
 //:
 '/status.reply' >>@ NetAddr("127.0.0.1", 12000);

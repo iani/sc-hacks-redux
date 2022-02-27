@@ -22,7 +22,7 @@ OSC {
 		key.addNotifier(this, message.asOscMessage, function);
 	}
 
-	*remove { | key, message |
+	*remove { | message, key |
 		Notification.remove(this, message.asOscMessage, key);
 	}
 
