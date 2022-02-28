@@ -13,7 +13,8 @@ Use Notification to add OSC functions.
 	}
 
 	addAction { | func, key |
-		OSC.add((key ? this), func)
+		// message, function, key
+		OSC.add(this, func, key)
 	}
 
 	<<< { | key | // remove action registered under this message and key pair.
