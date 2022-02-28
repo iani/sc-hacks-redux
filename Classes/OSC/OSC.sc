@@ -13,17 +13,24 @@ OSC {
 
 	classvar >reportingFunc;
 
-	*add { | key, message, function |
+	*add { | message, function, key |
 		// message is the osc message to which the function is bound.
 		// One can use different keys to add more than one function to one message.
 		// Each key - message pair creates a new Notification, with
 		// key as the listener and message as the message.
 		// Convert message to standard osc message format by prepending / if needed
-		key.addNotifier(this, message.asOscMessage, function);
+		(key ? message).addNotifier(this, message.asOscMessage, function);
 	}
 
 	*remove { | message, key |
-		Notification.remove(this, message.asOscMessage, key);
+		// postf("Removing notifier % from listener % at message %\n",
+		// 	this, (key ? message), message.asOscMessage;
+		// );
+		// "These are the active osc connections before removal:".postln;
+		// this.list;
+		(key ? message).removeNotifier(this, message.asOscMessage);
+		// "These are the active osc connections after removal:".postln;
+		// this.list;
 	}
 
 	*list {
@@ -32,13 +39,15 @@ OSC {
 			d isKindOf: NotificationController
 		});
 		if (controllers.size == 0) {
-			"===== There are no actions in OSC currently =====".postln;
+			^"===== There are no actions in OSC currently =====".postln;
 		};
+		postln("======= Listing" + controllers.size + "controllers: ======= ");
 		controllers do: { | d |
 			d.actions keysValuesDo: { | key, notifications |
 				postf("  Actions at % :\n", key);
 				notifications do: { | n |
-					postf("    key: %, action: %\n", n.listener, n.action)
+					postf("    notifier: %, listener: %, message: %, action: %\n",
+						n.notifier, n.listener, n.message, n.action)
 				}
 			};
 		}

@@ -13,19 +13,19 @@ Use Notification to add OSC functions.
 	}
 
 	addAction { | func, key |
-		OSC.add((key ? this).asOscMessage, this, func)
+		OSC.add((key ? this), func)
 	}
 
 	<<< { | key | // remove action registered under this message and key pair.
 		this.removeOSC(key);
 	}
 
-	>>? { | key | // does OSC respond to this message under this key?
-
+	removeOSC { | key |
+		OSC.remove(this.asOscMessage, key);
 	}
 
-	removeOSC { | key |
-		OSC.remove(this, key ? this);
+	>>? { | key | // does OSC respond to this message under this key?
+
 	}
 
 	>>@ { | address |
