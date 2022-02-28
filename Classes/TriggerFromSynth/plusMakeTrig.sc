@@ -8,6 +8,7 @@ Convert a trigger source to a synth function.
 
 + Function {
 	makeTrig { | values = 0 |
+		// IS THIS USED???? DEPRECATED?
 		^{ | id = 0 |
 			//			Env.adsr.kr(gate: \gate.kr(1), doneAction: 2);
 			SendTrig.kr(this, id, values);
@@ -24,9 +25,10 @@ Convert a trigger source to a synth function.
 		message = this.asOscMessage;
 		trigger ?? { trigger = { Impulse.kr(2) } };
 		values ?? { values = 0 };
-		{
-			//			Env.adsr.kr(gate: \gate.kr(1), doneAction: 2);
-			SendReply.kr(trigger.value, message, values.value);
+		{   // Make trigger available to values function!
+			var trigger;
+			trigger = trigger.value;
+			SendReply.kr(trigger, message, values.(trigger));
 			Env.adsr.kr(gate: \gate.kr(1), doneAction: 2);
 		}.play;
 	}
@@ -37,8 +39,8 @@ Convert a trigger source to a synth function.
 		trigger ?? { trigger = { Impulse.kr(2) } };
 		values ?? { values = 0 };
 		^{
-			//			Env.adsr.kr(gate: \gate.kr(1), doneAction: 2);
-			SendReply.kr(trigger.value, message, values.value);
+			trigger = trigger.value;
+			SendReply.kr(trigger, message, values.(trigger));
 			Env.adsr.kr(gate: \gate.kr(1), doneAction: 2);
 		};
 	}

@@ -23,6 +23,7 @@ See EventStream:trigSynth
 	// TODO: envir -> actionKey
 	// TODO:  Use same syntax / semantics as Symbol >>>
 	+>> { | player, key | this.addTr(player, key) }
+
 	addTr { | player, key |
 		key ?? { key = this };
 		this.addAction({

@@ -4,7 +4,7 @@
 
 //: NEW APPROACH 27 Feb 2022 19:00
 
-\trigger.makeTr({ Impulse.kr(15.5) }) +> \mytrigger;
+\trigger.makeTr({ Impulse.kr(5) }) +> \mytrigger;
 
 \trigger.trace;
 \trigger.untrace;
@@ -19,8 +19,18 @@
 
 (degree: -10, dur: 0.01) ++> \test;
 (degree: [10, 20].pwhite, dur: 0.01) ++> \test;
+(degree: (10..20).pseq, dur: 0.01) ++> \test;
+(degree: ((-10..20) +.t [0, 2, 5]).pseq, dur: 0.01) ++> \test;
+//:Try 2 triggers on one EventStream:
 
-~test
+\trigger1.makeTr({ Impulse.kr(5/3) }) +> \mytrigger1;
+\trigger2.makeTr({ Impulse.kr(4/3) }) +> \mytrigger2;
+//:
+(degree: ((20..-10) +.t [0, 2, 5]).pseq, dur: 0.1) +>! \test2;
+//:
+\trigger1 +>> \test2;
+\trigger2 +>> \test2;
+//:
 
 // THE STUFF BELOW WENT WRONG - SEE STUFF ABOVE INSTEAD.
 //:
