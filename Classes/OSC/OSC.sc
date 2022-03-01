@@ -6,11 +6,6 @@ OscGroupClient 139.162.184.97 22242 22246 22244 22245 <USERNAME> <USER_PASSWORD>
 */
 
 OSC {
-	// classvar >settings;
-	// *settings { ^settings ?? { settings = IdentityDictionary(); } }
-	// *getSetting { | key | ^this.settings[setting] }
-	// *putSetting { | key, value | this.settings[setting] = value }
-
 	classvar >reportingFunc;
 
 	*add { | message, function, key |
@@ -23,14 +18,7 @@ OSC {
 	}
 
 	*remove { | message, key |
-		// postf("Removing notifier % from listener % at message %\n",
-		// 	this, (key ? message), message.asOscMessage;
-		// );
-		// "These are the active osc connections before removal:".postln;
-		// this.list;
 		(key ? message).removeNotifier(this, message.asOscMessage);
-		// "These are the active osc connections after removal:".postln;
-		// this.list;
 	}
 
 	*list {
@@ -54,9 +42,9 @@ OSC {
 	}
 
 	*clear {
-		// this.releaseDependants; // this does not remove Notifications!
 		// The following cleans up the Notification data:
 		Notification.removeListenersOf(this);
+		this.releaseDependants; // Release non-Notification dependants
 	}
 
 	*actionsAt { | message | // all keys responding to this message
@@ -87,7 +75,6 @@ OSC {
 	}
 
 	*sendLocal { | message ... args | // for testing
-		// asOscMessage: prepend / to message if needed.
 		NetAddr.localAddr.sendMsg(message.asOscMessage, *args);
 	}
 
