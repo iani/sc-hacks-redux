@@ -16,28 +16,39 @@ To explore:
 	idem { ^this }
 
 	adsr { | attackTime=0.01, decayTime=0.3, sustainLevel=1, releaseTime=1.0,
-		peakLevel=1.0, curve = -4.0, bias = 0.0 |
+		peakLevel=1.0, curve = -4.0, bias = 0.0,
+		doneAction = 2, gate = 1 |
 		^this *
 		Env.adsr(attackTime, decayTime, sustainLevel, releaseTime, peakLevel, curve, bias)
-		.kr(doneAction: 2, gate: \gate.kr(1))
+		.kr(doneAction: doneAction, gate: \gate.kr(gate))
 	}
 
 	// hack: use this for control rate functions, to ensure fast release
 	kdsr { | attackTime=0.001, decayTime=0.001, sustainLevel=1, releaseTime=1.0,
-		peakLevel=1.0, curve = -4.0, bias = 0.0 |
+		peakLevel=1.0, curve = -4.0, bias = 0.0,
+		doneAction = 2, gate = 1 |
 		^this *
 		Env.adsr(attackTime, decayTime, sustainLevel, releaseTime, peakLevel, curve, bias)
-		.kr(doneAction: 2, gate: \gate.kr(1))
+		.kr(doneAction: doneAction, gate: \gate.kr(gate))
 	}
 	// attackTime=0.01, releaseTime=1.0, level=1.0, curve = -4.0
-	perc { | attackTime=0.01, releaseTime=1.0, level=1.0, curve = -4.0 |
+	perc { | attackTime=0.01, releaseTime=1.0, level=1.0, curve = -4.0,
+		doneAction = 2, gate = 1 |
 		^this *
 		Env.perc(attackTime, releaseTime, level, curve)
-		.kr(doneAction: 2, gate: \gate.kr(1))
+		.kr(doneAction: doneAction, gate: \gate.kr(gate))
+	}
+
+	// for SynthDef code:
+	out { | out = 0 |
+		^Out.perform((audio: \ar, control: \kr)[this.rate],
+			\out.kr(out),
+			this
+		)
 	}
 }
 
-// make this work also with UGenArrays (usuall obtained from multichannel expansion)
+// Make this work also with UGenArrays (usuall obtained from multichannel expansion)
 + Array {
 
 	adsr { | attackTime=0.01, decayTime=0.3, sustainLevel=1, releaseTime=1.0,
