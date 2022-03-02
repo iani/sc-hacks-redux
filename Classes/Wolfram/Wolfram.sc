@@ -105,4 +105,23 @@ Wolfram {
 			this.stateString(i).postln;
 		}
 	}
+	plot {
+		// /* this. */// reuse window when replotting.
+		ruleCode.asSymbol.window({ | w |
+			w.view.background_(Color.white)
+		})
+		.name_(format("rule %", ruleCode))
+		.bounds_(Rect(0, 0, 800, 800))
+		.drawFunc_({
+			states do: { | row, i |
+				row do: { | s, j |
+					if (s == 1) {
+						Pen.color = Color.black;
+						Pen.addRect(Rect(j % 400 * 2, i * 2, 2, 2));
+						Pen.fill;
+					}
+				}
+			}
+		})
+	}
 }
