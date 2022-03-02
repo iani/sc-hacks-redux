@@ -22,6 +22,11 @@ Wolfram {
 	init {
 		this.makeRule(ruleCode);
 		startingState ?? { startingState = (0 ! 10) ++ [1] ++ (0 ! 10) };
+		if (startingState isKindOf: String) {
+			var newss;
+			startingState do: { | d | newss = newss add: d.asString.interpret };
+			startingState = newss;
+		};
 		currentState = startingState;
 		states = [currentState];
 	}
