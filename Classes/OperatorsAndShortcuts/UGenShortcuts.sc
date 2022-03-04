@@ -46,6 +46,9 @@ To explore:
 			this
 		)
 	}
+
+	decay { | dt = 0.25 | ^Decay.kr(this, dt) }
+
 }
 
 // Make this work also with UGenArrays (usuall obtained from multichannel expansion)
@@ -70,5 +73,14 @@ To explore:
 		^this *
 		Env.perc(attackTime, releaseTime, level, curve)
 		.kr(doneAction: 2, gate: \gate.kr(1))
+	}
+
+	mix { ^Mix(this) }
+}
+
++ Symbol {
+	busIn {
+		// bus in
+		^In.kr(this.bus.index)
 	}
 }
