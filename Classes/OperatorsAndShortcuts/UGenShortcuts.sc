@@ -90,9 +90,9 @@ To explore:
 		^In.kr(this.bus.index)
 	}
 
-	trigFilter { | trigger |
+	trigFilter { | trigger, start = 0, step = 1 |
 		// only filter the triggers by multiplying them with
 		// your elements values in sequence
-		^trigger * Demand.kr(trigger, 0, Dbufrd(this.buf, Dseries(0, 1, inf)))
+		^trigger * Demand.kr(trigger, 0, Dbufrd(this.buf, Dseries(start, step, inf)))
 	}
 }

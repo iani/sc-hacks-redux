@@ -46,10 +46,10 @@ Use Notification to add OSC functions.
 	}
 
 	evalOSC { | receiver, index = 1 |
-		OSC.add(receiver ? this, this, { | notification, message |
+		OSC.add(receiver ? this, { | notification, message |
 			postf("Remote evaluation: /* \%\n */\n", message[index]);
 			message[index].asString.interpret.postln;
-		})
+		}, this)
 	}
 
 	unevalOSC { | receiver |

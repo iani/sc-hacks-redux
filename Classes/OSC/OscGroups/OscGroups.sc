@@ -57,10 +57,14 @@ OscGroups {
 		this.changedStatus;
 	}
 
-	*enableCodeReception {
-		thisProcess.openUDPPort(22245);
+	*enableCodeReception { // TODO: Use oscRecvPort instead
+		thisProcess.openUDPPort(22245); // oscRecvPort
 		oscMessage.evalOSC;
 		this.changedStatus;
+	}
+
+	*openUDPPort { // TODO: Use oscRecvPort instead
+		thisProcess.openUDPPort(22245); // oscRecvPort
 	}
 
 	*disableCodeReception {
