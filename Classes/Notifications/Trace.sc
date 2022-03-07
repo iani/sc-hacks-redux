@@ -3,7 +3,9 @@ Simple way to post / stop posting update messages emitted by any object
 */
 
 Trace {
-	*update { | ... args | args.postln; }
+	*update { | changer ... args |
+		postln("changed:" + changer + "\nargs:" + args);
+	}
 }
 
 

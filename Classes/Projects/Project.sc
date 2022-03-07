@@ -84,7 +84,9 @@ Project {
 	*matchingFilesDo { | pathName, func ... types |
 		types = types collect: _.asSymbol;
 		postln("Looking for files in" + pathName.fullPath + "...");
-		postln("... found:" + (pathName +/+ "*").fullPath.pathMatch);
+		postln("... found:" + (pathName +/+ "*").fullPath.pathMatch
+			.collect({|p| PathName(p).fileName})
+		);
 		pathName filesDo: { | p | // ! filesDo recurses over subfolders!
 			if (types includes: p.extension.asSymbol) {
 				func.(p.fullPath)

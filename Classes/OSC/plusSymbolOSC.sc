@@ -47,8 +47,11 @@ Use Notification to add OSC functions.
 
 	evalOSC { | receiver, index = 1 |
 		OSC.add(receiver ? this, { | notification, message |
-			postf("Remote evaluation: /* \%\n */\n", message[index]);
-			message[index].asString.interpret.postln;
+			var code;
+			code = message[index].asString;
+			postf("Remote evaluation: /* \%\n */\n", code);
+			code.interpret.postln;
+			OscGroups.changed(\evalCode, code);
 		}, this)
 	}
 
