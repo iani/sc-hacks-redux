@@ -53,6 +53,7 @@ Project {
 				this.loadLocalSynthdefs;
 				server.sync;
 				postf("% finished loading synthdefs\n", server);
+				this.loadLocalSetupFolder;
 			};
 			ServerQuit add: {
 				"====== The default server quit ======".postln;
@@ -77,12 +78,13 @@ Project {
 	*globalAudiofilePath { ^this.globalProjectPath +/+ "audiofiles" }
 	*globalSynthdefPath { ^this.globalProjectPath +/+ "synthdefs" }
 	*localSynthdefPath { ^this.selectedProjectPath +/+ "synthdefs" }
+	*localSetupPath { ^this.selectedProjectPath +/+ "setup" }
 	*globalStartupFilePath { ^this.globalProjectPath +/+ "startup.scd" }
 
 	*matchingFilesDo { | pathName, func ... types |
 		types = types collect: _.asSymbol;
-		postf("Looking for files in %\n", pathName);
-		(pathName +/+ "*").fullPath.pathMatch.postln;
+		postln("Looking for files in" + pathName.fullPath + "...");
+		postln("... found:" + (pathName +/+ "*").fullPath.pathMatch);
 		pathName filesDo: { | p | // ! filesDo recurses over subfolders!
 			if (types includes: p.extension.asSymbol) {
 				func.(p.fullPath)
@@ -134,15 +136,24 @@ Project {
 		"loading global synthdefs".postln;
 		if (OscGroups.isEnabled) { OscGroups.disableCodeForwarding; };
 		this.loadScdFiles(this.globalSynthdefPath, false);
-		if (OscGroups.isEnabled) { OscGroups.enableCodeForwarding; }; }
+		if (OscGroups.isEnabled) { OscGroups.enableCodeForwarding; };
+	}
 
 	*loadLocalSynthdefs {
 		"loading local synthdefs".postln;
-		OscGroups.disableCodeForwarding;
+		OscGroups.disableCodeForwarding; // TODO: Remove this line after checking
 		if (OscGroups.isEnabled) { OscGroups.disableCodeForwarding; };
 		this.loadScdFiles(this.localSynthdefPath);
 		if (OscGroups.isEnabled) {
-			// "DEBUGGING".postln;
+			OscGroups.enableCodeForwarding; };
+	}
+
+	*loadLocalSetupFolder {
+		"loading setup folder".postln;
+		OscGroups.disableCodeForwarding;  // TODO: Remove this line after checking
+		if (OscGroups.isEnabled) { OscGroups.disableCodeForwarding; };
+		this.loadScdFiles(this.localSetupPath);
+		if (OscGroups.isEnabled) {
 			OscGroups.enableCodeForwarding; };
 	}
 
@@ -167,10 +178,15 @@ Project {
 						HLayout(
 							StaticText().string_("Projects"),
 							Button()
-							.maxWidth_(30)
+							.maxWidth_(50)
 							.canFocus_(false)
-							.states_([["*", Color.red, Color.black]])
-							.action_({ | me | this.startProjectInGroup });
+							.states_([["setup", Color.black, Color.green]])
+							.action_({ | me | this.setupProjectInGroup }),
+							 Button()
+							.maxWidth_(50)
+							.canFocus_(false)
+							.states_([["start"]])
+							.action_({ | me | this.startProjectInGroup })
 						),
 						ListView()
 						.hiliteColor_(Color(0.9, 0.9, 1.0))
@@ -309,9 +325,24 @@ Project {
 			OscGroups.enable; // so we are ready here for what comes next
 			this.broadcastSelectedProject; // works also without enable. Just making sure
 			0.1.wait; // wait for everyone to switch project before booting;
-			Server.default.boot;
+			Server.default.reboot;
 			OscGroups.forceBroadcastCode(
-				"Server.default.boot;"
+				"Server.default.reboot;"
+			);
+		}.fork;
+	}
+
+	*setupProjectInGroup {
+		// Load local project setup folder.
+		// Set local project of all group members to your local project
+		// Make all local project members load their local project setup folder
+		{
+			this.loadLocalSetupFolder;
+			OscGroups.enable; // so we are ready here for what comes next
+			this.broadcastSelectedProject; // works also without enable. Just making sure
+			0.1.wait; // wait for everyone to switch project before booting;
+			OscGroups.forceBroadcastCode(
+				"Project.loadLocalSetupFolder;"
 			);
 		}.fork;
 	}
