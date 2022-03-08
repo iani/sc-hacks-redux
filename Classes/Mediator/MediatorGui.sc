@@ -25,6 +25,7 @@ MediatorGui {
 			w.layout = HLayout(
 				ListView()
 				.items_(mediator.envir.keys.asArray.sort)
+				/*
 				.addNotifier(this, \key, { | n ... args |
 					var value;
 					value = n.listener.value;
@@ -38,6 +39,7 @@ MediatorGui {
 						n.listener.value = n.listener.items indexOf: n.listen
 					};
 				})
+				*/
 				.action_({ | me |
 				}),
 				TextView()

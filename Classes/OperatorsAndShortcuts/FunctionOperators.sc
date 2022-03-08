@@ -11,7 +11,7 @@
 		var synth;
 		Mediator.wrap({
 			// enable storing of source code:
-			currentEnvironment.changed(\playFunc, player, this);
+			// currentEnvironment.changed(\playFunc, player, this);
 			currentEnvironment[player] = synth = this.play.notify(player, envir)
 		}, envir);
 		^synth;

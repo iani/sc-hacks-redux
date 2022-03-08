@@ -42,7 +42,7 @@ Mediator : EnvironmentRedirect {
 	}
 	prPut { | key, obj |
 		envir.put (key, obj);
-		this.changed(key, obj);
+		// this.changed(key, obj);
 	}
 
 	*all { ^Library.at(this) }
