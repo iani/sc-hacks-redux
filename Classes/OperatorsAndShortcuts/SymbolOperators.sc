@@ -11,6 +11,10 @@
 	+> { | player, envir |
 		^this.playInEnvir(player, envir);
     }
+	// \srdiv <+.peb1 0.05;
+	<+ { | value, player |
+		player.set(this, value);
+	}
 
 	playInEnvir { | player, envir |
 		var synth;

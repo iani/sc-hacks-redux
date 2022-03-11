@@ -1,0 +1,8 @@
+#+TITLE: Sense Data Readme
+
+Here are utilities for dealing with OSC data from various sources.
+
+- SenseData :: Actions to perform when receiving a message from SenseStage.
+  - Attach a different action for each id (sensor module)
+  - Write data received from an id to busses
+- SensePlayer (folder) :: Record or read osc data to / from file. Also replay them.
