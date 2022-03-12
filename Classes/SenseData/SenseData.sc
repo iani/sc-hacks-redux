@@ -36,7 +36,21 @@ SenseData {
 		funcs[msg[1] ? 0].value(msg[2..]);
 	}
 
+	activeIds {
+		^funcs select: _.notNil;
+	}
+
 	put { | id, action |
 		funcs.put(id, action);
+	}
+
+	post { | ... ids |
+		ids do: { | id |
+			funcs[id] = { | x, y, z | postln("x" + x + "y" + y + "z" + z) };
+		}
+	}
+
+	setxyz { | ... ids |
+
 	}
 }
