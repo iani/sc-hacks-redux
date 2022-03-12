@@ -16,6 +16,14 @@
 		player.set(this, value);
 	}
 
+	<+@ { | value |
+		this.bus.set(value)
+	}
+
+	<@ { | bus, player |
+		currentEnvironment[player].map(this, bus.bus)
+	}
+
 	playInEnvir { | player, envir |
 		var synth;
 		Mediator.wrap({
