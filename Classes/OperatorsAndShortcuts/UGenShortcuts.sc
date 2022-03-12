@@ -85,6 +85,7 @@ To explore:
 }
 
 + Symbol {
+	bin { ^this.busIn } // synonym. (sic!)
 	busIn {
 		// bus in
 		^In.kr(this.bus.index)

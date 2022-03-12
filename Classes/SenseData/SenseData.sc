@@ -59,10 +59,7 @@ SenseData {
 			var x, y, z;
 			#x, y, z = ["x", "y", "z"].collect({ | s | format("%%", s, id).asSymbol.bus });
 			funcs[id] = { | xv, yv, zv |
-				// postln("x:" + x + "y:" + y + "z:" + z);
-				// postln("bus" + x + "value" + xv + "setting its value");
 				x.set(xv);
-				// x.get;
 				y.set(yv);
 				z.set(zv);
 			};
