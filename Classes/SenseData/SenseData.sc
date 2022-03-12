@@ -49,12 +49,28 @@ SenseData {
 
 	post { | ... ids |
 		ids do: { | id |
-			funcs[id] = { | x, y, z | postln("x" + x + "y" + y + "z" + z) };
+			funcs[id] = { | x, y, z | postln("x:" + x + "y:" + y + "z:" + z) };
 		};
 		this.enable;
 	}
 
 	setxyz { | ... ids |
+		ids do: { | id |
+			var x, y, z;
+			#x, y, z = ["x", "y", "z"].collect({ | s | format("%%", s, id).asSymbol.bus });
+			funcs[id] = { | xv, yv, zv |
+				// postln("x:" + x + "y:" + y + "z:" + z);
+				// postln("bus" + x + "value" + xv + "setting its value");
+				x.set(xv);
+				// x.get;
+				y.set(yv);
+				z.set(zv);
+			};
+		};
+		this.enable
+	}
 
+	*scope {
+		Server.default.scope(12, rate: \control);
 	}
 }
