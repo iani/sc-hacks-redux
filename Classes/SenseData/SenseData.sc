@@ -11,7 +11,8 @@ SenseData {
 	var <>funcs;
 
 	*new { | message |
-		^Registry(this, (message ? senseMessage).asOscMessage,
+		message = message ? senseMessage;
+		^Registry(this, (message).asOscMessage,
 			{ this.newCopyArgs(message).init }
 		)
 	}
@@ -33,11 +34,13 @@ SenseData {
 	silent { message.untrace }
 
 	valueArray { | n, msg |
-		funcs[msg[1] ? 0].value(msg[2..]);
+		funcs[msg[1] ? 0].value(*msg[2..]);
 	}
 
 	activeIds {
-		^funcs select: _.notNil;
+		var ids;
+		funcs do: { | f, id | if (f.notNil) { ids = ids add: id } };
+		^ids;
 	}
 
 	put { | id, action |
@@ -47,7 +50,8 @@ SenseData {
 	post { | ... ids |
 		ids do: { | id |
 			funcs[id] = { | x, y, z | postln("x" + x + "y" + y + "z" + z) };
-		}
+		};
+		this.enable;
 	}
 
 	setxyz { | ... ids |
