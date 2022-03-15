@@ -47,12 +47,21 @@ To explore:
 		)
 	}
 
+	bout { | busName | // send kr signal to a named kr bus
+		Out.kr(busName.bus.index, this);
+	}
+
 	decay { | dt = 0.25 | ^Decay.kr(this, dt) }
 
 	perctr { | attackTime=0.01, releaseTime=1.0, level=1.0, curve = -4.0, gate = 1 |
 		^Env.perc(attackTime, releaseTime, level, curve).kr(doneAction: 0, gate: this)
 	}
 
+	inrange {  | inMin = 0.47, inMax = 0.53, outMin = 0.0, outMax = 1.0, clip = \minmax |
+		// scale input from named bus from estimated range of sensestage sensors
+		// to the range specified.
+		^In.kr(this.bus.index).linlin(inMin, inMax, outMin, outMax, clip);
+	}
 }
 
 // Make this work also with UGenArrays (usuall obtained from multichannel expansion)
@@ -85,11 +94,14 @@ To explore:
 }
 
 + Symbol {
-	bin { ^this.busIn } // synonym. (sic!)
+	bin { ^this.busIn } // input from a named kr bus.
+	//synonym. (sic!)
 	busIn {
 		// bus in
 		^In.kr(this.bus.index)
 	}
+
+	//	bout {  } see UGen bout !
 
 	trigFilter { | trigger, start = 0, step = 1 |
 		// only filter the triggers by multiplying them with
