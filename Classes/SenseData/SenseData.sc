@@ -7,13 +7,13 @@
 
 SenseData {
 	classvar <>senseMessage = '/minibee/data';
-	var <message; //
+	var <message, <name = \default; //
 	var <>funcs;
 
-	*new { | message |
+	*new { | message, name = \default |
 		message = message ? senseMessage;
-		^Registry(this, (message).asOscMessage,
-			{ this.newCopyArgs(message).init }
+		^Registry(this, (message).asOscMessage, name
+			{ this.newCopyArgs(message, name).init }
 		)
 	}
 

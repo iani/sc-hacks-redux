@@ -13,6 +13,29 @@ OSCData {
 	var <key; // set of messages for storing in activeSessions
 	classvar >directory;
 
+	// 26 Mar 2022 11:11 transferred from OSCRecorder
+	classvar activeSessions; //  Dictionary of OSCDataSession.key -> OSCDataSession
+
+	*start { | ... messages | // messages to record.
+		// OSCData(messages).start;
+		this.new(messages).start;
+	}
+
+	*stop { | ... messages |
+		this.activeSessions[this makeSessionKey: messages].stop;
+	}
+
+	*activeSessions {
+		activeSessions ?? { activeSessions = Dictionary() };
+		^activeSessions;
+	}
+
+	*makeSessionKey { | messages |
+		^Set.newFrom(messages collect: _.asOscMessage);
+	}
+
+	// 26 Mar 2022 11:12 end of code from OSCrecorder
+
 	*new { | messages |
 		^this.newCopyArgs(messages collect: _.asOscMessage, List()).init;
 	}
@@ -20,7 +43,7 @@ OSCData {
 	init {
 		// set the name from now's date stamp plus
 		// all the messages separated by _
-		key = OSCRecorder makeSessionKey: messages;
+		key = this.class makeSessionKey: messages;
 		name = Date.getDate.stamp.sepcatList(
 			"_",
 			key.asArray.sort .collect({ | m | m.asString[1..] })
@@ -28,20 +51,20 @@ OSCData {
 	}
 
 	start { // only start if not already running:
-		OSCRecorder.activeSessions[key] ?? { // only nil if not running
-			OSCRecorder.activeSessions[key] = this;
+		this.class.activeSessions[key] ?? { // only nil if not running
+			this.class.activeSessions[key] = this;
 			OSC addDependant: this;
 			this.changed(\started);
-			OSCRecorder.changed(\started, this);
+			this.class.changed(\started, this);
 		};
 		postln("Started OSC data recording:" + name)
 	}
 	stop {
-		OSCRecorder.activeSessions[key] ?? { ^this };
+		this.class.activeSessions[key] ?? { ^this };
 		OSC removeDependant: this;
-		OSCRecorder.activeSessions[key] = nil;
+		this.class.activeSessions[key] = nil;
 		this.changed(\stopped);
-		OSCRecorder.changed(\stopped, this);
+		this.class.changed(\stopped, this);
 		this.save;
 	}
 	save {

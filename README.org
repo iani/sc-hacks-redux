@@ -7,13 +7,14 @@ This library provides utilities for live coding in SuperCollider, including a wa
 
 Put the sc-hacks-redux folder or its alias (symbolic link) in the SuperCollider user exensions folder and recompile the class library.
 
-* The =+>= operator
+* Basics
+** The =+>= operator
 
 =source +> player=
 
 Create a new sound process from the source and play it in the player. The player is a name written as a symbol. The source can be a function, an event, or a symbol.
 
-** Function +> player;
+*** Function +> player;
 
 Playing a function in a player with =+>= is similar to running ={}.play=.
 
@@ -23,7 +24,7 @@ Playing a function in a player with =+>= is similar to running ={}.play=.
 
 The difference is that the synth is stored under the name of the player, and can be released or replaced.
 
-** Event +> player;
+*** Event +> player;
 
 Playing an event in a player is similar to playing a Pbind using as keys the keys given in the event:
 
@@ -33,7 +34,7 @@ Playing an event in a player is similar to playing a Pbind using as keys the key
 
 This is not the same as playing a Pbind. Instead, it starts an =EventStream= which has some additional capabilities explained below.
 
-** Symbol +> player;
+*** Symbol +> player;
 
 =Symbol +> player= starts a synth using the synthdef named by =Symbol=:
 
@@ -41,7 +42,7 @@ This is not the same as playing a Pbind. Instead, it starts an =EventStream= whi
 \default +> \myplayer;
 #+end_src
 
-* Stopping a player with =stop=
+** Stopping a player with =stop=
 To stop a player, send it the message =stop=.
 
 #+begin_src sclang
@@ -50,7 +51,7 @@ To stop a player, send it the message =stop=.
 \myplayer.stop;
 #+end_src
 
-* Specifying duration of release with argument to =stop=
+** Specifying duration of release with argument to =stop=
 
 A numeric argument to =stop= sent to a symbol specifies the release time when stopping the player stored in that symbol:
 
@@ -60,7 +61,7 @@ A numeric argument to =stop= sent to a symbol specifies the release time when st
 \myplayer.stop(5); // same as: \myplayer stop: 5;
 #+end_src
 
-* Resuming a pattern with start
+** Resuming a pattern with start
 
 An EventStream playing in a player be stopped with =stop= and restarted with =start=.  It will continue playing its streams at the position last stopped:
 
@@ -70,7 +71,7 @@ An EventStream playing in a player be stopped with =stop= and restarted with =st
 \myresume.start; // run this after a while
 #+end_src
 
-* Modifying a player with ++>
+** Modifying a player with ++>
 
 One can use the =++>= operator to modify a player while it is playing. A statement of the form =anEvent ++> player= adds or sets all key-value pairs of anEvent to the player.
 
@@ -106,7 +107,7 @@ Another example, using more controls defined in the Synth function:
 (drate: 1, vrate: 1, vlo: 200, vhi: 1000) ++> \multiparam;
 #+end_src
 
-* Setting a control of a synth with =<+=
+** Setting a control of a synth with =<+=
 
 This is an alternative syntax that works for setting a single parameter in a synth or EventStream. The syntax is:
 
@@ -128,3 +129,11 @@ Example with EventStream:
 (degree: Pseq((0..10), inf)) +> \test;
 \dur <+.test 0.2;
 #+end_src
+
+* OSC
+
+** (Class) =OSC=: handle OSC communication
+
+** =OSCData=:
+
+** =OSCRecorder=:
