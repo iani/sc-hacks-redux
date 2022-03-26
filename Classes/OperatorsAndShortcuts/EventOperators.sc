@@ -25,14 +25,16 @@
 		^new;
 	}
 
-	++> { | key |
-		var e;
-		e = currentEnvironment[key];
-		if (e isKindOf: EventStream) {
-			^e addEvent: this;
-		}{
-			^this +> key
-		}
+	++> { | key, envir |
+		var p;
+		Mediator.wrap({
+			p = currentEnvironment[key];
+			p ?? {
+				p = EventStream(this);
+				currentEnvironment.put(key, p);
+			};
+			currentEnvironment[key].setEvent(this);
+		}, envir);
 	}
 
 	@> { | beatKey |

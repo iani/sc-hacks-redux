@@ -3,9 +3,15 @@
 */
 
 + Synth {
-	addEvent { | event, key | // used??????
-		event +> key
+	setEvent { | event | // see Event ++>
+		var params;
+		event keysValuesDo: { | key, value |
+			params = params add: key;
+			params = params add: value.next;
+		};
+		this.set(*params);
 	}
+
 	notify { | playerName, envirName |
 		this.onStart({ | synth |
 			// track state and broadcast id for use with tr

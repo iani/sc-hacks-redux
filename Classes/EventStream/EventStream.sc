@@ -70,6 +70,11 @@ EventStream {
 
 	cmdPeriod { routine = nil; }
 
+	setEvent { | inEvent |
+		this addEvent: inEvent;
+		this.start;
+	}
+
 	addEvent { | inEvent |
 		inEvent keysValuesDo: { | key, value |
 			event[key] = value;
