@@ -82,6 +82,10 @@ EventStream {
 		}
 	}
 
+	set { | param, value | // compatibility with <+
+		this.addEvent(().put(param, value))
+	}
+
 	addBeat { | beat |
 		this.addNotifier(beat.beat, \beat, {
 			this.getNextEvent.play;

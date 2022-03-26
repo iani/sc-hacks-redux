@@ -13,8 +13,13 @@
     }
 	// \srdiv <+.peb1 0.05;
 	<+ { | value, player |
-		player.set(this, value);
+		// .set(this, value);
+		currentEnvironment[player].set(this, value)
 	}
+
+	// set { | param = \trig, value = 1 |
+	// 	currentEnvironment[this].set(param, value)
+	// }
 
 	<+@ { | value |
 		this.bus.set(value)

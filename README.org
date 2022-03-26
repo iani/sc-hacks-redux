@@ -60,15 +60,61 @@ A numeric argument to =stop= sent to a symbol specifies the release time when st
 \myplayer.stop(5); // same as: \myplayer stop: 5;
 #+end_src
 
+* Resuming a pattern with start
+
+An EventStream playing in a player be stopped with =stop= and restarted with =start=.  It will continue playing its streams at the position last stopped:
+
+#+begin_src sclang
+(degree: Pseq((0..10), inf)) +> \myresume;
+\myresume.stop; // run this after a while
+\myresume.start; // run this after a while
+#+end_src
+
+* Modifying a player with ++>
+
+One can use the =++>= operator to modify a player while it is playing. A statement of the form =anEvent ++> player= adds or sets all key-value pairs of anEvent to the player.
+
+If the player is an EventStream (i.e. a playing pattern), the key-value pairs are added to the EventStream. (If the EventStream is not playing, it is started).
+
+#+begin_src sclang
+(degree: Pseq((0..10), inf)) +> \mymodify;
+(degree: Prand((0..10), inf)) ++> \mymodify; // run this after a while
+(dur: 0.1) ++> \mymodify; // run this after a while
+#+end_src
+
+If the player is a synth, then the synth parameters named by the keys in the event are set to the values in the event:
+
+#+begin_src sclang
+\default +> \asynth;
+(freq: 1000, amp: 0.05) ++> \asynth;
+#+end_src
+
+Another example, using more controls defined in the Synth function:
+#+begin_src sclang
+//: Create a synth with several control parameters
+(
+{ SinOsc.ar(
+	SinOsc.kr(\vrate.kr(5)).range(\vlo.kr(400), \vhi.kr(450)),
+	0,
+	Decay.kr(Dust.kr(\drate.kr(1)), mul: 0.1)
+	).dup
+} +> \multiparam;
+)
+//: Set parameters drate and vrate:
+(drate: 10, vrate: 20) ++> \multiparam;
+//: Set parameters drate, vrat,e vlo and vhi:
+(drate: 1, vrate: 1, vlo: 200, vhi: 1000) ++> \multiparam;
+#+end_src
+
 * Setting a control of a synth with =<+=
 
-The syntax is:
+This is an alternative syntax that works for setting a single parameter in a synth or EventStream. The syntax is:
 
 #+begin_src sclang
 \parameter <+.player value;
 #+end_src
 
-Example:
+Example with synth:
 
 #+begin_src sclang
 \default +> \myplayer;
@@ -76,24 +122,9 @@ Example:
 \freq <+.myplayer 600;
 #+end_src
 
-* Resuming a pattern with start
-
-An EventStream playing in a player be stopped with =stop= and restarted with =start=.  It will continue playing its streams at the position last stopped:
+Example with EventStream:
 
 #+begin_src sclang
-(degree: Pseq((0..10), inf)) +> \myresume;
-\myresume.stop;
-\myresume.start;
+(degree: Pseq((0..10), inf)) +> \test;
+\dur <+.test 0.2;
 #+end_src
-
-* Modifying a playing pattern with ++>
-
-To modify an EventStream (i.e. a playing pattern), or a Synth while it is playing, use the ++> operator.
-
-If an EventStream is playing in a player, then =Event ++> player= will set all the keys of the EventStream to the stream values of the corresponding keys contained in =Event=.
-
-#+begin_src sclang
-(degree: Pseq((0..10), inf)) +> \modifiable;
-(dur: 0.15) ++> \modifiable;
-#+end_src
-
