@@ -80,7 +80,6 @@ Project {
 	*localSynthdefPath { ^this.selectedProjectPath +/+ "synthdefs" }
 	*localSetupPath { ^this.selectedProjectPath +/+ "setup" }
 	*globalStartupFilePath { ^this.globalProjectPath +/+ "startup.scd" }
-	*oscDataPath { ^this.projectHomePath +/+ "oscdata" }
 
 	*matchingFilesDo { | pathName, func ... types |
 		types = types collect: _.asSymbol;
