@@ -24,7 +24,7 @@ PthisEvent : Pattern {
 }
 
 PthisEventStream : Stream {
-	next { ^currentEnvironment }
+	next { ^currentEnvironment.postln }
 	reset { }
 	storeArgs { ^[] }
 }

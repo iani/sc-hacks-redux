@@ -37,14 +37,20 @@ EventStream {
 			while {
 				(nextEvent = this.getNextEvent).notNil;
 			}{
-				nextEvent.play;
-				this.changed(\played);
+				this.playAndNotify(nextEvent);
+				// nextEvent.play;
+				// this.changed(\played);
 				nextEvent[\dur].wait;
 			};
 			this.changed(\stopped);
 			routine = nil;
 			this.reset;
 		}.fork;
+	}
+
+	playAndNotify { | inEvent |
+		inEvent.play;
+		this.changed(\played, inEvent, this);
 	}
 
 	getNextEvent {
@@ -88,7 +94,7 @@ EventStream {
 
 	addBeat { | beat |
 		this.addNotifier(beat.beat, \beat, {
-			this.getNextEvent.play;
+			this.playAndNotify(this.getNextEvent);
 		});
 	}
 

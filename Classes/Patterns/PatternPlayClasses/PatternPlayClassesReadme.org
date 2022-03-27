@@ -11,3 +11,16 @@ The play key is evaluated as function.  Example:
 #+end_src
 
 Instances of a class that are substituted for such a function the play key should respond to value.
+
+Alternatively, one may store an instance in any key and have it evaluated with =next=.
+
+* Send keys-values as OSC:
+
+Send all key value pairs as an OSC message.
+Prototype:
+
+#+begin_src sclang
+(degree: 1) ++> \test;
+(test: PFunc{ currentEnvironment keysValuesDo:
+.postln; }) ++> \test;
+#+end_src

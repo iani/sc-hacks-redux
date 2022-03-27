@@ -33,7 +33,7 @@ Clicking on the selected file/folder button executes the corresponding file(s)
 */
 
 Project {
-	classvar >startupFolder = "sc-projects", >globalFolder = "global";
+	classvar <>startupFolder = "sc-projects", <>globalFolder = "global";
 	classvar <projects, <selectedProject;
 	classvar <projectItems, <selectedProjectItem;
 
@@ -80,6 +80,7 @@ Project {
 	*localSynthdefPath { ^this.selectedProjectPath +/+ "synthdefs" }
 	*localSetupPath { ^this.selectedProjectPath +/+ "setup" }
 	*globalStartupFilePath { ^this.globalProjectPath +/+ "startup.scd" }
+	*oscDataPath { ^this.projectHomePath +/+ "oscdata" }
 
 	*matchingFilesDo { | pathName, func ... types |
 		types = types collect: _.asSymbol;
@@ -475,6 +476,7 @@ Project {
 			)
 		});
 	}
+
 	// some early drafts.
 	*scdFilesDo { | pathName, func | }
 	*globalAudioFiles { }

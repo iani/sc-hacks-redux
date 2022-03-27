@@ -3,6 +3,8 @@
 */
 
 + Symbol {
+	// ================================================================
+	// playeer operators
 	playingp { | envir |
 		^Mediator.wrap({
 			currentEnvironment[this].isPlaying;
@@ -17,18 +19,6 @@
 		currentEnvironment[player].set(this, value)
 	}
 
-	// set { | param = \trig, value = 1 |
-	// 	currentEnvironment[this].set(param, value)
-	// }
-
-	<+@ { | value |
-		this.bus.set(value)
-	}
-
-	<@ { | bus, player |
-		currentEnvironment[player].map(this, bus.bus)
-	}
-
 	playInEnvir { | player, envir |
 		var synth;
 		Mediator.wrap({
@@ -37,19 +27,52 @@
 		^synth;
 	}
 
-	@> { | beatKey |
-		beatKey.beat.addDependant(currentEnvironment[this]);
+	// ================================================================
+	// EventStream played actions
+	// Actions run every time an EventStream plays its next event
+	<! { | func, envir | this.addEventStreamAction(func, envir); }
+
+	addEventStreamAction { | func, envir |
+		Mediator.wrap({
+			this.addNotifier(currentEnvironment[this], \played, { | n, event, stream |
+				func.(event, stream);
+			})
+		}, envir)
 	}
 
+	sendEvents { | netAddress, envir, message = '/eventPlayed' |
+		netAddress ?? { netAddress = NetAddr.localAddr };
+		this.addEventStreamAction({ | event, eventStream |
+			// postln("Address" + netAddress);
+			// postln("Event" + event);
+			// postln("Stream" + eventStream.stream);
+			var keys, data;
+
+			keys = eventStream.stream.keys ?? { [\dur] };
+			data = [\player, this, \envir, currentEnvironment.name,
+				\time, Process.elapsedTime];
+			keys do: { | key |
+				data = data add: key;
+				data = data add: event[key]
+			};
+			netAddress.sendMsg(message, *data);
+		}, envir)
+	}
+
+	// ================================================================
+	// ============================ Beats UNTESTED!!!
+	|> { | beatKey |
+		beatKey.beat.addDependant(currentEnvironment[this]);
+	}
 	addBeat { | beatKey |
-		this @> (beatKey ? this);
+		this |> (beatKey ? this);
 	}
 
 	removeBeat { | beatKey |
 		currentEnvironment[this].removeBeat(beatKey ? this);
 	}
 
-	// toggle
+	// ============================ Toggle. UNTESTED!!!
 	+>? { | player, envir |
 		^this.toggle(player, envir);
 	}
@@ -66,6 +89,17 @@
 		}, envir);
 		^process;
 	}
+	// ================================================================
+	// bus operators
+	<+@ { | value |
+		this.bus.set(value)
+	}
+
+	<@ { | bus, player |
+		currentEnvironment[player].map(this, bus.bus)
+	}
+
+	//
 
 	push {
 		^Mediator.fromLib(this).push;

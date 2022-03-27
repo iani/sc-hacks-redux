@@ -16,12 +16,23 @@ OSCData {
 	// 26 Mar 2022 11:11 transferred from OSCRecorder
 	classvar activeSessions; //  Dictionary of OSCDataSession.key -> OSCDataSession
 
-	*start { | ... messages | // messages to record.
+	*directory {
+		directory ?? { directory = Project.oscDataPath };
+		^directory;
+	}
+	*files {
+		^this.directory.deepFiles.select({ | p | p.extension == "scd" });
+	}
+	*fileNames {
+		^this.files.collect(_.fileName);
+	}
+
+	*record { | ... messages | // messages to record.
 		// OSCData(messages).start;
 		this.new(messages).start;
 	}
 
-	*stop { | ... messages |
+	*stopRecording { | ... messages |
 		this.activeSessions[this makeSessionKey: messages].stop;
 	}
 
@@ -46,7 +57,7 @@ OSCData {
 		key = this.class makeSessionKey: messages;
 		name = Date.getDate.stamp.sepcatList(
 			"_",
-			key.asArray.sort .collect({ | m | m.asString[1..] })
+			key.asArray.sort.collect({ | m | m.asString[1..] })
 		)
 	}
 
@@ -75,10 +86,6 @@ OSCData {
 	}
 
 	directory { ^this.class.directory }
-	*directory {
-		directory ?? { directory = PathName(Platform.userAppSupportDir); };
-		^directory;
-	}
 
 	*loadDialog {
 

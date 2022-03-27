@@ -11,4 +11,7 @@
 		});
 		^string
 	}
+	absPath {
+		^PathName(this).asAbsolutePath;
+	}
 }

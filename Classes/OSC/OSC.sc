@@ -78,8 +78,15 @@ OSC {
 		NetAddr.localAddr.sendMsg(message.asOscMessage, *args);
 	}
 
+	*traceMessages { | ... messages |
+		messages do: { | message | this trace1: message }
+	}
+
+	*untraceMessages { | ... messages |
+		messages do: { | message | this untrace1: message }
+	}
 	*trace1 { | message |
-		Trace.addNotifier(this, message.asOscMessage, { | ... args | args.postln; })
+		Trace.addNotifier(this, message.asOscMessage, { | msg ... args | args.postln; })
 	}
 
 	*untrace1 { | message |
