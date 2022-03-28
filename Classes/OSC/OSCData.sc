@@ -15,7 +15,7 @@ OSCData {
 	var <data; // The recorded data
 	var <>sessionStart, <recordingStart, <recordingStop; // recording timestamps
 	var <>name; // name for directory containing this session's data files
-	var <playbackRoutine, playbackAddr;
+	var <playbackRoutine, <playbackAddr;
 
 	*fileNames { ^this.files.collect(_.fileName); }
 	*files { ^this.dataPath.deepFiles.select({ | p | p.extension == "scd" }); }
@@ -189,21 +189,42 @@ OSCData {
 					.string_("Num. messages: - Duration: - Sending to: -  Messages sent:")
 					.addNotifier(this, \loadedSession, { | n |
 						this.displayLoadedSession(n.listener)
+					})
+					.addNotifier(this, \playbackStarted, { | n |
+						this.displayLoadedSession(n.listener)
+					})
+					.addNotifier(this, \playbackStopped, { | n |
+						this.displayLoadedSession(n.listener)
 					}),
 					NumberBox().maxWidth_(80)
+					.addNotifier(this, \playbackIndex, { | n, index |
+						n.listener.value = index + 1;
+					})
 				)
 			);
 		})
 	}
 
-	*displayLoadedSession { | stringView, inAddr = "-" |
+	*displayLoadedSession { | stringView  |
 		stringView.string_(
 			format(
-				"Num. messages: % Duration: % Sending to: %  Messages sent:",
+				"Num. messages: % Duration: % Sending: % Addr: %  Sent:",
 				loadedSession.data.size,
-				loadedSession.duration.round(0.001), inAddr
+				loadedSession.duration.round(0.001),
+				["OFF", "ON"][this.isPlaying.binaryValue],
+				this.playbackAddressString;
 			);
 		)
+	}
+
+	*playbackAddressString {
+		loadedSession ?? { ^"-" };
+		^loadedSession.formatAddr;
+	}
+
+	formatAddr {
+		playbackAddr ?? { ^"-" };
+		^format("%:%", playbackAddr.hostname, playbackAddr.port);
 	}
 
 	*loadSession { | pathName |
@@ -217,6 +238,7 @@ OSCData {
 			this.changed(\loadedSession, loadedSession);
 		};
 	}
+
 
 	addSessionData { | otherSessions | // add data from other sessions
 		otherSessions do: { | session |
@@ -247,7 +269,7 @@ OSCData {
 
 	startPlayback { | addr |
 		var dt;
-		if (this.isPlayingBack) {
+		if (this.isPlaying) {
 			^postln("Session" + name + "is already playing back. Skipping this.");
 		};
 		dt = data.flop[1].differentiate;
@@ -260,13 +282,15 @@ OSCData {
 			dt do: { | delay, index |
 				delay.wait;
 				playbackAddr.sendMsg(*data[index][0]);
+				this.class.changed(\playbackIndex, index);
 			};
 			playbackRoutine	= nil;
 			this.class.changed(\playbackStopped, this);
 		}.fork;
 	}
 
-	isPlayingBack { ^playbackRoutine.notNil }
+	*isPlaying { ^loadedSession.isPlaying }
+	isPlaying { ^playbackRoutine.notNil }
 
 	*stopPlayback {
 		if (loadedSession.notNil) {
@@ -277,7 +301,7 @@ OSCData {
 	}
 
 	stopPlayback {
-		if (this.isPlayingBack) {
+		if (this.isPlaying) {
 			playbackRoutine.stop;
 			playbackRoutine	= nil;
 			this.class.changed(\playbackStopped, this);
