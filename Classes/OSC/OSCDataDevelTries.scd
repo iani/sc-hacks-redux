@@ -4,12 +4,38 @@ Code trials for refactoring OSCData.
 */
 //:
 
+OSCData.selectSession;
+OSCData.loadedSession;
+OSCData.sessionPaths.first.folderName;
+OSCData.sessionNames;
+OSCData.window;
+
+t = OSCData.loadedSession.first.data.flop[1];
+u = t.differentiate;
+u[0] = 0;
+
+u.size;
+d = OSCData.loadedSession.first.data;
+d.size;
+d = d ++ d;
+//:
+{
+	u do: { | t, i|
+		t.wait;
+		d[i].postln;
+	};
+	"Finished data playback".postln;
+}.fork;
+//:
+
 o = OSCData.record;
 o.dataFilePath;
 o.save;
 o.disable;
 
 //:
+OSC.untrace;
+//
 {
 	10 do: { | i |
 		m = Set.newFrom(['/test', '/status', '/n_go', '/sense/data', i.asSymbol]);
