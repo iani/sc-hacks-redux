@@ -286,6 +286,7 @@ OSCData {
 			};
 			playbackRoutine	= nil;
 			this.class.changed(\playbackStopped, this);
+			postln("Playback of" + name + "ended.");
 		}.fork;
 	}
 
