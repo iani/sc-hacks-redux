@@ -33,7 +33,7 @@ Clicking on the selected file/folder button executes the corresponding file(s)
 */
 
 Project {
-	classvar >startupFolder = "sc-projects", >globalFolder = "global";
+	classvar <>startupFolder = "sc-projects", <>globalFolder = "global";
 	classvar <projects, <selectedProject;
 	classvar <projectItems, <selectedProjectItem;
 
@@ -53,6 +53,7 @@ Project {
 				this.loadLocalSynthdefs;
 				server.sync;
 				postf("% finished loading synthdefs\n", server);
+				this.loadLocalSetupFolder;
 			};
 			ServerQuit add: {
 				"====== The default server quit ======".postln;
@@ -77,12 +78,15 @@ Project {
 	*globalAudiofilePath { ^this.globalProjectPath +/+ "audiofiles" }
 	*globalSynthdefPath { ^this.globalProjectPath +/+ "synthdefs" }
 	*localSynthdefPath { ^this.selectedProjectPath +/+ "synthdefs" }
+	*localSetupPath { ^this.selectedProjectPath +/+ "setup" }
 	*globalStartupFilePath { ^this.globalProjectPath +/+ "startup.scd" }
 
 	*matchingFilesDo { | pathName, func ... types |
 		types = types collect: _.asSymbol;
-		postf("Looking for files in %\n", pathName);
-		(pathName +/+ "*").fullPath.pathMatch.postln;
+		postln("Looking for files in" + pathName.fullPath + "...");
+		postln("... found:" + (pathName +/+ "*").fullPath.pathMatch
+			.collect({|p| PathName(p).fileName})
+		);
 		pathName filesDo: { | p | // ! filesDo recurses over subfolders!
 			if (types includes: p.extension.asSymbol) {
 				func.(p.fullPath)
@@ -108,11 +112,8 @@ Project {
 		}
 	}
 
-	*loadScdFiles { | pathName, broadcast = true |
+	*loadScdFiles { | pathName |
 		var restoreBroadcasting;
-		// FIXME: Perhaps broadcast switching should be done a different way.
-		restoreBroadcasting = OscGroups.isForwarding;
-		if (broadcast.not) { OscGroups.disableCodeForwarding };
 		this.matchingFilesDo(
 			pathName,
 			{ | p |
@@ -121,7 +122,6 @@ Project {
 			},
 			"scd"
 		);
-		if (restoreBroadcasting) { OscGroups.enableCodeForwarding }
 	}
 
 	*loadGlobalBuffers {
@@ -136,16 +136,27 @@ Project {
 
 	*loadGlobalSynthdefs {
 		"loading global synthdefs".postln;
-		OscGroups.disableCodeForwarding;
+		if (OscGroups.isEnabled) { OscGroups.disableCodeForwarding; };
 		this.loadScdFiles(this.globalSynthdefPath, false);
-		OscGroups.enableCodeForwarding;
+		if (OscGroups.isEnabled) { OscGroups.enableCodeForwarding; };
 	}
 
 	*loadLocalSynthdefs {
 		"loading local synthdefs".postln;
-		OscGroups.disableCodeForwarding;
+		OscGroups.disableCodeForwarding; // TODO: Remove this line after checking
+		if (OscGroups.isEnabled) { OscGroups.disableCodeForwarding; };
 		this.loadScdFiles(this.localSynthdefPath);
-		OscGroups.enableCodeForwarding;
+		if (OscGroups.isEnabled) {
+			OscGroups.enableCodeForwarding; };
+	}
+
+	*loadLocalSetupFolder {
+		"loading setup folder".postln;
+		OscGroups.disableCodeForwarding;  // TODO: Remove this line after checking
+		if (OscGroups.isEnabled) { OscGroups.disableCodeForwarding; };
+		this.loadScdFiles(this.localSetupPath);
+		if (OscGroups.isEnabled) {
+			OscGroups.enableCodeForwarding; };
 	}
 
 	*localAudiofilePath { ^this.selectedProjectPath +/+ "audiofiles"; }
@@ -169,10 +180,15 @@ Project {
 						HLayout(
 							StaticText().string_("Projects"),
 							Button()
-							.maxWidth_(30)
+							.maxWidth_(50)
 							.canFocus_(false)
-							.states_([["*", Color.red, Color.black]])
-							.action_({ | me | this.startProjectInGroup });
+							.states_([["setup", Color.black, Color.green]])
+							.action_({ | me | this.setupProjectInGroup }),
+							 Button()
+							.maxWidth_(50)
+							.canFocus_(false)
+							.states_([["start"]])
+							.action_({ | me | this.startProjectInGroup })
 						),
 						ListView()
 						.hiliteColor_(Color(0.9, 0.9, 1.0))
@@ -311,9 +327,24 @@ Project {
 			OscGroups.enable; // so we are ready here for what comes next
 			this.broadcastSelectedProject; // works also without enable. Just making sure
 			0.1.wait; // wait for everyone to switch project before booting;
-			Server.default.boot;
+			Server.default.reboot;
 			OscGroups.forceBroadcastCode(
-				"Server.default.boot;"
+				"Server.default.reboot;"
+			);
+		}.fork;
+	}
+
+	*setupProjectInGroup {
+		// Load local project setup folder.
+		// Set local project of all group members to your local project
+		// Make all local project members load their local project setup folder
+		{
+			this.loadLocalSetupFolder;
+			OscGroups.enable; // so we are ready here for what comes next
+			this.broadcastSelectedProject; // works also without enable. Just making sure
+			0.1.wait; // wait for everyone to switch project before booting;
+			OscGroups.forceBroadcastCode(
+				"Project.loadLocalSetupFolder;"
 			);
 		}.fork;
 	}
@@ -352,9 +383,6 @@ Project {
 
 	*loadSelectedProjectItem {
 		postf("loading project item: %\n", selectedProjectItem);
-		// selectedProjectItem.fullPath.postln;
-		// selectedProjectItem.isFolder.postln;
-
 		if (selectedProjectItem.isFolder) {
 			// selectedProjectItem.folderName.postln;
 			if (this.isAudioFileFolder(selectedProjectItem)) {
@@ -447,6 +475,7 @@ Project {
 			)
 		});
 	}
+
 	// some early drafts.
 	*scdFilesDo { | pathName, func | }
 	*globalAudioFiles { }

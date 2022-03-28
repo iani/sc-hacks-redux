@@ -33,13 +33,39 @@ Notification {
 		^controllers.at(notifier).at(message, listener);
 	}
 
+	remove { this.class.remove(notifier, message, listener); }
+
 	*remove { | argNotifier, message, listener |
 		controllers[argNotifier].remove(message, listener);
 	}
 
+	*clear { this.notifications do: _.remove }
+
 	*notifications { ^controllers.values.collect({|nc|nc.actions.values}).flat; }
-	*notifiers { ^controllers collect: _.model; }
-	*listeners { ^controllers.collect({ | c | c.listeners }).flat; }
+
+	*listeningto { | notifier |
+		^this.notifications.select({ | n | n.notifier === notifier })
+	}
+
+	*notifying { | listener |
+		^this.notifications.select({ | n | n.listener === listener })
+	}
+
+	*removeNotifiersOf { | listener |
+		this.notifying(listener) do: _.remove;
+	}
+
+	*removeListenersOf { | notifier |
+		this.listeningto(notifier) do: _.remove;
+	}
+
+	*notifiers {
+		^Set.newFrom(this.notifications.collect({|n| n.notifier})); //.asArray;
+	}
+	*listeners {
+		^Set.newFrom(this.notifications.collect({|n| n.listener})); //.asArray;
+	}
+	// *listeners { ^controllers.collect({ | c | c.listeners }).asArray.flat; }
 
 	*matches { | notifier, listener, message |
 		^this.notifications.detect({|n| n.matches(notifier, listener, message)}).notNil
@@ -51,10 +77,11 @@ Notification {
 		{ message == argMessage }
 	}
 
+	// ---- rarely used access methods ----
 	*notifiersOf { | listener |
-		^this.notifications.select({ | n |
-			n.listeners includes: listener
-		}).collect({ | n | n.model })
+		^Set newFrom:
+		(this.notifications.select({|n| n.listener === listener }) ?? [])
+		.collect(_.notifier);
 	}
 
 	*messagesOf { | notifier |
@@ -64,19 +91,8 @@ Notification {
 	}
 
 	*listenersOf { | notifier |
-		var controller;
-		controller = controllers[notifier];
-		^if (controller.isNil) { ^nil } { ^controller.actions.keys };
-	}
-	
-	*removeNotifiersOf { | listener |
-		this.notifiersOf(listener) do: { | notifier |
-			controllers[notifier].removeListener(listener)
-		};
-	}
-
-	*removeListenersOf { | notifier |
-		controllers[notifier].free;
-		controllers.removeAt(notifier);
+		^Set newFrom:
+		(this.notifications.select({|n| n.notifier === notifier }) ?? [])
+		.collect(_.listener);
 	}
 }

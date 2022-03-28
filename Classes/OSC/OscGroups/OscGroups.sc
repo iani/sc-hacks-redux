@@ -14,14 +14,6 @@ OscGroups.disable;
 OscGroups.enable;
 */
 
-DisabledOscGroups {
-	// This is an empty class to use as notifier in OscGroups.
-	// When notifier in OscGroups is set to the DisabledOscGroups,
-	// then OscGroups will NOT broadcast evaluated code,
-	// but WILL evaluate code received by other users. See
-	// OscGroups methods enableCodeBroadcasting, disableCodeBroadcasting.
-}
-
 OscGroups {
 	classvar <oscSendPort = 22244, <oscRecvPort = 22245;
 	classvar sendAddress, <oscRecvFunc;
@@ -39,12 +31,14 @@ OscGroups {
 		this.makeSendAddress;
 		this.enableCodeForwarding;
 		this.enableCodeReception;
+		CmdPeriod add: this;
 		"OscGroups enabled".postln;
 		this.changedStatus;
 	}
 	*disable {
 		this.disableCodeForwarding;
 		this.disableCodeReception;
+		CmdPeriod remove: this;
 		"OscGroups disabled".postln;
 		this.changedStatus;
 	}
@@ -63,10 +57,14 @@ OscGroups {
 		this.changedStatus;
 	}
 
-	*enableCodeReception {
-		thisProcess.openUDPPort(22245);
+	*enableCodeReception { // TODO: Use oscRecvPort instead
+		thisProcess.openUDPPort(22245); // oscRecvPort
 		oscMessage.evalOSC;
 		this.changedStatus;
+	}
+
+	*openUDPPort { // TODO: Use oscRecvPort instead
+		thisProcess.openUDPPort(22245); // oscRecvPort
 	}
 
 	*disableCodeReception {

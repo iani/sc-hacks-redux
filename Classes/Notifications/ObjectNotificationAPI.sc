@@ -38,6 +38,10 @@ Transferred from sc-hacks.
 		}
 	}
 
+	addNodeActions { | node, onStart, onEnd |
+		node.onStart({ onStart.(this, node) }, this);
+		node.onEnd({ onEnd.(this, node) }, this);
+	}
 	// TODO:
 	// removeListenersAt { | message | }
 	// removeNotifiersAt { | message | }
@@ -60,18 +64,20 @@ Transferred from sc-hacks.
     }
 
 	onStart { | action, listener |
-		listener = listener ? { this };
+		if (this.isPlaying) { ^action.(this) };
+		listener = listener ? { this }; // DO NOT CHANGE THIS!
 		NodeWatcher.register(this);
 		listener.addNotifierOneShot(this, \n_go, {
 			this.isPlaying = true;
-			action.value;
+			action.(this);
+			// this.changed(\started);
 		});
 	}
 
 	onEnd { | action, listener |
-		listener = listener ? { this };
+		listener = listener ? { this }; // DO NOT CHANGE THIS!
 		NodeWatcher.register(this);
-		listener.addNotifierOneShot(this, \n_end, action);
+		listener.addNotifierOneShot(this, \n_end, { action.(this) });
 	}	
 }
 

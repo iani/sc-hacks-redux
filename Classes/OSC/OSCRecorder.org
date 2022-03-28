@@ -1,0 +1,15 @@
+#+TITLE: Osc Recorder
+#+DATE: 25 Feb 2022 17:12
+
+* OSCRecorder
+OSCRecorder records commands received via OSC.
+It uses OSCData.
+
+
+
+* OSCData
+OSCData stores data received from OSC.
+
+Each instance of OSCData holds the data from a continuous recording session.
+
+An OSCData instance records only those messages whose name matches one of the osc messages stored in its instance variable messages.  If messages is empty, then it records all osc messages.

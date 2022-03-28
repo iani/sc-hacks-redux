@@ -11,7 +11,13 @@
 }
 
 + Synth {
-	stop { | fadeTime = 1.0 | this.release(fadeTime) }
+	stop { | fadeTime = 1.0 |
+		if (this.isPlaying) {
+			this.release(fadeTime);
+		}{
+			this.onStart({ this.release(fadeTime) })
+		}
+	}
 	start {
 		if (this.isPlaying) {
 			postf("% is already playing\n", this);

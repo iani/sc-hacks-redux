@@ -56,7 +56,4 @@
 		// TODO: make customizable sender (project name?) + use better method name
 		key.removeNotifier(IdeFantasy, this.oscify);
 	}
-	set { | param = \trig, value = 1 |
-		currentEnvironment[this].set(param, value)
-	}
 }

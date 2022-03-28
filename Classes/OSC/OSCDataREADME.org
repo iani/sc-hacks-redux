@@ -1,0 +1,72 @@
+#+TITLE: Osc Data Readme
+* Quick start guide.
+
+** Start a new recording session which records only messages =/minibee/data=
+
+#+begin_src sclang
+OSCData.record('/minibee/data');
+#+end_src
+
+** Start a new recording session which records =/minibee/data= and =/eventPlayed=
+
+#+begin_src sclang
+OSCData.record('/minibee/data', '/eventPlayed');
+#+end_src
+
+** Stop recording a sessi which records =/minibee/data=
+
+To stop recording a session, use message =stopRecording=. Provide arguments in the same manner as with message =record=.
+
+#+begin_src sclang
+OSCData.stopRecordin('/minibee/data');
+#+end_src
+
+Note: =stopRecording= saves the data of the currently recording session before stopping it.
+
+** Where data are saved
+
+The data are saved in
+
+=~/osc-data/=
+
+Each subdirectory inside of =~/osc-data/= holds the data files for one recording session.  There may be several data files for a single session, if the data size of the session exceeds the size limit for a single file (10000 entries).
+
+** Loading and playing saved data
+
+Open a GUI with a list of saved sessions in the left pane, and a list of the data files for each selected session in the right pane.
+To load a session, click on the upper bottom right button.
+To play back the loaded session, click on the lower bottom right button.
+
+#+begin_src sclang
+OSCData.selectSession;
+#+end_src
+
+
+* Notes for implementation of OSCData.
+** Recording all incomiong osc messages or only those matching some messages.
+An OSCData instance records either all incoming OSC messages or only messages matching some set of message symbols.  For example, only messages matching one of the following 2 messages:
+
+[/status.reply, '/synced']
+
+** Directory where data are stored
+
+All data are saved under the users' home directory, inside the directory defined in class variable =directory= of =OSCData=.  The default value of =directory= is ="osc-data"=, and therefore by default the data are stored in ="~/osc-data/"=.  Since a single recording session may produce several data files as explained below, the files produced by each recording session are stored in a separate subdirectory under the main osc-data directory.  The directory is named after the date and time when the session was started plus the messages that this session records.
+
+*** Recording Session Example
+
+Start a session with
+
+#+begin_src sclang
+OSCData.record('/sense/data', '/eventPlayed');
+#+end_src
+
+** Limiting the size of a recording
+
+OSC messages are stored in an array stored in OSCData instance variable =data=. Each message to be recorded is added at the end of the array.  When the array reaches the maximum size defined in OSCData class variable =maxsize= (default value: 10000), OSCData writes the data to file, and resets the data variable to an empty array.  Thus, each file written by OSCData is limited in size to =maxsize= rows (OSC messages with their data).
+This is done in order to limit the overhead incurred by saving large amounts of data to file. The next section shows how files belonging to one recording session are organized by storing each session in a separate folder.
+
+** File structure
+
+A single recording session may produce many files, where each file holds up to the number of entries defined in =maxsize=.  To keep files of a single session together, each session stores its files in a separate folder under the
+
+As a result of writing data to a new file when the number of entries a limited number of entries have been recorded, a single recording session may produce several files. The files of a recording session are saved in a separ

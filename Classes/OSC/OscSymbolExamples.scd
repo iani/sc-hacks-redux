@@ -8,17 +8,33 @@ Examples for using symbol operators to add functions to received
 Server.default.boot;
 //:
 '/status.reply' >>> { "STATUSREPLY RECEIVED".postln; };
+//doubles because the key is different!!!
+'status.reply' >>> { "STATUSREPLY RECEIVED hah".postln; };
+//: Here is how to remove both of the above:
+'/status.reply' <<< '/status.reply';
+'/status.reply' <<< 'status.reply';
 //:
 OSC.activeMessages;
 //:
 '/status.reply' >>>.more { "more STATUSREPLY RECEIVED".postln; };
+//: does not double because the key is given explicitly
+'status.reply' >>>.more { "more STATUSREPLY RECEIVED".postln; };
 //:
 '/status.reply'.removeOSC;
+'status.reply'.removeOSC;
 //:
 '/status.reply'.removeOSC(\more);
+'status.reply'.removeOSC(\more);
 //:
-'/status.reply' <<< '/status.reply';
 //: remove all osc messages:
+'more' <<< '/status.reply';
+
+'/status.reply' <<< 'more'
+
+
+
+
+
 OSC.clear;
 //:
 '/status.reply' >>@ NetAddr("127.0.0.1", 12000);

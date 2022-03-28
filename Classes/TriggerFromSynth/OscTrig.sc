@@ -1,4 +1,8 @@
-/* 27 Jan 2021 12:31
+/*
+27 Feb 2022 16:09: TO BE REPLACED BY SIMPLER IMPLMENTATOIN
+USING SendReply with custom message names, instead of SendTrig..
+
+27 Jan 2021 12:31
 Holds an OSCfunc that responds to \tr messages and sends \trig 
 messages to one or more listening objects.
 

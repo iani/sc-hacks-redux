@@ -8,17 +8,40 @@ Convert a trigger source to a synth function.
 
 + Function {
 	makeTrig { | values = 0 |
+		// IS THIS USED???? DEPRECATED?
 		^{ | id = 0 |
 			//			Env.adsr.kr(gate: \gate.kr(1), doneAction: 2);
 			SendTrig.kr(this, id, values);
 			Env.adsr.kr(gate: \gate.kr(1), doneAction: 2);
 		}
 	}
-	
 }
 
-+ Array {
-	makeTrig {
-		^this[0] makeTrig: this[1]
++ Symbol {
+	// 27 Feb 2022 16:25 : this is better!
+	// This does not yet work. Need to rebuild the code in detail
+	makeTrig { | trigger, values |
+		var message;
+		message = this.asOscMessage;
+		trigger ?? { trigger = { Impulse.kr(2) } };
+		values ?? { values = 0 };
+		{   // Make trigger available to values function!
+			var trigger;
+			trigger = trigger.value;
+			SendReply.kr(trigger, message, values.(trigger));
+			Env.adsr.kr(gate: \gate.kr(1), doneAction: 2);
+		}.play;
+	}
+	// Return synth func to use with +>
+	makeTr { | trigger, values |
+		var message;
+		message = this.asOscMessage;
+		trigger ?? { trigger = { Impulse.kr(2) } };
+		values ?? { values = 0 };
+		^{
+			trigger = trigger.value;
+			SendReply.kr(trigger, message, values.(trigger));
+			Env.adsr.kr(gate: \gate.kr(1), doneAction: 2);
+		};
 	}
 }

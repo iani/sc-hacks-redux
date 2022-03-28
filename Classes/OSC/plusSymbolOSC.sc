@@ -9,19 +9,24 @@ Use Notification to add OSC functions.
 		// The key can optionally be used to add several actions for the same message.
 		// The key becomes a Notification's listener, and the receiver becomes
 		// the Notification's message.
-		OSC.add(key ? this, this, func)
+		this.addAction(func, key);
+	}
+
+	addAction { | func, key |
+		// message, function, key
+		OSC.add(this, func, key)
 	}
 
 	<<< { | key | // remove action registered under this message and key pair.
 		this.removeOSC(key);
 	}
 
-	>>? { | key | // does OSC respond to this message under this key?
-
+	removeOSC { | key |
+		OSC.remove(this.asOscMessage, key);
 	}
 
-	removeOSC { | receiver |
-		OSC.remove(receiver ? this, this);
+	>>? { | key | // does OSC respond to this message under this key?
+
 	}
 
 	>>@ { | address |
@@ -41,10 +46,13 @@ Use Notification to add OSC functions.
 	}
 
 	evalOSC { | receiver, index = 1 |
-		OSC.add(receiver ? this, this, { | notification, message |
-			postf("Remote evaluation: /* \%\n */\n", message[index]);
-			message[index].asString.interpret.postln;
-		})
+		OSC.add(receiver ? this, { | notification, message |
+			var code;
+			code = message[index].asString;
+			postf("Remote evaluation: /* \%\n */\n", code);
+			code.interpret.postln;
+			OscGroups.changed(\evalCode, code);
+		}, this)
 	}
 
 	unevalOSC { | receiver |
