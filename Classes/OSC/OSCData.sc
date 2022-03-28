@@ -42,6 +42,21 @@ OSCData {
 		^newOscData;
 	}
 
+	*stopRecording { | ... messages |
+		/* if an instance recording these messages exists, stop it and remove it */
+		var oscData;
+		messages = Set.newFrom(messages collect: _.asOscMessage);
+		oscData = this.activeSessions[messages];
+		if (oscData.isNil) {
+			postln("No active OSCData instance found for:" + messages.asArray);
+		}{
+			oscData.disable;
+			oscData.save;
+			this.activeSessions[messages] = nil;
+			postln("Stopped recording messages:" + messages.asArray);
+		};
+	}
+
 	*newFromMessages { | messages |
 		var newOscData;
 		newOscData = this.newCopyArgs(messages, Array(maxsize));
@@ -94,9 +109,7 @@ OSCData {
 		OSC addDependant: this;
 	}
 
-	*stopRecording { | ... messages |
-		this.activeSessions[this makeSessionKey: messages].stop;
-	}
+
 
 	*activeSessions {
 		activeSessions ?? { activeSessions = Dictionary() };
@@ -107,6 +120,7 @@ OSCData {
 		OSC addDependant: this;
 		postln("Enabled OSCData Session" + name);
 	}
+
 	disable {
 		OSC removeDependant: this;
 		postln("Disabled OSCData Session" + name);
