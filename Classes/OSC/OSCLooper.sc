@@ -6,7 +6,8 @@ OSCLooper : OSCData{
 	then collect using OSCLooper
 	OSCLooper.dataCollect;
 	Use the ramp to collect data i.e from the first data element to the hundredth
-	OSCLooper.ramp(0, 3, 1);
+	OSCLooper ramp method arguments (start, end, dur)
+	OSCLooper.ramp(2, 15, 0.5);
 	*/
 
 	classvar data;
