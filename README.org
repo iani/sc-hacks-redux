@@ -3,7 +3,7 @@
 * About
 This library provides utilities for live coding in SuperCollider, including a way to share code over the network using OscGroups by Ross Bencina.
 
-* installation
+* Installation
 
 Put the sc-hacks-redux folder or its alias (symbolic link) in the SuperCollider user exensions folder and recompile the class library.
 
@@ -130,10 +130,14 @@ Example with EventStream:
 \dur <+.test 0.2;
 #+end_src
 
-* OSC
+* Other features
 
-** (Class) =OSC=: handle OSC communication
+Several classes and methods are provided which extend the functionality of SuperCollider.  Documentation to these features is found in separate files inside this folder.
 
-** =OSCData=:
+See:
 
-** =OSCRecorder=:
+** OscGroups
+** OSC
+** OSCData
+** EventStream
+** Project
