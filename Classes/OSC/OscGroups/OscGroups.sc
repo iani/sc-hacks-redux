@@ -27,6 +27,25 @@ OscGroups {
 	*isEnabled { ^OSC.listensTo(oscMessage, oscMessage); }
 	*isForwarding { ^thisProcess.interpreter.preProcessor.notNil; }
 
+	*forward { | message |
+		// forward an osc message to OscGroupsClient
+		// default message is '/minibee/data'
+		message ?? { message = '/minibee/data' };
+		message.asOscMessage >>> { | n, msg |
+			sendAddress.sendMsg(*msg);
+		}
+		//		'/minibee/data' >>> { | n, msg |
+		//	OscGroups.sendAddress.postln;
+		// msg.postln;
+	}
+
+	*unforward { | message | // stop forwarding message to OscGroupClient
+		//
+		message ?? { message = '/minibee/data' };
+		message = message.asOscMessage;
+		OSC.remove(message, message);
+	}
+
 	*enable {
 		this.makeSendAddress;
 		this.enableCodeForwarding;

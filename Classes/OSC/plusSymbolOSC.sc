@@ -34,7 +34,7 @@ Use Notification to add OSC functions.
 	}
 
 	forwardOSC { | address, receiver = \forward |
-		OSC.add(receiver, this, { | notification, message |
+		OSC.add(receiver, this.asOscMessage, { | notification, message |
 			// postf("received this over osc: %\n", message);
 			// postf("I'll be forwarding it to: %\n", address);
 			address.sendMsg(*message);
