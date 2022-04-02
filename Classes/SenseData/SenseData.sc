@@ -12,8 +12,9 @@ SenseData {
 
 	*new { | message, name = \default |
 		message = message ? senseMessage;
-		^Registry(this, (message).asOscMessage, name
-			{ this.newCopyArgs(message, name).init }
+		^Registry(this, (message).asOscMessage, name, {
+			this.newCopyArgs(message, name).init
+		}
 		)
 	}
 
