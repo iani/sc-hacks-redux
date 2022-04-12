@@ -15,7 +15,7 @@ OSCData {
 	var <data; // The recorded data
 	var <>sessionStart, <recordingStart, <recordingStop; // recording timestamps
 	var <>name; // name for directory containing this session's data files
-	var <playbackRoutine, <playbackAddr;
+	var <playbackRoutine, <playbackAddr, <batchNumber = 0;
 
 	*fileNames { ^this.files.collect(_.fileName); }
 	*files { ^this.dataPath.deepFiles.select({ | p | p.extension == "scd" }); }
@@ -64,6 +64,7 @@ OSCData {
 		^newOscData;
 	}
 
+	/*
 	saveAndStartNextSession {
 		/* save this instance, remove it from OSC dependants and from activeSessions,
 			create new instance with same messages, sessionStart and name,
@@ -71,12 +72,14 @@ OSCData {
 		*/
 		this.disable;
 		this.save;
+
 		this.class.newFromMessages(messages)
 		.name_(name)
 		.sessionStart_(sessionStart)
 		.stampRecordingStart
 		.enable;
 	}
+	*/
 
 	stampSessionStart { sessionStart = Date.localtime.stamp; }
 	stampRecordingStart { recordingStart = Date.localtime.stamp }
@@ -91,7 +94,7 @@ OSCData {
 	dataFolder { ^(this.class.dataPath +/+ name).fullPath; }
 
 	dataFilePath {
-		^PathName(this.dataFolder +/+ name ++ ".scd").fullPath;
+		^PathName(this.dataFolder +/+ format("%_%.scd", name, batchNumber)).fullPath;
 	}
 
 	*forMessages { | messages |
@@ -102,14 +105,14 @@ OSCData {
 	}
 
 	init {
-		data = Array.new(maxsize);
+		this.initData;
 		recordingStart = sessionStart = Date.localtime;
 		name = "OSCData" ++ Date.localtime.stamp ++ "_" ++ (UniqueID.next % 1000);
 		this.activeSessions[messages] = this;
 		OSC addDependant: this;
 	}
 
-
+	initData { data = Array.new(maxsize); }
 
 	*activeSessions {
 		activeSessions ?? { activeSessions = Dictionary() };
@@ -126,13 +129,29 @@ OSCData {
 		postln("Disabled OSCData Session" + name);
 	}
 
-	save {
-		var path;
-		path = this.dataFilePath;
+	anisave {
 		{
-			this.writeArchive(path);
+			var path;
+			path = this.dataFilePath;
+			this.dataDictionary.writeArchive(path);
 			postln("Saved OSC Data in: " + path);
 		}.fork; // avoid delay in main thread
+	}
+
+	dataDictionary {
+		var dict;
+		dict = IdentityDictionary();
+	// var <>messages; // Set of messages being recorded. If empty, record everything
+	// var <data; // The recorded data
+	// var <>sessionStart, <recordingStart, <recordingStop; // recording timestamps
+	// var <>name; // name for directory containing this session's data files
+		dict[\messages] = messages;
+		dict[\data] = data.copy;
+		dict[\sessionStart] = sessionStart;
+		dict[\recordingStart] = recordingStart;
+		dict[\recordingStop] = recordingStop;
+		dict[\name] = name;
+		^dict
 	}
 
 
@@ -264,10 +283,13 @@ OSCData {
 		if ((messages.size == 0) or: { messages includes: inMsg }) {
 			data add: args;
 			if (data.size >= maxsize) {
-				this.saveAndStartNextSession;
+				this.save; // save a copy of the data in a forked thread.
+				this.initData.incBatchNumber; // inited data immediately resume recording
 			}
 		}
 	}
+
+	incBatchNumber { batchNumber = batchNumber + 1 }
 
 	duration {
 		^data.flop[1].differentiate.put(0, 0).sum;
