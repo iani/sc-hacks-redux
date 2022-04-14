@@ -266,7 +266,11 @@ Project {
 							})
 						})
 						.selectionAction_({ | me |
-							this.selectProjectItem(projectItems[me.value]);
+							if (me.value.isNil) {
+								postln("project" + selectedProject + "has no scripts");
+							}{
+								this.selectProjectItem(projectItems[me.value]);
+							}
 						})
 						.enterKeyAction_({ | me |
 							postf("Loading selected item: %\n", projectItems[me.value]);
