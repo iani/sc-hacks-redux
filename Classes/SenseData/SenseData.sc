@@ -23,10 +23,13 @@ SenseData {
 		funcs = Array newClear: 10000;
 	}
 
+	*enable { ^this.new.enable }
+
 	enable {
 		this.addNotifier(OSC, message, this);
 	}
 
+	*disable { ^this.new.disable }
 	disable {
 		this.removeNotifier(OSC, message);
 	}
@@ -55,6 +58,7 @@ SenseData {
 		this.enable;
 	}
 
+	*setxyz { | ... ids | ^this.new.setxyz(*ids); }
 	setxyz { | ... ids |
 		ids do: { | id |
 			var x, y, z;

@@ -174,13 +174,14 @@ Project {
 
 	*gui {
 		{
+			this.getProjects;
 			this.window({ | w |
 				w.bounds = w.bounds.height_(300);
 				w.name = "Projects in ~/" ++ startupFolder;
 				w.layout = HLayout(
 					VLayout(
 						HLayout(
-							StaticText().string_("Projects"),
+							StaticText().string_("Projects").maxWidth_(150),
 							Button()
 							.maxWidth_(50)
 							.canFocus_(false)
@@ -246,7 +247,13 @@ Project {
 					),
 					VLayout(
 						HLayout(
-							StaticText().string_("Project Items"),
+							StaticText().string_("Scripts").maxWidth_(100),
+							Button()
+							.maxWidth_(50)
+							.states_([
+								["Refresh", Color.black, Color.white]
+							])
+							.action_({ CmdPeriod.run }),
 							Button()
 							.maxWidth_(50)
 							.states_([

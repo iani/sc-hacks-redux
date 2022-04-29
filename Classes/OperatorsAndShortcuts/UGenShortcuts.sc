@@ -101,11 +101,15 @@ To explore:
 		^In.kr(this.bus.index)
 	}
 
-	//	bout {  } see UGen bout !
-
 	trigFilter { | trigger, start = 0, step = 1 |
 		// only filter the triggers by multiplying them with
 		// your elements values in sequence
 		^trigger * Demand.kr(trigger, 0, Dbufrd(this.buf, Dseries(start, step, inf)))
+	}
+}
+
++ Env {
+	*square { | lo = 0, hi = 0.1, duration = 0.1 |
+		^this.new([lo, hi, lo], [0.0, duration], \hold);
 	}
 }
