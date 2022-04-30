@@ -91,9 +91,14 @@ To explore:
 	}
 
 	mix { ^Mix(this) }
+
+	lag { | lag = 0.1 | ^Lag.kr(this, lag); }
+	amp { | attack = 0.01, decay = 0.1 | ^Amplitude.kr(this, attack, decay); }
 }
 
 + Symbol {
+	blag { | lag = 0.1 | ^this.bin.lag(lag) }
+	bamp { | attack = 0.01, decay = 0.1 | ^this.bin.amp(attack, decay); }
 	bin { ^this.busIn } // input from a named kr bus.
 	//synonym. (sic!)
 	busIn {
