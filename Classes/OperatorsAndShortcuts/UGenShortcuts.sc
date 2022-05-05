@@ -62,6 +62,8 @@ To explore:
 		// to the range specified.
 		^In.kr(this.bus.index).linlin(inMin, inMax, outMin, outMax, clip);
 	}
+	lag { | lag = 0.1 | ^Lag.kr(this, lag); }
+	amp { | attack = 0.01, decay = 0.1 | ^Amplitude.kr(this, attack, decay); }
 }
 
 // Make this work also with UGenArrays (usuall obtained from multichannel expansion)
