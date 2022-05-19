@@ -50,8 +50,10 @@ Use Notification to add OSC functions.
 			var code;
 			code = message[index].asString;
 			postf("Remote evaluation: /* \%\n */\n", code);
-			code.interpret.postln;
-			OscGroups.changed(\evalCode, code);
+			{	// permit window operations via remote evaluated code
+				code.interpret.postln;
+				OscGroups.changed(\evalCode, code);
+			}.defer;
 		}, this)
 	}
 
