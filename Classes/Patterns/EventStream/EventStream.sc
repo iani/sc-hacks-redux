@@ -45,7 +45,7 @@ EventStream {
 			this.changed(\stopped);
 			routine = nil;
 			this.reset;
-		}.fork;
+		}.fork(TempoClock.default, ~quant ? 1); // synchronize start
 	}
 
 	playAndNotify { | inEvent |
@@ -81,6 +81,7 @@ EventStream {
 		this.start;
 	}
 
+	// suggestion T.M: method name should be: mergeEvent?
 	addEvent { | inEvent |
 		inEvent keysValuesDo: { | key, value |
 			event[key] = value;
