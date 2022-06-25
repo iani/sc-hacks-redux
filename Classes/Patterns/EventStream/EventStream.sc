@@ -38,14 +38,15 @@ EventStream {
 				(nextEvent = this.getNextEvent).notNil;
 			}{
 				this.playAndNotify(nextEvent);
-				// nextEvent.play;
-				// this.changed(\played);
 				nextEvent[\dur].wait;
 			};
 			this.changed(\stopped);
 			routine = nil;
 			this.reset;
-		}.fork(TempoClock.default, ~quant ? 1); // synchronize start
+		}.fork( // synchronize start
+			event[\clock] ? TempoClock.default,
+			event[\quant] ? 1
+		);
 	}
 
 	playAndNotify { | inEvent |
@@ -56,8 +57,7 @@ EventStream {
 	getNextEvent {
 		var nextEvent, nextValue;
 		nextEvent = ().parent_(event.parent);
-		// run this within the stream environment,
-		// to make the stream event available to any functions running in it?
+		// Make the stream event available to any functions running in it
 		stream use: {
 			stream keysValuesDo: { | key, value |
 				nextValue = value.next;
@@ -66,9 +66,8 @@ EventStream {
 					^nil
 				};
 				nextEvent[key] = nextValue;
-
 			};
-		} // stream use: EXPERIMENTAL
+		};
 		^nextEvent;
 	}
 

@@ -48,7 +48,8 @@ Mediator : EnvironmentRedirect {
 	*all { ^Library.at(this) }
 
 	*at { | envirName |
-		if (envirName.isNil) { ^this.default; }{ ^this.fromLib(envirName); }
+		// if (envirName.isNil) { ^this.default; }{ ^this.fromLib(envirName); }
+		if (envirName.isNil) { ^currentEnvironment; }{ ^this.fromLib(envirName); }
 	}
 
 	*wrap { | func, envirName |

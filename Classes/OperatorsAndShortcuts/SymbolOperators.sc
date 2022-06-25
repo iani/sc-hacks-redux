@@ -3,6 +3,12 @@
 */
 
 + Symbol {
+	&> { | value, envir = \default |
+		envir.addKey(this, value);
+	}
+	addKey { | key, value | // add key to a player environment
+		Mediator.at(this).put(key, value);
+	}
 	// ================================================================
 	// playeer operators
 	playingp { | envir |
@@ -17,6 +23,14 @@
 	<+ { | value, player |
 		// .set(this, value);
 		currentEnvironment[player].set(this, value)
+	}
+
+	player { | envir |
+		var player;
+		Mediator.wrap({
+			player = currentEnvironment[this];
+		}, envir);
+		^player;
 	}
 
 	playInEnvir { | player, envir |
