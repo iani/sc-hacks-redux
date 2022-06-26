@@ -20,10 +20,10 @@ EventStream {
 
 	asEvenStream { ^this }
 
-	start {
+	start { | quant = 1 |
 		// postf("troubleshooting. isRunnign? %\n", this.isRunning);
 		if (this.isRunning) { ^postf("% is running. will not restart it\n", this) };
-		this.makeRoutine;
+		this.makeRoutine(quant);
 	}
 
 	stop {
@@ -31,7 +31,7 @@ EventStream {
 		routine = nil;
 	}
 
-	makeRoutine {
+	makeRoutine { | quant |
 		var nextEvent;
 		CmdPeriod add: this;
 		routine = {
@@ -47,7 +47,7 @@ EventStream {
 			this.reset;
 		}.fork( // synchronize start
 			event[\clock] ? TempoClock.default,
-			event[\quant] ? 1
+			quant ?? { event[\quant] }
 		);
 	}
 
@@ -64,7 +64,7 @@ EventStream {
 			stream keysValuesDo: { | key, value |
 				nextValue = value.next;
 				if (nextValue.isNil) {
-					postf("% has ended\n", this);
+					// postf("% has ended\n", this);
 					^nil
 				};
 				nextEvent[key] = nextValue;
