@@ -18,6 +18,8 @@ EventStream {
 		}
 	}
 
+	asEvenStream { ^this }
+
 	start {
 		// postf("troubleshooting. isRunnign? %\n", this.isRunning);
 		if (this.isRunning) { ^postf("% is running. will not restart it\n", this) };
@@ -76,20 +78,25 @@ EventStream {
 	cmdPeriod { routine = nil; }
 
 	setEvent { | inEvent |
-		this addEvent: inEvent;
+		this mergeEvent: inEvent;
 		this.start;
 	}
 
 	// suggestion T.M: method name should be: mergeEvent?
-	addEvent { | inEvent |
+	mergeEvent { | inEvent |
 		inEvent keysValuesDo: { | key, value |
 			event[key] = value;
 			stream[key] = value.asStream;
 		}
 	}
 
+	addSubEvent { | subEvent, key |
+		if (event[\play].isKindOf(SubStream).not) { SubStream(this) };
+		event[\play].addSubStream(subEvent, key);
+	}
+
 	set { | param, value | // compatibility with <+
-		this.addEvent(().put(param, value))
+		this.mergeEvent(().put(param, value))
 	}
 
 	addBeat { | beat |

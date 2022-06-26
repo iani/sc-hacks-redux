@@ -4,9 +4,15 @@ Run a routine that broadcasts beats for global synchronization.
 
 BeatCounter {
 	classvar <beatMessage = \beat;
-	var <>count = 0;
-	var <routine, <>dt = 1;
+	var <>count = 0, <>dt = 1;
+	var <routine;
 	var <lastBeatTime; // use to restart on time after cmd period.
+
+	*new { | count, dt = 1 |
+		^this.newCopyArgs(
+		count ?? { Pseries() },
+		dt)
+	}
 
 	isRunning { ^routine.notNil }
 

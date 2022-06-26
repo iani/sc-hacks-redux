@@ -20,7 +20,7 @@ EventPattern : Pattern {
 
 	pattern { ^this }
 
-	addEvent { | inEvent | // also accepts key-value pairs in Arrays
+	mergeEvent { | inEvent | // also accepts key-value pairs in Arrays
 		// Add event's keys/values and also update the event
 		// of the currently playing stream.
 		inEvent keysValuesDo: { | key value |
