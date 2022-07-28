@@ -31,7 +31,8 @@ OscGroups {
 		// forward an osc message to OscGroupsClient
 		// default message is '/minibee/data'
 		message ?? { message = '/minibee/data' };
-		message.asOscMessage >>> { | n, msg, time, addr, port |
+
+		message.asOscMessage >>>.forward { | n, msg, time, addr, port |
 			// postln("time" + time + "addr" + addr + "port" + port)
 			if (port == 57120) {
 				sendAddress.sendMsg(*msg);
@@ -46,7 +47,7 @@ OscGroups {
 		//
 		message ?? { message = '/minibee/data' };
 		message = message.asOscMessage;
-		OSC.remove(message, message);
+		OSC.remove(message, 'forward');
 	}
 
 	*enable {
