@@ -1,6 +1,6 @@
 OSCRecorder3.maxItems = 100;
-OSCRecorder3.fileHeader = "datatest";
-OSCRecorder3.subFolder = "recordingtests5";
+OSCRecorder3.fileHeader = "newformattest";
+OSCRecorder3.subFolder = "newformattest1";
 OSCRecorder3.enable;
 //:
 {
@@ -15,3 +15,5 @@ OSCRecorder3.enable;
 }.fork;
 //:
 OSCRecorder3.closeFile;
+//:
+OscGroups.enable;

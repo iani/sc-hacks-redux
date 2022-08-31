@@ -62,21 +62,26 @@ Use Notification to add OSC functions.
 	}
 
 	share { | address, message = \code |
+		"Symbol:share is an obsolete method!".postln;
+		"Instead, use OscGroups:enableCodeForwarding".postln;
 		// share with message and user name
-		address = address ?? { OscGroups.sendAddress };
-		postf("Start sending, addr: %, message %, user %\n",
-			address, message.asCompileString, this.asCompileString
-		);
-		thisProcess.interpreter.preProcessor = { | code |
+		// address = address ?? { OscGroups.sendAddress };
+		// postf("Start sending, addr: %, message %, user %\n",
+		// 	address, message.asCompileString, this.asCompileString
+		// );
+		// OscGroups.addNotifier(Interpreter, \code, { | self, message, stuff |
+
+		// })
+		// thisProcess.interpreter.preProcessor = { | code |
 			// OSCRecorder2.addLocalCode(code);
-			OscGroups.changed(message, code); // allow OSCRecorder to record locally evaluated code
-			address.sendMsg(message, code, this);
-			code;
-		}
+			// OscGroups.changed(message, code); // allow OSCRecorder to record locally evaluated code
+			// address.sendMsg(message, code, this);
+			// code;
+		// }
 	}
 
 	unshare {
-		thisProcess.interpreter.preProcessor = nil;
+		// thisProcess.interpreter.preProcessor = nil;
 		"Stopped sharing code with OSCGroups".postln;
 	}
 

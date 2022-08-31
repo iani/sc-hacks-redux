@@ -39,11 +39,11 @@ Project {
 
 	*initClass {
 		StartUp add: {
-			OscGroups runLocally: {
-				{
-					this.globalStartupFilePath.fullPath.postln.load;
-				}.fork;
-			};
+			// OscGroups runLocally: {
+			// 	{
+			// 		this.globalStartupFilePath.fullPath.postln.load;
+			// 	}.fork;
+			// };
 			Server.default doWhenReallyBooted:  { | server |
 		 		this.loadGlobalBuffers;
 				server.sync;

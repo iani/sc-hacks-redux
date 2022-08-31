@@ -24,8 +24,22 @@ OscGroups {
 	// See methods enableCodeBroadcasting, disableCodeBroadcasting
 	classvar <>localUser = \localuser;
 
+	*initClass {
+		StartUp add: {
+			thisProcess.interpreter.preProcessor = { | code |
+			Interpreter.changed(\code, code);
+			code;
+			}
+		}
+	}
 	*isEnabled { ^OSC.listensTo(oscMessage, oscMessage); }
-	*isForwarding { ^thisProcess.interpreter.preProcessor.notNil; }
+	*isForwarding {
+		// ^thisProcess.interpreter.preProcessor.notNil;
+		// "isForwarding not implemented! look into NOtification!".postln;
+		// look into this:
+		//			*listeningto { | notifier |
+		^this isListeningTo: Interpreter;
+	}
 
 	*forward { | message |
 		// forward an osc message to OscGroupsClient
@@ -70,13 +84,21 @@ OscGroups {
 		// send evaluated code to sendAddress using oscMessage and adding localUser
 		// as extra argument. Before each code evaluation, the preprocesso runs:
 		// sendAddess.sendMsg(oscMessage, code, localUser);
-		localUser.share(sendAddress, oscMessage);
+		// localUser.share(sendAddress, oscMessage);
+		// "asdfasdf".breakingThisOnPurposeToseeifthisfunctionwascalled;
+		this.addNotifier(Interpreter, \code, { | n, code |
+			"Code forwarding under preparation. The code received is:\n\n\n".postln;
+			code.postln;
+			this.changed(\localcode, code); // OSCRecorder records the code here.
+			// address.sendMsg(message, code, this);
+		});
 		this.changedStatus;
 	}
 
 	*disableCodeForwarding {
 		 // deactivate sharing by settging Interpreter's preprocessor to nil.
-		localUser.unshare;
+		// localUser.unshare;
+		this.removeNotifier(Interpreter, \code);
 		this.changedStatus;
 	}
 
@@ -114,9 +136,19 @@ OscGroups {
 	}
 
 	*runLocally { | func |
+		var isCodeForwarding;
+		isCodeForwarding = this.isForwarding;
+		// postln("BEFORE: should I restore forwarding?" + isCodeForwarding);
 		this.disableCodeForwarding;
 		func.value;
-		this.enableCodeForwarding;
+		// postln("AFTER: should I restore forwarding?" + isCodeForwarding);
+		if (isCodeForwarding) {
+			// "Enabling code forwarding - return to original state".postln;
+			this.enableCodeForwarding;
+
+		}{
+			// "I will not enable code forwarding!".postln;
+		};
 	}
 
 	*cmdPeriod {

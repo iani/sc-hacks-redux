@@ -29,8 +29,11 @@ OSCRecorder3 {
 	}
 
 	*addData { | time, msg |
+		if (file.isNil or: { file.isOpen.not}) {
+			^nil; // do not save or record if file is closed!
+		};
 		data = data add: [time, msg];
-		file.putString("\n//:" ++ time.asCompileString ++ "\n");
+		file.putString("\n//:--[" ++ time.asCompileString ++ "]\n");
 		file.putString(msg.asCompileString);
 		this.saveIfNeeded;
 	}
@@ -72,12 +75,16 @@ OSCRecorder3 {
 			this.newFile;
 			OSC addDependant: this;
 			// TODO: Check with OscGroups if \code is the message watched
-			this.addNotifier(OscGroups, \code, {  }); // TODO: add code to self
+			this.addNotifier(OscGroups, \localcode, { | n, code |
+				"Testing recording of local code".postln;
+				this.addData(Main.elapsedTime, ['/code', code]);
+			}); // TODO: add code to self
 		}.fork
 	}
 
 	*disable {
 		OSC removeDependant: this;
+		this.removeNotifier(OscGroups, \localcode);
 		this.closeFile;
 		// TODO: Check with OscGroups if \code is the message watched
 		this.removeNotifier(OscGroups, \code);

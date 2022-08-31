@@ -96,3 +96,9 @@ Notification {
 		.collect(_.listener);
 	}
 }
+
++ Object {
+	isListeningTo { | notifier |
+		^notifier.listeners includes: this;
+	}
+}

@@ -23,7 +23,7 @@ OscDataReader {
 		var timebeg, timeend, time;
 		path.postln;
 		dataString = File.readAllString(path);
-		delimiters = dataString.findAll("\n//:");
+		delimiters = dataString.findAll("\n//:--[");
 		delimiters do: { | b, i |
 			var end;
 			end = delimiters[i + 1];
@@ -32,16 +32,17 @@ OscDataReader {
 			}{
 				entry = dataString.copyRange(b, dataString.size - 1)
 			};
-			timebeg = entry.find(":");
-			timeend = entry.find("[", 4);
+			timebeg = entry.find(":--[");
+			timeend = entry.find("]", 4);
 			data = data add: [
-				entry.copyRange(timebeg + 1, timeend - 1).interpret,
-				entry
+				entry.copyRange(timebeg + 4, timeend - 1).interpret,
+				entry.copyRange(timeend + 1, entry.size - 1)
 			];
 		}
 	}
 
 	*openDialog { | varname = \oscdata |
+		"Opening file dialog".postln;
 		FileDialog({ | argPath |
 			currentEnvironment.put(varname, this.new(argPath.first))
 		})
