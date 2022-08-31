@@ -1,0 +1,42 @@
+#+TITLE: File Format220831
+
+Draft for new file format.
+
+* Background:
+1. Object.readArchive fails for large files. So native text archive format is not suitable.
+2. The format used by OSCFileLog does not seem suitable for storing code text (it is geared towards numerical data rather than text.)
+
+* Proposed format and re-play mechanism
+The format proposed here uses scd script format with =//:= as delimiters between messages.  Example:
+
+#+begin_example
+//:13.3424
+['code', "1000.rand"]
+//:13.4424
+['/sense_data', 10.2, -5.0, 101.5439]
+#+end_example
+
+Syntax:
+
+#+begin_example
+//:<float>
+#+end_example
+
+Starts a new message. <float> is the time when the message was received, as obtained from =Main.elapsedTime=.
+
+The string between individual message lines is the message received, asCompileString.
+
+When playing back, this string is compiled to its original value (an array starting with the name of the message received), stored as =message=.  The aIt can then be sent back to the local address or to OscGroups as Osc message.  Alternatively the receipt of a message can be simulated by =OSC.changed(*message)=;
+
+* Implementation notes
+
+** method "newEntry"
+
+#+begin_src clang
+{ | msg |
+	file.putString(
+		"\n//:" ++ Main.elapsedTime.asCompileString ++ "\n"
+	);
+	file.putString(msg.asCompileString;)
+}
+#+end_src

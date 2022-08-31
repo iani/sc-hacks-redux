@@ -68,6 +68,8 @@ Use Notification to add OSC functions.
 			address, message.asCompileString, this.asCompileString
 		);
 		thisProcess.interpreter.preProcessor = { | code |
+			// OSCRecorder2.addLocalCode(code);
+			OscGroups.changed(message, code); // allow OSCRecorder to record locally evaluated code
 			address.sendMsg(message, code, this);
 			code;
 		}
