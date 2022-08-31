@@ -87,10 +87,10 @@ OscGroups {
 		// localUser.share(sendAddress, oscMessage);
 		// "asdfasdf".breakingThisOnPurposeToseeifthisfunctionwascalled;
 		this.addNotifier(Interpreter, \code, { | n, code |
-			"Code forwarding under preparation. The code received is:\n\n\n".postln;
-			code.postln;
+			// "Code forwarding under preparation. The code received is:\n\n\n".postln;
+			// code.postln;
 			this.changed(\localcode, code); // OSCRecorder records the code here.
-			// address.sendMsg(message, code, this);
+			sendAddress.sendMsg(oscMessage, code);
 		});
 		this.changedStatus;
 	}
