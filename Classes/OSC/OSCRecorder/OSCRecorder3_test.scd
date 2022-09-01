@@ -1,6 +1,11 @@
+O
+
+
+
+
 OSCRecorder3.maxItems = 100;
-OSCRecorder3.fileHeader = "newformattest5withcode_B";
-OSCRecorder3.subFolder = "newformattest5withode_B";
+OSCRecorder3.fileHeader = "newformattest5withcode_D";
+OSCRecorder3.subFolder = "newformattest5withode_D";
 OSCRecorder3.enable;
 //:
 {
@@ -14,13 +19,14 @@ OSCRecorder3.enable;
 	"DONE".postln;
 }.fork;
 //:
-OSCRecorder3 jll.closeFile;
+OSCRecorder3.closeFile;
 //:
 OscGroups.enable;
 //:
 OscDataReader.openDialog;
 //:
 ~x = ~oscdata.data;
+~x;
 ~x.flop[0] do: _.postln;
 ~x.flop[1] do: _.postln;
 ~x.flop[1].first;

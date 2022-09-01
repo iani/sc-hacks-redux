@@ -32,7 +32,8 @@ OscGroups {
 			}
 		}
 	}
-	*isEnabled { ^OSC.listensTo(oscMessage, oscMessage); }
+	// this may no longer be valid on  1 Sep 2022 20:13
+	*isEnabled { ^OSC.listensTo(oscMessage, oscMessage); } // NEEDS CHECKING!
 	*isForwarding {
 		// ^thisProcess.interpreter.preProcessor.notNil;
 		// "isForwarding not implemented! look into NOtification!".postln;
@@ -82,13 +83,7 @@ OscGroups {
 
 	*enableCodeForwarding {
 		// send evaluated code to sendAddress using oscMessage and adding localUser
-		// as extra argument. Before each code evaluation, the preprocesso runs:
-		// sendAddess.sendMsg(oscMessage, code, localUser);
-		// localUser.share(sendAddress, oscMessage);
-		// "asdfasdf".breakingThisOnPurposeToseeifthisfunctionwascalled;
 		this.addNotifier(Interpreter, \code, { | n, code |
-			// "Code forwarding under preparation. The code received is:\n\n\n".postln;
-			// code.postln;
 			this.changed(\localcode, code); // OSCRecorder records the code here.
 			sendAddress.sendMsg(oscMessage, code);
 		});

@@ -24,10 +24,32 @@ Main.elapsedTime as "timereceived".
 
 */
 
-OSCDataPlayer {
-	var <>data, <>from = 0, >to, <>addr, <>rate = 1, <routine;
+OSCGlobalDataPlayer {
+	classvar <data;
+	var <>from = 0, >to, <>addr, <>rate = 1, <routine;
 
-	play { | argFrom = 0, argTo |
-
+	*enable {
+		OSC addDependant: this;
+		this.enableCodeRecording;
 	}
+
+	*disable {
+		OSC removeDependant: this;
+		this.disableCodeRecording;
+	}
+
+	*update { | self, cmd, msg, time, addr, port |
+		data = data add: [time, msg];
+	}
+
+	*enableCodeRecording {
+		this.addNotifier(OscGroups, \localcode, { | n, code |
+			data = data add: [Main.elapsedTime, ['/code', code]];
+		})
+	}
+
+	*disableCodeRecording {
+		this.removeNotifier(OscGroups, \localcode);
+	}
+
 }

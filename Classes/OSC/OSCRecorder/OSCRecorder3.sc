@@ -14,8 +14,7 @@ OSCRecorder3 {
 		ShutDown add: { this.closeFile };
 	}
 	*update { | self, cmd, msg, time, addr, port |
-
-		this.addData(time, msg, addr.addr, port);
+		this.addData(time, msg);
 	}
 
 	*rootFolder_ { | argRootFolder |
@@ -40,22 +39,34 @@ OSCRecorder3 {
 
 	*saveIfNeeded {
 		if (data.size >= maxItems) {
-			this.newFile;
-			"OSC data saved in: ".post;
+			"saving OSC data in new file: ".post;
 			this.fullPath.postln;
+			this.saveAndContinue;
 		}
 	}
 
 	*newFile {
-		this.closeFile;
 		file = File.open(this.fullPath, "w");
 	}
 
-	*closeFile {
-		file !? { file.close };
+	*saveAndContinue {
+		var oldFile;
+		file !? {
+			oldFile = file;
+			this.newFile;
+			{ oldFile.close; }.defer(0.1);
+		};
 		data = [];
 	}
 
+	*closeFile {
+		// "DEBUGGING. file is:".postln;
+		// file.postln;
+		file !? {
+			// "I will closse the file".postln;
+			file.close;
+		}
+	}
 	*folderPath {
 		^(PathName(Platform.userAppSupportDir) +/+ rootFolder +/+ subFolder).fullPath;
 	}
@@ -74,9 +85,8 @@ OSCRecorder3 {
 			0.1.wait;
 			this.newFile;
 			OSC addDependant: this;
-			// TODO: Check with OscGroups if \code is the message watched
 			this.addNotifier(OscGroups, \localcode, { | n, code |
-				"Testing recording of local code".postln;
+				// "Testing recording of local code".postln;
 				this.addData(Main.elapsedTime, ['/code', code]);
 			}); // TODO: add code to self
 		}.fork
