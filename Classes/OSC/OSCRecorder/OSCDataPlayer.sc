@@ -18,7 +18,7 @@ OSCDataPlayer {
 	}
 
 	*new { | data, from = 0, to, rate = 1, addr |
-		^this.newCopyArgs(data, from, to rate, addr ?? { NetAddr.localAddr }).init;
+		^this.newCopyArgs(data, from, to, rate, addr ?? { NetAddr.localAddr }).init;
 	}
 
 	init {
