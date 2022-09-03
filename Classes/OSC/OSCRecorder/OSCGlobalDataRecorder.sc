@@ -14,13 +14,15 @@ Current tests have shown that sclang can store an array with
 This amounts to more than 10 hours of recording of OSC data at
 a rate or 100 messages per second.
 
-OSCDataPlayer will keep adding received messages to data as long
+OSCGlobalDataRecorder will keep adding received messages to data as long
 as it is enabled.
 
-OSCDataPlayer records all messages received from OSC.changed, and stores
+OSCGlobalDataRecorder records all messages received from OSC.changed, and stores
 the time contained in the message as "timereceived".  It also records
 all messages received from OscGroups.changed(\localcode), and stores
 Main.elapsedTime as "timereceived".
+
+To play back data recorded in this way, use OSCDataPlayer.
 
 */
 
