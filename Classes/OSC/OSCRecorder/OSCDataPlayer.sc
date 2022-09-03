@@ -14,7 +14,7 @@ OSCDataPlayer {
 	var <>data, <>from = 0, to, <>rate = 1, <>addr, <routine;
 
 	*play { | data, from = 0, to, rate = 1, addr |
-		^this.new(data, from, to rate, addr).play;
+		^this.new(data, from, to, rate, addr).play;
 	}
 
 	*new { | data, from = 0, to, rate = 1, addr |
