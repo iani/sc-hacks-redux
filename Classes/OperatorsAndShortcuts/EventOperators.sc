@@ -26,6 +26,9 @@
 	}
 
 	++> { | key, envir |
+		// Set all key-value pairs of the receiver to the object at key/envir
+		// If object is EventStream: set keys of the Event.
+		// Else if object is Synth, set all parameters corresponding to the keys
 		var p;
 		Mediator.wrap({
 			p = currentEnvironment[key];
@@ -33,6 +36,7 @@
 				p = EventStream(this);
 				currentEnvironment.put(key, p);
 			};
+			// EventSream and Synth handle this differently:
 			currentEnvironment[key].setEvent(this);
 		}, envir);
 	}

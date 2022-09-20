@@ -81,6 +81,10 @@ OscGroups {
 		this.changedStatus;
 	}
 
+	broadcast { | message, args |
+		sendAddress.sendMsg(message, args);
+	}
+
 	*enableCodeForwarding {
 		// send evaluated code to sendAddress using oscMessage and adding localUser
 		this.addNotifier(Interpreter, \code, { | n, code |
