@@ -3,10 +3,13 @@ Redo of OSCRecorder2
 
 Using new format to enable saving of code and of large files (> 100 entries).
 
+OSCRecorder3.rootDir = "/tmp/";
+
 */
 
 OSCRecorder3 {
 	classvar <rootFolder = "OSCData", <subFolder = "", <>fileHeader = "", <data;
+	classvar <>rootDir;
 	classvar <>maxItems = 1000; // Keep files small!
 	classvar <file; // the file where the data are stored.
 
@@ -67,8 +70,18 @@ OSCRecorder3 {
 			file.close;
 		}
 	}
+
+
 	*folderPath {
-		^(PathName(Platform.userAppSupportDir) +/+ rootFolder +/+ subFolder).fullPath;
+		^(this.root +/+ rootFolder +/+ subFolder).fullPath;
+	}
+
+	*root {
+		if (rootDir.isNil) {
+			^PathName(Platform.userAppSupportDir);
+		}{
+			^PathName(rootDir)
+		}
 	}
 
 	*fullPath {
