@@ -89,7 +89,7 @@ OSCRecorder3 {
 	}
 
 	*makeDirectory {
-		("mkdir " ++ this.folderPath.replace(" ", "\\ ")).unixCmd
+		("mkdir -p " ++ this.folderPath.replace(" ", "\\ ")).unixCmd
 	}
 
 	*enable {
