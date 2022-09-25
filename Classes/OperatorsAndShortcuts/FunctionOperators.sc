@@ -16,11 +16,4 @@
 		}, envir);
 		^synth;
 	}
-
-	@> { | bus, player |
-		// play as kr funcction in player name
-		player = player ? bus;
-		player.postln;
-		{ Out.kr(bus.bus, this); Silent.kr.kadsr }.playInEnvir(player, player);
-	}
 }

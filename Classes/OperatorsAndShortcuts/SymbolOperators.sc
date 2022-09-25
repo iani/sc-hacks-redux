@@ -10,7 +10,7 @@
 		Mediator.at(this).put(key, value);
 	}
 	// ================================================================
-	// playeer operators
+	// player operators
 	playingp { | envir |
 		^Mediator.wrap({
 			currentEnvironment[this].isPlaying;
@@ -19,9 +19,8 @@
 	+> { | player, envir |
 		^this.playInEnvir(player, envir);
     }
-	// \srdiv <+.peb1 0.05;
+
 	<+ { | value, player |
-		// .set(this, value);
 		currentEnvironment[player].set(this, value)
 	}
 
@@ -39,6 +38,9 @@
 			currentEnvironment[player] = synth = Synth(this).notify(player, envir);
 		}, envir);
 		^synth;
+	}
+	pfree { | envir |
+		^this.player(envir).free;
 	}
 
 	// ================================================================
@@ -138,17 +140,6 @@
 	}
 
 	stream { } // evstream?
-
-	bus { | rate = \control, numchans = 1, server |
-		var bus;
-		server = server.asTarget.server;
-		bus = Library.at(Bus, server, rate, this);
-		bus ?? {
-			bus = Bus.perform(\control, server, numchans);
-			Library.put(Bus, server, rate, this, bus);
-		};
-		^bus;
-	}
 
 	get { ^this.bus.get }
 	index { ^this.bus.index }

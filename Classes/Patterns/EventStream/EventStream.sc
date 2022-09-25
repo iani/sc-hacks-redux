@@ -21,10 +21,11 @@ EventStream {
 	asEvenStream { ^this }
 
 	start { | quant = 1 |
-		// postf("troubleshooting. isRunnign? %\n", this.isRunning);
 		if (this.isRunning) { ^postf("% is running. will not restart it\n", this) };
 		this.makeRoutine(quant);
 	}
+
+	free { this.stop }
 
 	stop {
 		routine.stop;

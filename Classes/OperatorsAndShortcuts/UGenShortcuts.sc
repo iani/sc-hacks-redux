@@ -27,9 +27,16 @@ To explore:
 	kdsr { | attackTime=0.001, decayTime=0.001, sustainLevel=1, releaseTime=1.0,
 		peakLevel=1.0, curve = -4.0, bias = 0.0,
 		doneAction = 2, gate = 1 |
+	// KEEP sustainLevel to the end. Avoid changing the control signal value!
 		^this *
-		Env.adsr(attackTime, decayTime, sustainLevel, releaseTime, peakLevel, curve, bias)
+		Env.new(
+			[0, sustainLevel, sustainLevel, sustainLevel] + bias,
+			[attackTime, decayTime, releaseTime],
+			curve,
+			2
+		)
 		.kr(doneAction: doneAction, gate: \gate.kr(gate))
+		// Env.adsr(attackTime, decayTime, sustainLevel, releaseTime, peakLevel, curve, bias)
 	}
 	// attackTime=0.01, releaseTime=1.0, level=1.0, curve = -4.0
 	perc { | attackTime=0.01, releaseTime=1.0, level=1.0, curve = -4.0,
@@ -99,15 +106,6 @@ To explore:
 }
 
 + Symbol {
-	blag { | lag = 0.1 | ^this.bin.lag(lag) }
-	bamp { | attack = 0.01, decay = 0.1 | ^this.bin.amp(attack, decay); }
-	bin { ^this.busIn } // input from a named kr bus.
-	//synonym. (sic!)
-	busIn {
-		// bus in
-		^In.kr(this.bus.index)
-	}
-
 	trigFilter { | trigger, start = 0, step = 1 |
 		// only filter the triggers by multiplying them with
 		// your elements values in sequence
