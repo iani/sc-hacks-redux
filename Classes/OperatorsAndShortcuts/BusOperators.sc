@@ -65,10 +65,35 @@ Simplenumber @> \symbol // set bus to number
 
 + Event {
 	@> { | bus, player |
+		var busNames, busStreams, stream;
 		player = player ? bus;
-		this[\bus] = bus.bus;
+		busNames = this[\busNames] ?? { [bus] };
+		busStreams = busNames collect: { | busName |
+			stream = this[busName];
+			stream ?? { stream = defaultParentEvent[busName] };
+			if (stream.isNil) {
+				postln("Missing value for bus: " + busName + "in Event: " + this);
+				[busName.bus, 0]
+			}{
+				[busName.bus, stream.asStream]
+			};
+		};
+		this[\busStreams] = busStreams;
 		this[\play] = {
-			~bus.set(currentEnvironment[\val].value); };
+			var bus, val;
+			~busStreams do: { | busStreamPair |
+				#bus, val = busStreamPair;
+				val = val.value;
+				if (val.isNil) { // the next line actually never gets executed:
+					postln("Stream for bus" + bus + "ended.");
+				}{  // \_ is a pause. Do not set the value.
+					if (val !== \_) { // only set if not pause \_
+						bus.set(val);
+					}
+				};
+			};
+			val;
+		};
 		this.playInEnvir(player, \busses);
 	}
 }
