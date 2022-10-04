@@ -22,7 +22,7 @@ OscGroups {
 	classvar <>notifier; // Only if notifier is OscGroups, then
 	// the message is broadcast via OscGroups
 	// See methods enableCodeBroadcasting, disableCodeBroadcasting
-	classvar <>localUser = \localuser;
+	classvar <>localUser = \localuser; // TODO: delete this if it is not used!!!
 
 	*initClass {
 		StartUp add: {
@@ -81,8 +81,14 @@ OscGroups {
 		this.changedStatus;
 	}
 
-	broadcast { | message, args |
-		sendAddress.sendMsg(message, args);
+	*broadcast { | message ... args |
+		if (this.isEnabled) {
+		sendAddress.sendMsg(message, *args);
+		}{
+			postln("OscGroups is disabled.");
+			postln("Cannot broadcast " + message + args);
+			postln("To enable OscGroups run: OscGrups.enable");
+		}
 	}
 
 	*enableCodeForwarding {
@@ -129,6 +135,7 @@ OscGroups {
 	*askLocalUser { "OscGroups askLocalUser method disabled" }
 
 	*forceBroadcastCode { | string |
+		// TODO: is this method superseeded by broadcast?
 		// send string to sendAddress independently of current status.
 		// Sends even if OscGroups is disabled.
 		sendAddress.sendMsg(oscMessage, string, localUser);
