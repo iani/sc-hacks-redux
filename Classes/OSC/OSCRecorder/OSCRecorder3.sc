@@ -99,9 +99,8 @@ OSCRecorder3 {
 			this.newFile;
 			OSC addDependant: this;
 			this.addNotifier(OscGroups, \localcode, { | n, code |
-				// "Testing recording of local code".postln;
 				this.addData(Main.elapsedTime, ['/code', code]);
-			}); // TODO: add code to self
+			});
 		}.fork
 	}
 

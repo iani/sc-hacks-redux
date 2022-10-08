@@ -35,6 +35,18 @@
 		}).front;
 	}
 
+	vlayout { | ... widgets |
+		^this.window({ | w |
+			w.view.layout = VLayout(*widgets)
+		})
+	}
+
+	hlayout { | ... widgets |
+		^this.window({ | w |
+			w.view.layout = HLayout(*widgets)
+		})
+	}
+
 	// defers are done here, because Rect.tl... calls need to return
 	tl_ { | width, height = 200, key = \default |
 		{ this.bounds_(Rect.tl(GuiDefaults.width, height), key) }.defer;

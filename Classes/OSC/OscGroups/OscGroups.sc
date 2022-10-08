@@ -33,7 +33,11 @@ OscGroups {
 		}
 	}
 	// this may no longer be valid on  1 Sep 2022 20:13
-	*isEnabled { ^OSC.listensTo(oscMessage, oscMessage); } // NEEDS CHECKING!
+	*isEnabled {
+		^OSC.listensTo(oscMessage, oscMessage) and: {
+			sendAddress.notNil
+		};
+	} // NEEDS CHECKING!
 	*isForwarding {
 		// ^thisProcess.interpreter.preProcessor.notNil;
 		// "isForwarding not implemented! look into NOtification!".postln;

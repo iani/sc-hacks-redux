@@ -4,6 +4,14 @@ Chat via OSC Groups
 
 Chat {
 	classvar history, >username;
+	*initClass {
+		StartUp add: { // Start recording at startup
+			// .chat for readability: explicitly add this action for key \chat.
+			\chat >>>.chat { | n, message |
+				this.receiveMessage(*message[1..]);
+			}
+		}
+	}
 	*history {
 		^history ? [];
 	}
@@ -39,11 +47,13 @@ Chat {
 				),
 				StaticText().string_("Type <enter> to send chat message:"),
 				TextField().action_({ | me |
-					postln("sending to chat:" + me.string);
-					OscGroups.broadcast(\chat, me.string, this.username);
-					this.receiveMessage(me.string, this.username);
+					this.broadcastMessage(me.string);
 				})
 			)
 		});
+	}
+	*broadcastMessage { | argString |
+		OscGroups.broadcast(\chat, argString, this.username);
+		this.receiveMessage(argString, this.username);
 	}
 }
