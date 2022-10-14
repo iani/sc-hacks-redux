@@ -20,6 +20,9 @@ EventStream {
 
 	asEvenStream { ^this }
 
+	restart { // to make Symbol:start also work with Synths.
+		this start: nil; // being explicit ...
+	}
 	start { | quant |
 		if (this.isRunning) { ^postf("% is running. will not restart it\n", this) };
 		this.makeRoutine(quant);

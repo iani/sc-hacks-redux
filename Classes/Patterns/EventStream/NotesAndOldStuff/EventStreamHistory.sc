@@ -3,11 +3,10 @@ Obtain events to be played from an EventStream.
 
 This version computes several events ahead of time.
 
-Disadvantage: Any changes to the event will only be reflected after the precomputed events have played.
-
-Advantage: the present event has access to future events and can calculate 
+Advantage: the present event has access to future events and can calculate
 things like glissando or other phrases from them.
 
+Disadvantage: Any changes to the event will only be reflected after the precomputed events have played.
 Disadvantage: Changes made to the stream while it is playing take
 effect only after the already pre-computed events have past. 
 
