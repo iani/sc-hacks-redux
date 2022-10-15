@@ -33,12 +33,25 @@
 	}
 
 	playInEnvir { | player, envir |
+		// TODO: add arguments setting, bus mapping
 		var synth;
+		envir = envir ? \default;
 		Mediator.wrap({
-			currentEnvironment[player] = synth = Synth(this).notify(player, envir);
+			// enable storing of source code:
+			Function.changed(\player, envir, player, Main.elapsedTime,
+				format("% +>.% %", this.asCompileString, envir, player.asCompileString);
+			);
+			if (Server.default.serverRunning) {
+				currentEnvironment[player] = synth = Synth(this).notify(player, envir)
+			}{
+				Server.default.waitForBoot({
+					currentEnvironment[player] = synth = Synth(this).notify(player, envir)
+				})
+			}
 		}, envir);
 		^synth;
 	}
+
 	pfree { | envir |
 		^this.player(envir).free;
 	}

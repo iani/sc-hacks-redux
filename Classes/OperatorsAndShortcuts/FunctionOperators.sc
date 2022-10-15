@@ -12,7 +12,9 @@
 		envir = envir ? \default;
 		Mediator.wrap({
 			// enable storing of source code:
-			Function.changed(\player, envir, player, Main.elapsedTime, this.def.sourceCode);
+			Function.changed(\player, envir, player, Main.elapsedTime,
+				format("% +>.% %", this.def.sourceCode, envir, player.asCompileString);
+			);
 			if (Server.default.serverRunning) {
 				currentEnvironment[player] = synth = this.play.notify(player, envir)
 			}{

@@ -22,10 +22,11 @@
 	}
 
 	restart { | envir, playerName |
-		format("% +>.% %",
-			SynthHistory.at(envir.name, playerName).last[1],
-			envir.name, playerName.asCompileString
-		).interpret;
+		// format("% +>.% %",
+		// 	SynthHistory.at(envir.name, playerName).last[1],
+		// 	envir.name, playerName.asCompileString
+		// ).interpret;
+		SynthHistory.at(envir.name, playerName).last[1].interpret;
 	}
 	// cannot make this work: !
 	/*
