@@ -3,10 +3,17 @@
 EventStream history cannot be recorded.
 Synth history is recorded.
 
+However, both Synhs and EvenStreams are managed by this gui.
+EventStreams can be restarted without using history.
+
 */
 
-SynthHistory : MultiLevelIdentityDictionary {
+PlayerHistory : MultiLevelIdentityDictionary {
 	classvar default;
+
+	// currently chosen environment and player:
+	// Used by gui to obtain list items.
+	var <envir, <player;
 
 	*initClass {
 		StartUp add: { this.enable; }
@@ -21,10 +28,7 @@ SynthHistory : MultiLevelIdentityDictionary {
 	*disable {
 		this.removeNotifier(Function, \player);
 	}
-	*default {
-		default ?? { default = this.new; };
-		^default;
-	}
+	*default { ^default ?? { default = this.fromLib(\default) } }
 
 	*add { | event, player, time, code |
 		var all, thisOne;
@@ -36,5 +40,22 @@ SynthHistory : MultiLevelIdentityDictionary {
 
 	*at { | event, player |
 		^this.default.at(event, player);
+	}
+
+	*gui { this.default.gui }
+	gui {
+		this.vlayout(
+			HLayout(
+				ListView()
+				.items_(Mediator.envirNames.sort),
+				ListView()
+				.items_(Mediator.playerNames(
+					\defaul
+					// Mediator.envirNames.sort.first).sort
+				).sort),
+				ListView()
+			),
+			TextView()
+		).name_("Player History")
 	}
 }

@@ -32,6 +32,8 @@
 		^player;
 	}
 
+	envir { ^Mediator.at(this) }
+
 	playInEnvir { | player, envir |
 		// TODO: add arguments setting, bus mapping
 		var synth;

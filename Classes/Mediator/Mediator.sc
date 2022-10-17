@@ -67,4 +67,18 @@ Mediator : EnvironmentRedirect {
 	players {
 		^this.values select: _.isPlayer;
 	}
+
+	playerNames {
+		var names = [];
+		this.keysValuesDo({ | key, value |
+			if (value.isPlayer) { names = names add: key };
+		});
+		^names;
+	}
+
+	*playerNames { | envir |
+		^this.at(envir).playerNames;
+	}
+
+	*envirNames { ^this.all.keys.asArray }
 }
