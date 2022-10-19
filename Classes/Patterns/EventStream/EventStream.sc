@@ -55,6 +55,10 @@ EventStream {
 		);
 	}
 
+	playNext {
+		this.playAndNotify(this.getNextEvent);
+	}
+
 	playAndNotify { | inEvent |
 		inEvent.play;
 		this.changed(\played, inEvent, this);
@@ -103,13 +107,16 @@ EventStream {
 		this.mergeEvent(().put(param, value))
 	}
 
-	addBeat { | beat |
-		this.addNotifier(beat.beat, \beat, {
-			this.playAndNotify(this.getNextEvent);
-		});
-	}
 
-	removeBeat { | beat | this.removeNotifier(beat.beat, \beat); }
+
+
+	// addBeat { | beat |
+	// 	this.addNotifier(beat.beat, \beat, {
+	// 		this.playAndNotify(this.getNextEvent);
+	// 	});
+	// }
+
+	// removeBeat { | beat | this.removeNotifier(beat.beat, \beat); }
 
 	// Trigger the next event when receiving message from OSC./
 	// Use with Symbol:makeTrig.

@@ -17,6 +17,11 @@ OSC {
 		(key ? message).addNotifier(this, message.asOscMessage, function);
 	}
 
+	*addRaw { | message, function, key |
+		// Like add, without prepending / to message.
+		// For use with SendReply.
+		(key ? message).addNotifier(this, message, function);
+	}
 	*remove { | message, key |
 		(key ? message).removeNotifier(this, message.asOscMessage);
 	}

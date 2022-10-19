@@ -3,26 +3,35 @@
 */
 
 + Event {
-	+> { | key, envir | ^this.playInEnvir(key, envir) }
+	// obsolete?!
+	splay { ^EventStream(this).start; }
 
-	playInEnvir { | key, envir |
+	+> { | player, envir | ^this.playInEnvir(player, envir, true) }
+
+	playInEnvir { | player, envir, start = true |
 		var atKey, new;
 		Mediator.wrap({
-			atKey = currentEnvironment[key];
+			atKey = currentEnvironment[player];
 			atKey.stop;
-			new = this.splay(key);
-			currentEnvironment[key] = new;
+			new = EventStream(this);
+			if (start) { new.start };
+			currentEnvironment[player] = new;
 		}, envir);
 		^new;
 	}
 
-	splay { | key | ^EventStream(this).start; }
+	+>! { | player, envir | // do not start
+		^this.playInEnvir(player, envir, false);
+	}
 
-	+>! { | key |
-		var new;
-		new = EventStream(this);
-		currentEnvironment.put(key, new);
-		^new;
+	+>> { | player, envir |
+		// create, store and
+		// make this respond to OSC trigger messages
+		// Use coupled with {} +>> key
+		var estream;
+		estream = this.playInEnvir(player, envir, false);
+		player >>> { estream.playNext };
+		^estream;
 	}
 
 	++> { | key, envir |
@@ -39,13 +48,5 @@
 			// EventSream and Synth handle this differently:
 			currentEnvironment[key].setEvent(this);
 		}, envir);
-	}
-
-	@> { | beatKey |
-		beatKey.beat.addDependant(EventStream(this));
-	}
-
-	addBeat { | beatKey |
-		this @> (beatKey ? this);
 	}
 }

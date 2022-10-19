@@ -20,6 +20,16 @@
 		^this.playInEnvir(player, envir);
     }
 
+	+>! { | player, envir |
+		// osc message triggers play next event of an EventStream player
+		this >>> {
+			Mediator.wrap(
+				{ currentEnvironment[player].playNext },
+				envir ? \default
+			)
+		}
+	}
+
 	<+ { | value, player |
 		currentEnvironment[player].set(this, value)
 	}
@@ -37,7 +47,6 @@
 	playInEnvir { | player, envir |
 		// TODO: add arguments setting, bus mapping
 		var synth;
-		envir = envir ? \default;
 		Mediator.wrap({
 			// enable storing of source code:
 			Function.changed(\player, envir, player, Main.elapsedTime,
@@ -50,7 +59,7 @@
 					currentEnvironment[player] = synth = Synth(this).notify(player, envir)
 				})
 			}
-		}, envir);
+		}, envir ? \default);
 		^synth;
 	}
 

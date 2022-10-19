@@ -12,6 +12,12 @@ Use Notification to add OSC functions.
 		this.addAction(func, key);
 	}
 
+	>>! { | func, key |
+		// Like >>> without prepending / to self.
+		// For use with SendReply.
+		OSC.addRaw(this, func, key);
+	}
+
 	addAction { | func, key |
 		// message, function, key
 		OSC.add(this, func, key)

@@ -25,4 +25,18 @@
 		}, envir);
 		^synth;
 	}
+
+	+>> { | cmdName, player |
+		this.sendReply(cmdName, player)
+	}
+
+	sendReply { | cmdName, player, values = 1, replyID = 1 |
+		// always save in environment \triggers (special envir)
+		{
+			SendReply.kr(
+				this.value.kdsr, cmdName.asOscMessage,
+				values.value, replyID.value
+			)
+		}.playInEnvir(player ? cmdName, \triggers)
+	}
 }

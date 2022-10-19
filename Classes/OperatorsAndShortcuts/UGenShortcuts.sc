@@ -114,7 +114,14 @@ To explore:
 }
 
 + Env {
-	*square { | lo = 0, hi = 0.1, duration = 0.1 |
-		^this.new([lo, hi, lo], [0.0, duration], \hold);
+	*square { | level = 0.1, duration = 0.1 |
+		^this.step([0, level, 0], [0.0, duration, 0.0]);
+	}
+
+	gate { | busOrKr |
+		if (busOrKr isKindOf: Symbol) {
+			busOrKr = busOrKr.bin
+		};
+		^this.kr(gate: busOrKr)
 	}
 }

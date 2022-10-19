@@ -54,12 +54,10 @@ Simplenumber @> \symbol // set bus to number
 
 + Function {
 	@> { | bus, player | // play as kr funcction in bus (or player) name
-		player = player ? bus;
-		//                       // .playInEnvir(player, player);// ????
 		{
 			Out.kr(bus.bus, this);
 			A2K.kr(Silent.ar).kdsr;
-		}.playInEnvir(player, \busses);
+		}.playInEnvir(player ? bus, \busses);
 	}
 }
 
@@ -106,9 +104,7 @@ Simplenumber @> \symbol // set bus to number
 }
 
 + Nil {
-	@> {| bus, player | // stop bus or player
-		player = player ? bus;
-		//	postln("stopping player for" + player + "which is ")
-		player.player(\busses).free;
+	@> {| bus, player | // Stop player for bus
+		(player ? bus).player(\busses).free;
 	}
 }

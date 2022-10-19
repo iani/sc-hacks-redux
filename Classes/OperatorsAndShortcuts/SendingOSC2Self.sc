@@ -8,3 +8,15 @@ of code evaluation in OscGroups.
 		NetAddr.localAddr.sendMsg(\code, this);
 	}
 }
+
++ Array {
+	sim {
+		NetAddr.localAddr.sendMsg(*this);
+	}
+}
+
++ Symbol {
+	sim {
+		NetAddr.localAddr.sendMsg(this);
+	}
+}
