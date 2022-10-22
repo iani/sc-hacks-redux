@@ -33,6 +33,7 @@ PlayerHistory : MultiLevelIdentityDictionary {
 	*add { | event, player, time, code |
 		var all, thisOne;
 		all = this.default;
+		event ?? { event = currentEnvironment };
 		thisOne = all.at(event, player);
 		thisOne = thisOne add: [time, code];
 		all.put(event, player, thisOne);

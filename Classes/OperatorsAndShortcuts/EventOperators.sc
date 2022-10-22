@@ -6,7 +6,7 @@
 	// obsolete?!
 	splay { ^EventStream(this).start; }
 
-	+> { | player, envir | ^this.playInEnvir(player, envir, true) }
+	+> { | player, envir | ^this.playInEnvir(player, envir ? currentEnvironment.name, true) }
 
 	playInEnvir { | player, envir, start = true |
 		var atKey, new;
@@ -16,7 +16,7 @@
 			new = EventStream(this);
 			if (start) { new.start };
 			currentEnvironment[player] = new;
-		}, envir);
+		}, envir ? currentEnvironment.name);
 		^new;
 	}
 
@@ -29,24 +29,29 @@
 		// make this respond to OSC trigger messages
 		// Use coupled with {} +>> key
 		var estream;
-		estream = this.playInEnvir(player, envir, false);
+		estream = this.playInEnvir(player, envir ? currentEnvironment.name, false);
 		player >>> { estream.playNext };
 		^estream;
+	}
+
+	+@> { | key |
+		Mediator.setEvent(this, key, \busses);
 	}
 
 	++> { | key, envir |
 		// Set all key-value pairs of the receiver to the object at key/envir
 		// If object is EventStream: set keys of the Event.
 		// Else if object is Synth, set all parameters corresponding to the keys
-		var p;
-		Mediator.wrap({
-			p = currentEnvironment[key];
-			p ?? {
-				p = EventStream(this);
-				currentEnvironment.put(key, p);
-			};
-			// EventSream and Synth handle this differently:
-			currentEnvironment[key].setEvent(this);
-		}, envir);
+		Mediator.setEvent(this, key, envir);
+		// var p;
+		// Mediator.wrap({
+		// 	p = currentEnvironment[key];
+		// 	p ?? {
+		// 		p = EventStream(this);
+		// 		currentEnvironment.put(key, p);
+		// 	};
+		// 	// EventSream and Synth handle this differently:
+		// 	currentEnvironment[key].setEvent(this);
+		// }, envir);
 	}
 }

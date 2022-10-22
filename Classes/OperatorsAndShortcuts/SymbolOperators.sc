@@ -3,6 +3,31 @@
 */
 
 + Symbol {
+
+	//=================================================================
+	// testing admissible operator names
+	||> { | player, param = \trig |
+		// Set param of player to index of this bus
+		().put(param, this.bus.index) ++> player;
+	}
+
+	at { | envir | // has same effect as Symbol:player below?
+		^Mediator.at(envir ? currentEnvironment.name).at(this);
+	}
+
+	asPlayer { ^this.at(nil) }
+
+	// NOTE: If possible, avoid adding more operators, like the following:
+	@|> { "@|> works".postln; }
+	|@|> { "|@|> works".postln; }
+	|@| { "|@| works".postln; }
+	|> { "|> works".postln; }
+
+	//=================================================================
+	-- { | envir, time = 1 |
+		// Stop player from specified envir
+		Mediator.at(envir).at(this).stop(time);
+	}
 	&> { | value, envir = \default |
 		envir.addKey(this, value);
 	}
@@ -47,6 +72,7 @@
 	playInEnvir { | player, envir |
 		// TODO: add arguments setting, bus mapping
 		var synth;
+		envir = envir ? currentEnvironment.name;
 		Mediator.wrap({
 			// enable storing of source code:
 			Function.changed(\player, envir, player, Main.elapsedTime,
@@ -59,7 +85,7 @@
 					currentEnvironment[player] = synth = Synth(this).notify(player, envir)
 				})
 			}
-		}, envir ? \default);
+		}, envir);
 		^synth;
 	}
 
@@ -101,19 +127,19 @@
 
 	// ================================================================
 	// ============================ Beats UNTESTED!!!
-	|> { | beatKey |
-		beatKey.beat.addDependant(currentEnvironment[this]);
-	}
-	addBeat { | beatKey |
-		this |> (beatKey ? this);
-	}
+	// |> { | beatKey |
+	// 	beatKey.beat.addDependant(currentEnvironment[this]);
+	// }
+	// addBeat { | beatKey |
+	// 	this |> (beatKey ? this);
+	// }
 
-	removeBeat { | beatKey |
-		currentEnvironment[this].removeBeat(beatKey ? this);
-	}
+	// removeBeat { | beatKey |
+	// 	currentEnvironment[this].removeBeat(beatKey ? this);
+	// }
 
 	// ============================ Toggle. UNTESTED!!!
-	+>? { | player, envir |
+	<?> { | player, envir |
 		^this.toggle(player, envir);
 	}
 
@@ -168,6 +194,7 @@
 	get { ^this.bus.get }
 	index { ^this.bus.index }
 	in { ^In.kr(this.index) }
+	krin { | index = 0 | ^In.kr(this.kr(index)) }
 
 	bkr { ^In.kr(this.bus.index) }
 

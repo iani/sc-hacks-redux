@@ -12,12 +12,27 @@ OSCRecorder3 {
 	classvar <>rootDir;
 	classvar <>maxItems = 1000; // Keep files small!
 	classvar <file; // the file where the data are stored.
+	classvar <>excludedMessages;
 
 	*initClass {
+		excludedMessages = [
+			'/cbmon', '/status.reply', '/done', '/n_end',
+			'/recordingDuration', '/n_go', '/d_removed', '/synced'
+		];
 		ShutDown add: { this.closeFile };
 	}
+
+	*exclude { | ... argMessages |
+		excludedMessages = excludedMessages ++ argMessages;
+	}
+
 	*update { | self, cmd, msg, time, addr, port |
-		this.addData(time, msg);
+		if (excludedMessages includes: msg[0]) {
+			// do not record excluded message!
+			postln("osc recorder ignores: " + msg[0]);
+		}{
+			this.addData(time, msg);
+		}
 	}
 
 	*rootFolder_ { | argRootFolder |
@@ -98,7 +113,7 @@ OSCRecorder3 {
 			0.1.wait;
 			this.newFile;
 			OSC addDependant: this;
-			this.addNotifier(OscGroups, \localcode, { | n, code |
+			this.addNotifier(Interpreter, \code, { | n, code |
 				this.addData(Main.elapsedTime, ['/code', code]);
 			});
 		}.fork
@@ -106,7 +121,7 @@ OSCRecorder3 {
 
 	*disable {
 		OSC removeDependant: this;
-		this.removeNotifier(OscGroups, \localcode);
+		this.removeNotifier(Interpreter, \code);
 		this.closeFile;
 		// TODO: Check with OscGroups if \code is the message watched
 		this.removeNotifier(OscGroups, \code);

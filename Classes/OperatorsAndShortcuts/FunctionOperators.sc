@@ -9,20 +9,28 @@
 	playInEnvir { | player, envir |
 		// TODO: add arguments setting, bus mapping
 		var synth;
-		envir = envir ? \default;
+		envir = envir ? currentEnvironment.name;
+		// postln("playInEnvir envir is now: " + envir);
 		Mediator.wrap({
 			// enable storing of source code:
 			Function.changed(\player, envir, player, Main.elapsedTime,
 				format("% +>.% %", this.def.sourceCode, envir, player.asCompileString);
 			);
 			if (Server.default.serverRunning) {
-				currentEnvironment[player] = synth = this.play.notify(player, envir)
+				// "INSIDE SERVER RUNNING - DEBUGGING".postln;
+				// postln("currentEnvironment before the put" + currentEnvironment);
+				// postln("the player where I will put it is" + player);
+				currentEnvironment[player] = synth = this.play.notify(player, envir);
+				// postln("currentEnvironment AFTER the put" + currentEnvironment);
 			}{
 				Server.default.waitForBoot({
 					currentEnvironment[player] = synth = this.play.notify(player, envir)
 				})
 			}
 		}, envir);
+		// "DEBUGGING Just before leaving playInEnvir method".postln;
+		// postln("envir is: " + envir);
+		// postln("currentEnvironment is", currentEnvironment);
 		^synth;
 	}
 

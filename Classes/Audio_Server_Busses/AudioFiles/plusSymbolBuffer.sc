@@ -23,5 +23,7 @@
 	b { ^this.buffer; }
 	buf { ^this.buffer; }
 	bufnum { ^this.buf.bufnum }
-
+	storebuf { | buffer |
+		Library.put(Buffer, this, buffer);
+	}
 }
