@@ -16,16 +16,24 @@ Simplenumber @> \symbol // set bus to number
 			this.set(val);
 		});
 	}
+	pget {
+		this.get(_.postln)
+	}
 }
 
 + Symbol {
 	blag { | lag = 0.1 | ^this.bin.lag(lag) }
 	bamp { | attack = 0.01, decay = 0.1 | ^this.bin.amp(attack, decay); }
+	br { | val | ^this.bin(val) } // alias similar to ar, kr
 	bin { | val | ^this.busIn(val) } // input from a named kr bus.
 	//synonym. (sic!)
 	busIn { | val |
 		// bus in
-		^In.kr(this.bus(val).index)
+		// Restore following line if needed:
+		// ^In.kr(this.bus(val).index)
+		var bus;
+		bus = this.bus(val);
+		^In.kr(this.kr(bus.index));
 	}
 
 	bus { | val, rate = \control, numchans = 1, server |

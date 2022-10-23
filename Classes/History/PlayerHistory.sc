@@ -20,8 +20,8 @@ PlayerHistory : MultiLevelIdentityDictionary {
 	}
 
 	*enable {
-		this.addNotifier(Function, \player, { | n, event, player, time, code |
-			this.add(event, player, time, code);
+		this.addNotifier(Function, \player, { | n, event, player, time, code, controls |
+			this.add(event, player, time, code, controls);
 		});
 	}
 
@@ -30,12 +30,12 @@ PlayerHistory : MultiLevelIdentityDictionary {
 	}
 	*default { ^default ?? { default = this.fromLib(\default) } }
 
-	*add { | event, player, time, code |
+	*add { | event, player, time, code, controls |
 		var all, thisOne;
 		all = this.default;
 		event ?? { event = currentEnvironment };
 		thisOne = all.at(event, player);
-		thisOne = thisOne add: [time, code];
+		thisOne = thisOne add: [time, code, controls];
 		all.put(event, player, thisOne);
 	}
 

@@ -8,7 +8,7 @@ For sc-hacks-redux: playInEnvir.  Create synth, providing arguments from current
 */
 
 + Function {
-	play { arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args;
+	play { arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args, player, envir;
 		var def, synth, server, bytes, synthMsg;
 		target = target.asTarget;
 		server = target.server;
@@ -22,6 +22,11 @@ For sc-hacks-redux: playInEnvir.  Create synth, providing arguments from current
 			fadeTime:fadeTime,
 			name: SystemSynthDefs.generateTempName
 		);
+		Function.changed(\player, envir, player, Main.elapsedTime,
+			format("% +>.% %", this.def.sourceCode, envir, player.asCompileString),
+			[def.allControlNames collect: _.name]
+		);
+
 		synth = Synth.basicNew(def.name, server);
 		// if notifications are enabled on the server,
 		// use the n_end signal to remove the temp synthdef
