@@ -36,6 +36,10 @@ Mediator : EnvironmentRedirect {
 	*push { this.default.push }
 	*pop { this.default.pop }
 	*default { ^default ?? { default = this.fromLib(\default) } }
+	*fromLib { | key |
+		this.changed(\envir, key);
+		^super.fromLib(key);
+	}
 	put { | key, obj |
 		dispatch.value(key, obj);
 		// this.changed(key, obj);

@@ -6,6 +6,8 @@ Synth history is recorded.
 However, both Synhs and EvenStreams are managed by this gui.
 EventStreams can be restarted without using history.
 
+Under development 23 Oct 2022 21:34
+
 */
 
 PlayerHistory : MultiLevelIdentityDictionary {
@@ -13,7 +15,7 @@ PlayerHistory : MultiLevelIdentityDictionary {
 
 	// currently chosen environment and player:
 	// Used by gui to obtain list items.
-	var <envir, <player;
+	var <envir, <player, <control;
 
 	*initClass {
 		StartUp add: { this.enable; }
@@ -50,19 +52,27 @@ PlayerHistory : MultiLevelIdentityDictionary {
 	gui {
 		this.vlayout(
 			HLayout(
-				ListView()
+				ListView() // envir list
 				.items_(Mediator.envirNames.sort)
 				.action_({ | me |
-					postln("")
+					postln("You chose this item: " + me.item + me.item.class);
+					envir = me.item;
+				})
+				.addNotifier(Mediator, \envir, { | n |
+					var envirs, index;
+					envirs = Mediator.envirNames.sort;
+					n.listener.items = envirs;
+					postln("envirs: " + n.listener.items);
+					postln("current envir" + envir);
+					postln("index!!!" + envirs indexOf: (envir ? \default));
 				}),
 				ListView()
 				.items_(Mediator.playerNames(
 					\default
-					// Mediator.envirNames.sort.first).sort
 				).sort),
 				ListView()
 			),
-			TextView()
+			TextView(), //
 		).name_("Player History")
 	}
 }
