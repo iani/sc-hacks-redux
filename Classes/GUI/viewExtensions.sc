@@ -9,3 +9,9 @@ Shortcut for action_({ | me | somebody.changed(message, me) })
 		}
 	}
 }
+
++ ListView {
+	item {
+		^this.items[this.value]
+	}
+}

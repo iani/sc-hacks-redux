@@ -16,12 +16,19 @@ Simplenumber @> \symbol // set bus to number
 			this.set(val);
 		});
 	}
-	pget {
-		this.get(_.postln)
+	pget { | format = "%" |
+		this.get({ | v | format(format, v).postln; })
 	}
 }
 
 + Symbol {
+	// compose event to switch busses in a player
+	// usage:
+	// \parameter @> \targetbus ++>.envir \player;
+	@> { | targetBus |
+		^().put(this.busify, targetBus.bus.index);
+	}
+	pget { | format = "%" | ^this.bus.pget(format) }
 	blag { | lag = 0.1 | ^this.bin.lag(lag) }
 	bamp { | attack = 0.01, decay = 0.1 | ^this.bin.amp(attack, decay); }
 	br { | val | ^this.bin(val) } // alias similar to ar, kr
@@ -33,8 +40,11 @@ Simplenumber @> \symbol // set bus to number
 		// ^In.kr(this.bus(val).index)
 		var bus;
 		bus = this.bus(val);
-		^In.kr(this.kr(bus.index));
+		// use b_ prefix for controls which refer to buses.
+		^In.kr(this.busify.kr(bus.index));
 	}
+	// prepend b_. Used to recognize controls that read from busses
+	busify { ^("b_" ++ this).asSymbol }
 
 	bus { | val, rate = \control, numchans = 1, server |
 		// Return the bus for this symbol.
@@ -63,8 +73,8 @@ Simplenumber @> \symbol // set bus to number
 + Function {
 	@> { | bus, player | // play as kr funcction in bus (or player) name
 		{
-			Out.kr(bus.bus, this);
-			A2K.kr(Silent.ar).kdsr;
+			Out.kr(bus.bus, this.value.kdsr);
+			// A2K.kr(Silent.ar).kdsr;
 		}.playInEnvir(player ? bus, \busses);
 	}
 }
@@ -107,7 +117,7 @@ Simplenumber @> \symbol // set bus to number
 + SimpleNumber {
 	@> { | bus | // set bus value
 		// works with new AND already existing busses.
-		bus.bus(this);
+		bus.bus(this).set(this);
 	}
 }
 

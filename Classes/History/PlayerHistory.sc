@@ -32,11 +32,14 @@ PlayerHistory : MultiLevelIdentityDictionary {
 
 	*add { | event, player, time, code, controls |
 		var all, thisOne;
+		player !? {
+			// only add if played for player (with playInEnvir)
 		all = this.default;
 		event ?? { event = currentEnvironment };
 		thisOne = all.at(event, player);
 		thisOne = thisOne add: [time, code, controls];
 		all.put(event, player, thisOne);
+		}
 	}
 
 	*at { | event, player |
@@ -48,10 +51,13 @@ PlayerHistory : MultiLevelIdentityDictionary {
 		this.vlayout(
 			HLayout(
 				ListView()
-				.items_(Mediator.envirNames.sort),
+				.items_(Mediator.envirNames.sort)
+				.action_({ | me |
+					postln("")
+				}),
 				ListView()
 				.items_(Mediator.playerNames(
-					\defaul
+					\default
 					// Mediator.envirNames.sort.first).sort
 				).sort),
 				ListView()

@@ -5,12 +5,8 @@
 + Symbol {
 
 	//=================================================================
-	// testing admissible operator names
-	||> { | player, param = \trig |
-		// Set param of player to index of this bus
-		().put(param, this.bus.index) ++> player;
-	}
 
+	@ { | envir | ^this.at(envir) }
 	at { | envir | // has same effect as Symbol:player below?
 		^Mediator.at(envir ? currentEnvironment.name).at(this);
 	}

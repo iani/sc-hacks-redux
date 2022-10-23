@@ -26,7 +26,7 @@
 		// 	SynthHistory.at(envir.name, playerName).last[1],
 		// 	envir.name, playerName.asCompileString
 		// ).interpret;
-		SynthHistory.at(envir.name, playerName).last[1].interpret;
+		PlayerHistory.at(envir.name, playerName).last[1].interpret;
 	}
 	// cannot make this work: !
 	/*
