@@ -13,6 +13,7 @@ See discussion in https://github.com/iani/sc-hacks-redux/blob/master/README.org
 		new ?? {
 			new = this.new(key).init(*args);
 			Library.global.put(this, key, new);
+			this.changed(\fromLib, key, *args);
 		};
 		^new;
 	}

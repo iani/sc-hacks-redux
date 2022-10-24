@@ -12,6 +12,7 @@ Create an array of entries like this:
 */
 
 OscDataReader {
+	classvar <allData;
 	var <path, <dataString, <data;
 
 	*new { | path |
@@ -21,7 +22,7 @@ OscDataReader {
 	readData {
 		var delimiters, entry;
 		var timebeg, timeend, time;
-		path.postln;
+		postln("Reading data from" + path + "...");
 		dataString = File.readAllString(path);
 		delimiters = dataString.findAll("\n//:--[");
 		delimiters do: { | b, i |
@@ -38,13 +39,52 @@ OscDataReader {
 				entry.copyRange(timebeg + 4, timeend - 1).interpret,
 				entry.copyRange(timeend + 1, entry.size - 1)
 			];
-		}
+		};
+		postln("... read " + data.size + "entries.")
 	}
 
-	*openDialog { | varname = \oscdata |
+	*openDialog { | key = \oscdata |
 		"Opening file dialog".postln;
-		FileDialog({ | argPath |
-			currentEnvironment.put(varname, this.new(argPath.first))
-		})
+		Dialog.openPanel({ | argPaths |
+			// currentEnvironment.put(key, this.new(argPath.first))
+			argPaths do: { | path, index |
+				Library.put(this, key, index, this.new(path))
+			}
+		}, multipleSelection: true);
+		this.merge(key);
+		this.processMerged;
+	}
+
+	*merge { | key |
+		var dict;
+		dict = Library.at(this, key);
+		allData = [];
+		dict.keys.asArray.sort do: { | i |
+			var newData;
+			newData = dict[i].data;
+			postln("Adding" + newData.size + "entries to allData ...");
+			allData = allData ++ newData;
+		};
+		postln("DONE. allData has" + allData.size + "entries.")
+	}
+
+	*processMerged { | filter = true |
+		var exclude, converted;
+		if (filter) { exclude = OSCRecorder3.excludedMessages } { exclude = [] };
+		postln("Processing " + allData.size + "entries...");
+		allData do: { | data |
+			var message;
+			message = data[1].interpret;
+			if (exclude includes: message[0]) {} {
+				converted = converted add: [data[0], message];
+			};
+		};
+		"Sorting...".post;
+		allData = converted.sort({| a, b | a[0] < b[0] });
+		postln("... Done. Collected" + allData.size + "messages.");
+	}
+
+	*sortMerged {
+		allData = allData.sort({| a, b | a[0] < b[0] })
 	}
 }

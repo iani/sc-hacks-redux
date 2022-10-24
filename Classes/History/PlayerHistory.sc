@@ -55,16 +55,16 @@ PlayerHistory : MultiLevelIdentityDictionary {
 				ListView() // envir list
 				.items_(Mediator.envirNames.sort)
 				.action_({ | me |
-					postln("You chose this item: " + me.item + me.item.class);
+					// postln("You chose this item: " + me.item + me.item.class);
 					envir = me.item;
+					this.changed(\envir, envir);
 				})
-				.addNotifier(Mediator, \envir, { | n |
+				.addNotifier(Mediator, \fromLib, { | n |
 					var envirs, index;
+					// "PlayerHistory: a new envir was created !!!!!!!!!!!".postln;
 					envirs = Mediator.envirNames.sort;
 					n.listener.items = envirs;
-					postln("envirs: " + n.listener.items);
-					postln("current envir" + envir);
-					postln("index!!!" + envirs indexOf: (envir ? \default));
+					n.listener.value = envirs indexOf: (envir ? \default);
 				}),
 				ListView()
 				.items_(Mediator.playerNames(

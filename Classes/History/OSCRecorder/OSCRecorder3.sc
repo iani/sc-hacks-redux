@@ -13,6 +13,7 @@ OSCRecorder3 {
 	classvar <>maxItems = 1000; // Keep files small!
 	classvar <file; // the file where the data are stored.
 	classvar <>excludedMessages;
+	classvar <>verbose = false;
 
 	*initClass {
 		excludedMessages = [
@@ -29,7 +30,7 @@ OSCRecorder3 {
 	*update { | self, cmd, msg, time, addr, port |
 		if (excludedMessages includes: msg[0]) {
 			// do not record excluded message!
-			postln("osc recorder ignores: " + msg[0]);
+			if (verbose) { postln("osc recorder ignores: " + msg[0]); };
 		}{
 			this.addData(time, msg);
 		}
@@ -104,7 +105,12 @@ OSCRecorder3 {
 	}
 
 	*makeDirectory {
+		this.makeDailySubfolderTimestamp;
 		("mkdir -p " ++ this.folderPath.replace(" ", "\\ ")).unixCmd
+	}
+
+	*makeDailySubfolderTimestamp {
+		subFolder = Date.getDate.dayStamp;
 	}
 
 	*enable {
