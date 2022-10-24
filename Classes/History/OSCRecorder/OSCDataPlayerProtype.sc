@@ -2,6 +2,8 @@
 
 Play back osc data by sending them to an ip address.
 
+Early prototype.  See OscDataPlayer class for current version 24 Oct 2022 11:15
+
 Approach:
 
 Construct an Event with durations calculated from the dt of the times of the data.
@@ -10,7 +12,7 @@ Play the Event in an EventStream.
 
 */
 
-OSCDataPlayer {
+OSCDataPlayerPrototype {
 	var <>data, <>from = 0, to, <>rate = 1, <>addr, <routine;
 
 	*play { | data, from = 0, to, rate = 1, addr |
@@ -37,6 +39,8 @@ OSCDataPlayer {
 				next = data[i + 1];
 				addr.sendMsg()
 			};
+			postln(this + "playback ended.");
+			routine = nil;
 		}.fork;
 	}
 

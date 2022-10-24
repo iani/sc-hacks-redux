@@ -48,11 +48,11 @@ OscDataReader {
 		Dialog.openPanel({ | argPaths |
 			// currentEnvironment.put(key, this.new(argPath.first))
 			argPaths do: { | path, index |
-				Library.put(this, key, index, this.new(path))
-			}
+				Library.put(this, key, index, this.new(path));
+				this.merge(key);
+				this.processMerged;
+			};
 		}, multipleSelection: true);
-		this.merge(key);
-		this.processMerged;
 	}
 
 	*merge { | key |
