@@ -15,3 +15,11 @@
 		^PathName(this).asAbsolutePath;
 	}
 }
+
+/*
++ SequenceableCollection {
+	pathcat {
+
+	}
+}
+*/

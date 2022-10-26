@@ -11,6 +11,38 @@ Create an array of entries like this:
 [[time, code], [time, code], etc...]
 */
 
+/*
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+NOTE: Fix interpreting read data code strings:
+If the code saved contains a syntax error, then interpreting
+the code will issue the same error.  This will cause the
+interpretation loop to stop!
+There seems to be no way to catch this error ("try" and "protect"
+	do not work when doing "astring".interpret. ).
+But one can repeat the loop if one does it inside a routine.
+Use this as example, and build it in method "readData".
+
+Alternatively, have readData call a separate method in a second
+runthrough, which does the interpreting inside a forked routine,
+and repeats it until all code snippets with syntax errors have been
+ignored.
+
+//:
+{
+	5 do: {
+[
+	"1", "pi", "(1..3).sqrt", "xxx2"
+] do: { | i | i.interpret.postln; };
+		1.wait;
+	}
+}.fork;
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+*/
+
+
 OscDataReader {
 	classvar <allData;
 	var <path, <dataString, <data;

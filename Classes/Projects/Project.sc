@@ -213,13 +213,22 @@ Project {
 								this.selectProject(selectedProject);
 							};
 						}),
-						Button().states_([["-"]])
-						.addNotifier(this, \selectedProject, { | n |
-							n.listener.states_([[selectedProject]]);
-						})
-						.action_({
-							this.broadcastSelectedProject;
-						}),
+						HLayout(
+							Button().states_([["-"]])
+							.addNotifier(this, \selectedProject, { | n |
+								n.listener.states_([[selectedProject]]);
+							})
+							.action_({
+								this.broadcastSelectedProject;
+							}),
+							Button().maxWidth_(30).states_([[">"], ["<"]])
+							.action_({ | me |
+								[
+									{ this.goUpAFolder; },
+									{ this.goDownAFolder; }
+								][me.value].value;
+							})
+						),
 						HLayout(
 							StaticText().string_("OscGroups:"),
 							Button()
@@ -335,6 +344,48 @@ Project {
 		}.fork(AppClock);
 	}
 
+	*goDownAFolder {
+		var targetFolder, fullPath;
+		// go down to selected project folder making it root of projects.
+		// If selected project folder has no subfolders, then just issue an error.
+		"I will go down a folder. The current project folder I will go down to is:".postln;
+		selectedProject.postln;
+		targetFolder = PathName(startupFolder) +/+ selectedProject +/+ "";
+		postln("The new projectfolder will become:" + targetFolder);
+		fullPath = PathName(Platform.userHomeDir)  +/+ targetFolder;
+		postln("The full path is " ++ fullPath);
+		postln("There are " + fullPath.folders.size + "subfolders to work with.");
+		if (fullPath.folders.size == 0) {
+			postln("Cannot use " + selectedProject + "as root folder because it has no subfolders");
+			"Skipping this.".postln;
+			"Please select a different folder as project root".postln;
+		}{
+			"Here will be the glorious new project root folder!!!!!".postln;
+			targetFolder.postln;
+			startupFolder = targetFolder.fullPath;
+			this.getProjects;
+		};
+	}
+
+	*goUpAFolder {
+		var targetFolder;
+		// if current startupFolder is root project folder, then just issue an error.
+		postln("I will go up a folder. Current startup folder is: " + startupFolder);
+		startupFolder.postln;
+
+		targetFolder = PathName(PathName(startupFolder).parentPath).folderName.postln; // hack ...
+		postln("The new target folder is:" + targetFolder);
+		if (targetFolder.size == 0) {
+			postln("hey you have moved to the root of home directory. This is not good. ABORTING");
+		}{
+			"Well yes, we may be able to go to this folder:".postln;
+			targetFolder;
+			startupFolder = targetFolder;
+			this.getProjects;
+		}
+	}
+
+
 	*startProjectInGroup {
 		{
 			OscGroups.enable; // so we are ready here for what comes next
@@ -397,10 +448,12 @@ Project {
 	*loadSelectedProjectItem {
 		postf("loading project item: %\n", selectedProjectItem);
 		if (selectedProjectItem.isFolder) {
-			// selectedProjectItem.folderName.postln;
+			"Loading folder".postln;
 			if (this.isAudioFileFolder(selectedProjectItem)) {
+				"Loading audio files".postln;
 				this.loadAudioFiles(selectedProjectItem);
 			}{
+				"loading scd files".postln;
 				this.loadScdFiles(selectedProjectItem);
 			}
 		} {
@@ -418,33 +471,38 @@ Project {
 
 	*loadProjectBuffers {
 		postf("Loading project buffers from: %\n", selectedProjectItem.fullPath);
-
+		"WARNING: This method is not implemented!".postln;
 	}
 
 	*openSelectedProjectItem {
-		var path;
-		path = selectedProjectItem.fullPath;
-		postf("opening: %\n", path);
+		// var path;
+		// path = selectedProjectItem.fullPath;
+		postf("opening: %\n", selectedProjectItem);
 		if (selectedProjectItem.isFolder) {
-			this.openFolder(selectedProjectItem.fullPath);
+			this.openFolder(selectedProjectItem);
 		}{
-			this.openFile(path);
+			this.openFile(selectedProjectItem);
 		}
 	}
 
 	*openFolder { | path |
 		if (this.isAudioFileFolder(path)) {
-			this loadAudioBuffers: path;
+			"audiofiles folder contains the following files:".postln;
+			path filesDo: { | f |
+				f.postln
+			};
+			"Loading audio files now:".postln;
+			this.loadSelectedProjectItem;
 		}{
-			this loadScdFiles: path;
+			"Cannot open a folder containing scripts".postln;
 		}
 	}
 
 	*openFile { | path |
 		if (Platform.ideName == "scel") {
-			ScelDocument.open(path);
+			ScelDocument.open(path.fullPath);
 		}{
-			Document.open(path)
+			Document.open(path.fullPath)
 		}
 	}
 
