@@ -107,6 +107,7 @@ OscDataReader {
 		allData do: { | data |
 			var message;
 			message = data[1].interpret;
+			if (message.isNil) { message = [\error, data[1]]; };
 			if (exclude includes: message[0]) {} {
 				converted = converted add: [data[0], message];
 			};

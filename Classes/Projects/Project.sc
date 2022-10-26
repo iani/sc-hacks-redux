@@ -386,7 +386,6 @@ Project {
 		}
 	}
 
-
 	*startProjectInGroup {
 		{
 			OscGroups.enable; // so we are ready here for what comes next
