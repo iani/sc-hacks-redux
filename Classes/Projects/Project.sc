@@ -221,12 +221,13 @@ Project {
 							.action_({
 								this.broadcastSelectedProject;
 							}),
-							Button().maxWidth_(30).states_([[">"], ["<"]])
+							Button().maxWidth_(30).states_([["<"]])
 							.action_({ | me |
-								[
-									{ this.goUpAFolder; },
-									{ this.goDownAFolder; }
-								][me.value].value;
+								this.goUpAFolder
+							}),
+							Button().maxWidth_(30).states_([[">"]])
+							.action_({ | me |
+								this.goDownAFolder
 							})
 						),
 						HLayout(
@@ -373,13 +374,13 @@ Project {
 		postln("I will go up a folder. Current startup folder is: " + startupFolder);
 		startupFolder.postln;
 
-		targetFolder = PathName(PathName(startupFolder).parentPath).folderName.postln; // hack ...
+		targetFolder = PathName(PathName(startupFolder).parentPath).fullPath.postln; // hack ...
 		postln("The new target folder is:" + targetFolder);
 		if (targetFolder.size == 0) {
 			postln("hey you have moved to the root of home directory. This is not good. ABORTING");
 		}{
 			"Well yes, we may be able to go to this folder:".postln;
-			targetFolder;
+			targetFolder.postln;
 			startupFolder = targetFolder;
 			this.getProjects;
 		}
