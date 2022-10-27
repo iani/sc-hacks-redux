@@ -214,3 +214,7 @@
 
 	lfree { Library.at(this).free; }
 }
+
++ Nil {
+	envir { ^currentEnvironment }
+}

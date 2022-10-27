@@ -50,12 +50,15 @@ OscDataReader {
 	*new { | path |
 		^this.newCopyArgs(path).readData;
 	}
-
 	readData {
+		postln("Reading data from" + path + "...");
+		this.parseDataOSC(File.readAllString(path));
+	}
+
+	parseDataOSC { | argString |
 		var delimiters, entry;
 		var timebeg, timeend, time;
-		postln("Reading data from" + path + "...");
-		dataString = File.readAllString(path);
+		dataString = argString;
 		delimiters = dataString.findAll("\n//:--[");
 		delimiters do: { | b, i |
 			var end;

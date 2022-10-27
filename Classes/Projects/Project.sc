@@ -72,6 +72,7 @@ Project {
 			Warn(format("ERROR: No projects found in %\n", this.projectHomePath.fullPath))
 		}{
 			this changed: \projects;
+			this.notifyNavigationStatus;
 		}
 	}
 
@@ -371,10 +372,10 @@ Project {
 		// If selected project folder has no subfolders, then just issue an error.
 		"I will go down a folder. The current project folder I will go down to is:".postln;
 		selectedProject.postln;
-		targetFolder = PathName(startupFolder) +/+ selectedProject +/+ "";
+		targetFolder = PathName(startupFolder) +/+ selectedProject;
 		postln("The new projectfolder will become:" + targetFolder);
 		fullPath = PathName(Platform.userHomeDir)  +/+ targetFolder;
-		postln("The full path is " ++ fullPath);
+		postln("The full path is " + fullPath);
 		postln("There are " + fullPath.folders.size + "subfolders to work with.");
 		if (fullPath.folders.size == 0) {
 			postln("Cannot use " + selectedProject + "as root folder because it has no subfolders");
@@ -387,16 +388,6 @@ Project {
 			this.getProjects;
 		};
 	}
-
-	*canGoDownAFolder {
-		Project.selectedProjectItem ?? { ^false };
-		// postln("Checking if i can go down on this project:" + this.selectedProject);
-		// postln("FOLDERS: " + Project.selectedProjectPath.folders.size);
-		// postln("FILES: " + Project.selectedProjectPath.files.size);
-		^this.selectedProjectPath.folders.size > 0;
-	}
-
-	*canGoUpAFolder{ ^PathName(startupFolder).allFolders.size > 0; }
 
 	*goUpAFolder {
 		var targetFolder;
@@ -457,7 +448,29 @@ Project {
 		this.getProjectItems;
 		// projectItems.postln;
 		this.changed(\selectedProject);
+		this.notifyNavigationStatus;
+	}
+
+	*notifyNavigationStatus {
 		this.changed(\navigationStatus, this.canGoUpAFolder, this.canGoDownAFolder);
+	}
+
+	*canGoDownAFolder {
+		Project.selectedProjectItem ?? { ^false };
+		// postln("Checking if i can go down on this project:" + this.selectedProject);
+		// postln("FOLDERS: " + Project.selectedProjectPath.folders.size);
+		// postln("FILES: " + Project.selectedProjectPath.files.size);
+		^this.selectedProjectPath.folders.size > 0;
+	}
+
+	*canGoUpAFolder {
+		// "can go up a folder?????".postln;
+		// "startupFolder should have more than 1 folder:".postln;
+		// this.projectHomePath.postln;
+		// startupFolder.postln;
+		// startupFolder.numFolders.postln;
+		// postln("the answer is : " + (startupFolder.numFolders > 1));
+		^(startupFolder.numFolders > 1);
 	}
 
 	*getProjectItems {

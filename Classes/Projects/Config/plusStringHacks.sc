@@ -6,6 +6,9 @@ Utility: Iterate an action on all files that match a search.
 
 
 + String {
+	interpretIn { | envir |
+		envir use: { this.interpret }
+	}
 	pathMatchDo { | action |
 		// perform action on each non-directory path that is matched by me
 		this.pathMatch.reject(_.isFolder).do(action.(_))
@@ -62,6 +65,10 @@ Utility: Iterate an action on all files that match a search.
 			};
 		}
 	}
+
+	numFolders {
+		^PathName(this).numFolders;
+	}
 }
 
 + PathName {
@@ -75,5 +82,16 @@ Utility: Iterate an action on all files that match a search.
 			bufName = this.folderName ++ "_" ++ bufName;
 		};
 		^bufName.asSymbol;
+	}
+
+	numFolders {
+		var numFolders = 1, but1;
+		but1 = fullPath.size - 1;
+		fullPath do: { | char, i |
+			if (i > 0 and: { i != but1 } and: { char.isPathSeparator }) {
+				numFolders = numFolders + 1;
+			};
+		};
+		^numFolders;
 	}
 }
