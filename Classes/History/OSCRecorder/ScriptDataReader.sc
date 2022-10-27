@@ -22,8 +22,8 @@ ScriptDataReader : OscDataReader {
 	}
 
 	readData {
-		postln("Reading data from" + path + "...");
-		"Will now call parseDataScript".postln;
+		postln("Reading data from" + path);
+		// "Will now call parseDataScript".postln;
 		this.parseDataScript(File.readAllString(path));
 	}
 
@@ -32,7 +32,7 @@ ScriptDataReader : OscDataReader {
 		var timebeg, timeend, time;
 		dataString = argString;
 		delimiters = dataString.findAll("\n//:[");
-		delimiters.postln;
+		// delimiters.postln;
 		delimiters do: { | b, i |
 			var end;
 			end = delimiters[i + 1];
@@ -41,47 +41,37 @@ ScriptDataReader : OscDataReader {
 			}{
 				entry = dataString.copyRange(b, dataString.size - 1)
 			};
-			// entry.postln;
 			timebeg = entry.find(":[");
 			timeend = entry.find("]", 2);
 			data = data add: [
 				entry.copyRange(timebeg + 2, timeend - 1).interpret,
 				entry
 			];
-			// [timebeg, timeend].postln;
-			// entry.copyRange(timebeg + 2, timeend - 1).postln;
-			// data = data add: [
-			// 	entry.copyRange(timebeg + 2, timeend - 1).interpret,
-			// 	entry.copyRange(timeend + 1, entry.size - 1)
-			// ];
 		};
 		postln("... read " + data.size + "entries.")
 	}
 
-	play { | player, envir, rate = 1, repeats = 1 |
-		var event;
+	play { | player, envir, rate = 1, repeats = 1, osc = true |
+		var event, playFunc;
 		player ?? { player = PathName(path).fileNameWithoutExtension.asSymbol };
 		envir = envir.envir;
-		// envir.postln;
-		// "===============================================================".postln;
-		event = (
-			score: Pindex(data, Pseries(0, 1, data.size * repeats)),
-			play: {
+		// postln("scriptreader play osc is:" + osc);
+		if (osc.not) {
+			playFunc = {
 				~score[1].postln.interpretIn(envir);
 				~dur = ~score[0] * rate
 			}
-		);
-		// event.postln;
-		// postln("I am going to send " + event + "to " + player);
-		event +> player;
-		/*
-		(
-			score: Pindex(data, Pseries(0, 1, data.size - 1)),
-			play: {
-				~score[1].interpretIn(envir);
+		}{
+			OscGroups.enableCodeReception;
+			playFunc = {
+				~score[1].sim;
 				~dur = ~score[0] * rate
 			}
-		) +> player;
-		*/
+		};
+		event = (
+			score: Pindex(data, Pseries(0, 1, data.size * repeats)),
+			play: playFunc
+		);
+		event +> player;
 	}
 }

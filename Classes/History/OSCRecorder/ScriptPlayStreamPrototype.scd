@@ -60,5 +60,6 @@ a = (1..10).clump(2);
 b = a.flop;
 b[0] = b[0].differentiate;
 b[0].differentiate;
-a
-b
+//:i
+ScriptDataReader.openDialog;
+Library.at(ScriptDataReader, \scriptdata).play(repeats: 5);

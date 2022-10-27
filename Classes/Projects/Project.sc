@@ -313,7 +313,12 @@ Project {
 						.enterKeyAction_({ | me |
 							postf("Loading selected item: %\n", projectItems[me.value]);
 							this.loadSelectedProjectItem;
-						}),
+						})
+						.setContextMenuActions(
+							MenuAction("play script score", { this.playSelectedProjectItem; }),
+							MenuAction("eval script", { this.loadSelectedProjectItem; }),
+							MenuAction("edit script", { this.openSelectedProjectItem; }),
+						),
 						HLayout(
 							Button().states_([["-"]])
 							.addNotifier(this, \selectedProject, { | n |
@@ -504,6 +509,15 @@ Project {
 			this.loadScdFile(selectedProjectItem);
 		}
 
+	}
+
+	*playSelectedProjectItem {
+		if (selectedProjectItem.isFolder) {
+			postln("This is a folder and I cannot play it:" + selectedProjectItem);
+		}{
+			postln("playing: " + selectedProjectItem.fullPath);
+			ScriptDataReader(selectedProjectItem.fullPath).play;
+		}
 	}
 
 	*isAudioFileFolder { | pathName |

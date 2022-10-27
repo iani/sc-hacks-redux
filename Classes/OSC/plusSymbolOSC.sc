@@ -55,7 +55,7 @@ Use Notification to add OSC functions.
 		OSC.add(receiver ? this, { | notification, message |
 			var code;
 			code = message[index].asString;
-			postf("Remote evaluation: /* \%\n */\n", code);
+			postf("========= Remote evaluation: ========= \n\(\n\%\n\)\n", code);
 			{	// permit window operations via remote evaluated code
 				code.interpret.postln;
 				OscGroups.changed(\evalCode, code);
