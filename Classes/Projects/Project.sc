@@ -67,12 +67,16 @@ Project {
 	}
 
 	*getProjects {
-		projects = this.projectHomePath.folders collect: { | p | p.folderName.asSymbol };
+		projects = this.prGetProjects;
 		if (projects.size == 0) {
 			Warn(format("ERROR: No projects found in %\n", this.projectHomePath.fullPath))
 		}{
 			this changed: \projects;
 		}
+	}
+
+	*prGetProjects {
+		^this.projectHomePath.folders collect: { | p | p.folderName.asSymbol };
 	}
 
 	*projectHomePath { ^PathName(Platform.userHomeDir +/+ startupFolder); }
@@ -212,6 +216,16 @@ Project {
 							if (char === Char.space) {
 								this.selectProject(selectedProject);
 							};
+						})
+						.addNotifier(this, \navigationStatus, { | n, goUp, goDown |
+							var menuActions = [];
+							if (goUp) {
+								menuActions = menuActions add: MenuAction("go up", { this.goUpAFolder });
+							};
+							if (goDown) {
+								menuActions = menuActions add: MenuAction("go to subproject", { this.goDownAFolder; });
+							};
+							n.listener.setContextMenuActions(*menuActions)
 						}),
 						HLayout(
 							Button().states_([["-"]])
@@ -224,10 +238,16 @@ Project {
 							Button().maxWidth_(30).states_([["<"]])
 							.action_({ | me |
 								this.goUpAFolder
+							})
+							.addNotifier(this, \navigationStatus, { | n, goUp, goDown |
+								n.listener.enabled = goUp;
 							}),
 							Button().maxWidth_(30).states_([[">"]])
 							.action_({ | me |
 								this.goDownAFolder
+							})
+							.addNotifier(this, \navigationStatus, { | n, goUp, goDown |
+								n.listener.enabled = goDown;
 							})
 						),
 						HLayout(
@@ -339,8 +359,8 @@ Project {
 				{
 					OscGroups.changed(\status);
 					"polled oscgroups status now".postln;
-				} .defer(0.15);
-				this.getProjects;
+				}.defer(0.15);
+				2 do: { this.getProjects; 1.wait; };
 			});
 		}.fork(AppClock);
 	}
@@ -367,6 +387,16 @@ Project {
 			this.getProjects;
 		};
 	}
+
+	*canGoDownAFolder {
+		Project.selectedProjectItem ?? { ^false };
+		// postln("Checking if i can go down on this project:" + this.selectedProject);
+		// postln("FOLDERS: " + Project.selectedProjectPath.folders.size);
+		// postln("FILES: " + Project.selectedProjectPath.files.size);
+		^this.selectedProjectPath.folders.size > 0;
+	}
+
+	*canGoUpAFolder{ ^PathName(startupFolder).allFolders.size > 0; }
 
 	*goUpAFolder {
 		var targetFolder;
@@ -427,6 +457,7 @@ Project {
 		this.getProjectItems;
 		// projectItems.postln;
 		this.changed(\selectedProject);
+		this.changed(\navigationStatus, this.canGoUpAFolder, this.canGoDownAFolder);
 	}
 
 	*getProjectItems {
