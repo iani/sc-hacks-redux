@@ -315,9 +315,10 @@ Project {
 							this.loadSelectedProjectItem;
 						})
 						.setContextMenuActions(
+							MenuAction("load script", { this.loadSelectedProjectItem; }),
 							MenuAction("play script score", { this.playSelectedProjectItem; }),
-							MenuAction("eval script", { this.loadSelectedProjectItem; }),
 							MenuAction("edit script", { this.openSelectedProjectItem; }),
+							MenuAction("open snippet gui", { this.guiSelectedProjectItem; }),
 						),
 						HLayout(
 							Button().states_([["-"]])
@@ -490,8 +491,10 @@ Project {
 	}
 
 	*selectProjectItem { | projectItem |
-		selectedProjectItem = projectItem;
-		this.changed(\selectedProjectItem);
+		if (selectedProjectItem !== projectItem) {
+			selectedProjectItem = projectItem;
+			this.changed(\selectedProjectItem);
+		}
 	}
 
 	*loadSelectedProjectItem {
@@ -520,6 +523,14 @@ Project {
 		}
 	}
 
+	*guiSelectedProjectItem {
+		if (selectedProjectItem.isFolder) {
+			postln("Gui for Folders not implemented:" + selectedProjectItem);
+		}{
+			postln("opening snippet gui for" + selectedProjectItem.fullPath);
+			SnippetGui.gui(selectedProjectItem.fullPath);
+		}
+	}
 	*isAudioFileFolder { | pathName |
 		// TODO: check implementation!
 		^pathName.isFolder and: {

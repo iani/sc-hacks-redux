@@ -6,6 +6,18 @@ Utility: Iterate an action on all files that match a search.
 
 
 + String {
+	stripInitialBlanks {
+		var b = 0; // blank
+		while { this[b] === $\n } {  b = b + 1 };
+		if (b == this.size) { ^this } { ^this[b..] }
+	}
+	header { // return the first line
+		var nonblank, nl;
+		nonblank = this.stripInitialBlanks;
+		nl = nonblank find: "\n";
+		nl ?? { ^nonblank };
+		^nonblank.copyRange(0, nl - 1);
+	}
 	interpretIn { | envir |
 		envir use: { this.interpret }
 	}
