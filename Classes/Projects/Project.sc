@@ -188,15 +188,20 @@ Project {
 						HLayout(
 							StaticText().string_("Projects").maxWidth_(150),
 							Button()
+							.maxWidth_(70)
+							.states_([
+								["Refresh", Color.black, Color.white]
+							])
+							.action_({ this.getProjects }),
+							Button()
 							.maxWidth_(50)
 							.canFocus_(false)
-							.states_([["setup", Color.black, Color.green]])
-							.action_({ | me | this.setupProjectInGroup }),
-							 Button()
-							.maxWidth_(50)
-							.canFocus_(false)
-							.states_([["start"]])
-							.action_({ | me | this.startProjectInGroup })
+							.states_([["menu", Color.red, Color.white]])
+							.action_({ Menu(
+								MenuAction("Open Snippet Gui", { SnippetGui.gui }),
+								MenuAction("Go to subfolder", { this.goDownAFolder }),
+								MenuAction("Go to superfolder", { this.goUpAFolder }),
+							).front })
 						),
 						ListView()
 						.hiliteColor_(Color(0.9, 0.9, 1.0))
@@ -279,12 +284,9 @@ Project {
 					VLayout(
 						HLayout(
 							StaticText().string_("Scripts").maxWidth_(100),
-							Button()
-							.maxWidth_(50)
-							.states_([
-								["Refresh", Color.black, Color.white]
-							])
-							.action_({ CmdPeriod.run }),
+							Button().states_([["snippets"]])
+							// .action_({ SnippetGui.gui }),
+							.action_({ SnippetGui.read(this.selectedProjectItem.fullPath).gui }),
 							Button()
 							.maxWidth_(50)
 							.states_([
@@ -493,9 +495,11 @@ Project {
 	*selectProjectItem { | projectItem |
 		if (selectedProjectItem !== projectItem) {
 			selectedProjectItem = projectItem;
-			this.changed(\selectedProjectItem);
+			this.notifyProjectItem;
 		}
 	}
+
+	*notifyProjectItem { this.changed(\selectedProjectItem); }
 
 	*loadSelectedProjectItem {
 		postf("loading project item: %\n", selectedProjectItem);

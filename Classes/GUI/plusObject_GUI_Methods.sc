@@ -68,7 +68,9 @@
 	}
 
 	bounds_ { | rect, key = \default |
-		Registry.put(\windowRects, this, key, rect);
+		// Registry.put(\windowRects, this, key, rect);
+		// Do not overwrite previously existing bounds:
+		Registry(\windowRects, this, key, {rect});
 	}
 
 	bounds { | key = \default |
