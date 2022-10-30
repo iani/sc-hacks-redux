@@ -73,17 +73,20 @@ OscGroups {
 		this.makeSendAddress;
 		this.enableCodeForwarding;
 		this.enableCodeReception;
-		CmdPeriod add: this;
+		this.enableCmdPeriod;
 		"OscGroups enabled".postln;
 		this.changedStatus;
 	}
 	*disable {
 		this.disableCodeForwarding;
 		this.disableCodeReception;
-		CmdPeriod remove: this;
+		this.disableCmdPeriod;
 		"OscGroups disabled".postln;
 		this.changedStatus;
 	}
+
+	*enableCmdPeriod { CmdPeriod add: this; }
+	*disableCmdPeriod { CmdPeriod remove: this; }
 
 	*broadcast { | message ... args |
 		if (this.isEnabled) {
@@ -163,6 +166,7 @@ OscGroups {
 
 	*cmdPeriod {
 		// Remotely only execute core CmdPeriod method.
+		sendAddress ?? { ^nil };
 		"Sending CmdPeriod to OscGroups".postln;
 		sendAddress.sendMsg(oscMessage, "OscGroups.remoteCmdPeriod")
 	}

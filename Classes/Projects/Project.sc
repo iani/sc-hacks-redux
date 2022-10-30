@@ -183,6 +183,7 @@ Project {
 			this.window({ | w |
 				w.bounds = w.bounds.height_(300);
 				w.name = "Projects in ~/" ++ startupFolder;
+				w.userCanClose = false;
 				w.layout = HLayout(
 					VLayout(
 						HLayout(

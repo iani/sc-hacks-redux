@@ -31,13 +31,6 @@ SnippetGui {
 		var window;
 		window = this.tr_(600, 400).vlayout(
 			HLayout(
-				Button().states_([["detach"], ["attach"]])
-				.action_({ | me |
-					followProjectGui = [true, false][me.value];
-					if (followProjectGui) {
-						this.readAndUpdate(Project.selectedProjectItem.fullPath)
-					}
-				}),
 				Button().states_([["eval snippet globally"]])
 				.action_({ | me |
 					snippets[snippetindex].interpret;
@@ -48,6 +41,14 @@ SnippetGui {
 					snippets[snippetindex].interpret;
 					OscGroups.enableCodeForwarding;
 				}),
+				Button().states_([["Cmd-."]])
+				.action_({
+					OscGroups.disableCmdPeriod;
+					CmdPeriod.run;
+					OscGroups.enableCmdPeriod;
+				}),
+				Button().states_([["Cmd-.*", Color.red]])
+				.action_({ CmdPeriod.run; }),
 				Button().states_([["play script"]])
 				.action_({
 					this.collectTimes.postln;
@@ -60,23 +61,32 @@ SnippetGui {
 				.action_({ this.saveScript; })
 				.addNotifier(this, \edited, { | n, edited |
 					if (edited) { n.listener.value = 1 }
+				}),
+				Button().states_([["detach"], ["attach"]])
+				.action_({ | me |
+					followProjectGui = [true, false][me.value];
+					if (followProjectGui) {
+						this.readAndUpdate(Project.selectedProjectItem.fullPath)
+					}
 				})
 			),
 			[ListView()
 				// .items_(snippets collect: _.header)
 				.action_({ | me |
+					snippetindex = me.value;
 					this.changed(\snippet, me.value);
 
 				})
-			.addNotifier(Project, \selectedProjectItem, { | n |
-				if (followProjectGui and: { Project.selectedProjectItem.isFolder.not }) {
-					this.readAndUpdate(Project.selectedProjectItem.fullPath);
-					n.listener.items = snippets collect: _.header;
-					this.changed(\snippet, n.listener.value);
-				};
-			}), stretch: 1],
+				.addNotifier(Project, \selectedProjectItem, { | n |
+					this.doIfScript(n.listener, {
+						this.readAndUpdate(Project.selectedProjectItem.fullPath);
+						n.listener.items = snippets collect: _.header;
+						this.changed(\snippet, n.listener.value);
+					});
+				}), stretch: 1],
 			[TextView()
 				.palette_(QPalette.dark.highlight_(Color(0.9, 0.9, 0.7)))
+				.string_("NO SNIPPET SELECTED.\nSELECT A SNIPPET ON PROJECT GUI.")
 				.keyDownAction_({ | me ... args |
 					this.changed(\edited, isEdited = true);
 					me.defaultKeyDownAction(me, *args);
@@ -89,9 +99,25 @@ SnippetGui {
 				}),
 				stretch: 4]
 		);
-		window.view.mouseEnterAction = { this.rereadIfNeeded; };
+		window.
+		addNotifier(Project, \selectedProjectItem, { | n |
+			// "Debugging window renaming".postln;
+			this.doIfScript(n.listener, { | me |
+				// me.postln;
+				me.name =
+				Project.selectedProjectItem.folderName + ":" +
+				Project.selectedProjectItem.fileNameWithoutExtension;
+			})
+		})
+		.view.mouseEnterAction = { this.rereadIfNeeded; };
 		Project.notifyProjectItem;
 		^window;
+	}
+
+	doIfScript { | view, action |
+		if (followProjectGui and: { Project.selectedProjectItem.isFolder.not }) {
+			action.(view);
+		}
 	}
 
 	updateSnippetView { | view, snippet = 0 |
