@@ -7,6 +7,7 @@ SnippetGui {
 	var <followProjectGui = true;
 	var <snippetindex = 0, sourcePath, isEdited = false;
 	var <>repeats = inf;
+	// var <editedSource;
 
 	*read { | path | ^this.new.read(path); }
 	*withScript { | source | // for playing scripts remotely...
@@ -18,10 +19,15 @@ SnippetGui {
 		path ?? { path = sourcePath };
 		if (path.isFolder) { ^this };
 		this.read(path);
+		this.updateSnippets;
+	}
+
+	updateSnippets {
 		this.makeSnippets;
 		this.changed(\snippets);
 		this.changed(\isEdited, isEdited = false);
 	}
+
 	read { | path |
 		source = File.readAllString(path);
 		sourcePath = path;
@@ -73,7 +79,7 @@ SnippetGui {
 					this.openScript.postln;
 				}),
 				Button().maxWidth_(50).states_([["save", Color.black], ["save", Color.red]])
-				.action_({ this.saveScript; })
+				.action_({ this.changed(\save); })
 				.addNotifier(this, \edited, { | n, edited |
 					if (edited) { n.listener.value = 1 }
 				}),
@@ -90,18 +96,19 @@ SnippetGui {
 				.action_({ | me |
 					snippetindex = me.value;
 					this.changed(\snippet, me.value);
-
 				})
 				.addNotifier(Project, \selectedProjectItem, { | n |
 					this.doIfScript(n.listener, {
 						this.readAndUpdate(Project.selectedProjectItem.fullPath);
-						n.listener.items = snippets collect: _.header;
-						this.changed(\snippet, n.listener.value);
+						this.updateSnippetListView(n.listener);
 					});
+				})
+				.addNotifier(this, \snippets, { | n |
+					this.updateSnippetListView(n.listener)
 				}), stretch: 1],
 			[TextView()
 				.palette_(QPalette.dark.highlight_(Color(0.9, 0.9, 0.7)))
-				.string_("NO SNIPPET SELECTED.\nSELECT A SNIPPET ON PROJECT GUI.")
+				.string_("NO SCRIPT SELECTED.\nSELECT A SCRIPT FILE ON PROJECT GUI.")
 				.keyDownAction_({ | me ... args |
 					this.changed(\edited, isEdited = true);
 					me.defaultKeyDownAction(me, *args);
@@ -111,6 +118,12 @@ SnippetGui {
 				})
 				.addNotifier(this, \snippet, { | n, snippet |
 					this.updateSnippetView(n.listener, snippet);
+				})
+				.addNotifier(this, \save, { | n |
+					"debugging save".postln;
+					postln("view is: " + n.listener);
+					postln("its contents are:" + n.listener.string);
+					this.saveScript(n.listener.string.postln);
 				}),
 				stretch: 4]
 		);
@@ -118,14 +131,34 @@ SnippetGui {
 			// "Debugging window renaming".postln;
 			this.doIfScript(n.listener, { | me |
 				// me.postln;
-				me.name =
-				Project.selectedProjectItem.folderName + ":" +
+				me.name = Project.selectedProjectItem.folderName + ":" +
 				Project.selectedProjectItem.fileNameWithoutExtension;
 			})
 		})
 		.view.mouseEnterAction = { this.rereadIfNeeded; };
 		Project.notifyProjectItem;
 		^window;
+	}
+
+	updateSnippetListView { | view |
+		view.items = snippets collect: _.header;
+		this.changed(\snippet, view.value);
+	}
+
+	saveScript { | editedSource |
+		var file;
+		postln("debuggging save script. edited source is:\n\n");
+		editedSource.postln;
+		if (isEdited) {
+			source = editedSource;
+			file = File(sourcePath.postln, "w");
+			file.write(editedSource);
+			file.close;
+			this.updateSnippets;
+		}{
+			"There are no changes to save.".postln;
+			this.changed(\edited, isEdited);
+		};
 	}
 
 	playScript {
@@ -210,14 +243,6 @@ SnippetGui {
 				})
 			)
 		}
-	}
-
-	saveScript {
-		if (isEdited) {
-			"TODO: put some code here!!";
-		};
-		"save not implemented".postln;
-		this.changed(\edited, isEdited);
 	}
 
 	openScript {
