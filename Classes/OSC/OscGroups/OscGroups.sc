@@ -46,7 +46,7 @@ OscGroups {
 		^this isListeningTo: Interpreter;
 	}
 
-	*forward { | message |
+	*forward { | message, preprocessor |
 		// forward an osc message to OscGroupsClient
 		// default message is '/minibee/data'
 		message ?? { message = '/minibee/data' };
@@ -54,7 +54,7 @@ OscGroups {
 		message.asOscMessage >>>.forward { | n, msg, time, addr, port |
 			// postln("time" + time + "addr" + addr + "port" + port)
 			if (port == 57120) {
-				sendAddress.sendMsg(*msg);
+				sendAddress.sendMsg(*preprocessor.(*msg));
 			}
 		}
 		//		'/minibee/data' >>> { | n, msg |
