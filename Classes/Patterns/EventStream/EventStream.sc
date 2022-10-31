@@ -87,7 +87,7 @@ EventStream {
 
 	setEvent { | inEvent |
 		this mergeEvent: inEvent;
-		this.start;
+		if (this.isRunning.not) { this.start; };
 	}
 
 	// suggestion T.M: method name should be: mergeEvent?
