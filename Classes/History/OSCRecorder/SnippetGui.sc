@@ -236,12 +236,14 @@ SnippetParser {
 	*new { | string | ^this.newCopyArgs(string) }
 	parse { | separator = "\n//:" |
 		var delimiters, data, entry, positions;
-		delimiters = string findAll: separator;
+		// string.findRegexp("^//:").postln;
+		// delimiters = string findAll: separator;string.findRegexp("^//:")
+		delimiters = string.findRegexp("^//:").collect({ | d | d[0] });
 		delimiters do: { | b, i |
 			var end;
 			end = delimiters[i + 1];
 			if (end.notNil) {
-				entry = string.copyRange(b, end)
+				entry = string.copyRange(b, end - 1)
 			}{
 				entry = string.copyRange(b, string.size - 1)
 			};
