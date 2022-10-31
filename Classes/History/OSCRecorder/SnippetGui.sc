@@ -6,8 +6,13 @@ SnippetGui {
 	var <source, <snippets, <snippetPositions;
 	var <followProjectGui = true;
 	var <snippetindex = 0, sourcePath, isEdited = false;
+	var <>repeats = inf;
 
 	*read { | path | ^this.new.read(path); }
+	*withScript { | source | // for playing scripts remotely...
+		// TODO: develop and test code to do this remotely.
+		^this.newCopyArgs(source);
+	}
 	init {} // enable fromLib;
 	readAndUpdate { | path |
 		path ?? { path = sourcePath };
@@ -31,6 +36,20 @@ SnippetGui {
 		var window;
 		window = this.tr_(600, 400).vlayout(
 			HLayout(
+				Button().maxWidth_(50).states_([["play"]])
+				.action_({
+					this.playScript;
+				}),
+				NumberBox().minWidth_(50)
+				.clipLo_(0).maxDecimals_(0)
+				.action_({ | me |
+					repeats = me.value.round(1).asInteger;
+					if (repeats == 0) { repeats = inf };
+				}),
+				Button().maxWidth_(50).states_([["stop"]])
+				.action_({
+					this.stopScript;
+				}),
 				Button().states_([["eval snippet globally"]])
 				.action_({ | me |
 					snippets[snippetindex].interpret;
@@ -41,28 +60,24 @@ SnippetGui {
 					snippets[snippetindex].interpret;
 					OscGroups.enableCodeForwarding;
 				}),
-				Button().states_([["Cmd-."]])
+				Button().maxWidth_(50).states_([["Cmd-."]])
 				.action_({
 					OscGroups.disableCmdPeriod;
 					CmdPeriod.run;
 					OscGroups.enableCmdPeriod;
 				}),
-				Button().states_([["Cmd-.*", Color.red]])
+				Button().maxWidth_(50).states_([["Cmd-.*", Color.red]])
 				.action_({ CmdPeriod.run; }),
-				Button().states_([["play script"]])
-				.action_({
-					this.collectTimes.postln;
-				}),
-				Button().states_([["open"]])
+				Button().maxWidth_(50).states_([["open"]])
 				.action_({
 					this.openScript.postln;
 				}),
-				Button().states_([["save", Color.black], ["save", Color.red]])
+				Button().maxWidth_(50).states_([["save", Color.black], ["save", Color.red]])
 				.action_({ this.saveScript; })
 				.addNotifier(this, \edited, { | n, edited |
 					if (edited) { n.listener.value = 1 }
 				}),
-				Button().states_([["detach"], ["attach"]])
+				Button().maxWidth_(50).states_([["detach"], ["attach"]])
 				.action_({ | me |
 					followProjectGui = [true, false][me.value];
 					if (followProjectGui) {
@@ -99,8 +114,7 @@ SnippetGui {
 				}),
 				stretch: 4]
 		);
-		window.
-		addNotifier(Project, \selectedProjectItem, { | n |
+		window.addNotifier(Project, \selectedProjectItem, { | n |
 			// "Debugging window renaming".postln;
 			this.doIfScript(n.listener, { | me |
 				// me.postln;
@@ -112,6 +126,56 @@ SnippetGui {
 		.view.mouseEnterAction = { this.rereadIfNeeded; };
 		Project.notifyProjectItem;
 		^window;
+	}
+
+	playScript {
+		var envir;
+		envir = this.envirName.envir;
+		if (snippets.size == 1) {
+			source.interpret;
+		}{
+			(
+				dur: this.collectTimes.pseq(repeats),
+				snippet: snippets.pseq(repeats),
+				play: { var snippet;
+					snippet = ~snippet;
+					envir use: {  snippet.interpret }
+				}
+			).playInEnvir(this.playerName, this.envirName);
+		}
+	}
+
+	stopScript {
+		// TODO: keep a history of started scripts.
+		// Offer list to stop any of them.
+		this.envirName.envir do: _.stop;
+	}
+
+	collectTimes {
+		^snippets.collect(_.header).collect({ | h |
+			var time;
+			time = h.findRegexp("\\[.*?]");
+			if (time.size < 1) {
+				time = 1
+			}{
+				time = (time[0][1].interpret ?? { [1] })[0] ?? { 1 };
+			};
+			time;
+		})
+	}
+
+	envirName {
+		// return name of envir to play current script with.
+		// Envir has unique name made from script's path's folders and file name.
+		var pathname, folders, envirName;
+		pathname = PathName(sourcePath);
+		folders = pathname.allFolders collect: _.asSymbol;
+		folders = folders[folders.indexOf('sc-projects') + 1..] add: pathname.fileNameWithoutExtension;
+		^folders.catList("_").asSymbol;
+	}
+
+	playerName {
+		^PathName(sourcePath).fileNameWithoutExtension.asSymbol;
 	}
 
 	doIfScript { | view, action |
@@ -165,19 +229,6 @@ SnippetGui {
 		#snippets, snippetPositions = SnippetParser(source).parse;
 	}
 
-	collectTimes {
-		^snippets.collect(_.header).collect({ | h |
-			var time;
-			time = h.findRegexp("\\[.*?]");
-			if (time.isNil) {
-				time = 1
-			}{
-				time = time[0][1];
-				time[1..time.size-2].postln;
-			};
-			time;
-		})
-	}
 }
 
 SnippetParser {
