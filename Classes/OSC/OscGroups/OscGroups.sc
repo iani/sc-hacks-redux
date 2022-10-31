@@ -1,4 +1,5 @@
 /* 23 May 2021 14:02
+
 Share evaluated code via OSCGroups
 (see link Ross Bencina...)
 
@@ -23,13 +24,15 @@ OscGroups {
 	// the message is broadcast via OscGroups
 	// See methods enableCodeBroadcasting, disableCodeBroadcasting
 	classvar <>localUser = \localuser; // TODO: delete this if it is not used!!!
+	classvar localAddress;
 
 	*initClass {
 		StartUp add: {
 			thisProcess.interpreter.preProcessor = { | code |
-			Interpreter.changed(\code, code);
-			code;
-			}
+				Interpreter.changed(\code, code);
+				code;
+			};
+			localAddress = NetAddr.localAddress;
 		}
 	}
 	// this may no longer be valid on  1 Sep 2022 20:13
@@ -46,6 +49,19 @@ OscGroups {
 		^this isListeningTo: Interpreter;
 	}
 
+	*forwardprocessed { | message, newmessage, preprocessor |
+		// process incoming values (normalize range etc.)
+		// Send processed data to oscgroups AND TO SELF
+		// with newmessage as osc message.
+		// Group members as well as self react to new message.
+		message.asOscMessage >>>.processforward { | n, msg |
+			var processed;
+			processed = preprocessor.(*msg[1..]);
+			sendAddress.sendMsg(newmessage, *processed); // send to others
+			localAddress.sendMsg(newmessage, *processed); // send to self
+		};
+	}
+
 	*forward { | message, preprocessor |
 		// forward an osc message to OscGroupsClient
 		// default message is '/minibee/data'
@@ -53,9 +69,13 @@ OscGroups {
 
 		message.asOscMessage >>>.forward { | n, msg, time, addr, port |
 			// postln("time" + time + "addr" + addr + "port" + port)
+			var processed;
+			processed = preprocessor.(*msg[1..]);
 			if (port == 57120) {
-				sendAddress.sendMsg(*preprocessor.(*msg));
-			}
+				sendAddress.sendMsg(message, *processed);
+			};
+
+
 		}
 		//		'/minibee/data' >>> { | n, msg |
 		//	OscGroups.sendAddress.postln;
