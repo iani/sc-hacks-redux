@@ -15,6 +15,13 @@ To explore:
 	// early test: return self. Just making sure this works
 	idem { ^this }
 
+	// value mapping + comparing shortcuts
+	lin { | lo = 0.0, hi = 1.0 | ^this.linlin(0.0, 1.0, lo, hi) }
+	exp { | lo = 0.0, hi = 1.0 | ^this.linexp(0.0, 1.0, lo, hi) }
+	lt { | thresh = 0.5 | ^this < thresh; }
+	gt { | thresh = 0.5 | ^this > thresh; }
+
+	// envelope shortcuts
 	adsr { | attackTime=0.01, decayTime=0.3, sustainLevel=1, releaseTime=1.0,
 		peakLevel=1.0, curve = -4.0, bias = 0.0,
 		doneAction = 2, gate = 1 |

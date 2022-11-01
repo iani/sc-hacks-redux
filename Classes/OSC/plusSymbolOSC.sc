@@ -3,6 +3,17 @@ Use Notification to add OSC functions.
 */
 
 + Symbol {
+	watch { | raw = false | // simple gui displaying osc messages matching this symbol
+		var message;
+		if (raw) { message = this } { message = this.asOscMessage };
+		message.tr_(200, 30).vlayout(
+			TextView()
+			.addNotifier(OSC, message, { | n, msg, time |
+				n.listener.string = time.round(0.01) + msg.asString;
+			})
+		)
+	}
+
 	>>> { | func, key | // add OSC response to this message under key
 		// One can add different functions for the same message under different keys
 		// The receiver becomes the message that OSC will respond to.
@@ -28,7 +39,7 @@ Use Notification to add OSC functions.
 	}
 
 	removeOSC { | key |
-		OSC.remove(this.asOscMessage, key);
+		OSC.remove(this, key);
 	}
 
 	>>? { | key | // does OSC respond to this message under this key?

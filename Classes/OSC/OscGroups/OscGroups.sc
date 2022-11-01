@@ -32,7 +32,7 @@ OscGroups {
 				Interpreter.changed(\code, code);
 				code;
 			};
-			localAddress = NetAddr.localAddress;
+			localAddress = NetAddr.localAddr;
 		}
 	}
 	// this may no longer be valid on  1 Sep 2022 20:13
@@ -50,31 +50,34 @@ OscGroups {
 	}
 
 	*forwardprocessed { | message, newmessage, preprocessor |
+		// see class MapXyz for a separate implementation of this.
 		// process incoming values (normalize range etc.)
 		// Send processed data to oscgroups AND TO SELF
 		// with newmessage as osc message.
 		// Group members as well as self react to new message.
-		message.asOscMessage >>>.processforward { | n, msg |
+		// Only forward messages received locally (from sensors etc.)
+		message.asOscMessage >>>.processforward { | n, msg, time, addr, port |
 			var processed;
-			processed = preprocessor.(*msg[1..]);
-			sendAddress.sendMsg(newmessage, *processed); // send to others
-			localAddress.sendMsg(newmessage, *processed); // send to self
+			if (port == 57120) { // only forward locally received messages
+				processed = preprocessor.(*msg[1..]);
+				sendAddress.sendMsg(newmessage, *processed); // send to others
+				localAddress.sendMsg(newmessage, *processed); // send to self
+			}
 		};
 	}
 
-	*forward { | message, preprocessor |
+	*send { | message | // send to oscgroups client
+		sendAddress !? { sendAddress.sendMsg(*message); }
+	}
+	*forward { | message |
 		// forward an osc message to OscGroupsClient
 		// default message is '/minibee/data'
 		message ?? { message = '/minibee/data' };
 
 		message.asOscMessage >>>.forward { | n, msg, time, addr, port |
-			// postln("time" + time + "addr" + addr + "port" + port)
-			var processed;
-			processed = preprocessor.(*msg[1..]);
 			if (port == 57120) {
-				sendAddress.sendMsg(message, *processed);
+				sendAddress.sendMsg(*msg);
 			};
-
 
 		}
 		//		'/minibee/data' >>> { | n, msg |

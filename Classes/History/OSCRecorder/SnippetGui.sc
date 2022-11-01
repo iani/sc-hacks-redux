@@ -42,7 +42,7 @@ SnippetGui {
 		var window;
 		window = this.tr_(600, 400).vlayout(
 			HLayout(
-				Button().maxWidth_(50).states_([["play"]])
+				Button().maxWidth_(50).states_([["pla"]])
 				.action_({
 					this.playScript;
 				}),
@@ -58,13 +58,13 @@ SnippetGui {
 				}),
 				Button().states_([["eval snippet globally"]])
 				.action_({ | me |
-					snippets[snippetindex].interpret;
+					snippets[snippetindex].interpretAndShare;
 				}),
 				Button().states_([["eval snippet locally"]])
 				.action_({ | me |
-					OscGroups.disableCodeForwarding;
+					// OscGroups.disableCodeForwarding;
 					snippets[snippetindex].interpret;
-					OscGroups.enableCodeForwarding;
+					// OscGroups.enableCodeForwarding;
 				}),
 				Button().maxWidth_(50).states_([["Cmd-."]])
 				.action_({

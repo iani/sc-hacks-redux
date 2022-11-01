@@ -45,4 +45,28 @@
 			)
 		}.playInEnvir(player ? cmdName, \triggers)
 	}
+
+	**> { | player, envir | // infinite loop in envir
+		{
+			inf do: {
+				var dur;
+				dur = this.(player, envir);
+				if (dur.isKindOf(SimpleNumber).not) { dur = 1 };
+				dur.wait;
+			}
+		}.routineInEnvir(player, envir);
+	}
+
+	*> { | player, envir | // play as routine
+		this.routineInEnvir(player, envir);
+	}
+
+	routineInEnvir { | player, envir |
+		var routine;
+		envir = envir ? currentEnvironment.name;
+		Mediator.wrap({
+			currentEnvironment[player] = routine = this.fork;
+		}, envir);
+		^routine
+	}
 }

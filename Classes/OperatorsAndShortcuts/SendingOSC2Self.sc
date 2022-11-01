@@ -5,18 +5,18 @@ of code evaluation in OscGroups.
 
 + String {
 	sim {
-		NetAddr.localAddr.sendMsg(\code, this);
+		LocalAddr().sendMsg(\code, this);
 	}
 }
 
 + Array {
 	sim {
-		NetAddr.localAddr.sendMsg(*this);
+		LocalAddr().sendMsg(*this);
 	}
 }
 
 + Symbol {
 	sim {
-		NetAddr.localAddr.sendMsg(this);
+		LocalAddr().sendMsg(this);
 	}
 }

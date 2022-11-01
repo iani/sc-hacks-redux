@@ -14,6 +14,12 @@
 	absPath {
 		^PathName(this).asAbsolutePath;
 	}
+
+	interpretAndShare { // interpret and let OscGroups share
+		// the interpreted code.
+		Interpreter.changed(\code, this);
+		^this.interpret;
+	}
 }
 
 /*
