@@ -40,7 +40,7 @@ SnippetGui {
 
 	gui {
 		var window;
-		window = this.tr_(600, 400).vlayout(
+		window = this.br_(600, 400).vlayout(
 			HLayout(
 				Button().maxWidth_(50).states_([["pla"]])
 				.action_({

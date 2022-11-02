@@ -199,6 +199,7 @@ Project {
 							.canFocus_(false)
 							.states_([["menu", Color.red, Color.white]])
 							.action_({ Menu(
+								MenuAction("OSC Monitor", { OscMonitor.gui }),
 								MenuAction("Open Snippet Gui", { SnippetGui.gui }),
 								MenuAction("Go to subfolder", { this.goDownAFolder }),
 								MenuAction("Go to superfolder", { this.goUpAFolder }),
