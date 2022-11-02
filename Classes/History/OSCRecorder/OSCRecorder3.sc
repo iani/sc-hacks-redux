@@ -8,12 +8,14 @@ OSCRecorder3.rootDir = "/tmp/";
 */
 
 OSCRecorder3 {
-	classvar <rootFolder = "OSCData", <subFolder = "", <>fileHeader = "", <data;
+	classvar <rootFolder = "OSCData", <subFolder = "", <sessionStamp;
+	classvar <>fileHeader = "", <data;
 	classvar <>rootDir;
 	classvar <>maxItems = 1000; // Keep files small!
 	classvar <file; // the file where the data are stored.
 	classvar <>excludedMessages;
 	classvar <>verbose = false;
+	classvar <currentRecordingPath = "";
 
 	*initClass {
 		excludedMessages = [
@@ -58,7 +60,7 @@ OSCRecorder3 {
 
 	*saveIfNeeded {
 		if (data.size >= maxItems) {
-			"saving OSC data in new file: ".post;
+			"saving OSC data in new file: ".postln;
 			this.fullPath.postln;
 			this.saveAndContinue;
 		}
@@ -89,7 +91,7 @@ OSCRecorder3 {
 
 
 	*folderPath {
-		^(this.root +/+ rootFolder +/+ subFolder).fullPath;
+		^(this.root +/+ rootFolder +/+ subFolder +/+ sessionStamp).fullPath;
 	}
 
 	*root {
@@ -101,7 +103,7 @@ OSCRecorder3 {
 	}
 
 	*fullPath {
-		^this.folderPath +/+ fileHeader ++ Date.getDate.stamp ++ ".scd";
+		^currentRecordingPath = this.folderPath +/+ fileHeader ++ Date.getDate.stamp ++ ".scd";
 	}
 
 	*makeDirectory {
@@ -110,6 +112,7 @@ OSCRecorder3 {
 	}
 
 	*makeDailySubfolderTimestamp {
+		sessionStamp = Date.localtime.stamp;
 		subFolder = Date.getDate.dayStamp;
 	}
 
@@ -122,6 +125,9 @@ OSCRecorder3 {
 			this.addNotifier(Interpreter, \code, { | n, code |
 				this.addData(Main.elapsedTime, ['/code', code]);
 			});
+			this.changed(\enabled_p, true);
+			postln("OSCRecorder3 is now recording at:");
+			postln(currentRecordingPath);
 		}.fork
 	}
 
@@ -131,6 +137,10 @@ OSCRecorder3 {
 		this.closeFile;
 		// TODO: Check with OscGroups if \code is the message watched
 		this.removeNotifier(OscGroups, \code);
+		this.changed(\enabled_p, false);
+		postln("OSCRecorder3 stopped recording at:");
+		postln(currentRecordingPath);
+	"OSCRecorder"
 	}
 
 	*isEnabled { ^OSC.dependants includes: this }

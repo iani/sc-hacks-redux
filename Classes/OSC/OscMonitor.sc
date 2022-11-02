@@ -21,7 +21,16 @@ OscMonitor {
 	*gui {
 		this.enable;
 		this.tl_.vlayout(
-			// Button().states_([["update list"]]).action_({ this.changed(\messages) }),
+			Button()
+			.states_([["Record OSC"], ["Stop Recording OSC"]])
+			.action_({ | me |
+				[\disable, \enable][me.value].postln;
+				OSCRecorder3.perform([\disable, \enable][me.value]);
+			})
+			.addNotifier(OSCRecorder3, \enabled_p, { | n, enabled_p |
+				postln("OSC Recording status in now: " + enabled_p);
+				if(enabled_p) { n.listener.value = 1 } { n.listener.value = 0 }
+			}),
 			ListView()
 			.addNotifier(this, \messages, { | n |
 				n.listener.items = messages.asArray.sort;
