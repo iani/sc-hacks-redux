@@ -43,7 +43,7 @@ Simplenumber @> \symbol // set bus to number
 		// use b_ prefix for controls which refer to buses.
 		^In.kr(this.busify.kr(bus.index));
 	}
-	// prepend b_. Used to recognize controls that read from busses
+	// prepend b_. Used to mark controls that read from busses
 	busify { ^("b_" ++ this).asSymbol }
 
 	bus { | val, rate = \control, numchans = 1, server |

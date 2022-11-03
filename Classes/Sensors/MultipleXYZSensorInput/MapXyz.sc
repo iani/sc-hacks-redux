@@ -34,5 +34,4 @@ MapXyz {
 			LocalAddr().sendMsg(*message);
 		}
 	}
-
 }
