@@ -30,7 +30,7 @@ MapXyz {
 			var xyz, message;
 			xyz = msg[2..].linlin(lo, hi, 0.0, 1.0);
 			message = [forwardMessage, msg[1]] ++ xyz;
-			OscGroups.send(*message);
+			OscGroups.send(message);
 			LocalAddr().sendMsg(*message);
 		}
 	}
