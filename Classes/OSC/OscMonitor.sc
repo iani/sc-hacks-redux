@@ -21,16 +21,46 @@ OscMonitor {
 	*gui {
 		this.enable;
 		this.tl_.vlayout(
-			Button()
-			.states_([["Record OSC"], ["Stop Recording OSC"]])
-			.action_({ | me |
-				[\disable, \enable][me.value].postln;
-				OSCRecorder3.perform([\disable, \enable][me.value]);
-			})
-			.addNotifier(OSCRecorder3, \enabled_p, { | n, enabled_p |
-				postln("OSC Recording status in now: " + enabled_p);
-				if(enabled_p) { n.listener.value = 1 } { n.listener.value = 0 }
-			}),
+			HLayout(
+				Button()
+				.states_([["Record OSC"], ["Stop Recording OSC"]])
+				.action_({ | me |
+					OSCRecorder3.perform([\disable, \enable][me.value]);
+				})
+				.addNotifier(OSCRecorder3, \enabled_p, { | n, enabled_p |
+					postln("OSC Recording status in now: " + enabled_p);
+					if(enabled_p) { n.listener.value = 1 } { n.listener.value = 0 }
+				}),
+				Button()
+				.states_([["Record OSC+Sound"], ["Stop Recording OSC+Sound"]])
+				.action_(({ | me |
+					[
+						{ this.stopOscAndAudioRecording },
+						{ this.startOscAndAudioRecording }
+					][me.value].value;
+				}))
+				.addNotifier(Server.default, \recording, { | n |
+					this.doublecheckRecordingStatus(n.listener);
+				})
+				.addNotifier(OSCRecorder3, \enabled_p, { | n |
+					this.doublecheckRecordingStatus(n.listener);
+				}),
+				Button()
+				.states_([["Record Sound"], ["Stop Recording Sound"]])
+				.action_(({ | me |
+					[
+						{ Server.default.stopRecording },
+						{ Server.default.record }
+					][me.value].value;
+				}))
+				.addNotifier(Server.default, \recording, { | n, status |
+					 n.listener.value = status.binaryValue;
+				}),
+				NumberBox().maxWidth_(51).minWidth_(50)
+				.addNotifier(Server.default, \recordingDuration, { | n, d |
+					n.listener.value = d.asInteger;
+				})
+			),
 			ListView()
 			.addNotifier(this, \messages, { | n |
 				n.listener.items = messages.asArray.sort;
@@ -40,5 +70,23 @@ OscMonitor {
 			})
 		);
 		{ this changed: \messages } defer: 1.0;
+	}
+
+	*startOscAndAudioRecording {
+		OSCRecorder3.enable;
+		Server.default.record;
+	}
+
+	*stopOscAndAudioRecording {
+		OSCRecorder3.disable;
+		Server.default.stopRecording;
+	}
+
+	*doublecheckRecordingStatus { | view |
+		if (Server.default.isRecording and: { OSCRecorder3.isRecording }) {
+			view.value = 1;
+		}{
+			view.value = 0;
+		}
 	}
 }

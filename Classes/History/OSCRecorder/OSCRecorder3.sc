@@ -96,9 +96,19 @@ OSCRecorder3 {
 
 	*root {
 		if (rootDir.isNil) {
-			^PathName(Platform.userAppSupportDir);
+			^this.osDependentRootDir;
 		}{
 			^PathName(rootDir)
+		}
+	}
+
+	*osDependentRootDir {
+		if (thisProcess.platform isKindOf: OSXPlatform) {
+			rootFolder = "SuperCollider Recordings";
+			^PathName(Platform.userHomeDir +/+ "Music")
+		}{
+			^PathName(Platform.userAppSupportDir);
+
 		}
 	}
 
@@ -117,6 +127,9 @@ OSCRecorder3 {
 	}
 
 	*enable {
+		if (this.isEnabled) {
+			^"OSCRecorder is already running. Skipping this.".postln;
+		};
 		{ // leave time for directory to exist before making file!
 			this.makeDirectory;
 			0.1.wait;
@@ -126,7 +139,7 @@ OSCRecorder3 {
 				this.addData(Main.elapsedTime, ['/code', code]);
 			});
 			this.changed(\enabled_p, true);
-			postln("OSCRecorder3 is now recording at:");
+			postln("!!!!!!! Recording OSC Data at:");
 			postln(currentRecordingPath);
 		}.fork
 	}
@@ -143,6 +156,7 @@ OSCRecorder3 {
 	"OSCRecorder"
 	}
 
+	*isRecording { ^this.isEnabled; }
 	*isEnabled { ^OSC.dependants includes: this }
 
 	*addLocalCode { | code |

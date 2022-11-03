@@ -42,11 +42,11 @@ SnippetGui {
 		var window;
 		window = this.br_(600, 400).vlayout(
 			HLayout(
-				Button().maxWidth_(50).states_([["pla"]])
+				Button().maxWidth_(50).states_([["play"]])
 				.action_({
 					this.playScript;
 				}),
-				NumberBox().minWidth_(50)
+				NumberBox().minWidth_(50).maxWidth_(55)
 				.clipLo_(0).maxDecimals_(0)
 				.action_({ | me |
 					repeats = me.value.round(1).asInteger;
@@ -125,7 +125,7 @@ SnippetGui {
 					postln("its contents are:" + n.listener.string);
 					this.saveScript(n.listener.string.postln);
 				}),
-				stretch: 4]
+				stretch: 3]
 		);
 		window.addNotifier(Project, \selectedProjectItem, { | n |
 			// "Debugging window renaming".postln;
@@ -172,7 +172,7 @@ SnippetGui {
 				snippet: snippets.pseq(repeats),
 				play: { var snippet;
 					snippet = ~snippet;
-					envir use: {  snippet.interpret }
+					envir use: {  snippet.interpretAndShare }
 				}
 			).playInEnvir(this.playerName, this.envirName);
 		}

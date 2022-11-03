@@ -117,12 +117,16 @@ Simplenumber @> \symbol // set bus to number
 + SimpleNumber {
 	@> { | bus | // set bus value
 		// works with new AND already existing busses.
+		// Stop processes playing in this bus before setting a new value:
+		nil @> bus;
 		bus.bus(this).set(this);
 	}
 }
 
 + Nil {
 	@> {| bus, player | // Stop player for bus
-		(player ? bus).player(\busses).free;
+		if ((player ? bus).player(\busses).isPlaying) {
+			(player ? bus).player(\busses).free;
+		}
 	}
 }
