@@ -9,9 +9,8 @@
 	playInEnvir { | player, envir |
 		// TODO: add arguments setting, bus mapping
 		var synth;
-		envir = envir ? currentEnvironment.name;
-		// postln("playInEnvir envir is now: " + envir);
-		Mediator.wrap({
+		envir = envir ? player; // play in own envir, holding own busses
+		Mediator.pushWrap({
 			// enable storing of source code:
 			// Function.changed(\player, envir, player, Main.elapsedTime,
 			// 	format("% +>.% %", this.def.sourceCode, envir, player.asCompileString)

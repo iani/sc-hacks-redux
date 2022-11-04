@@ -41,9 +41,4 @@ For sc-hacks-redux: playInEnvir.  Create synth, providing arguments from current
 		def.doSend(server, synthMsg);
 		^synth
 	}
-	/*
-	playInEnvir { | name | // synthFromEnvir? ????
-		^this.asSynthDef(fadeTime: ~fadeTime, name: name)//.synthFromEnvir;
-	}
-	*/
 }

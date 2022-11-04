@@ -59,7 +59,7 @@
 		var player;
 		Mediator.wrap({
 			player = currentEnvironment[this];
-		}, envir);
+		}, envir ? this);
 		^player;
 	}
 
@@ -68,8 +68,10 @@
 	playInEnvir { | player, envir |
 		// TODO: add arguments setting, bus mapping
 		var synth;
-		envir = envir ? currentEnvironment.name;
-		Mediator.wrap({
+		// envir = envir ? currentEnvironment.name;
+		// Each player has its own envir, which also stores its busses
+		envir = envir ? player;
+		Mediator.pushWrap({
 			// enable storing of source code:
 			Function.changed(\player, envir, player, Main.elapsedTime,
 				format("% +>.% %", this.asCompileString, envir, player.asCompileString);
@@ -86,7 +88,7 @@
 	}
 
 	pfree { | envir |
-		^this.player(envir).free;
+		^this.player(envir ? this).free;
 	}
 
 	// ================================================================

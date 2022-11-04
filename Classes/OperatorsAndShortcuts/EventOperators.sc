@@ -6,17 +6,17 @@
 	// obsolete?!
 	splay { ^EventStream(this).start; }
 
-	+> { | player, envir | ^this.playInEnvir(player, envir ? currentEnvironment.name, true) }
+	+> { | player, envir | ^this.playInEnvir(player, envir ? player, true) }
 
 	playInEnvir { | player, envir, start = true |
 		var atKey, new;
-		Mediator.wrap({
+		Mediator.pushWrap({
 			atKey = currentEnvironment[player];
 			atKey.stop;
 			new = EventStream(this);
 			if (start) { new.start };
 			currentEnvironment[player] = new;
-		}, envir ? currentEnvironment.name);
+		}, envir ? player);
 		^new;
 	}
 
@@ -29,7 +29,7 @@
 		// make this respond to OSC trigger messages
 		// Use coupled with {} +>> key
 		var estream;
-		estream = this.playInEnvir(player, envir ? currentEnvironment.name, false);
+		estream = this.playInEnvir(player, envir ? player, false);
 		player >>> { estream.playNext };
 		^estream;
 	}

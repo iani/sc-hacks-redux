@@ -25,12 +25,15 @@ Simplenumber @> \symbol // set bus to number
 	// compose event to switch busses in a player
 	// usage:
 	// \parameter @> \targetbus ++>.envir \player;
-	@> { | targetBus |
-		^().put(this.busify, targetBus.bus.index);
+	@> { | targetBus, player |
+		^().put(this.busify, targetBus.bus(nil, player ? currentEnvironment.name).index);
 	}
-	pget { | format = "%" | ^this.bus.pget(format) }
+	pget { | player, format = "%" | ^this.bus(nil, player).pget(format) }
 	blag { | lag = 0.1 | ^this.bin.lag(lag) }
 	bamp { | attack = 0.01, decay = 0.1 | ^this.bin.amp(attack, decay); }
+
+	sr { ^In.kr(this.sensorbus.index) }
+	sensorbus { this.bus(nil, \sensors) }
 	br { | val | ^this.bin(val) } // alias similar to ar, kr
 	bin { | val | ^this.busIn(val) } // input from a named kr bus.
 	//synonym. (sic!)
@@ -46,22 +49,23 @@ Simplenumber @> \symbol // set bus to number
 	// prepend b_. Used to mark controls that read from busses
 	busify { ^("b_" ++ this).asSymbol }
 
-	bus { | val, rate = \control, numchans = 1, server |
+	bus { | val, player, rate = \control, numchans = 1, server |
 		// Return the bus for this symbol.
 		// If bus does not exist, create new one.
 		// If val is not nil, then set the bus to val.
 		// Works with new AND already existing busses.
-		var bus;
+		var bus, envir;
 		server = server.asTarget.server;
-		bus = Library.at(Bus, server, rate, this);
+		player = player ?? { currentEnvironment.name };
+		envir = Mediator.at(player);
+		bus = envir.busses.at(this);
 		if (bus.isNil) {
 			bus = Bus.perform(rate, server, numchans);
 			{
 				server.sync;
 				val !? { bus.set(val) };
-				// bus.changed(\sync);
 			}.fork;
-			Library.put(Bus, server, rate, this, bus);
+			envir.busses.put(this, bus);
 		}{
 			val !? { bus.set(val) };
 		};

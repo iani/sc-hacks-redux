@@ -8,7 +8,7 @@ See README.
 
 Mediator : EnvironmentRedirect {
 	classvar default;
-	var <name;
+	var <name, busses;
 
 	*new { | name, envir |
 			^this.newCopyArgs(
@@ -64,6 +64,14 @@ Mediator : EnvironmentRedirect {
 		^this.at(envirName) use: func;
 	}
 
+	*pushWrap { | func, envirName |
+		// eval aMediator use: func
+		// Where aMediator is obtained from envirName
+		^this.at(envirName ? \default).push use: func;
+	}
+
+	busses { ^busses ?? { busses = IdentityDictionary() } }
+
 	playerGui { // TODO: IMPLEMENT THIS.
 		/* List with all players.
 			names of players that are playing are enclosed in *.
@@ -88,19 +96,19 @@ Mediator : EnvironmentRedirect {
 
 	*envirNames { ^this.all.keys.asArray }
 
-	*setEvent { | event, key, envir |
+	*setEvent { | event, player, envir |
 		// Set all key-value pairs of the receiver to the object at key/envir
 		// If object is EventStream: set keys of the Event.
 		// Else if object is Synth, set all parameters corresponding to the keys
 		this.wrap({
 			var p;
-			p = currentEnvironment[key];
+			p = currentEnvironment[player];
 			p ?? {
 				p = EventStream(event);
-				currentEnvironment.put(key, p);
+				currentEnvironment.put(player, p);
 			};
 			// EventSream and Synth handle this differently:
-			currentEnvironment[key].setEvent(event);
-		}, envir);
+			currentEnvironment[player].setEvent(event);
+		}, envir ? player);
 	}
 }
