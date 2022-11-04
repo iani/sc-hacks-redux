@@ -38,7 +38,7 @@
 		}, envir)
 	}
 	+> { | player, envir |
-		^this.playInEnvir(player, envir);
+		^this.pushPlayInEnvir(player, envir);
     }
 
 	+>! { | player, envir |
@@ -91,13 +91,17 @@
 		^this.player(envir ? this).free;
 	}
 
-	stopPlayer { | envir |
+	stop { | fadeTime, envir | this.stopPlayer(envir ? this, fadeTime) }
+	stopPlayer { | envir, fadeTime |
 		var player;
-		envir ?? { envir = currentEnvironment.name };
-		envir = Mediator.at(envir);
+		envir = Mediator.at(envir ?? { currentEnvironment.name });
 		player = envir.at(this);
 		if (player.isPlaying) {
-			player.free;
+			if (player isKindOf: Synth) {
+				player release: (fadeTime ?? { envir[\fadeTime] ? 1.0 });
+			}{
+				player.stop;
+			};
 			envir.put(this, nil);
 		}
 	}

@@ -6,7 +6,7 @@
 	// obsolete?!
 	splay { ^EventStream(this).start; }
 
-	+> { | player, envir | ^this.playInEnvir(player, envir ? player, true) }
+	+> { | player, envir | ^this.pushPlayInEnvir(player, envir ? player, true) }
 
 	playInEnvir { | player, envir, start = true |
 		var atKey, new;

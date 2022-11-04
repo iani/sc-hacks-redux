@@ -1,14 +1,17 @@
 /* 27 Feb 2022 09:52
 
 */
-+ Function {
-	+> { | player, envir |
-		^this.pushPlayInEnvir(player, envir);
-	}
 
++ Object {
 	pushPlayInEnvir { | player, envir |
 		(envir ? player).push;
 		this.playInEnvir(player, envir);
+	}
+}
+
++ Function {
+	+> { | player, envir |
+		^this.pushPlayInEnvir(player, envir);
 	}
 
 	playInEnvir { | player, envir |
