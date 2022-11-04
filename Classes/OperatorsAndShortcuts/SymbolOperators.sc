@@ -87,8 +87,19 @@
 		^synth;
 	}
 
-	pfree { | envir |
+	pfree { | envir | // may be obsolete
 		^this.player(envir ? this).free;
+	}
+
+	stopPlayer { | envir |
+		var player;
+		envir ?? { envir = currentEnvironment.name };
+		envir = Mediator.at(envir);
+		player = envir.at(this);
+		if (player.isPlaying) {
+			player.free;
+			envir.put(this, nil);
+		}
 	}
 
 	// ================================================================

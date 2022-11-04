@@ -3,14 +3,19 @@
 */
 + Function {
 	+> { | player, envir |
-		^this.playInEnvir(player, envir);
+		^this.pushPlayInEnvir(player, envir);
+	}
+
+	pushPlayInEnvir { | player, envir |
+		(envir ? player).push;
+		this.playInEnvir(player, envir);
 	}
 
 	playInEnvir { | player, envir |
 		// TODO: add arguments setting, bus mapping
 		var synth;
 		envir = envir ? player; // play in own envir, holding own busses
-		Mediator.pushWrap({
+		Mediator.wrap({
 			// enable storing of source code:
 			// Function.changed(\player, envir, player, Main.elapsedTime,
 			// 	format("% +>.% %", this.def.sourceCode, envir, player.asCompileString)

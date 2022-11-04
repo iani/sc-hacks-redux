@@ -76,10 +76,11 @@ Simplenumber @> \symbol // set bus to number
 
 + Function {
 	@> { | bus, player | // play as kr funcction in bus (or player) name
+		player ?? { player = currentEnvironment.name };
 		{
-			Out.kr(bus.bus, this.value.kdsr);
+			Out.kr(bus.bus(nil, player), this.value.kdsr);
 			// A2K.kr(Silent.ar).kdsr;
-		}.playInEnvir(player ? bus, \busses);
+		}.playInEnvir(bus, player); // do not push envir !!!
 	}
 }
 
@@ -119,18 +120,17 @@ Simplenumber @> \symbol // set bus to number
 }
 
 + SimpleNumber {
-	@> { | bus | // set bus value
+	@> { | bus, playerEnvir | // set bus value
 		// works with new AND already existing busses.
 		// Stop processes playing in this bus before setting a new value:
-		nil @> bus;
-		bus.bus(this).set(this);
+		bus.stopPlayer(playerEnvir);
+		bus.bus(nil, playerEnvir ? currentEnvironment.name).set(this);
 	}
 }
 
 + Nil {
-	@> {| bus, player | // Stop player for bus
-		if ((player ? bus).player(\busses).isPlaying) {
-			(player ? bus).player(\busses).free;
-		}
+	@> { | busPlayer, envir | // Stop player for bus
+		// stop player with same name as bus in an environment
+		busPlayer.stopPlayer(envir);
 	}
 }

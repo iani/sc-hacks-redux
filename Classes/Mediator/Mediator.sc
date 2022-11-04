@@ -17,7 +17,6 @@ Mediator : EnvironmentRedirect {
 			).dispatch = MediatorHandler();
 	}
 
-
 	init { | ... args |
 		// postf("my iit args are: %\n", args);
 	}
@@ -34,6 +33,11 @@ Mediator : EnvironmentRedirect {
 	}
 
 	*push { this.default.push }
+	push { // get rid of annoying warning
+		if(currentEnvironment !== this) {
+			Environment.push(this)
+		} // { "this environment is already current".warn }
+	}
 	*pop { this.default.pop }
 	*default { ^default ?? { default = this.fromLib(\default) } }
 	/* // this changed is now in Class:fromLib
@@ -58,16 +62,21 @@ Mediator : EnvironmentRedirect {
 		if (envirName.isNil) { ^currentEnvironment; }{ ^this.fromLib(envirName); }
 	}
 
-	*wrap { | func, envirName |
+	*wrap { | func, envirName /*, push = true */ |
 		// eval aMediator use: func
 		// Where aMediator is obtained from envirName
-		^this.at(envirName) use: func;
+		var envir;
+		envir = this.at(envirName);
+		// if (push) { "I am pushing the envir".postln; envir.push }
+		// { "I am NOT pushing the envir".postln; };
+		^envir use: func;
 	}
 
+	// UNDER REVIEW!!!!!
 	*pushWrap { | func, envirName |
 		// eval aMediator use: func
 		// Where aMediator is obtained from envirName
-		^this.at(envirName ? \default).push use: func;
+		^this.wrap(func, envirName, true) use: func;
 	}
 
 	busses { ^busses ?? { busses = IdentityDictionary() } }
