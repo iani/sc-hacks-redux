@@ -71,13 +71,14 @@
 		// envir = envir ? currentEnvironment.name;
 		// Each player has its own envir, which also stores its busses
 		envir = envir ? player;
-		Mediator.pushWrap({
+		Mediator.wrap({
 			// enable storing of source code:
 			Function.changed(\player, envir, player, Main.elapsedTime,
 				format("% +>.% %", this.asCompileString, envir, player.asCompileString);
 			);
 			if (Server.default.serverRunning) {
-				currentEnvironment[player] = synth = Synth(this).notify(player, envir)
+				currentEnvironment[player] = synth = Synth(this).notify(player, envir);
+				// postln("started new synth while server running" + synth);
 			}{
 				Server.default.waitForBoot({
 					currentEnvironment[player] = synth = Synth(this).notify(player, envir)
@@ -91,18 +92,18 @@
 		^this.player(envir ? this).free;
 	}
 
-	stop { | fadeTime, envir | this.stopPlayer(envir ? this, fadeTime) }
+	stop { | fadeTime, envir | this.stopPlayer(envir ? this, fadeTime.postln) }
 	stopPlayer { | envir, fadeTime |
 		var player;
+		postln("fadetime" + fadeTime);
 		envir = Mediator.at(envir ?? { currentEnvironment.name });
 		player = envir.at(this);
 		// postln("player " + player + " is playing? : " + player.isPlaying );
 		if (player.isPlaying) {
 			if (player isKindOf: Synth) {
-				player release: (fadeTime ?? { envir[\fadeTime] ? 1.0 });
-				envir.put(this, nil);
+				fadeTime ?? { fadeTime = envir[\fadeTime] ? 1.0 };
+				player release: fadeTime;
 			}{
-				// postln("will stop this player: " + player);
 				player.stop;
 			};
 		}
