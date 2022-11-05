@@ -39,7 +39,7 @@ InputXyz {
 
 	makeBusses {
 		busses = [\x, \y, \z] collect: { | d |
-			format("%%", d, id).asSymbol.sensorbus;
+			format("%%", d, id).asSymbol.sensorbus,
 			Mediator.at(\sensors);
 		}
 	}
