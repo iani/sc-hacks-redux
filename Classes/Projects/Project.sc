@@ -199,6 +199,7 @@ Project {
 							.canFocus_(false)
 							.states_([["menu", Color.red, Color.white]])
 							.action_({ Menu(
+								MenuAction("Setup Current Project", { this.setup }),
 								MenuAction("OSC Monitor+Recorder", { OscMonitor.gui }),
 								MenuAction("Open Snippet Gui", { SnippetGui.gui }),
 								MenuAction("Go to subfolder", { this.goDownAFolder }),
@@ -429,7 +430,20 @@ Project {
 		}.fork;
 	}
 
+	*setup { // simpler setup method
+		var setupPath, file, code;
+		setupPath = Project.projectItems.select({ | i | i.fileName.asSymbol == 'setup.scd' }).first;
+		if (setupPath.isNil) {
+			postln("There is no setup.scd file in project:" + selectedProject);
+		}{
+			postln("Loading setup.scd file for project:" + selectedProject);
+			code = File.readAllString(setupPath.fullPath);
+			code.interpret; // this always runs locall only as it does not use the preprocessor.
+		}
+	}
+
 	*setupProjectInGroup {
+		// OBSOLETE - NEEDS CHECKING!
 		// Load local project setup folder.
 		// Set local project of all group members to your local project
 		// Make all local project members load their local project setup folder

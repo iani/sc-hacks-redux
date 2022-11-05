@@ -1,16 +1,23 @@
 /* 27 Feb 2022 09:52
 
 */
+
++ Object {
+	pushPlayInEnvir { | player, envir |
+		(envir ? player).push;
+		this.playInEnvir(player, envir);
+	}
+}
+
 + Function {
 	+> { | player, envir |
-		^this.playInEnvir(player, envir);
+		^this.pushPlayInEnvir(player, envir);
 	}
 
 	playInEnvir { | player, envir |
 		// TODO: add arguments setting, bus mapping
 		var synth;
-		envir = envir ? currentEnvironment.name;
-		// postln("playInEnvir envir is now: " + envir);
+		envir = envir ? player; // play in own envir, holding own busses
 		Mediator.wrap({
 			// enable storing of source code:
 			// Function.changed(\player, envir, player, Main.elapsedTime,

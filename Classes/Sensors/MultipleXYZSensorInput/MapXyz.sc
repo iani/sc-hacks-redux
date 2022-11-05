@@ -21,15 +21,24 @@ sent to oscgroups and to self, with the id, and the mapped x, y, z data.
 */
 
 MapXyz {
-	classvar maps, <inputs, <values;
-	classvar localAddr;
-	// var <inputMessage, <forwardMessage, <>lo = 0, <>hi = 1;
 
 	*new { | inputMessage, forwardMessage, lo = 0, hi = 1 |
 		inputMessage.asOscMessage >>>.mapxyz { | n, msg |
 			var xyz, message;
 			xyz = msg[2..].linlin(lo, hi, 0.0, 1.0);
 			message = [forwardMessage, msg[1]] ++ xyz;
+			OscGroups.send(message);
+			LocalAddr().sendMsg(*message);
+		}
+	}
+}
+
+MapFunc {
+
+	*new { | inputMessage, func |
+		inputMessage.asOscMessage >>>.mapxyz { | n, msg |
+			var message;
+			message = func.(msg);
 			OscGroups.send(message);
 			LocalAddr().sendMsg(*message);
 		}
