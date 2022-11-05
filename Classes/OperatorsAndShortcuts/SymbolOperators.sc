@@ -92,6 +92,12 @@
 		^this.player(envir ? this).free;
 	}
 
+	reset { | envir |
+		var player;
+		player = Mediator.at(envir ? this).at(this);
+		player.reset;
+	}
+
 	stop { | fadeTime, envir | this.stopPlayer(envir ? this, fadeTime.postln) }
 	stopPlayer { | envir, fadeTime |
 		var player;
