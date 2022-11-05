@@ -33,7 +33,7 @@ Simplenumber @> \symbol // set bus to number
 	bamp { | attack = 0.01, decay = 0.1 | ^this.bin.amp(attack, decay); }
 
 	sr { ^In.kr(this.sensorbus.index) }
-	sensorbus { this.bus(nil, \sensors) }
+	sensorbus { ^this.bus(nil, \sensors) }
 	br { | val | ^this.bin(val) } // alias similar to ar, kr
 	bin { | val | ^this.busIn(val) } // input from a named kr bus.
 	//synonym. (sic!)

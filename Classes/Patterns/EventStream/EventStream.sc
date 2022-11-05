@@ -81,7 +81,8 @@ EventStream {
 		^nextEvent;
 	}
 
-	isRunning { ^routine.notNil }
+	isRunning { ^this.isPlaying }
+	isPlaying { ^routine.notNil }
 
 	cmdPeriod { routine = nil; }
 
