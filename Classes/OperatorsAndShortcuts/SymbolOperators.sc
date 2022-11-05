@@ -96,13 +96,15 @@
 		var player;
 		envir = Mediator.at(envir ?? { currentEnvironment.name });
 		player = envir.at(this);
+		// postln("player " + player + " is playing? : " + player.isPlaying );
 		if (player.isPlaying) {
 			if (player isKindOf: Synth) {
 				player release: (fadeTime ?? { envir[\fadeTime] ? 1.0 });
+				envir.put(this, nil);
 			}{
+				// postln("will stop this player: " + player);
 				player.stop;
 			};
-			envir.put(this, nil);
 		}
 	}
 
