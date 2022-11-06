@@ -24,12 +24,10 @@
 			// 	format("% +>.% %", this.def.sourceCode, envir, player.asCompileString)
 			// );
 			if (Server.default.serverRunning) {
-				currentEnvironment[player] = synth = this.play(player: player, envir: envir)
-				.notify(player, envir);
+					currentEnvironment.addSynth(player, synth = this.play(player: player, envir: envir));
 			}{
 				Server.default.waitForBoot({
-					currentEnvironment[player] = synth = this.play(player: player, envir: envir)
-					.notify(player, envir)
+					currentEnvironment.addSynth(player, synth = this.play(player: player, envir: envir));
 				})
 			}
 		}, envir);

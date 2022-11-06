@@ -77,11 +77,10 @@
 				format("% +>.% %", this.asCompileString, envir, player.asCompileString);
 			);
 			if (Server.default.serverRunning) {
-				currentEnvironment[player] = synth = Synth(this).notify(player, envir);
-				// postln("started new synth while server running" + synth);
+				currentEnvironment.addSynth(player, synth = Synth(this));
 			}{
 				Server.default.waitForBoot({
-					currentEnvironment[player] = synth = Synth(this).notify(player, envir)
+					currentEnvironment.addSynth(player, synth = Synth(this));
 				})
 			}
 		}, envir);
@@ -98,10 +97,9 @@
 		player.reset;
 	}
 
-	stop { | fadeTime, envir | this.stopPlayer(envir ? this, fadeTime.postln) }
+	stop { | fadeTime, envir | this.stopPlayer(envir ? this, fadeTime) }
 	stopPlayer { | envir, fadeTime |
 		var player;
-		postln("fadetime" + fadeTime);
 		envir = Mediator.at(envir ?? { currentEnvironment.name });
 		player = envir.at(this);
 		// postln("player " + player + " is playing? : " + player.isPlaying );

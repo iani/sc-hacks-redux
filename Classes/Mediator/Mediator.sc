@@ -120,4 +120,12 @@ Mediator : EnvironmentRedirect {
 			currentEnvironment[player].setEvent(event);
 		}, envir ? player);
 	}
+
+	addSynth { | key, synth |
+		this[key] = synth;
+		synth onEnd: {
+			if (this[key] === synth) { this[key] = nil };
+		};
+		^synth;
+	}
 }
