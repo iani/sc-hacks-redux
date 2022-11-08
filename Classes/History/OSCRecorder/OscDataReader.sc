@@ -81,10 +81,11 @@ OscDataReader {
 	*openDialog { | key = \oscdata |
 		"Opening file dialog".postln;
 		Dialog.openPanel({ | argPaths |
-			// currentEnvironment.put(key, this.new(argPath.first))
+			// put data from all files in one dictionary
+			// each file is put under a new numeric index.
 			argPaths do: { | path, index |
 				Library.put(this, key, index, this.new(path));
-				this.merge(key);
+				this.merge(key); // Merge all files under this key into one data array
 				this.processMerged;
 			};
 		}, multipleSelection: true);
@@ -93,7 +94,7 @@ OscDataReader {
 	*merge { | key |
 		var dict;
 		dict = Library.at(this, key);
-		allData = [];
+		allData = []; // Start with data and then add all data from instances in key.
 		dict.keys.asArray.sort do: { | i |
 			var newData;
 			newData = dict[i].data;
@@ -116,11 +117,18 @@ OscDataReader {
 			};
 		};
 		"Sorting...".post;
+		// sort data by *ENTRY TIME* in ascending order
+		// use sortMerget method instead of this line: ?
 		allData = converted.sort({| a, b | a[0] < b[0] });
 		postln("... Done. Collected" + allData.size + "messages.");
 	}
 
-	*sortMerged {
+	*sortMerged { // sort data by *ENTRY TIME* in ascending order
 		allData = allData.sort({| a, b | a[0] < b[0] })
+	}
+
+	// experimental
+	*play { | player = \oscdata, envir = \oscdata |
+
 	}
 }

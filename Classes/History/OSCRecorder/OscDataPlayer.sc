@@ -1,24 +1,46 @@
 /* 24 Oct 2022 11:17
 
-TODO: Construct event stream for playing data.
-This could be returned by OscDataReader.
-Therefore there may be no need for OscDataPlayer.
+Returned by OscDataReader:play.
+
+(Could become a method of OscDataReader.)
 
 */
 
 OscDataPlayer {
 	var <>data, <>addr;
-	// var <routine;
+	var times, snippets;
+
+	*new { | data, addr |
+		^super.new.init(data, addr);
+	}
 
 	init { | argData, argAddr |
 		data = argData;
 		addr = argAddr ?? { NetAddr.localAddr; };
 	}
 
-	*fromReader { | addr |
-		^this.fromLib(\fromReader, OscDataReader.allData, addr);
+	play { // building this step-by-step
+		this.collectTimes.postln;
 	}
 
-	// isPlaying { ^routine.notNil }
+	collectTimes {
+		times, snippets = data.flop;
+		times.postln;
+		"============================================================".postln;
+		times.differentiate.postln;
+	}
 
+	playPrototype { | player = \oscdata, envir = \oscdata |
+		// finish this later.
+		/*
+		(
+			dur: this.collectTimes.pseq(repeats),
+			snippet: snippets.pseq(repeats),
+			play: { var snippet;
+				snippet = ~snippet;
+				envir use: {  snippet.interpretAndShare }
+			}
+		).playInEnvir(player, envir);
+		*/
+	}
 }

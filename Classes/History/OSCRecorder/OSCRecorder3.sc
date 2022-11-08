@@ -103,7 +103,7 @@ OSCRecorder3 {
 	}
 
 	*osDependentRootDir {
-		if (thisProcess.platform isKindOf: OSXPlatform) {
+		if (thisProcess.platform.class === OSXPlatform) {
 			rootFolder = "SuperCollider Recordings";
 			^PathName(Platform.userHomeDir +/+ "Music")
 		}{
