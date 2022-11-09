@@ -24,7 +24,7 @@ OscDataPlayer {
 	}
 
 	collectTimes {
-		times, snippets = data.flop;
+		#times, snippets = data.flop;
 		times.postln;
 		"============================================================".postln;
 		times.differentiate.postln;

@@ -46,7 +46,18 @@ ignored.
 OscDataReader {
 	classvar <allData;
 	var <path, <dataString, <data;
-
+	*openDialog { | key = \oscdata |
+		"Opening file dialog".postln;
+		Dialog.openPanel({ | argPaths |
+			// put data from all files in one dictionary
+			// each file is put under a new numeric index.
+			argPaths do: { | path, index |
+				Library.put(this, key, index, this.new(path));
+				this.merge(key); // Merge all files under this key into one data array
+				this.processMerged;
+			};
+		}, multipleSelection: true);
+	}
 	*new { | path |
 		^this.newCopyArgs(path).readData;
 	}
@@ -76,19 +87,6 @@ OscDataReader {
 			];
 		};
 		postln("... read " + data.size + "entries.")
-	}
-
-	*openDialog { | key = \oscdata |
-		"Opening file dialog".postln;
-		Dialog.openPanel({ | argPaths |
-			// put data from all files in one dictionary
-			// each file is put under a new numeric index.
-			argPaths do: { | path, index |
-				Library.put(this, key, index, this.new(path));
-				this.merge(key); // Merge all files under this key into one data array
-				this.processMerged;
-			};
-		}, multipleSelection: true);
 	}
 
 	*merge { | key |
@@ -128,7 +126,24 @@ OscDataReader {
 	}
 
 	// experimental
-	*play { | player = \oscdata, envir = \oscdata |
-
+	*play { | player = \oscdata, envir = \oscdata, start = 0, length, repeats = 1,
+		enableCodeEvaluation = true |
+		var score, durs, addr;
+		addr = LocalAddr();
+		length ?? length = allData.size - 1;
+		score = allData.copyRange(st;
+		durs = score.at(0).differentiate;
+		durs[0] = durs[1];
+		durs = durs.rotate(-1);
+		score = score.put(0, durs).flop;
+		if (enableCodeEvaluation) { OscGroups.enableCodeEvaluation; };
+		(
+			score: Pseq(score, repeats),
+			play: {
+				~dur = ~score[0];
+				// ~score[1].postln;
+				addr.sendMsg(*~score[1]);
+			}
+		).playInEnvir(player, envir);
 	}
 }

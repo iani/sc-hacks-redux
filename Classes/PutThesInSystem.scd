@@ -1,0 +1,2 @@
+WARNING: Extension in '/usr/share/SuperCollider/Extensions/sc-hacks-redux/Classes/OperatorsAndShortcuts/UGenShortcuts.sc' overwrites UGen:lag in main class library.
+Intentional overwrites must be put in a 'SystemOverwrites' subfolder.
