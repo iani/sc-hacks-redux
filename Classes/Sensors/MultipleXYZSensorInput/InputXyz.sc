@@ -46,12 +46,7 @@ InputXyz {
 
 	*addMessage { | message = '/minibee' |
 		message.asOscMessage >>>.inputxyz { | n, msg |
-			"message : ".post;
-			msg.postln;
-			"instances: ".post;
-			instances.postln;
-
-			// instances[msg[1]].setValues(msg[2..])
+			instances[msg[1]].setValues(msg[2..])
 		}
 	}
 
