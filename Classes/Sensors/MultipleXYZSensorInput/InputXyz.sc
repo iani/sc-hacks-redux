@@ -46,7 +46,15 @@ InputXyz {
 
 	*addMessage { | message = '/minibee' |
 		message.asOscMessage >>>.inputxyz { | n, msg |
-			instances[msg[1]].setValues(msg[2..])
+			var index; // provide safe index:
+			// Silent automatic correction could overwrite data from other sensor:
+			// index = instances.size - 1 min: msg[1] max: 0;
+			index = msg[1];
+			if (index > instances.size or: { index < 0 }) {
+				postln("index" + index + "out of range for message" + message);
+			}{
+				instances[index].setValues(msg[2..])
+			}
 		}
 	}
 

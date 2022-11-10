@@ -7,6 +7,10 @@ of code evaluation in OscGroups.
 	sim {
 		LocalAddr().sendMsg(\code, this);
 	}
+
+	stamp {
+		LocalAddr().sendMsg(\stamp, this + Date.localtime.stamp)
+	}
 }
 
 + Array {

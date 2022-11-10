@@ -68,7 +68,7 @@
 
 	routineInEnvir { | player, envir |
 		var routine;
-		envir = envir ? currentEnvironment.name;
+		envir = envir ? player; // ? currentEnvironment.name;
 		Mediator.wrap({
 			currentEnvironment[player] = routine = this.fork;
 		}, envir);

@@ -100,14 +100,20 @@
 	stop { | fadeTime, envir | this.stopPlayer(envir ? this, fadeTime) }
 	stopPlayer { | envir, fadeTime |
 		var player;
+		// postln("Stop player" + this + "for envir" + envir);
 		envir = Mediator.at(envir ?? { currentEnvironment.name });
+		// postln("envir is:" + envir);
 		player = envir.at(this);
+		// postln("player is:" + player);
 		// postln("player " + player + " is playing? : " + player.isPlaying );
 		if (player.isPlaying) {
+			// postln("player" + player + "is playing");
 			if (player isKindOf: Synth) {
+				// postln("player" + player + "is a synth. I will release it");
 				fadeTime ?? { fadeTime = envir[\fadeTime] ? 1.0 };
 				player release: fadeTime;
 			}{
+				// postln("player" + player + "is NOT synth. I will stop it");
 				player.stop;
 			};
 		}
