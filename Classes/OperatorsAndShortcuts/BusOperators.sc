@@ -19,6 +19,21 @@ Simplenumber @> \symbol // set bus to number
 	pget { | format = "%" |
 		this.get({ | v | format(format, v).postln; })
 	}
+
+	scope {
+	// open a Stethoscope on this bus index.
+		var scope;
+		scope = Stethoscope.fromLib(this)
+		.setRate(this.rate)
+		.setNumChannels(1);
+		// must be done later because ... good programming by smart guys
+		{  scope.setIndex(index); }.defer(0.5);
+		this.addNotifier(scope, \stopped, {
+			Library.put(Stethoscope, this, nil);
+		});
+		ServerQuit add: { scope.quit };
+		^scope;
+	}
 }
 
 + Symbol {
@@ -61,6 +76,7 @@ Simplenumber @> \symbol // set bus to number
 		bus = envir.busses.at(this);
 		if (bus.isNil) {
 			bus = Bus.perform(rate, server, numchans);
+			Bus.changed(this, player); // reset new bus numbers in other objects?
 			{
 				server.sync;
 				val !? { bus.set(val) };
