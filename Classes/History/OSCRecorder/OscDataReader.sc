@@ -131,7 +131,7 @@ OscDataReader {
 		var score, durs, addr;
 		addr = LocalAddr();
 		length ?? length = allData.size - 1;
-		score = allData.copyRangest;
+		score = allData.copyRange(start, (start + length) min: (allData.size - 1) );
 		durs = score.at(0).differentiate;
 		durs[0] = durs[1];
 		durs = durs.rotate(-1);
