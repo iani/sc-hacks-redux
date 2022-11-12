@@ -26,15 +26,8 @@ OscDataPlayer {
 
 	play { | repeats = 1, player = \oscdata, envir = \oscdata, playEvent |
 		if (enableCodeEvaluation) { OscGroups.enableCodeEvaluation; };
-		/*
-		(
-			dur: times.pseq(repeats),
-			message: messages.pseq(repeats),
-			play: { addr.sendMsg(*~message) }
-		).playInEnvir(player, envir);
-		*/
 		playEvent ?? { playEvent = this.makePlayEvent(nil, repeats) };
-		playEvent.playInEnvir(player, envir)
+		playEvent.playInEnvir(player, envir);
 	}
 
 	playSelect { | selectMessages, repeats = 1, player = \oscdata, envir = \oscdata |

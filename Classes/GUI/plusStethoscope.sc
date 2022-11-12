@@ -50,4 +50,7 @@ Extend Stethoscope to focus on busses chosen from user.
 		this.changed(\stopped);
 	}
 
+	yZoom_ { | n |
+		setYZoom.(n)
+	}
 }

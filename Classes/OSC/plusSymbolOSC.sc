@@ -5,7 +5,7 @@ Use Notification to add OSC functions.
 + Symbol {
 	scope { | player |
 		// open a Stethoscope on this bus index.
-		^this.bus(nil, player).scope;
+		^this.bus(nil, player).scope(this);
 	}
 
 	watch { | raw = false | // simple gui displaying osc messages matching this symbol
