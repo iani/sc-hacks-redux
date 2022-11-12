@@ -10,7 +10,8 @@ Read a file containing osc data as scripts in format:
 Create an array of entries like this:
 [[time, code], [time, code], etc...]
 */
-
+// 12 Nov 2022 12:26 : also calculate relative times.
+// This saves time to re-calculate times when playing with OscDataPlayer.
 /*
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -46,19 +47,52 @@ ignored.
 OscDataReader {
 	classvar <allData;
 	var <path, <dataString, <data;
-	classvar <scoreData; // for debugging purposes
+	classvar <times, <messages;  // relative times calculated at load time
+	// classvar <scoreData; // for debugging purposes
 	*openDialog { | key = \oscdata |
 		"Opening file dialog".postln;
 		Dialog.openPanel({ | argPaths |
 			// put data from all files in one dictionary
 			// each file is put under a new numeric index.
-			argPaths do: { | path, index |
-				Library.put(this, key, index, this.new(path));
-				this.merge(key); // Merge all files under this key into one data array
-				this.processMerged;
-			};
+			argPaths writeArchive: this.pathsArchivePath;
+			this.readAndMergePaths(argPaths, key);
+			// argPaths do: { | path, index |
+			// 	Library.put(this, key, index, this.new(path));
+			// 	this.merge(key); // Merge all files under this key into one data array
+			// 	this.processMerged;
+			// };
 		}, multipleSelection: true);
 	}
+
+	*pathsArchivePath {
+		^(PathName(Platform.userHomeDir) +/+ "OscDataReader_LastRead.scd").fullPath;
+	}
+
+	*readAndMergePaths { | argPaths, key = \oscdata |
+		argPaths do: { | path, index |
+			if (File exists: path) {
+				Library.put(this, key, index, this.new(path));
+			}{
+				postln("File not found:", path);
+			}
+		};
+		this.merge(key);
+		this.processMerged;
+	}
+
+	*readLastSaved { | key = \oscdata |
+		var archivePath, paths;
+		archivePath = this.pathsArchivePath;
+		if (File exists: archivePath) {
+			paths = Object.readArchive(archivePath);
+			this.readAndMergePaths(paths, key);
+		}{
+			postln("File not found:" + archivePath);
+			"Cannot find location of last paths archive path".postln;
+		};
+		//		postln(Object readArchive: this.pathsArchivePath );
+	}
+
 	*new { | path |
 		^this.newCopyArgs(path).readData;
 	}
@@ -103,6 +137,13 @@ OscDataReader {
 		postln("DONE. allData has" + allData.size + "entries.")
 	}
 
+	*calculateTimes {
+		#times, messages = allData.flop;
+		times = times.differentiate;
+		times[0] = times[1];
+		times = times rotate: -1;
+	}
+
 	*processMerged { | filter = true |
 		var exclude, converted;
 		if (filter) { exclude = OSCRecorder3.excludedMessages } { exclude = [] };
@@ -119,6 +160,7 @@ OscDataReader {
 		// sort data by *ENTRY TIME* in ascending order
 		// use sortMerget method instead of this line: ?
 		allData = converted.sort({| a, b | a[0] < b[0] });
+		this.calculateTimes;
 		postln("... Done. Collected" + allData.size + "messages.");
 	}
 
@@ -128,10 +170,24 @@ OscDataReader {
 
 	// experimental
 	*part { | start = 0, length |
-		var maxIndex;
-		maxIndex = allData.size - 1;
-		length ?? { length = maxIndex - start };
-		^OscDataPlayer(allData.copyRange(start.clip(0, maxIndex), (start + length).clip(0, maxIndex)));
+		^allData.copyRange(start, (start + length ?? { allData.size - 1 }));
 	}
+
+	*makePlayer {  | start = 0, length |
+		// Make player from pre-calculated times, messages.
+		// Save time to re-calculate times.
+		var end;
+		length ?? { length = allData.size - 1 };
+		end = start + length;
+		^OscDataPlayer.newCopyArgs(
+			allData.copyRange(start, end),
+			LocalAddr(),
+			times.copyRange(start, end),
+			messages.copyRange(start, end)
+		);
+	}
+
+	*select {}
+	*reject {}
 }
 
