@@ -46,6 +46,7 @@ ignored.
 OscDataReader {
 	classvar <allData;
 	var <path, <dataString, <data;
+	classvar <scoreData; // for debugging purposes
 	*openDialog { | key = \oscdata |
 		"Opening file dialog".postln;
 		Dialog.openPanel({ | argPaths |
@@ -126,24 +127,11 @@ OscDataReader {
 	}
 
 	// experimental
-	*play { | player = \oscdata, envir = \oscdata, start = 0, length, repeats = 1,
-		enableCodeEvaluation = true |
-		var score, durs, addr;
-		addr = LocalAddr();
-		length ?? length = allData.size - 1;
-		score = allData.copyRange(start, (start + length) min: (allData.size - 1) );
-		durs = score.at(0).differentiate;
-		durs[0] = durs[1];
-		durs = durs.rotate(-1);
-		score = score.put(0, durs).flop;
-		if (enableCodeEvaluation) { OscGroups.enableCodeEvaluation; };
-		(
-			score: Pseq(score, repeats),
-			play: {
-				~dur = ~score[0];
-				// ~score[1].postln;
-				addr.sendMsg(*~score[1]);
-			}
-		).playInEnvir(player, envir);
+	*part { | start = 0, length |
+		var maxIndex;
+		maxIndex = allData.size - 1;
+		length ?? { length = maxIndex - start };
+		^OscDataPlayer(allData.copyRange(start.clip(0, maxIndex), (start + length).clip(0, maxIndex)));
 	}
 }
+
