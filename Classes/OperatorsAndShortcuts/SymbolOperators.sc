@@ -226,18 +226,33 @@
 
 	// Buffer play ugens ================
 
-	playBuf { | loop = 0 |
-		var bufnum, numChannels;
-		bufnum = this.buf.bufnum;
+	playbuf { arg loop = 0, bufnum = \bufnum, rate = \rate,
+		trig = \trig, startPos = \startPos, argLoop = \loop;
+		// , \startPos = startPos, argLoop = \loop;
+		var bnum, numChannels;
+		bnum = this.buf.bufnum;
 		numChannels = this.buf.numChannels;
 		^PlayBuf.ar(
 			numChannels,
-			\bufnum.kr(bufnum),
-			\rate.kr(1),
-			\trigger.tr(1),
-			\startPos.kr(0),
-			\loop.kr(loop),
+			bufnum.br(bnum),
+			rate.br(1),
+			trig.br(1),
+			startPos.br(0),
+			argLoop.br(0),
 		)
+	}
+
+	numFrames { | player |
+		^this.buf(nil, player).numFrames;
+	}
+
+	sampleRate { | player |
+		^this.buf(nil, player).sampleRate
+	}
+	bufdur { | player |
+		var buf;
+		buf = this.buf(nil, player);
+		^buf.numFrames / buf.sampleRate
 	}
 
 	grainBuf {}

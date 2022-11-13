@@ -183,22 +183,18 @@ Project {
 					VLayout(
 						HLayout(
 							StaticText().string_("Projects").maxWidth_(150),
-							Button()
-							.maxWidth_(70)
-							.states_([
-								["Refresh", Color.black, Color.white]
-							])
-							.action_({ this.getProjects }),
+							Button().states_([["Setup"]]).maxWidth_(50)
+							.action_({ this.setup }),
 							Button()
 							.maxWidth_(50)
 							.canFocus_(false)
 							.states_([["menu", Color.red, Color.white]])
 							.action_({ Menu(
-								MenuAction("Setup Current Project", { this.setup }),
 								MenuAction("OSC Monitor+Recorder", { OscMonitor.gui }),
 								MenuAction("Open Snippet Gui", { SnippetGui.gui }),
 								MenuAction("Go to subfolder", { this.goDownAFolder }),
 								MenuAction("Go to superfolder", { this.goUpAFolder }),
+								MenuAction("Refresh Project Window", { this.getProjects }),
 							).front })
 						),
 						ListView()
@@ -281,9 +277,8 @@ Project {
 					),
 					VLayout(
 						HLayout(
-							StaticText().string_("Scripts").maxWidth_(100),
-							Button().states_([["snippets"]])
-							// .action_({ SnippetGui.gui }),
+							StaticText().string_("Scripts").maxWidth_(70),
+							Button().states_([["Snippets"]]).maxWidth_(60)
 							.action_({ SnippetGui.read(this.selectedProjectItem.fullPath).gui }),
 							Button()
 							.maxWidth_(50)
