@@ -151,3 +151,7 @@ Simplenumber @> \symbol // set bus to number
 		busPlayer.stopPlayer(envir);
 	}
 }
+
++ UGen {
+	br {} // return self. enable ugen args in synth func shortcuts
+}

@@ -50,6 +50,7 @@ OSCRecorder3 {
 
 	*addData { | time, msg |
 		if (file.isNil or: { file.isOpen.not}) {
+			"OSCRecorder3 file is not open for writing. Please check!".postln;
 			^nil; // do not save or record if file is closed!
 		};
 		data = data add: [time, msg];
@@ -67,7 +68,32 @@ OSCRecorder3 {
 	}
 
 	*newFile {
-		file = File.open(this.fullPath, "w");
+		var thePath, numAttempts = 0;
+		thePath = this.fullPath;
+		postln("OSCRecorder3 will open new file here:");
+		postln(thePath);
+		file = File.open(thePath, "w");
+		if (file.isOpen) {
+			"The file is open. Continuing with the recording as open".postln;
+		}{
+			{
+				"Trying to open the file again - waiting for folder in file system".postln;
+				while (file.isOpen.not) do: {
+					"Trying to open the file again - waiting for folder in file system".postln;
+					file = File.open(thePath, "w");
+					numAttempts = numAttempts + 1;
+					if (numAttempts > 10) {
+						"ERROR: OSCRecorder3 failed to open file!!!!!".postln;
+						thePath.postln;
+						"ABORTING RECORDING SESSION. PLEASE CHECK FILE SYSTEM".postln;
+						^nil;
+					};
+					0.1.wait;
+				};
+				"FILE WAS CREATED. RECORDING HAS STARTED".postln;
+			}.fork;
+		}
+
 	}
 
 	*saveAndContinue {
@@ -84,8 +110,8 @@ OSCRecorder3 {
 		// "DEBUGGING. file is:".postln;
 		// file.postln;
 		file !? {
-			// "I will closse the file".postln;
 			file.close;
+			postln("OSCRecorder3 closed file:\n" + currentRecordingPath);
 		}
 	}
 
