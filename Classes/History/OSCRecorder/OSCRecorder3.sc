@@ -74,7 +74,7 @@ OSCRecorder3 {
 		postln(thePath);
 		file = File.open(thePath, "w");
 		if (file.isOpen) {
-			"The file is open. Continuing with the recording as open".postln;
+			"The file is open. Continuing with the recording.".postln;
 		}{
 			{
 				"Trying to open the file again - waiting for folder in file system".postln;
@@ -142,23 +142,13 @@ OSCRecorder3 {
 		^currentRecordingPath = this.folderPath +/+ fileHeader ++ Date.getDate.stamp ++ ".scd";
 	}
 
-	*makeDirectory {
-		this.makeDailySubfolderTimestamp;
-		("mkdir -p " ++ this.folderPath.replace(" ", "\\ ")).unixCmd
-	}
-
-	*makeDailySubfolderTimestamp {
-		sessionStamp = Date.localtime.stamp;
-		subFolder = Date.getDate.dayStamp;
-	}
-
 	*enable {
 		if (this.isEnabled) {
 			^"OSCRecorder is already running. Skipping this.".postln;
 		};
 		{ // leave time for directory to exist before making file!
 			this.makeDirectory;
-			0.1.wait;
+			0.5.wait; // 15 Nov 2022 10:23 0.1 was too short?
 			this.newFile;
 			OSC addDependant: this;
 			this.addNotifier(Interpreter, \code, { | n, code |
@@ -168,6 +158,21 @@ OSCRecorder3 {
 			postln("!!!!!!! Recording OSC Data at:");
 			postln(currentRecordingPath);
 		}.fork
+	}
+
+	*makeDirectory { // runs a synchronous command on operating system
+		// is called by enable inside a fork, therefore does not delay execution.
+		var errorCode;
+		this.makeDailySubfolderTimestamp;
+		// run command synchronously and collect error:
+		errorCode = ("mkdir -p " ++ this.folderPath.replace(" ", "\\ ")).systemCmd;
+		// TODO: find out which error signifies a problem, and catch it here
+		// if (errorCode == ??? ) { issue a warning }
+	}
+
+	*makeDailySubfolderTimestamp {
+		sessionStamp = Date.localtime.stamp;
+		subFolder = Date.getDate.dayStamp;
 	}
 
 	*disable {
