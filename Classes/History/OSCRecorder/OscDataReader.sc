@@ -187,7 +187,8 @@ OscDataReader {
 		);
 	}
 
-	*select {}
-	*reject {}
+	// These are done by OscDataPlayer with playSelect, playReject
+	// *select {}
+	// *reject {}
 }
 
