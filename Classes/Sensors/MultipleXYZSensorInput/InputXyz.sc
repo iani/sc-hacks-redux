@@ -27,9 +27,10 @@ InputXyz {
 	classvar <values, <instances;
 	var <id, <valueIndex, <busses;
 	*enable { | numIds = 30 |
+		postln("InputXyz: Creating" + numIds + "x-y-z bus groups");
 		values = 0.dup(numIds * 3);
-		Server.default.waitForBoot({
-			instances =  numIds collect: { | i | this.new(i) }
+		Server.default.waitForBoot({// start ids at 1 instead of 0:
+			instances =  numIds collect: { | i | this.new(i + 1) }
 		})
 	}
 
@@ -38,10 +39,13 @@ InputXyz {
 	}
 
 	makeBusses {
+		post("InputXyz creates busses for id" + id + " : ");
 		busses = [\x, \y, \z] collect: { | d |
+			post(format("%%, ", d, id));
 			format("%%", d, id).asSymbol.sensorbus
 			// Mediator.at(\sensors);
-		}
+		};
+		postln("");
 	}
 
 	*addMessage { | message = '/minibee' |
