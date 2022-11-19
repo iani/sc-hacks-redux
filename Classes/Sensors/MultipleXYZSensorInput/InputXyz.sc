@@ -72,6 +72,7 @@ InputXyz {
 	*gui {
 		this.tr_.vlayout(
 			MultiSliderView()
+			.size_(3 * 25)
 			.addNotifier(this, \sensors, { | n, values |
 				n.listener.value_(values);
 			})
