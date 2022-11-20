@@ -198,7 +198,7 @@ Project {
 							).front })
 						),
 						ListView()
-						.palette_(QPalette.dark.highlight_(Color(0.9, 0.9, 0.7)))
+						.palette_(QPalette.dark.highlight_(Color(0.1, 0.9, 0.7)))
 						// .hiliteColor_(Color(0.9, 0.9, 1.0))
 						.addNotifier(this, \projects, { | n |
 							n.listener.items = projects;
@@ -289,7 +289,7 @@ Project {
 							.action_({ CmdPeriod.run }),
 						),
 						ListView()
-						.palette_(QPalette.dark.highlight_(Color(0.9, 0.9, 0.7)))
+						.palette_(QPalette.dark.highlight_(Color(0.1, 0.9, 0.7)))
 						.addNotifier(this, \projectItems, { | n |
 							n.listener.items = projectItems.collect({ | i |
 								if (i.isFolder) {
