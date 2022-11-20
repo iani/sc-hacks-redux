@@ -21,6 +21,7 @@ Sensors {
 			InputXyz.addMessage(map[1]);
 		};
 		InputXyz.enable(numSensorIds);
+		OscGroups.enable;
 	}
 
 	*enable_OLD_TEST {
