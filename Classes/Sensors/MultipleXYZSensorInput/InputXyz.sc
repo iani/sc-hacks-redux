@@ -30,7 +30,7 @@ InputXyz {
 		postln("InputXyz: Creating" + numIds + "x-y-z bus groups");
 		values = 0.dup(numIds * 3);
 		Server.default.waitForBoot({// start ids at 1 instead of 0:
-			instances =  numIds collect: { | i | this.new(i + 1) }
+			instances =  numIds collect: { | i | this.new(i) }
 		})
 	}
 
@@ -72,6 +72,7 @@ InputXyz {
 	*gui {
 		this.tr_.vlayout(
 			MultiSliderView()
+			.thumbSize_(3)
 			.size_(3 * 25)
 			.addNotifier(this, \sensors, { | n, values |
 				n.listener.value_(values);

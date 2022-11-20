@@ -13,7 +13,7 @@ Sensors {
 		['/minibee/data', '/minibee', 0.44, 0.56],
 		['/pinetime/data', '/pine', 0.44, 0.56]
 	];
-	classvar <>numSensorIds = 24;
+	classvar <>numSensorIds = 72;
 
 	*enable {
 		maps do: { | map |
