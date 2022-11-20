@@ -93,6 +93,10 @@ SnippetGui {
 			),
 			[ListView()
 				// .items_(snippets collect: _.header)
+				.palette_(QPalette.dark
+					.highlight_(Color(0.1, 0.1, 0.7))
+					.highlightText_(Color(0.9, 0.8, 0.7))
+				)
 				.action_({ | me |
 					snippetindex = me.value;
 					this.changed(\snippet, me.value);
@@ -107,7 +111,10 @@ SnippetGui {
 					this.updateSnippetListView(n.listener)
 				}), stretch: 1],
 			[TextView()
-				.palette_(QPalette.dark.highlight_(Color(0.9, 0.9, 0.7)))
+				.palette_(QPalette.dark
+					.highlight_(Color(0.1, 0.1, 0.7))
+					.highlightText_(Color(0.9, 0.8, 0.7))
+				)
 				.string_("NO SCRIPT SELECTED.\nSELECT A SCRIPT FILE ON PROJECT GUI.")
 				.keyDownAction_({ | me ... args |
 					this.changed(\edited, isEdited = true);

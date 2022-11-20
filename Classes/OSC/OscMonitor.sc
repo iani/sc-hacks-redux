@@ -62,7 +62,10 @@ OscMonitor {
 				})
 			),
 			ListView()
-			.palette_(QPalette.dark.highlight_(Color(0.1, 0.9, 0.7)))
+			.palette_(QPalette.dark
+				.highlight_(Color(0.1, 0.1, 0.7))
+				.highlightText_(Color(0.9, 0.8, 0.7))
+			)
 			.addNotifier(this, \messages, { | n |
 				n.listener.items = messages.asArray.sort;
 			})
