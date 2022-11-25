@@ -4,8 +4,9 @@
 + SimpleNumber {
 
 	// TODO: REVIEW OR REMOVE THIS METHOD:
-	+> { | envir, param |
-		param ?? { ^"SimpleNumber +> requires a parameter adverb".warn };
-		envir.push.put(param, this);
+	+> { | param, player |
+		player ?? { ^"SimpleNumber +> requires a parameter adverb".warn };
+		// envir.push.put(param, this);
+		Mediator.setEvent(().put(param, this), player, player);
 	}
 }

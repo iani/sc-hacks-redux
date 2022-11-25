@@ -12,14 +12,13 @@ To explore:
 */
 
 + UGen {
-	// early test: return self. Just making sure this works
-	idem { ^this }
-
+	br {} // return self. enable ugen args in synth func shortcuts
 	// value mapping + comparing shortcuts
 	lin { | lo = 0.0, hi = 1.0 | ^this.linlin(0.0, 1.0, lo, hi) }
 	exp { | lo = 0.0, hi = 1.0 | ^this.linexp(0.0, 1.0, lo, hi) }
 	lt { | thresh = 0.5 | ^this < thresh; }
 	gt { | thresh = 0.5 | ^this > thresh; }
+	slope { ^Slope.kr(this) }
 
 	// envelope shortcuts
 	adsr { | attackTime=0.01, decayTime=0.3, sustainLevel=1, releaseTime=1.0,
@@ -114,7 +113,7 @@ To explore:
 
 + Symbol {
 	trigFilter { | trigger, start = 0, step = 1 |
-		// only filter the triggers by multiplying them with
+		// filter the triggers by multiplying them with
 		// your elements values in sequence
 		^trigger * Demand.kr(trigger, 0, Dbufrd(this.buf, Dseries(start, step, inf)))
 	}
@@ -126,9 +125,8 @@ To explore:
 	}
 
 	gate { | busOrKr |
-		if (busOrKr isKindOf: Symbol) {
-			busOrKr = busOrKr.bin
-		};
-		^this.kr(gate: busOrKr)
+		// implicit conversion is done by br method on ugen or symbol:
+		// if (busOrKr isKindOf: Symbol) { busOrKr = busOrKr.bin };
+		^this.kr(gate: busOrKr.br); // if symbol, read from bus;
 	}
 }

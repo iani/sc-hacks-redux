@@ -77,10 +77,10 @@ Simplenumber @> \symbol // set bus to number
 		bus = envir.busses.at(this);
 		if (bus.isNil) {
 			bus = Bus.perform(rate, server, numchans);
-			Bus.changed(this, player); // reset new bus numbers in other objects?
 			{
 				server.sync;
 				val !? { bus.set(val) };
+				Bus.changed(this, player); // reset new bus numbers in other objects?
 			}.fork;
 			envir.busses.put(this, bus);
 		}{
@@ -148,10 +148,6 @@ Simplenumber @> \symbol // set bus to number
 + Nil {
 	@> { | busPlayer, envir | // Stop player for bus
 		// stop player with same name as bus in an environment
-		busPlayer.stopPlayer(envir);
+		busPlayer.stopPlayer(envir, 0);
 	}
-}
-
-+ UGen {
-	br {} // return self. enable ugen args in synth func shortcuts
 }

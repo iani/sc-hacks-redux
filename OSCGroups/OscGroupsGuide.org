@@ -10,38 +10,6 @@ We will update the present info when we change the location of the server.
 Binaries for *arch linux* and *macos* are provided here in a subfolder of bin in the present folder.
 More binaries will be added as we manage to test them, after 25 May 2021 12:24. 
 
-Compiling your own binaries is relatively easy according to our experience. Here is how to:
-
-First have a look at the instructions by the author of OSCGroups here: http://www.rossbencina.com/code/oscgroups
-
-Our own tested method consists of these steps:
-
-1. Create a folder =OSCGRoupsInstall=
-2. Inside the folder =OSCGRoupsInstall=, clone the following 2 repositories, using =git clone --recursive <repository git url>=.
-   Note: The clone should use the option =--recursive= to ensure that submodules are also included.
-   1. oscgroups by Ross Bencina - https://github.com/RossBencina/oscgroups.git
-   2. oscpack by Ross Bencina - https://github.com/RossBencina/oscpack.git
-3. go inside the folder =oscgroups= (=cd oscgroups=)
-4. run shell command =make=
-
-The above produces the executables for server and client, and stores them in a new folder =bin= inside the oscgroups folder. 
-
-* OSCGroups Quark for SuperCollider
-
-You can find Quark (Library extension) for OSCGroups here:
-
-http://quark.sccode.org/OscGroupClient/OscGroupClient.html
-
-We have tested compatibility of using both the =OscGroupClient= quark and the present =sc-hacks-redux= library at the same time. There are no conflicts in compiling the library.  The OscGroups Class of =sc-hacks-redux= works without problems as before, when the OscGroupClient quark is present.  As of 26 May 2021 13:14 we are not yet acquainted with the OscGroupClient quark enough to assess it. 
-
-* Running OSCGroupsServer
-
-You can skip this step if you only want to connect to an existing server hosted by someone else.
-The PEARL group currently provides such a server. Instructions for connecting to the server are given below under [[Running OSCGroupClient]].
-
-If you still want to run your own server, that would be a useful experience both for you and for the community. See instructions http://www.rossbencina.com/code/oscgroups
-If you just want to use our server, read the next section. 
-
 * Running OSCGroupClient
 
 Copy the binary file =OscGroupClient= from your bin folder (or from this repository) into your bin folder. Under arch linux this is: =/usr/bin=.  This makes it possible for both you and SuperCollider to start the OscGroupClient from the shell or using =.unixCmd=.  
@@ -98,9 +66,18 @@ Users should send data to localhost:localtxport and listen on localhost:localrxp
      a password for the group. users without the correct password
  won't be admitted to the group. The group password is chosen by the client creating the group.
 
-* Using OSCGroups in SuperCollider
+* Using OSCGroups
 
-First you should have started OscGroupsClient on your own computer using the instructions listed above in the previous section.
+** Sharing OSC by Sending OSC messages to a group
+Once you have started OscGroupsClient you can share OSC with all users connected to the same OscGroup as you, by sending OSC messages to the local host of your computer (IP 127.0.0.1) and port number 22244.  Example in SuperCollider:
+
+#+begin_src sclang
+NetAddr("127.0.0.1", 22244).sendMsg('/test', 1, 2, 3);
+#+end_src
+
+** Using the OscGroups in =sc-hacks-redux=
+
+The present library, =sc-hacks-redux= enables you to automatically send all code that you run on your computer to osc groups, and furthermore to execute code received from other users and shared in the same manner. It also provides facilities for tracing, viewing  jl
 
 The class =OscGroups= provided in the present library is configured to connect automatically to the server noted above.  To use the class do the following: 
 
@@ -115,4 +92,38 @@ Platform.userExtensionDir;
 
 This automatically connects to the OSCGroupsServer via your OscGroupClient.
 
+* Extra info
 
+The following points can be of interest if you are looking to delve deeper into OscGroups and see how other people are working with it.
+** OSCGroups Quark for SuperCollider
+
+You can find Quark (Library extension) for OSCGroups here:
+
+http://quark.sccode.org/OscGroupClient/OscGroupClient.html
+
+We have tested compatibility of using both the =OscGroupClient= quark and the present =sc-hacks-redux= library at the same time. There are no conflicts in compiling the library.  The OscGroups Class of =sc-hacks-redux= works without problems as before, when the OscGroupClient quark is present.  As of 26 May 2021 13:14 we are not yet acquainted with the OscGroupClient quark enough to assess it.
+
+** Running OSCGroupsServer
+
+You can skip this step if you only want to connect to an existing server hosted by someone else.
+The PEARL group currently provides such a server. Instructions for connecting to the server are given below under [[Running OSCGroupClient]].
+
+If you still want to run your own server, that would be a useful experience both for you and for the community. See instructions http://www.rossbencina.com/code/oscgroups
+If you just want to use our server, read the next section.
+
+** Compiling your own binaries
+Compiling your own binaries is relatively easy according to our experience. Here is how to:
+
+First have a look at the instructions by the author of OSCGroups here: http://www.rossbencina.com/code/oscgroups
+
+Our own tested method consists of these steps:
+
+1. Create a folder =OSCGRoupsInstall=
+2. Inside the folder =OSCGRoupsInstall=, clone the following 2 repositories, using =git clone --recursive <repository git url>=.
+   Note: The clone should use the option =--recursive= to ensure that submodules are also included.
+   1. oscgroups by Ross Bencina - https://github.com/RossBencina/oscgroups.git
+   2. oscpack by Ross Bencina - https://github.com/RossBencina/oscpack.git
+3. go inside the folder =oscgroups= (=cd oscgroups=)
+4. run shell command =make=
+
+The above produces the executables for server and client, and stores them in a new folder =bin= inside the oscgroups folder.
