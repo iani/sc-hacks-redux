@@ -15,6 +15,8 @@ Sensors {
 	];
 	classvar <>numSensorIds = 72;
 
+	*addSensor { | ... specs | maps = maps add: specs; }
+
 	*enable {
 		maps do: { | map |
 			MapXyz(*map);

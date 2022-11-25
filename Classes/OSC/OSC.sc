@@ -17,6 +17,13 @@ OSC {
 		(key ? message).addNotifier(this, message.asOscMessage, function);
 	}
 
+	*forward { | message, address, key |
+		key ?? { key = message };
+		this.add(message, { | n, msg |
+			address.sendMsg(*msg);
+		}, key);
+	}
+
 	*addRaw { | message, function, key |
 		// Like add, without prepending / to message.
 		// For use with SendReply.
