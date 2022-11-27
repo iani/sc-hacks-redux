@@ -17,7 +17,10 @@ OSC {
 		(key ? message).addNotifier(this, message.asOscMessage, function);
 	}
 
-	*forward { | message, address, key |
+	*forward { | message, address = 12345, key |
+		if (address isKindOf: Integer) {
+			address = NetAddr("127.0.0.1", address)
+		};
 		key ?? { key = message };
 		this.add(message, { | n, msg |
 			address.sendMsg(*msg);
