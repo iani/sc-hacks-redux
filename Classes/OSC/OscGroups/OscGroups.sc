@@ -90,7 +90,7 @@ OscGroups {
 		OSC.remove(message, 'forward');
 	}
 
-	*enable { | sendPort = 22244, receivePort =  = 22245 |
+	*enable { | sendPort = 22244, receivePort = 22245 |
 		oscSendPort = sendPort;
 		oscRecvPort = receivePort;
 		this.makeSendAddress;
