@@ -90,7 +90,9 @@ OscGroups {
 		OSC.remove(message, 'forward');
 	}
 
-	*enable {
+	*enable { | sendPort = 22244, receivePort =  = 22245 |
+		oscSendPort = sendPort;
+		oscRecvPort = receivePort;
 		this.makeSendAddress;
 		this.enableCodeForwarding;
 		this.enableCodeReception;
@@ -182,7 +184,7 @@ OscGroups {
 		func.value;
 		// postln("AFTER: should I restore forwarding?" + isCodeForwarding);
 		if (isCodeForwarding) {
-			// "Enabling code forwarding - return to original state".postln;
+			// "Enabling code f orwarding - return to original state".postln;
 			this.enableCodeForwarding;
 
 		}{
