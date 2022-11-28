@@ -16,7 +16,7 @@ OscGroups.enable;
 */
 
 OscGroups {
-	classvar <oscSendPort = 22244, <oscRecvPort = 22245;
+	classvar <>oscSendPort = 22244, <>oscRecvPort = 22245;
 	classvar sendAddress, <oscRecvFunc;
 	classvar <>verbose = false;
 	classvar <oscMessage = \code;

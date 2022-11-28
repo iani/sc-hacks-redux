@@ -22,7 +22,6 @@ ForwardOsc {
 		addr = NetAddr.localAddr;
 	}
 
-
 	*clients {
 		clients ?? { clients = Set() };
 		^clients;
