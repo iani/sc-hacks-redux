@@ -91,6 +91,7 @@ OscGroups {
 	}
 
 	*enable { | sendPort = 22244, receivePort = 22245 |
+		postln("Enabling OscGroups. Send Port:" + sendPort + "Receive Port:" + receivePort);
 		oscSendPort = sendPort;
 		oscRecvPort = receivePort;
 		this.makeSendAddress;
