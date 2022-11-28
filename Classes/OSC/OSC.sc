@@ -17,12 +17,6 @@ OSC {
 		(key ? message).addNotifier(this, message.asOscMessage, function);
 	}
 
-	*forwardAndBroadcast { | message, address = 12345, key |
-		this.forward(message, address, key);
-		this.forward(message, OscGroups.sendAddress, \oscgroups);
-	}
-
-
 	*forward { | message, address = 12345, key |
 		if (address isKindOf: Integer) {
 			address = NetAddr("127.0.0.1", address)

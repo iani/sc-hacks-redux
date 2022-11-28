@@ -69,20 +69,18 @@ OscGroups {
 	*send { | message | // send to oscgroups client
 		sendAddress !? { sendAddress.sendMsg(*message); }
 	}
+
 	*forward { | message |
 		// forward an osc message to OscGroupsClient
-		// default message is '/minibee/data'
-		message ?? { message = '/minibee/data' };
-
+		// BUILT-IN SAFETY: ONLY FORWARD MESSAGES RECEIVED FROM LOCAL PORT 57120
+		// DO NOT FORWARD MESSAGES FROM OSCGROUPS:
+		// !!!!!!! PREVENT FEEDBACK LOOPS ON OSCGROUPS !!!!!!!
+		var addr; // cache sendAddress obtained lazily
+		addr = this.sendAddress;
+		message ?? { message = '/minibee/data' }; // default message is '/minibee/data'
 		message.asOscMessage >>>.forward { | n, msg, time, addr, port |
-			if (port == 57120) {
-				sendAddress.sendMsg(*msg);
-			};
-
+			if (port == 57120) { addr.sendMsg(*msg); };
 		}
-		//		'/minibee/data' >>> { | n, msg |
-		//	OscGroups.sendAddress.postln;
-		// msg.postln;
 	}
 
 	*unforward { | message | // stop forwarding message to OscGroupClient
