@@ -22,7 +22,8 @@ ForwardOsc {
 		addr = NetAddr.localAddr;
 	}
 
-	clients {
+
+	*clients {
 		clients ?? { clients = Set() };
 		^clients;
 	}
@@ -35,7 +36,7 @@ ForwardOsc {
 		this.clients add: addressOrPort;
 	}
 
-	forward { | message, port |
+	*forward { | message, port |
 		if (port.isNil) {
 			NetAddr("127.0.0.1", port).sendMsg(message);
 		}{
