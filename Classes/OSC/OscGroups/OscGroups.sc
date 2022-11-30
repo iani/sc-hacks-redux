@@ -79,7 +79,11 @@ OscGroups {
 		addr = this.sendAddress;
 		message ?? { message = '/minibee/data' }; // default message is '/minibee/data'
 		message.asOscMessage >>>.forward { | n, msg, time, addr, port |
-			if (port == 57120) { addr.sendMsg(*msg); };
+			if (verbose) {
+				postln("forwarding " + msg);
+				this.sendAddress.postln;
+			};
+			if (port == 57120) { this.sendAddress.sendMsg(*msg); };
 		}
 	}
 

@@ -81,6 +81,7 @@ EventStream {
 		^nextEvent;
 	}
 
+	isPlayer { ^true }
 	isRunning { ^this.isPlaying }
 	isPlaying { ^routine.notNil }
 

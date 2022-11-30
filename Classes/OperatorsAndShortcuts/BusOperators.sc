@@ -88,6 +88,11 @@ Simplenumber @> \symbol // set bus to number
 		};
 		^bus;
 	}
+
+	// 30 Nov 2022 14:47
+	pb { | player = \pb |
+		^Pb(this, player)
+	}
 }
 
 

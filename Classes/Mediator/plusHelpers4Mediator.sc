@@ -21,6 +21,7 @@
 	handleReplacement { this.free }
 }
 
-+ EventStream {
-	isPlayer { ^true }
-}
+// Source code Moved to EventStream file:
+// + EventStream {
+// 	isPlayer { ^true }
+// }
