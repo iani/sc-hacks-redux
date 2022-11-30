@@ -67,6 +67,7 @@ Project {
 			Warn(format("ERROR: No projects found in %\n", this.projectHomePath.fullPath))
 		}{
 			this changed: \projects;
+			// this selectProject: selectedProject;
 			this.notifyNavigationStatus;
 		}
 	}
@@ -175,6 +176,7 @@ Project {
 	*gui {
 		{
 			this.getProjects;
+			ShutDown add: { this.saveProjectPath };
 			this.window({ | w |
 				w.bounds = w.bounds.height_(300);
 				w.name = "Projects in ~/" ++ startupFolder;
@@ -183,6 +185,8 @@ Project {
 					VLayout(
 						HLayout(
 							StaticText().string_("Projects").maxWidth_(150),
+							Button().states_([["-*-"]]).maxWidth_(30)
+							.action_({ this.loadProjectPath }),
 							Button().states_([["Setup"]]).maxWidth_(50)
 							.action_({ this.setup }),
 							Button()
@@ -213,7 +217,7 @@ Project {
 							);
 						})
 						.selectionAction_({ | me |
-							this.selectProject(projects[me.value]);
+							this.selectProject(projects[me.value], true);
 						})
 						.enterKeyAction_({ this.broadcastSelectedProject })
 						.keyDownAction_({ | me, char |
@@ -415,6 +419,11 @@ Project {
 		}
 	}
 
+	*goToFolder { | targetFolder |
+			startupFolder = targetFolder;
+			this.getProjects;
+	}
+
 	*startProjectInGroup {
 		{
 			OscGroups.enable; // so we are ready here for what comes next
@@ -470,6 +479,30 @@ Project {
 		// projectItems.postln;
 		this.changed(\selectedProject);
 		this.notifyNavigationStatus;
+	}
+
+
+	*saveProjectPath {
+		(
+			startupFolder: startupFolder,
+			selectedProject: selectedProject
+		).writeArchive(this.selectedProjectArchivePath);
+		postln("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! saving project path:" + startupFolder);
+	}
+
+	*loadProjectPath {
+		var dict, newSelectedProject;
+		dict = Object.readArchive(this.selectedProjectArchivePath);
+		startupFolder = dict[\startupFolder];
+		selectedProject = dict[\selectedProject];
+		newSelectedProject = selectedProject;
+		this.getProjects;
+		postln("Restoring last project selection from archive:" + newSelectedProject);
+		this.selectProject(newSelectedProject);
+	}
+
+	*selectedProjectArchivePath {
+		^(PathName(Platform.userAppSupportDir) +/+ "SelectedProject.scd").fullPath
 	}
 
 	*notifyNavigationStatus {
