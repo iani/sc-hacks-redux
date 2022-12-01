@@ -36,6 +36,7 @@ Project {
 	classvar <>startupFolder = "sc-projects", <>globalFolder = "global";
 	classvar <projects, <selectedProject;
 	classvar <projectItems, <selectedProjectItem;
+	classvar <userSelectedProject = false;
 
 	*initClass {
 		StartUp add: {
@@ -176,7 +177,7 @@ Project {
 	*gui {
 		{
 			this.getProjects;
-			ShutDown add: { this.saveProjectPath };
+			// ShutDown add: { this.saveProjectPath };
 			this.window({ | w |
 				w.bounds = w.bounds.height_(300);
 				w.name = "Projects in ~/" ++ startupFolder;
@@ -217,7 +218,7 @@ Project {
 							);
 						})
 						.selectionAction_({ | me |
-							this.selectProject(projects[me.value], true);
+							this.selectProject(projects[me.value]);
 						})
 						.enterKeyAction_({ this.broadcastSelectedProject })
 						.keyDownAction_({ | me, char |
@@ -225,6 +226,15 @@ Project {
 								this.selectProject(selectedProject);
 							};
 						})
+						.mouseDownAction_{ | me |
+							// "Mouse down selected this: ".post;
+							// me.items[me.value].postln;
+							userSelectedProject = true;
+							// this.selectProject(projects[me.value], true);
+							// me.value.postln;
+							// me.items[me.value].postln;
+							{ this.selectProject(projects[me.value]); }.defer(0.01);
+						}
 						.addNotifier(this, \navigationStatus, { | n, goUp, goDown |
 							var menuActions = [];
 							if (goUp) {
@@ -474,7 +484,11 @@ Project {
 
 	*selectProject { | projectName |
 		selectedProject = projectName;
-		postf("Selecting project: %\n", selectedProject);
+		// postf("Selecting project: %\n", selectedProject);
+		if (userSelectedProject) {
+			this.saveProjectPath;
+			userSelectedProject = false;
+		};
 		this.getProjectItems;
 		// projectItems.postln;
 		this.changed(\selectedProject);
@@ -487,7 +501,8 @@ Project {
 			startupFolder: startupFolder,
 			selectedProject: selectedProject
 		).writeArchive(this.selectedProjectArchivePath);
-		postln("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! saving project path:" + startupFolder);
+		post("*saving path* : ");
+		postln("folder:" + startupFolder + "project:" + selectedProject);
 	}
 
 	*loadProjectPath {
@@ -498,6 +513,7 @@ Project {
 		newSelectedProject = selectedProject;
 		this.getProjects;
 		postln("Restoring last project selection from archive:" + newSelectedProject);
+		userSelectedProject = true;
 		this.selectProject(newSelectedProject);
 	}
 

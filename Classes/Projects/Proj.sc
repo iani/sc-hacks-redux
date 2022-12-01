@@ -12,8 +12,10 @@ Proj {
 		// run the currently selected file locally
 		var path, code;
 		path = (Project.selectedProjectPath +/+ methodName.asString).fullPath ++ ".scd";
-		postln("Will run this:" + path);
+		postln("Loading:" + path);
 		code = File.readAllString(path);
 		code.interpret; // this does not forward the code to OscGroups
 	}
+
+	*gui { this.doesNotUnderstand('gui') }
 }

@@ -5,6 +5,9 @@
 + Symbol {
 
 	//=================================================================
+	use { | func | // evaluate func in this Mediator
+		Mediator.at(this) use: func;
+	}
 
 	@ { | envir | ^this.at(envir) }
 	at { | envir | // has same effect as Symbol:player below?
