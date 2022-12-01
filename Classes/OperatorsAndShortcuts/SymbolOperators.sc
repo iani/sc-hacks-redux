@@ -5,11 +5,34 @@
 + Symbol {
 
 	//=================================================================
+	!!> { | value, variable |
+		this use: {
+			currentEnvironment[variable] = value;
+		}
+	}
+	!!* { | funcName |
+		^this evalLocalFunc: funcName;
+	}
+	evalLocalFunc { | funcName |
+		^this use: { currentEnvironment[funcName].value };
+	}
+	!!! { | func | ^this use: func }
+
 	use { | func | // evaluate func in this Mediator
-		Mediator.at(this) use: func;
+		// var envir, result;
+		// postln("debugging symbol use");
+		// envir = Mediator.at(this);
+		// postln("Environment before eval func is:");
+		// envir.postln;
+		// result = Mediator.at(this) use: func;
+		// postln("Environment after eval func is:");
+		// postln(result);
+		// ^result;
+		^Mediator.at(this) use: func;
 	}
 
 	@ { | envir | ^this.at(envir) }
+	asEnvir { ^Mediator.at(this) } // doubtful synonym?
 	at { | envir | // has same effect as Symbol:player below?
 		^Mediator.at(envir ? currentEnvironment.name).at(this);
 	}
