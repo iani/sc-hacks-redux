@@ -4,14 +4,14 @@ the last value obtained, when used in an EventStream
 */
 
 Pb { // NOTE: Pbus is taken
-	classvar all, <pollRoutine, <>pollRate = 8;
+	classvar all, <pollRoutine, <>pollRate = 20;
 	var <name, <player, <bus, <value = 0;
 
 	*initClass {
 		ServerTree add: this;
 	}
 
-	*doOnServerTree { // on server boot, or after CmdPeriod ...
+	*doOnServerTree { // on server boot, or after CmdPeriod, restart polling routine.
 		pollRoutine = {
 			loop {
 				// "polling Pb".postln;

@@ -5,6 +5,11 @@
 + Symbol {
 
 	//=================================================================
+	// Pdefn
+	*> { | value | ^this.pd(value) }
+	pd { | value | ^Pdefn(this, value) }
+	//=================================================================
+	// Operate in the environment named by me:
 	!!> { | value, variable |
 		this use: {
 			currentEnvironment[variable] = value;
@@ -39,7 +44,8 @@
 
 	asPlayer { ^this.at(nil) }
 
-	// NOTE: If possible, avoid adding more operators, like the following:
+	//============================================================
+	// Tests for more operators with |
 	@|> { "@|> works".postln; }
 	|@|> { "|@|> works".postln; }
 	|@| { "|@| works".postln; }

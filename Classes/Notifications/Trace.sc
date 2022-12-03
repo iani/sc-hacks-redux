@@ -11,7 +11,8 @@ Trace {
 	*initClass {
 		excludedMessages = [
 			'/cbmon', '/status.reply', '/done', '/n_end',
-			'/recordingDuration', '/n_go', '/d_removed', '/synced'
+			'/recordingDuration', '/n_go', '/d_removed', '/synced',
+			'/groupclient/ping'
 		]
 	}
 

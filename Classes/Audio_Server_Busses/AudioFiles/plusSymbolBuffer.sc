@@ -22,6 +22,30 @@
 	// synonyms:
 	b { ^this.buffer; }
 	buf { ^this.buffer; }
+	numChannels { ^this.buffer.numChannels }
+	// playbuf { ^this.buffer.play }
+	playbuf { | params, player, envir |
+		var buf, theParams;
+		envir = envir ? this;
+		player = player ? this;
+		theParams = (rate: 1, trigger: 1, startpos: 0, loop: 0);
+		params keysValuesDo: { | key, value |
+			theParams.put(key, value)
+		};
+		buf = this.buf;
+		{
+			PlayBuf.ar(
+				buf.numChannels,
+				buf.bufnum,
+				\rate.kr(theParams[\rate]),
+				\trigger.kr(theParams[\trigger]),
+				\startPos.kr(theParams[\startPos]),
+				\loop.kr(theParams[\loop]),
+				2
+			) * Env.adsr().kr(\gate.kr(1))
+		}.playInEnvir(player, envir);
+		^buf;
+	}
 	bufnum { ^this.buf.bufnum }
 	storebuf { | buffer |
 		Library.put(Buffer, this, buffer);

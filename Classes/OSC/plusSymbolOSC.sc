@@ -71,6 +71,9 @@ Use Notification to add OSC functions.
 		OSC.add(receiver ? this, { | notification, message |
 			var code;
 			code = message[index].asString;
+			postf("========= Remote evaluation: ========= \n\(\n\%\n\)\n", code);
+			code.interpret.postln;
+			/*
 			if (code.isSafe) {
 				postf("========= Remote evaluation: ========= \n\(\n\%\n\)\n", code);
 				{	// permit window operations via remote evaluated code
@@ -81,6 +84,7 @@ Use Notification to add OSC functions.
 				"WARNING: UNSAFE CODE RECEIVED!:".postln;
 				code.postln;
 			}
+			*/
 		}, this)
 	}
 

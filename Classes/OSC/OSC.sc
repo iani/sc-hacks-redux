@@ -8,6 +8,24 @@ OscGroupClient 139.162.184.97 22242 22246 22244 22245 <USERNAME> <USER_PASSWORD>
 OSC {
 	classvar >reportingFunc;
 
+	// DEBUGGING
+	*enableCodeEvaluation {
+		this.add(\code, { | n, msg |
+			var code;
+			code = msg[1].asString;
+			if (code.isSafe) {
+				postf("========= Remote evaluation: ========= \n\(\n\%\n\)\n", code);
+				{	// permit window operations via remote evaluated code
+					code.interpret.postln;
+					OscGroups.changed(\evalCode, code);
+				}.defer;
+			}{
+				"WARNING: UNSAFE CODE RECEIVED!:".postln;
+				code.postln;
+			}
+		}, \codeEvaluation);
+	}
+
 	*add { | message, function, key |
 		// message is the osc message to which the function is bound.
 		// One can use different keys to add more than one function to one message.

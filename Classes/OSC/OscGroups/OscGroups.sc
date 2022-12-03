@@ -150,7 +150,8 @@ OscGroups {
 	}
 
 	*enableCodeEvaluation {
-		oscMessage.evalOSC;
+		OSC.enableCodeEvaluation;
+		// oscMessage.evalOSC;
 	}
 
 	*openUDPPort { // TODO: Use oscRecvPort instead
