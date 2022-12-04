@@ -34,6 +34,7 @@ Clicking on the selected file/folder button executes the corresponding file(s)
 
 Project {
 	classvar <>startupFolder = "sc-projects", <>globalFolder = "global";
+	classvar <>rootFolder = "sc-projects";
 	classvar <projects, <selectedProject;
 	classvar <projectItems, <selectedProjectItem;
 	classvar <userSelectedProject = false;
@@ -78,7 +79,8 @@ Project {
 	}
 
 	*projectHomePath { ^PathName(Platform.userHomeDir +/+ startupFolder); }
-	*globalProjectPath { ^this.projectHomePath +/+ globalFolder }
+	*globalHomePath { ^PathName(Platform.userHomeDir +/+ rootFolder); }
+	*globalProjectPath { ^this.globalHomePath +/+ globalFolder }
 	*globalAudiofilePath { ^this.globalProjectPath +/+ "audiofiles" }
 	*globalSynthdefPath { ^this.globalProjectPath +/+ "synthdefs" }
 	*localSynthdefPath { ^this.selectedProjectPath +/+ "synthdefs" }
