@@ -4,6 +4,7 @@
 
 + Object {
 	pushPlayInEnvir { | player, envir |
+		// "this is object pushPlayInEnvir".postln;
 		(envir ? player).push;
 		this.playInEnvir(player, envir);
 	}
@@ -14,6 +15,11 @@
 		^this.pushPlayInEnvir(player, envir);
 	}
 
+	+>@ { | player, group = \root |
+		player.envir[\target] = group;
+		postln("+>0 made envir:" + player.envir);
+		^this.pushPlayInEnvir(player, player);
+	}
 	playInEnvir { | player, envir |
 		// TODO: add arguments setting, bus mapping
 		var synth;

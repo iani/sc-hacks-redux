@@ -41,6 +41,8 @@ Simplenumber @> \symbol // set bus to number
 	// compose event to switch busses in a player
 	// usage:
 	// \parameter @> \targetbus ++>.envir \player;
+
+	// <+ { | value, envir | envir.envir.put(this, value); }
 	@> { | targetBus, player |
 		^().put(this.busify, targetBus.bus(nil, player ? currentEnvironment.name).index);
 	}

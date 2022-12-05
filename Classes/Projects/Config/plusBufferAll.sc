@@ -3,9 +3,16 @@ List all buffers
 */
 
 + Buffer {
+	*dict { ^Library.at(this) }
+	/*
+	*allocAdd { | key = \buffer, duration = 60, numChannels = 1 |
+		if (this.dict.at(\))
+	}
+	*/
+	*addBuffer { | key = \buffer, buffer |  this.dict.put(key, buffer) }
 	*all {
 		var bufferDict;
-		bufferDict = Library.at(this);
+		bufferDict = this.dict;
 		if (bufferDict.size == 0) {
 			"There are no buffers in the library. Please check if server is booted".postln;
 			^[]
@@ -15,7 +22,7 @@ List all buffers
 	}
 	*listAll {
 		var bufferdict;
-		bufferdict = Library.at(this);
+		bufferdict = this.dict;
 		this.all do: { | bname |
 			bufferdict[bname].postln;
 		}

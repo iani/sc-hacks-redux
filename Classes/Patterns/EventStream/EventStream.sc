@@ -1,21 +1,44 @@
 /* 21 Feb 2022 13:14
 Redo EventStream, removing all extras.
+
 */
 
 EventStream {
-	var <event, <stream, <routine;
+	var <event, <>filter, <stream, <routine;
+	// getNextEvent uses filter to modify stream if needed
 
-	*new { | event |
-		^this.newCopyArgs(event).reset;
+	*new { | event, filter |
+		^this.newCopyArgs(event, filter).reset;
 	}
 
+	// playing evenstream after adding a filter:
+
+	+> { | player, envir | ^this.pushPlayInEnvir(player, envir ? player, true) }
+
+	// saving some time by copying this from Event.
+	playInEnvir { | player, envir, start = true |
+		var atKey, new;
+		// "this is Event playInEnvir".postln;
+		Mediator.pushWrap({
+			atKey = currentEnvironment[player];
+			atKey.stop;
+			// "making event stream next".postln;
+			// new = EventStream(this);
+			new = this;
+			// "JUST MADE AN event stream next".postln;
+			if (start) { new.start };
+			currentEnvironment[player] = new;
+		}, envir ? player);
+		^new;
+	}
 	reset { this.makeStream }
 
 	makeStream {
 		stream = ().parent_(event.parent);
 		event keysValuesDo: { | key, value |
-			stream[key] = value.asStream;
-		}
+			stream[key] = value.asStream(event, stream);
+		};
+		stream use: filter;
 	}
 
 	asEvenStream { ^this }
@@ -70,13 +93,14 @@ EventStream {
 		// Make the stream event available to any functions running in it
 		stream use: {
 			stream keysValuesDo: { | key, value |
-				nextValue = value.next;
+				nextValue = value.next(stream);
 				if (nextValue.isNil) {
 					// postf("% has ended\n", this);
 					^nil
 				};
 				nextEvent[key] = nextValue;
 			};
+			filter.(nextEvent);
 		};
 		^nextEvent;
 	}

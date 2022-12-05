@@ -62,6 +62,7 @@ Mediator : EnvironmentRedirect {
 		if (envirName.isNil) { ^currentEnvironment; }{ ^this.fromLib(envirName); }
 	}
 
+	// UNDER REVIEW!!!!! this actually wraps
 	*wrap { | func, envirName /*, push = true */ |
 		// eval aMediator use: func
 		// Where aMediator is obtained from envirName
@@ -72,11 +73,12 @@ Mediator : EnvironmentRedirect {
 		^envir use: func;
 	}
 
-	// UNDER REVIEW!!!!!
+	// pushWrap not needed?
+	// UNDER REVIEW!!!!! this actually wraps
 	*pushWrap { | func, envirName |
 		// eval aMediator use: func
 		// Where aMediator is obtained from envirName
-		^this.wrap(func, envirName, true) use: func;
+		^this.wrap(func, envirName, true);// use: func;
 	}
 
 	busses { ^busses ?? { busses = IdentityDictionary() } }

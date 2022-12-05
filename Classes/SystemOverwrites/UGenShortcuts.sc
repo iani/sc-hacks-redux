@@ -19,6 +19,9 @@ To explore:
 	lt { | thresh = 0.5 | ^this < thresh; }
 	gt { | thresh = 0.5 | ^this > thresh; }
 	slope { ^Slope.kr(this) }
+	fader { | amp = 1, fin = 0.1, fout = 0.3 |
+		^this * Fader(fin, fout, amp);
+	}
 
 	// envelope shortcuts
 	adsr { | attackTime=0.01, decayTime=0.3, sustainLevel=1, releaseTime=1.0,
@@ -53,11 +56,8 @@ To explore:
 	}
 
 	// for SynthDef code:
-	out { | out = 0 |
-		^Out.perform((audio: \ar, control: \kr)[this.rate],
-			\out.kr(out),
-			this
-		)
+	out { | bus = \out, numChannels = 2 |
+		^Out.ar(bus.ab(numChannels), this)
 	}
 
 	bout { | busName | // send kr signal to a named kr bus
@@ -81,6 +81,12 @@ To explore:
 
 // Make this work also with UGenArrays (usuall obtained from multichannel expansion)
 + Array {
+
+	fader { | fin = 0.1, fout = 0.3, amp = 1 |
+		^this * Fader(fin, fout, amp);
+	}
+
+	out { | bus = \out, numChannels = 2 | ^Out.ar(bus.ab(numChannels), this) }
 
 	adsr { | attackTime=0.01, decayTime=0.3, sustainLevel=1, releaseTime=1.0,
 		peakLevel=1.0, curve = -4.0, bias = 0.0, doneAction = 2, gate = 1 |
@@ -117,6 +123,9 @@ To explore:
 		// your elements values in sequence
 		^trigger * Demand.kr(trigger, 0, Dbufrd(this.buf, Dseries(start, step, inf)))
 	}
+
+	in { | numChannels = 2 | ^In.ar(this.ab(numChannels)) }
+	ab { | numChannels = 2 | ^AudioBus(this, numChannels) }
 }
 
 + Env {

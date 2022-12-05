@@ -6,6 +6,8 @@
 	// obsolete?!
 	splay { ^EventStream(this).start; }
 
+	getParent { if (this.parent.isNil) { ^defaultParentEvent } { ^this.parent }  }
+
 	+> { | player, envir | ^this.pushPlayInEnvir(player, envir ? player, true) }
 
 	playInEnvir { | player, envir, start = true |
@@ -22,6 +24,18 @@
 
 	+>! { | player, envir | // do not start
 		^this.playInEnvir(player, envir, false);
+	}
+
+	playbuf {
+		^this filter: {
+			var buf;
+			buf = ~buf.next;
+			~instrument = [nil, \playbuf1, \playbuf2][buf.numChannels];
+			~bufnum = buf.bufnum;
+		}
+	}
+	filter { | function |
+		^EventStream(this, function);
 	}
 
 	+>> { | player, envir |

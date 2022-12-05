@@ -10,7 +10,13 @@ For sc-hacks-redux: playInEnvir.  Create synth, providing arguments from current
 + Function {
 	play { arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args, player, envir;
 		var def, synth, server, bytes, synthMsg;
-		target = target.asTarget;
+		// TODO: get outbus + targed from envir if provided!
+		// currentEnvironment.postln;
+		postln("Function:play current environment is target:" + currentEnvironment);
+		postln("Function:play  target is:" + ~target);
+
+		target ?? {  target = ~target.asTarget; };
+		~outbus !? { outbus = ~outbus };
 		server = target.server;
 		if(server.serverRunning.not) {
 			("server '" ++ server.name ++ "' not running.").warn;
@@ -35,6 +41,7 @@ For sc-hacks-redux: playInEnvir.  Create synth, providing arguments from current
 				server.sendMsg(\d_free, def.name);
 			}, '/n_end', server.addr, argTemplate: [synth.nodeID]).oneShot;
 		};
+		postln("Function:play will use this as target:" + target);
 		synthMsg = synth.newMsg(target,
 			[\i_out, outbus, \out, outbus] ++ args, addAction
 		);

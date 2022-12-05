@@ -4,6 +4,14 @@
 
 + Symbol {
 
+	//============================================================/
+	// add bus and target to environment
+	addBus { | bus, name = \outbus |
+		this.envir[name] = bus ?? { Bus.audio };
+	}
+	addTarget { | target, name = \target |
+		this.envir[name] = target.asTarget;
+	}
 	//=================================================================
 	// Pdefn
 	*> { | value | ^this.pd(value) }
@@ -82,10 +90,12 @@
 			)
 		}
 	}
-
-	<+ { | value, player |
-		currentEnvironment[player].set(this, value)
+	<+ { | value, envir | envir.envir.put(this, value); }
+	/*
+	<+ { | value, envir |
+		envir.envir[this] = value
 	}
+	*/
 
 	player { | envir |
 		var player;
@@ -251,7 +261,7 @@
 
 	get { ^this.bus.get }
 	index { ^this.bus.index }
-	in { ^In.kr(this.index) }
+	// in { ^In.kr(this.index) }
 	krin { | index = 0 | ^In.kr(this.kr(index)) }
 
 	bkr { ^In.kr(this.bus.index) }
