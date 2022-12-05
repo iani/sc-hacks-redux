@@ -126,6 +126,19 @@ To explore:
 
 	in { | numChannels = 2 | ^In.ar(this.ab(numChannels)) }
 	ab { | numChannels = 2 | ^AudioBus(this, numChannels) }
+	asAudioBus {  | numChannels = 2 | ^this.ab(numChannels) }
+}
+
++ Nil {
+	asAudioBus { ^0 }
+}
+
++ SimpleNumber {
+	asAudioBus { ^this.asInteger }
+}
+
++ Bus {
+	asAudioBus { ^this }
 }
 
 + Env {

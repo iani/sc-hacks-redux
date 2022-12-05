@@ -3,10 +3,10 @@
 */
 
 + Object {
-	pushPlayInEnvir { | player, envir |
+	pushPlayInEnvir { | player, envir, target, outbus = 0 |
 		// "this is object pushPlayInEnvir".postln;
 		(envir ? player).push;
-		this.playInEnvir(player, envir);
+		this.playInEnvir(player, envir, target, outbus);
 	}
 }
 
@@ -17,10 +17,10 @@
 
 	+>@ { | player, group = \root |
 		player.envir[\target] = group;
-		postln("+>0 made envir:" + player.envir);
+		// postln("+>0 made envir:" + player.envir);
 		^this.pushPlayInEnvir(player, player);
 	}
-	playInEnvir { | player, envir |
+	playInEnvir { | player, envir, target, outbus = 0 |
 		// TODO: add arguments setting, bus mapping
 		var synth;
 		envir = envir ? player; // play in own envir, holding own busses
@@ -30,10 +30,16 @@
 			// 	format("% +>.% %", this.def.sourceCode, envir, player.asCompileString)
 			// );
 			if (Server.default.serverRunning) {
-					currentEnvironment.addSynth(player, synth = this.play(player: player, envir: envir));
+				currentEnvironment.addSynth(player, synth = this.play(
+					target, outbus,
+					player: player, envir: envir
+				));
 			}{
 				Server.default.waitForBoot({
-					currentEnvironment.addSynth(player, synth = this.play(player: player, envir: envir));
+					currentEnvironment.addSynth(player, synth = this.play(
+						target, outbus,
+						player: player, envir: envir
+					));
 				})
 			}
 		}, envir);

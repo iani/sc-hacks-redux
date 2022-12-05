@@ -17,19 +17,57 @@
 
 */
 
++ SimpleNumber {
+	secs { ^this * 60 } // convert minutes to seconds
+}
+
 + Symbol {
+	alloc { | dur = 1, numChannels = 2 |
+		^this.allocFrames(
+			Server.default.options.sampleRate * (dur * 60),
+			numChannels
+			);
+	}
+
+	allocFrames { | numFrames = 512, numChannels = 1 |
+		var buffer;
+		buffer = this.buffer;
+		buffer !? {
+			postln("alloc" + this + ": keeping alreading existing buffer" + buffer);
+			^buffer;
+		};
+		buffer = Buffer.alloc(Server.default, numFrames, numChannels);
+		Library.put(Buffer, this, buffer);
+		^buffer
+	}
+
 	buffer { ^Library.at(Buffer, this); }
 	// synonyms:
 	b { ^this.buffer; }
 	buf { ^this.buffer; }
 	numChannels { ^this.buffer.numChannels }
+	// play buffer
+	pb { | target, outbus = 0, player, envir |
+		// var theEnvir;
+		// envir = envir ? player ? this;
+		// theEnvir = envir.envir;
+		// out !? { theEnvir[\outbus] = out.ab };
+		// target !? { theEnvir[\target] = target.asTarget };
+		this.playbuf((), player, envir, target, outbus);
+	}
+
+	// record buffer
+	// rb { | | }
+	//
+	// granulate buffer
 	// playbuf { ^this.buffer.play }
-	playbuf { | params, player, envir |
+	playbuf { | params, player, envir, target, outbus = 0 |
 		var buf, theParams;
 		envir = envir ? this;
 		player = player ? this;
+
 		theParams = (rate: 1, trigger: 1, startpos: 0, loop: 0);
-		params keysValuesDo: { | key, value |
+		params ? () keysValuesDo: { | key, value |
 			theParams.put(key, value)
 		};
 		buf = this.buf;
@@ -42,8 +80,8 @@
 				\startPos.kr(theParams[\startPos]),
 				\loop.kr(theParams[\loop]),
 				2
-			) * Env.adsr().kr(\gate.kr(1))
-		}.playInEnvir(player, envir);
+			).fader //　* Env.adsr().kr(\gate.kr(1))
+		}.playInEnvir(player, envir, target, outbus);
 		^buf;
 	}
 	bufnum { ^this.buf.bufnum }

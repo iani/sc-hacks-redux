@@ -14,9 +14,9 @@ AudioBus {
 	*initClass { ServerTree add: this;}
 	*doOnServerTree {
 		all = ();
-		specs keysValuesDo: { | name, numChannels |
+		this.specs keysValuesDo: { | name, numChannels |
 			all[name] = this.make(numChannels)
-		}
+		};
 	}
 
 	*make { | numChannels = 2 |
