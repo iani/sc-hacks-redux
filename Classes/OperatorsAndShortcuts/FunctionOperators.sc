@@ -15,20 +15,23 @@
 		^this.pushPlayInEnvir(player, envir);
 	}
 
-	+>@ { | player, group = \root |
+	// set the target group of the player's environment and use it
+	+>@ { | player, group = \default_group |
 		player.envir[\target] = group;
-		// postln("+>0 made envir:" + player.envir);
 		^this.pushPlayInEnvir(player, player);
 	}
+
+	// override (bypass) the target group of the player's environment
+	// but do not set it.
+	+><@> { | player, group = \root |
+		^this.pushPlayInEnvir(player, player, group);
+	}
+
 	playInEnvir { | player, envir, target, outbus = 0 |
 		// TODO: add arguments setting, bus mapping
 		var synth;
 		envir = envir ? player; // play in own envir, holding own busses
 		Mediator.wrap({
-			// enable storing of source code:
-			// Function.changed(\player, envir, player, Main.elapsedTime,
-			// 	format("% +>.% %", this.def.sourceCode, envir, player.asCompileString)
-			// );
 			if (Server.default.serverRunning) {
 				currentEnvironment.addSynth(player, synth = this.play(
 					target, outbus,
@@ -43,9 +46,6 @@
 				})
 			}
 		}, envir);
-		// "DEBUGGING Just before leaving playInEnvir method".postln;
-		// postln("envir is: " + envir);
-		// postln("currentEnvironment is", currentEnvironment);
 		^synth;
 	}
 

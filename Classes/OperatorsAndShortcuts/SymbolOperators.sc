@@ -9,8 +9,8 @@
 	addBus { | bus, name = \outbus |
 		this.envir[name] = bus ?? { Bus.audio };
 	}
-	addTarget { | target, name = \target |
-		this.envir[name] = target.asTarget;
+	addTarget { | target = \default_group, name = \target |
+		this.envir[name] = target;
 	}
 	//=================================================================
 	// Pdefn

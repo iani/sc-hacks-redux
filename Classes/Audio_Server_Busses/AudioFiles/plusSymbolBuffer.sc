@@ -22,9 +22,12 @@
 }
 
 + Symbol {
-	alloc { | dur = 1, numChannels = 2 |
+	malloc { | dur = 1, numChannels = 2 | // alloc in minutes duration
+		^this.alloc(dur * 60, numChannels);
+	}
+	alloc { | dur = 1, numChannels = 2 | // alloc in seconds duration
 		^this.allocFrames(
-			Server.default.options.sampleRate * (dur * 60),
+			Server.default.options.sampleRate * dur,
 			numChannels
 			);
 	}
@@ -47,24 +50,14 @@
 	buf { ^this.buffer; }
 	numChannels { ^this.buffer.numChannels }
 	// play buffer
-	pb { | target, outbus = 0, player, envir |
-		// var theEnvir;
-		// envir = envir ? player ? this;
-		// theEnvir = envir.envir;
-		// out !? { theEnvir[\outbus] = out.ab };
-		// target !? { theEnvir[\target] = target.asTarget };
-		this.playbuf((), player, envir, target, outbus);
+	pb { | target, outbus = 0, player, envir, params |
+		this.playbuf(params ? (), player, envir, target, outbus);
 	}
 
-	// record buffer
-	// rb { | | }
-	//
-	// granulate buffer
-	// playbuf { ^this.buffer.play }
 	playbuf { | params, player, envir, target, outbus = 0 |
 		var buf, theParams;
-		envir = envir ? this;
 		player = player ? this;
+		envir = envir ? player;
 
 		theParams = (rate: 1, trigger: 1, startpos: 0, loop: 0);
 		params ? () keysValuesDo: { | key, value |
@@ -84,8 +77,43 @@
 		}.playInEnvir(player, envir, target, outbus);
 		^buf;
 	}
+	//  6 Dec 2022 09:05 UNTESTED:
+	rb { | target, inbus = 0, player, envir, params |
+		this.recordbuf(params ? (), player, envir, target, inbus);
+	}
+
+	//  6 Dec 2022 09:05 UNTESTED:
+	recordbuf { | params, player, envir, target, inbus = 0 |
+		var buf, theParams;
+		player = player ? this;
+		envir = envir ? player;
+	// *ar { arg inputArray, bufnum=0, offset=0.0, recLevel=1.0, preLevel=0.0,
+	// 		run=1.0, loop=1.0, trigger=1.0, doneAction=0;
+		theParams = (offset: 0, recLevel: 1, preLevel: 0,
+			run: 1, loop: 0, trigger: 1, doneAction: 0);
+		params ? () keysValuesDo: { | key, value |
+			theParams.put(key, value)
+		};
+		buf = this.buf;
+		{
+			RecordBuf.ar(
+				In.ar(inbus), // inputArray
+				buf.bufnum,   // bufnum
+				\rate.kr(theParams[\rate]), // offset
+				\trigger.kr(theParams[\recLevel]), // recLevel
+				\startPos.kr(theParams[\preLevel]), // preLevel
+				\run.kr(theParams[\run]), // run
+				\loop.kr(theParams[\loop]), // loop
+				\trigger.kr(theParams[\trigger]), // trigger
+				theParams[\doneAction] // doneAction
+			).fader //　* Env.adsr().kr(\gate.kr(1))
+		}.playInEnvir(player, envir, target);
+		^buf;
+	}
 	bufnum { ^this.buf.bufnum }
 	storebuf { | buffer |
 		Library.put(Buffer, this, buffer);
 	}
+	// ci {... this.copyInput ... } //
+	//	copyInput {} // copy input to another bus
 }

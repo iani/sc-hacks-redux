@@ -43,6 +43,10 @@
 		this >>> { | ... args | args.postln; };
 	}
 
+	traceChanges {
+		this addDependant: Trace;
+	}
+
 	untrace { this <<< this }
 
 	|>|  { | action, key |

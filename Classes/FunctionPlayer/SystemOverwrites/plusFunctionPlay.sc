@@ -30,14 +30,18 @@ For sc-hacks-redux: playInEnvir.  Create synth, providing arguments from current
 			fadeTime:fadeTime,
 			name: SystemSynthDefs.generateTempName
 		);
+		// enable storing of source code:
 		Function.changed(\player, envir, player, Main.elapsedTime,
 			format("% +>.% %", this.def.sourceCode, envir, player.asCompileString),
 			[def.allControlNames collect: _.name]
 		);
 
 		synth = Synth.basicNew(def.name, server);
+		// this also cauuses crach. Why?????
+		// synth.addNotifier(\test, \test, { "test received".postln });
 		// if notifications are enabled on the server,
 		// use the n_end signal to remove the temp synthdef
+		synth.postln;
 		if (server.notified) {
 			OSCFunc({
 				server.sendMsg(\d_free, def.name);
@@ -48,6 +52,12 @@ For sc-hacks-redux: playInEnvir.  Create synth, providing arguments from current
 			[\i_out, outbus, \out, outbus] ++ args, addAction
 		);
 		def.doSend(server, synthMsg);
+		// This causes crash. Why? :
+		// synth.addNotifier(currentEnvironment, \target, { | ... args |
+		// 	postln("The target has changed for synth" + synth);
+		// 	postln("The args are:" + args);
+		// })
+		// ;
 		^synth
 	}
 }
