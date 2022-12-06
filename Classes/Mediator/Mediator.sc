@@ -52,7 +52,7 @@ Mediator : EnvironmentRedirect {
 	}
 	prPut { | key, obj |
 		envir.put (key, obj);
-		// this.changed(key, obj);
+		this.changed(key, obj);
 	}
 
 	*all { ^Library.at(this) }
@@ -125,6 +125,10 @@ Mediator : EnvironmentRedirect {
 
 	addSynth { | key, synth |
 		this[key] = synth;
+		synth.addNotifier(this, \target, { | n, target |
+			// "my target has changed".postln;
+			n.listener.moveToHead(target.asTarget);
+		});
 		synth onEnd: {
 			if (this[key] === synth) { this[key] = nil };
 		};

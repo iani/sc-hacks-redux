@@ -6,6 +6,10 @@ Setup the synth to update parameters or map busses from the environment,
 and to disconnect when ends.
 
 NOTE: See  Node:onFree !!!
+
+ 6 Dec 2022 17:12 this needs review.
+	are we still using asSynth?
+	It seems not.!!!!!!
 */
 
 + Function {
@@ -13,6 +17,7 @@ NOTE: See  Node:onFree !!!
 		//  9 Jun 2021 15:52 stub implementation
 		// arguments from synthdef to be added later.
 		var synth;
+		"as synth was used".postln;
 		envir = envir ? currentEnvironment;
 		// arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args
 		synth = this.play(
@@ -40,7 +45,8 @@ NOTE: See  Node:onFree !!!
 + Synth {
 	update { | envir, key, object |
 		//		postf("% still considering what to do with %\n", this, args);
-		object.setSynthParam(this, key);
+		[envir, key, object, "synth is updating"].postln;
+		// object.setSynthParam(this, key);
 	}
 }
 

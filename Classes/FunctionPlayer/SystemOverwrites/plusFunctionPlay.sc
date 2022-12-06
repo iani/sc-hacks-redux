@@ -38,10 +38,16 @@ For sc-hacks-redux: playInEnvir.  Create synth, providing arguments from current
 
 		synth = Synth.basicNew(def.name, server);
 		// this also cauuses crach. Why?????
+		// synth.addNotifier(currentEnvironment, \target, { "target received".postln;});
+
 		// synth.addNotifier(\test, \test, { "test received".postln });
 		// if notifications are enabled on the server,
 		// use the n_end signal to remove the temp synthdef
-		synth.postln;
+		// Moved to addSynth:
+		// synth.addNotifier(currentEnvironment, \target, { | n, target |
+		// 	// "my target has changed".postln;
+		// 	n.listener.moveToHead(target.asTarget);
+		// });
 		if (server.notified) {
 			OSCFunc({
 				server.sendMsg(\d_free, def.name);

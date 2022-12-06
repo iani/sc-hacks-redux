@@ -7,7 +7,7 @@ MediatorHandler {
 		var currentValue;
 		currentValue = envir.at(key);
 		envir use: { currentValue.handleReplacement(newValue); };
-		envir.changed(key, newValue);
+		// envir.changed(key, newValue);
 		envir.prPut(key, newValue
 		);
 	}

@@ -119,10 +119,12 @@
 				format("% +>.% %", this.asCompileString, envir, player.asCompileString);
 			);
 			if (Server.default.serverRunning) {
-				currentEnvironment.addSynth(player, synth = Synth(this));
+				currentEnvironment.addSynth(player,
+					synth = Synth(this, target: ~target.asTarget));
 			}{
 				Server.default.waitForBoot({
-					currentEnvironment.addSynth(player, synth = Synth(this));
+					currentEnvironment.addSynth(player,
+						synth = Synth(this, target: ~target.asTarget));
 				})
 			}
 		}, envir);
