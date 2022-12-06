@@ -129,6 +129,16 @@ Mediator : EnvironmentRedirect {
 			// "my target has changed".postln;
 			n.listener.moveToHead(target.asTarget);
 		});
+		synth.addNotifier(this, \outbus, { | n, outbus |
+			// postln("testing how to treat outbus. input is:" + outbus);
+			synth.set(\outbus, outbus);
+			synth.set(\out, outbus);
+		});
+		synth.addNotifier(this, \out, { | n, outbus |
+			// postln("testing how to treat outbus. input is:" + outbus);
+			synth.set(\outbus, outbus);
+			synth.set(\out, outbus);
+		});
 		synth onEnd: {
 			if (this[key] === synth) { this[key] = nil };
 		};

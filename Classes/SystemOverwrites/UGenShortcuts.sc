@@ -19,6 +19,15 @@ To explore:
 	lt { | thresh = 0.5 | ^this < thresh; }
 	gt { | thresh = 0.5 | ^this > thresh; }
 	slope { ^Slope.kr(this) }
+
+	// for SynthDef code:
+	fout {  | bus = \outbus, numChannels = 2 |
+		^this.fader.out(bus, numChannels);
+	}
+
+	out { | bus = \outbus, numChannels = 2 |
+		^Out.ar(bus.abc(numChannels), this)
+	}
 	fader { | amp = 1, fin = 0.1, fout = 0.3 |
 		^this * Fader(fin, fout, amp);
 	}
@@ -55,10 +64,6 @@ To explore:
 		.kr(doneAction: doneAction, gate: \gate.kr(gate))
 	}
 
-	// for SynthDef code:
-	out { | bus = \out, numChannels = 2 |
-		^Out.ar(bus.ab(numChannels), this)
-	}
 
 	bout { | busName | // send kr signal to a named kr bus
 		Out.kr(busName.bus.index, this);
@@ -86,7 +91,13 @@ To explore:
 		^this * Fader(fin, fout, amp);
 	}
 
-	out { | bus = \out, numChannels = 2 | ^Out.ar(bus.ab(numChannels), this) }
+	fout {  | bus = \outbus, numChannels = 2 |
+		^this.fader.out(bus, numChannels)
+	}
+
+	out { | bus = \outbus, numChannels = 2 |
+		^Out.ar(bus.abc(numChannels), this)
+	}
 
 	adsr { | attackTime=0.01, decayTime=0.3, sustainLevel=1, releaseTime=1.0,
 		peakLevel=1.0, curve = -4.0, bias = 0.0, doneAction = 2, gate = 1 |
@@ -126,6 +137,7 @@ To explore:
 
 	in { | numChannels = 2 | ^In.ar(this.ab(numChannels)) }
 	ab { | numChannels = 2 | ^AudioBus(this, numChannels) }
+	abc { | numChannels = 2 | ^\out.kr(AudioBus(this, numChannels).index.postln) }
 	asAudioBus {  | numChannels = 2 | ^this.ab(numChannels) }
 }
 

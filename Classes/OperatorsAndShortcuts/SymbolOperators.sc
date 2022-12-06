@@ -91,11 +91,6 @@
 		}
 	}
 	<+ { | value, envir | envir.envir.put(this, value); }
-	/*
-	<+ { | value, envir |
-		envir.envir[this] = value
-	}
-	*/
 
 	player { | envir |
 		var player;
@@ -108,10 +103,7 @@
 	envir { ^Mediator.at(this) }
 
 	playInEnvir { | player, envir |
-		// TODO: add arguments setting, bus mapping
 		var synth;
-		// envir = envir ? currentEnvironment.name;
-		// Each player has its own envir, which also stores its busses
 		envir = envir ? player;
 		Mediator.wrap({
 			// enable storing of source code:

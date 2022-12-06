@@ -37,33 +37,15 @@ For sc-hacks-redux: playInEnvir.  Create synth, providing arguments from current
 		);
 
 		synth = Synth.basicNew(def.name, server);
-		// this also cauuses crach. Why?????
-		// synth.addNotifier(currentEnvironment, \target, { "target received".postln;});
-
-		// synth.addNotifier(\test, \test, { "test received".postln });
-		// if notifications are enabled on the server,
-		// use the n_end signal to remove the temp synthdef
-		// Moved to addSynth:
-		// synth.addNotifier(currentEnvironment, \target, { | n, target |
-		// 	// "my target has changed".postln;
-		// 	n.listener.moveToHead(target.asTarget);
-		// });
 		if (server.notified) {
 			OSCFunc({
 				server.sendMsg(\d_free, def.name);
 			}, '/n_end', server.addr, argTemplate: [synth.nodeID]).oneShot;
 		};
-		// postln("Function:play will use this as target:" + target);
 		synthMsg = synth.newMsg(target,
 			[\i_out, outbus, \out, outbus] ++ args, addAction
 		);
 		def.doSend(server, synthMsg);
-		// This causes crash. Why? :
-		// synth.addNotifier(currentEnvironment, \target, { | ... args |
-		// 	postln("The target has changed for synth" + synth);
-		// 	postln("The args are:" + args);
-		// })
-		// ;
 		^synth
 	}
 }
