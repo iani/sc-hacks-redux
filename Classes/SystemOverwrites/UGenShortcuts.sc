@@ -21,15 +21,16 @@ To explore:
 	slope { ^Slope.kr(this) }
 
 	// for SynthDef code:
-	fout {  | bus = \outbus, numChannels = 2 |
-		^this.fader.out(bus, numChannels);
+	fout {  | bus = \outbus, numChannels = 2, fin = 0.1, fout = 0.3, amp = 1 |
+		^this.fader(fin, fout, amp).out(bus, numChannels);
+	}
+
+	fader { | fin = 0.1, fout = 0.3, amp = 1 |
+		^this * Fader(fin, fout, amp);
 	}
 
 	out { | bus = \outbus, numChannels = 2 |
 		^Out.ar(bus.abc(numChannels), this)
-	}
-	fader { | amp = 1, fin = 0.1, fout = 0.3 |
-		^this * Fader(fin, fout, amp);
 	}
 
 	// envelope shortcuts
@@ -64,7 +65,6 @@ To explore:
 		.kr(doneAction: doneAction, gate: \gate.kr(gate))
 	}
 
-
 	bout { | busName | // send kr signal to a named kr bus
 		Out.kr(busName.bus.index, this);
 	}
@@ -91,9 +91,12 @@ To explore:
 		^this * Fader(fin, fout, amp);
 	}
 
-	fout {  | bus = \outbus, numChannels = 2 |
-		^this.fader.out(bus, numChannels)
+	fout {  | bus = \outbus, numChannels = 2, fin = 0.1, fout = 0.3, amp = 1 |
+		^this.fader(fin, fout, amp).out(bus, numChannels);
 	}
+	// fout {  | bus = \outbus, numChannels = 2 |
+	// 	^this.fader.out(bus, numChannels)
+	// }
 
 	out { | bus = \outbus, numChannels = 2 |
 		^Out.ar(bus.abc(numChannels), this)

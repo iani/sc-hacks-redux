@@ -241,16 +241,6 @@
 		envir[key] = func.asSynth(envir, defName, \addToHead);
 	}
 
-	src {
-
-
-	}
-
-	fx {
-
-
-	}
-
 	stream { } // evstream?
 
 	get { ^this.bus.get }

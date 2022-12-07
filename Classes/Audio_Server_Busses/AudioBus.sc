@@ -36,7 +36,7 @@ AudioBus {
 
 	*new { | name, numChannels = 2 |
 		var new;
-		if ([\out, \outbus] includes: \out) {
+		if ([\out, \outbus] includes: name) {
 			new = Bus(\audio, 0, numChannels, Server.default);
 		}{
 			new = this.all[name];
