@@ -19,7 +19,7 @@ OscGroups {
 	classvar <>oscSendPort = 22244, <>oscRecvPort = 22245;
 	classvar sendAddress, <oscRecvFunc;
 	classvar <>verbose = false;
-	classvar <codeMessage = \code;
+	classvar <codeMessage = '/code';
 	classvar <>notifier; // Only if notifier is OscGroups, then
 	// the message is broadcast via OscGroups
 	// See methods enableCodeBroadcasting, disableCodeBroadcasting
@@ -34,12 +34,11 @@ OscGroups {
 				code;
 			};
 			localAddress = NetAddr.localAddr;
+			this.activateCodeMessage;
 		}
 	}
 
-	*codeMessage_ { | newCodeMessage |
-		OSC.remove(codeMessage, \codeEvaluation);
-		codeMessage = newCodeMessage;
+	*activateCodeMessage {
 		OSC.add(codeMessage, { | n, msg |
 			var code;
 			code = msg[1].asString;
@@ -53,7 +52,13 @@ OscGroups {
 				"WARNING: UNSAFE CODE RECEIVED!:".postln;
 				code.postln;
 			}
-		}, \codeEvaluation);
+		}, \codeEvaluation)
+	}
+
+	*codeMessage_ { | newCodeMessage |
+		OSC.remove(codeMessage, \codeEvaluation);
+		codeMessage = newCodeMessage;
+		this.activateCodeMessage;
 	}
 
 	// this may no longer be valid on  1 Sep 2022 20:13
