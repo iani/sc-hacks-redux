@@ -148,13 +148,28 @@ Project {
 	}
 
 	*loadLocalSynthdefs {
+		if (this.projectFileNames includes: 'autoload_synthdefs.scd') {
 		"loading local synthdefs".postln;
+
 		OscGroups.disableCodeForwarding; // TODO: Remove this line after checking
 		if (OscGroups.isEnabled) { OscGroups.disableCodeForwarding; };
 		this.loadScdFiles(this.localSynthdefPath);
 		if (OscGroups.isEnabled) {
-			OscGroups.enableCodeForwarding; };
+			OscGroups.enableCodeForwarding;
+		};
+		}{
+			"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!".postln;
+			postln("Synthdef loading for project" + selectedProject + "is disabled.");
+			"To enable autoload synthdefs, add a file named autoload_synhdefs.scd in the project's folder".postln;
+			"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!".postln;
+		}
 	}
+
+	*projectFileNames {
+		^Project.projectItems collect: { | p | p.fileName.asSymbol };
+	}
+
+
 
 	*loadLocalSetupFolder {
 		"loading setup folder".postln;
@@ -179,7 +194,30 @@ Project {
 	*gui {
 		{
 			this.getProjects;
-			// ShutDown add: { this.saveProjectPath };
+			\goToProject >>>.projects { | n, msg |
+				// msg.postln;
+				// msg.postln;
+				// msg[0].postln;
+				// msg[1].postln;
+				// msg[2].postln;
+				// this.gotoSelectedProject(
+				// 	(
+				// 		\selectedProject: msg[1],
+				// 		\startupFolder: msg[2]
+				// 	)
+				// )
+				~test = (
+					\selectedProject: msg[1],
+					\startupFolder: msg[2]
+				).postln;
+				this.gotoSelectedProject(
+					(
+						\selectedProject: msg[1],
+						\startupFolder: msg[2]
+					)
+				)
+			};
+			// // ShutDown add: { this.saveProjectPath };
 			this.window({ | w |
 				w.bounds = w.bounds.height_(300);
 				w.name = "Projects in ~/" ++ startupFolder;
@@ -211,7 +249,9 @@ Project {
 						)
 						// .hiliteColor_(Color(0.9, 0.9, 1.0))
 						.addNotifier(this, \projects, { | n |
+							postln("current projects are:" + projects);
 							n.listener.items = projects;
+							postln("setting" + n.listener + "items to " + projects);
 							this.selectProject;
 						})
 						.addNotifier(this, \selectedProject, { | n |
@@ -485,7 +525,7 @@ Project {
 	}
 
 	*selectProject { | projectName |
-		selectedProject = projectName;
+		selectedProject = projectName ? selectedProject;
 		// postf("Selecting project: %\n", selectedProject);
 		if (userSelectedProject) {
 			this.saveProjectPath;
@@ -512,6 +552,40 @@ Project {
 		dict = Object.readArchive(this.selectedProjectArchivePath);
 		startupFolder = dict[\startupFolder];
 		selectedProject = dict[\selectedProject];
+		newSelectedProject = selectedProject;
+		this.getProjects;
+		postln("Restoring last project selection from archive:" + newSelectedProject);
+		userSelectedProject = true;
+		this.selectProject(newSelectedProject);
+		^dict;
+	}
+
+	*getProjectPath { // just get the project path - for various purposes
+		^Object.readArchive(this.selectedProjectArchivePath);
+	}
+	// evaluate this to broadcast project change over OscGroups
+	// This must be run by the sender only.
+	// So the sender must activate it from an interface that
+	// then sends an OSC message with the relevant project info to OscGroups
+	// Do not call this method by evaluating code because you do not want
+	// others to send *their* selected project.  Instead, run this method
+	// only from a GUI.
+	// The code of this method will be copied into a gui button action.
+	// Then the method will be deleted in order to prevent it from
+	// being evaluated by accident - because this could lead to
+	// an OscGroup sending loop flooding the network.
+	// First write the method and test it, then copy the code
+	// into the button action and test it, then erase this method.
+	// *sendSelectedProject { // do not evaluate this method manually.
+
+	// }
+
+	*gotoSelectedProject { | dict |
+		var newSelectedProject;
+		startupFolder = dict[\startupFolder].asString; // convert received from OSC
+		selectedProject = dict[\selectedProject];
+		// startupFolder.class.postln;
+		// selectedProject.class.postln;
 		newSelectedProject = selectedProject;
 		this.getProjects;
 		postln("Restoring last project selection from archive:" + newSelectedProject);

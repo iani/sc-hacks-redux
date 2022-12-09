@@ -17,5 +17,10 @@ Proj {
 		code.interpret; // this does not forward the code to OscGroups
 	}
 
+	*getPath { | filename |
+		// get absolute path for this filename
+		^(Project.selectedProjectPath +/+ filename).fullPath;
+	}
+
 	*gui { this.doesNotUnderstand('gui') }
 }
