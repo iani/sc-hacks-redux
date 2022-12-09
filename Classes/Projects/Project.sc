@@ -195,21 +195,12 @@ Project {
 		{
 			this.getProjects;
 			\goToProject >>>.projects { | n, msg |
-				// msg.postln;
-				// msg.postln;
-				// msg[0].postln;
-				// msg[1].postln;
-				// msg[2].postln;
-				// this.gotoSelectedProject(
-				// 	(
-				// 		\selectedProject: msg[1],
-				// 		\startupFolder: msg[2]
-				// 	)
-				// )
+				// Message and arguments are, in order:
+				// [\gotoProject, selectedProject, startupFolder]
 				~test = (
 					\selectedProject: msg[1],
 					\startupFolder: msg[2]
-				).postln;
+				);
 				this.gotoSelectedProject(
 					(
 						\selectedProject: msg[1],
@@ -225,9 +216,13 @@ Project {
 				w.layout = HLayout(
 					VLayout(
 						HLayout(
-							StaticText().string_("Projects").maxWidth_(150),
+							// StaticText().string_("Projects").maxWidth_(150),
 							Button().states_([["-*-"]]).maxWidth_(30)
 							.action_({ this.loadProjectPath }),
+							Button().states_([[">*<", Color.red]]).maxWidth_(30)
+							// replace broadcastProjectt with inline code to avoid
+							// running this code from the interpreter. !
+							.action_({ this.broadcastProject }),
 							Button().states_([["Setup"]]).maxWidth_(50)
 							.action_({ this.setup }),
 							Button()
@@ -249,9 +244,9 @@ Project {
 						)
 						// .hiliteColor_(Color(0.9, 0.9, 1.0))
 						.addNotifier(this, \projects, { | n |
-							postln("current projects are:" + projects);
+							// postln("current projects are:" + projects);
 							n.listener.items = projects;
-							postln("setting" + n.listener + "items to " + projects);
+							// postln("setting" + n.listener + "items to " + projects);
 							this.selectProject;
 						})
 						.addNotifier(this, \selectedProject, { | n |
@@ -515,7 +510,7 @@ Project {
 			);
 		}.fork;
 	}
-
+	/* // obsolete. please delete
 	*broadcastSelectedProject {
 		postf("\n**** Broadcasting selected project % ****\n\n", selectedProject);
 		// Send to OscGroups net address even if OscGroups is disabled:
@@ -523,6 +518,7 @@ Project {
 			format("Project.selectProject(%)", selectedProject.asCompileString)
 		);
 	}
+	*/
 
 	*selectProject { | projectName |
 		selectedProject = projectName ? selectedProject;
@@ -579,6 +575,13 @@ Project {
 	// *sendSelectedProject { // do not evaluate this method manually.
 
 	// }
+	// remove this method when done building it inline in button above ">*<":
+	*broadcastProject {
+		this.selectedProject.postln;
+		this.startupFolder.postln;
+		postln("I will broadcast project" + this.selectedProject + "from folder" + this.startupFolder);
+		OscGroups.send([\goToProject, this.selectedProject, this.startupFolder]);
+	}
 
 	*gotoSelectedProject { | dict |
 		var newSelectedProject;
