@@ -35,6 +35,10 @@ OSC {
 		(key ? message).addNotifier(this, message.asOscMessage, function);
 	}
 
+	*remove { | message, key |
+		(key ? message).removeNotifier(this, message.asOscMessage);
+	}
+
 	*forward { | message, address = 12345, key |
 		if (address isKindOf: Integer) {
 			address = NetAddr("127.0.0.1", address)
@@ -50,9 +54,7 @@ OSC {
 		// For use with SendReply.
 		(key ? message).addNotifier(this, message, function);
 	}
-	*remove { | message, key |
-		(key ? message).removeNotifier(this, message.asOscMessage);
-	}
+
 
 	*list {
 		var controllers;

@@ -19,7 +19,7 @@ OscGroups {
 	classvar <>oscSendPort = 22244, <>oscRecvPort = 22245;
 	classvar sendAddress, <oscRecvFunc;
 	classvar <>verbose = false;
-	classvar <oscMessage = \code;
+	classvar <codeMessage = \code;
 	classvar <>notifier; // Only if notifier is OscGroups, then
 	// the message is broadcast via OscGroups
 	// See methods enableCodeBroadcasting, disableCodeBroadcasting
@@ -29,15 +29,36 @@ OscGroups {
 	*initClass {
 		StartUp add: {
 			thisProcess.interpreter.preProcessor = { | code |
-				Interpreter.changed(\code, code);
+				// Interpreter.changed(\code, code);
+				Interpreter.changed(codeMessage, code);
 				code;
 			};
 			localAddress = NetAddr.localAddr;
 		}
 	}
+
+	*codeMessage_ { | newCodeMessage |
+		OSC.remove(codeMessage, \codeEvaluation);
+		codeMessage = newCodeMessage;
+		OSC.add(codeMessage, { | n, msg |
+			var code;
+			code = msg[1].asString;
+			if (code.isSafe) {
+				postf("========= Remote evaluation: ========= \n\(\n\%\n\)\n", code);
+				{	// permit window operations via remote evaluated code
+					code.interpret.postln;
+					this.changed(\evalCode, code);
+				}.defer;
+			}{
+				"WARNING: UNSAFE CODE RECEIVED!:".postln;
+				code.postln;
+			}
+		}, \codeEvaluation);
+	}
+
 	// this may no longer be valid on  1 Sep 2022 20:13
 	*isEnabled {
-		^OSC.listensTo(oscMessage, oscMessage) and: {
+		^OSC.listensTo(codeMessage, codeMessage) and: {
 			sendAddress.notNil
 		};
 	} // NEEDS CHECKING!
@@ -130,7 +151,7 @@ OscGroups {
 		// send evaluated code to sendAddress using oscMessage and adding localUser
 		this.addNotifier(Interpreter, \code, { | n, code |
 			this.changed(\localcode, code); // OSCRecorder records the code here.
-			sendAddress.sendMsg(oscMessage, code);
+			sendAddress.sendMsg(codeMessage, code);
 		});
 		this.changedStatus;
 	}
@@ -138,7 +159,7 @@ OscGroups {
 	*disableCodeForwarding {
 		 // deactivate sharing by settging Interpreter's preprocessor to nil.
 		// localUser.unshare;
-		this.removeNotifier(Interpreter, \code);
+		this.removeNotifier(Interpreter, codeMessage);
 		this.changedStatus;
 	}
 
@@ -149,18 +170,18 @@ OscGroups {
 		this.changedStatus;
 	}
 
+	// obsolete - must rewrite for compatibility with setting codeMessage var!!!
 	*enableCodeEvaluation {
 		OSC.enableCodeEvaluation;
-		// oscMessage.evalOSC;
+	}
+
+	*disableCodeReception {
+		codeMessage.unevalOSC;
+		this.changedStatus;
 	}
 
 	*openUDPPort { // TODO: Use oscRecvPort instead
 		thisProcess.openUDPPort(22245); // oscRecvPort
-	}
-
-	*disableCodeReception {
-		oscMessage.unevalOSC;
-		this.changedStatus;
 	}
 
 	*changedStatus {  this.changed(\status) }
@@ -179,7 +200,7 @@ OscGroups {
 		// TODO: is this method superseeded by broadcast?
 		// send string to sendAddress independently of current status.
 		// Sends even if OscGroups is disabled.
-		sendAddress.sendMsg(oscMessage, string, localUser);
+		sendAddress.sendMsg(codeMessage, string, localUser);
 	}
 
 	*runLocally { | func |
@@ -202,7 +223,7 @@ OscGroups {
 		// Remotely only execute core CmdPeriod method.
 		sendAddress ?? { ^nil };
 		"Sending CmdPeriod to OscGroups".postln;
-		sendAddress.sendMsg(oscMessage, "OscGroups.remoteCmdPeriod")
+		sendAddress.sendMsg(codeMessage, "OscGroups.remoteCmdPeriod")
 	}
 
 	*remoteCmdPeriod {
