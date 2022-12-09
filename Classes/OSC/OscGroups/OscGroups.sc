@@ -30,7 +30,7 @@ OscGroups {
 		StartUp add: {
 			thisProcess.interpreter.preProcessor = { | code |
 				// Interpreter.changed(\code, code);
-				Interpreter.changed(codeMessage, code);
+				Interpreter.changed(\code, code);
 				code;
 			};
 			localAddress = NetAddr.localAddr;
@@ -156,6 +156,7 @@ OscGroups {
 		// send evaluated code to sendAddress using oscMessage and adding localUser
 		this.addNotifier(Interpreter, \code, { | n, code |
 			this.changed(\localcode, code); // OSCRecorder records the code here.
+			postln("sending message" + codeMessage + "to address " + sendAddress);
 			sendAddress.sendMsg(codeMessage, code);
 		});
 		this.changedStatus;
