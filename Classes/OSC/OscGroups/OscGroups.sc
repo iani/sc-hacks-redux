@@ -39,6 +39,7 @@ OscGroups {
 	}
 
 	*activateCodeMessage {
+		postln("activating code message:" + codeMessage);
 		OSC.add(codeMessage, { | n, msg |
 			var code;
 			code = msg[1].asString;
@@ -56,6 +57,7 @@ OscGroups {
 	}
 
 	*codeMessage_ { | newCodeMessage |
+		postln("removing old code message:" + codeMessage);
 		OSC.remove(codeMessage, \codeEvaluation);
 		codeMessage = newCodeMessage;
 		this.activateCodeMessage;
