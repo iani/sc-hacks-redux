@@ -156,7 +156,7 @@ OscGroups {
 		// send evaluated code to sendAddress using oscMessage and adding localUser
 		this.addNotifier(Interpreter, \code, { | n, code |
 			this.changed(\localcode, code); // OSCRecorder records the code here.
-			postln("sending message" + codeMessage + "to address " + sendAddress);
+			// postln("sending message" + codeMessage + "to address " + sendAddress);
 			sendAddress.sendMsg(codeMessage, code);
 		});
 		this.changedStatus;
