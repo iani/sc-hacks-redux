@@ -165,7 +165,7 @@ OscGroups {
 	*disableCodeForwarding {
 		 // deactivate sharing by settging Interpreter's preprocessor to nil.
 		// localUser.unshare;
-		this.removeNotifier(Interpreter, codeMessage);
+		this.removeNotifier(Interpreter, \code);
 		this.changedStatus;
 	}
 
