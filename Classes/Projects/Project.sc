@@ -148,7 +148,7 @@ Project {
 	}
 
 	*loadLocalSynthdefs {
-		if (this.projectFileNames includes: 'autoload_synthdefs.scd') {
+		if (this.projectFileNames ?? { [] } includes: 'autoload_synthdefs.scd') {
 		"loading local synthdefs".postln;
 
 		OscGroups.disableCodeForwarding; // TODO: Remove this line after checking
