@@ -177,7 +177,7 @@ OscGroups {
 
 	*enableCodeReception {
 		// TODO: Use oscRecvPort instead
-		thisProcess.openUDPPort(22245); // oscRecvPort
+		thisProcess.openUDPPort(oscRecvPort); // oscRecvPort
 		this.enableCodeEvaluation;
 		this.changedStatus;
 	}
