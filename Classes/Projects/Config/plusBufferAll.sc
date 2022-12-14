@@ -20,11 +20,15 @@ List all buffers
 			^bufferDict.keys.asArray.sort;
 		}
 	}
+	*list { this.listAll }
 	*listAll {
-		var bufferdict;
-		bufferdict = this.dict;
+		var bufferDict;
+		bufferDict = this.dict;
 		this.all do: { | bname |
-			bufferdict[bname].postln;
+			var b;
+			b = bufferDict[bname];
+			postln(bname.asString + "channels" + b.numChannels + "duration"
+				+ b.dur.formatTime + "path" + b.path);
 		}
 	}
 }

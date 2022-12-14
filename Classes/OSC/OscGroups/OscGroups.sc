@@ -17,7 +17,7 @@ OscGroups.enable;
 
 OscGroups {
 	classvar <>oscSendPort = 22244, <>oscRecvPort = 22245;
-	classvar sendAddress, <oscRecvFunc;
+	classvar <sendAddress, <oscRecvFunc;
 	classvar <>verbose = false;
 	classvar <codeMessage = '/code';
 	classvar <>notifier; // Only if notifier is OscGroups, then
@@ -65,7 +65,7 @@ OscGroups {
 
 	// this may no longer be valid on  1 Sep 2022 20:13
 	*isEnabled {
-		^OSC.listensTo(codeMessage, codeMessage) and: {
+		^OSC.listensTo(codeMessage, \codeEvaluation) and: {
 			sendAddress.notNil
 		};
 	} // NEEDS CHECKING!
@@ -88,6 +88,7 @@ OscGroups {
 			var processed;
 			if (port == 57120) { // only forward locally received messages
 				processed = preprocessor.(*msg[1..]);
+				// if sendAddress is nil, nothing happens.
 				sendAddress.sendMsg(newmessage, *processed); // send to others
 				localAddress.sendMsg(newmessage, *processed); // send to self
 			}
@@ -95,7 +96,9 @@ OscGroups {
 	}
 
 	*send { | message | // send to oscgroups client
-		sendAddress !? { sendAddress.sendMsg(*message); }
+		// sendAddress !? { sendAddress.sendMsg(*message); }
+		// if sendAddress is nil, nothing happens.
+		sendAddress.sendMsg(*message);
 	}
 
 	*forward { | message |
@@ -134,6 +137,7 @@ OscGroups {
 		this.changedStatus;
 	}
 	*disable {
+		sendAddress = nil;
 		this.disableCodeForwarding;
 		this.disableCodeReception;
 		this.disableCmdPeriod;
@@ -180,7 +184,8 @@ OscGroups {
 
 	// obsolete - must rewrite for compatibility with setting codeMessage var!!!
 	*enableCodeEvaluation {
-		OSC.enableCodeEvaluation;
+		// OSC.enableCodeEvaluation;
+		this.activateCodeMessage;
 	}
 
 	*disableCodeReception {
@@ -192,9 +197,12 @@ OscGroups {
 		thisProcess.openUDPPort(22245); // oscRecvPort
 	}
 
-	*changedStatus {  this.changed(\status) }
+	*changedStatus {
+		"OscGroups testing enabled status".postln;
+		this.changed(\status);
+	}
 
-	*sendAddress { ^sendAddress ?? { sendAddress = this.makeSendAddress } }
+	// *sendAddress { ^sendAddress ?? { sendAddress = this.makeSendAddress } }
 
 	*makeSendAddress {
 		sendAddress = NetAddr("127.0.0.1", oscSendPort);
@@ -251,6 +259,10 @@ OscGroups {
 		"OscGroupClient 64.225.97.89 22242 22243 22244 22245 iani ianipass nikkgroup nikkpass".runInTerminal;
 	}
 
+	*isForwardingCode {
+		^Notification.matches(Interpreter, OscGroups, \code);
+	}
+
 	*gui { // Window with button to enable / disable code broadcasting
 		var myself;
 		myself = this;
@@ -268,11 +280,14 @@ OscGroups {
 					][me.value]);
 				})
 				.addNotifier(this, \status, { | n |
-					// "Checking OscGroups gui status button".postln;
-					// n.notifier.postln;
+					"OscGroups gui checking OscGroups gui status button".postln;
+					n.notifier.postln;
 					postf(
-						"osc groups enabled? %\n",
+						"OscGroups gui: osc groups enabled? ",
 						n.notifier.isEnabled
+					);
+					postf("OscGroups gui: osc groups is forwarding code? %\n",
+						n.notifier.isForwardingCode
 					);
 					if (n.notifier.isEnabled) {
 						n.listener.value = 0

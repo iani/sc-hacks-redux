@@ -7,9 +7,25 @@ OscGroupClient 139.162.184.97 22242 22246 22244 22245 <USERNAME> <USER_PASSWORD>
 
 OSC {
 	classvar >reportingFunc;
+	classvar <>enabled = true;
 
-	// DEBUGGING
+	*enable { enabled = true }
+	*disable { enabled = false }
+
+	// 14 Dec 2022 14:06: enable disabling of reception
+	*respondTo { |  time, replyAddr, recvPort, msg |
+		if (enabled) {
+			// From earlier Main:recvOSCmessage:
+			// OSC.changed(msg[0], msg, time, replyAddr, recvPort);
+			this.changed(msg[0], msg, time, replyAddr, recvPort);
+		}
+	}
+
+	// Deprecated
 	*enableCodeEvaluation {
+		"OSC enableCodeEvaluation has been deprecated".postln;
+		"Use OscGroups enableCodeEvaluation instead".postln;
+		/*
 		this.add(\code, { | n, msg |
 			var code;
 			code = msg[1].asString;
@@ -24,6 +40,7 @@ OSC {
 				code.postln;
 			}
 		}, \codeEvaluation);
+		*/
 	}
 
 	*add { | message, function, key |

@@ -13,7 +13,9 @@ OSC.addDependant({ | ... args | args.postln; })
 	recvOSCmessage { arg time, replyAddr, recvPort, msg; // ... args;
 		// this method is called when an OSC message is received.
 		// postln("time:" + time + " replyAddr " + replyAddr + " recvPort " + recvPort + " msg " + msg + " args " + args);
-		OSC.changed(msg[0], msg, time, replyAddr, recvPort); // use OSC class
+		// replacing this to enable OSC disabling
+		// OSC.changed(msg[0], msg, time, replyAddr, recvPort); // use OSC class
+		OSC.respondTo(time, replyAddr, recvPort, msg); // respond only when OSC is enabled
 		recvOSCfunc.value(time, replyAddr, msg);
 		prRecvOSCFunc.value(msg, time, replyAddr, recvPort); // same order as OSCFunc
 		OSCresponder.respond(time, replyAddr, msg);

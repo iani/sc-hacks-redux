@@ -27,7 +27,7 @@
 		^this.pushPlayInEnvir(player, player, group);
 	}
 
-	playInEnvir { | player, envir, target, outbus = 0 |
+	playInEnvir { | player, envir, target, outbus = 0, addAction = \addToHead |
 		// TODO: add arguments setting, bus mapping
 		var synth;
 		envir = envir ? player; // play in own envir, holding own busses
@@ -35,7 +35,8 @@
 			if (Server.default.serverRunning) {
 				currentEnvironment.addSynth(player, synth = this.play(
 					target, outbus,
-					player: player, envir: envir
+					player: player, envir: envir,
+					addAction: addAction
 				));
 			}{
 				Server.default.waitForBoot({

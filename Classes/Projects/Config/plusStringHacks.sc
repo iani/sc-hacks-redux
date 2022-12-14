@@ -78,6 +78,11 @@ Utility: Iterate an action on all files that match a search.
 		}
 	}
 
+	// alternative scheme storing buffers in Library
+	libraryLoadAudioFile {
+
+	}
+
 	numFolders {
 		^PathName(this).numFolders;
 	}
@@ -90,9 +95,10 @@ Utility: Iterate an action on all files that match a search.
 		// return (folderName ++ "_" ++ fileNameWithoutExtension).asSymbol
 		var bufName;
 		bufName = this.fileNameWithoutExtension;
-		if (Library.at(Buffer, bufName.asSymbol).notNil) {
-			bufName = this.folderName ++ "_" ++ bufName;
-		};
+		// old scheme to be replaced by scheme with multiple dictionaries:
+		// if (Library.at(Buffer, bufName.asSymbol).notNil) {
+		// 	bufName = this.folderName ++ "_" ++ bufName;
+		// };
 		^bufName.asSymbol;
 	}
 

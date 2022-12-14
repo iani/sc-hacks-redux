@@ -59,7 +59,6 @@ Project {
 				"Removing buffer entries from lib".postln;
 				Library.put(Buffer, nil);
 			};
-
 	 	}
 	}
 
@@ -138,6 +137,12 @@ Project {
 	*loadLocalBuffers {
 		postf("loading local buffers from: %\n", this.localAudiofilePath);
 		this.loadAudioFiles(this.localAudiofilePath);
+		postf("loading local buffers from: %\n", this.externalAudiofilePath);
+		this.loadAudioFiles(this.externalAudiofilePath);
+	}
+
+	*externalAudiofilePath {
+		^PathName(Platform.userHomeDir +/+ "sc-audiofiles" +/+ Project.selectedProject);
 	}
 
 	*loadGlobalSynthdefs {
@@ -168,8 +173,6 @@ Project {
 	*projectFileNames {
 		^Project.projectItems collect: { | p | p.fileName.asSymbol };
 	}
-
-
 
 	*loadLocalSetupFolder {
 		"loading setup folder".postln;
@@ -235,6 +238,7 @@ Project {
 								MenuAction("Go to subfolder", { this.goDownAFolder }),
 								MenuAction("Go to superfolder", { this.goUpAFolder }),
 								MenuAction("Refresh Project Window", { this.getProjects }),
+								MenuAction("Load Local Audio Files", { this.loadLocalBuffers })
 							).front })
 						),
 						ListView()
@@ -418,7 +422,7 @@ Project {
 				);
 				{
 					OscGroups.changed(\status);
-					"polled oscgroups status now".postln;
+					// "polled oscgroups status now".postln;
 				}.defer(0.15);
 				2 do: { this.getProjects; 1.wait; };
 			});
@@ -429,7 +433,7 @@ Project {
 		var targetFolder, fullPath;
 		// go down to selected project folder making it root of projects.
 		// If selected project folder has no subfolders, then just issue an error.
-		"I will go down a folder. The current project folder I will go down to is:".postln;
+		"Going down to folder: ".post;
 		selectedProject.postln;
 		targetFolder = PathName(startupFolder) +/+ selectedProject;
 		postln("The new projectfolder will become:" + targetFolder);
@@ -441,8 +445,8 @@ Project {
 			"Skipping this.".postln;
 			"Please select a different folder as project root".postln;
 		}{
-			"Here will be the glorious new project root folder!!!!!".postln;
-			targetFolder.postln;
+			postln("The new project folder is:" + targetFolder);
+			// targetFolder.postln;
 			startupFolder = targetFolder.fullPath;
 			this.getProjects;
 		};
@@ -457,10 +461,10 @@ Project {
 		targetFolder = PathName(PathName(startupFolder).parentPath).fullPath.postln; // hack ...
 		postln("The new target folder is:" + targetFolder);
 		if (targetFolder.size == 0) {
-			postln("hey you have moved to the root of home directory. This is not good. ABORTING");
+			postln("Already at the root of home directory. Cannot go up any further.");
 		}{
-			"Well yes, we may be able to go to this folder:".postln;
-			targetFolder.postln;
+			postln("Going down to this folder:" + targetFolder);
+			// targetFolder.postln;
 			startupFolder = targetFolder;
 			this.getProjects;
 		}
@@ -543,11 +547,13 @@ Project {
 		postln("folder:" + startupFolder + "project:" + selectedProject);
 	}
 
-	*loadProjectPath {
-		var dict, newSelectedProject;
-		dict = Object.readArchive(this.selectedProjectArchivePath);
-		startupFolder = dict[\startupFolder];
-		selectedProject = dict[\selectedProject];
+	*loadProjectPath { | dict |
+		var newSelectedProject;
+		dict ?? {
+			dict = Object.readArchive(this.selectedProjectArchivePath);
+		};
+		startupFolder = dict[\startupFolder].asString;
+		selectedProject = dict[\selectedProject].asSymbol;
 		newSelectedProject = selectedProject;
 		this.getProjects;
 		postln("Restoring last project selection from archive:" + newSelectedProject);
@@ -583,10 +589,17 @@ Project {
 		OscGroups.send([\goToProject, this.selectedProject, this.startupFolder]);
 	}
 
+	*goto { | argProject, argFolder |
+		this gotoSelectedProject: (
+			selectedProject: argProject,
+			startupFolder: argFolder
+		);
+	}
+
 	*gotoSelectedProject { | dict |
 		var newSelectedProject;
 		startupFolder = dict[\startupFolder].asString; // convert received from OSC
-		selectedProject = dict[\selectedProject];
+		selectedProject = dict[\selectedProject].asSymbol;
 		// startupFolder.class.postln;
 		// selectedProject.class.postln;
 		newSelectedProject = selectedProject;
