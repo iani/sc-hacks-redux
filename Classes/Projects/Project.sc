@@ -1,4 +1,10 @@
-/* 15 Sep 2021 18:26
+/*
+20 Dec 2022 18:15: Reqriting Project from scratch,
+to tidy up the path and project related variables and methods.
+
+The present earlier version is renamed ProjecOld.
+
+	15 Sep 2021 18:26
 Load project scripts and audio files from subfolders of a folder.
 Default folder path is: ~/sc-projects.
 
@@ -32,14 +38,21 @@ Clicking on the selected file/folder button executes the corresponding file(s)
 
 */
 
-Project {
-	classvar <>startupFolder = "sc-projects", <>globalFolder = "global";
+ProjectOld {
+	classvar >root;
+	// TODO: rootFolder and startupFolder roles are confusing
+	// startupFolder should be dependen on rootFolder??
+	// Fix redundant vars!
 	classvar <>rootFolder = "sc-projects";
+	classvar <>startupFolder = "sc-projects";
+	classvar <>globalFolder = "global";
 	classvar <projects, <selectedProject;
 	classvar <projectItems, <selectedProjectItem;
 	classvar <userSelectedProject = false;
 
-	*initClass {
+	// projects should declare what they need in their setup script,
+	// using "Buffer.require(folder)", "SynthDef.require(folder)".
+	*initClassDisabled {
 		StartUp add: {
 			Server.default doWhenReallyBooted:  { | server |
 		 		this.loadGlobalBuffers;
@@ -77,6 +90,7 @@ Project {
 		^this.projectHomePath.folders collect: { | p | p.folderName.asSymbol };
 	}
 
+	// TODO: Review and remove unnecessary vars or methods.
 	*projectHomePath { ^PathName(Platform.userHomeDir +/+ startupFolder); }
 	*globalHomePath { ^PathName(Platform.userHomeDir +/+ rootFolder); }
 	*globalProjectPath { ^this.globalHomePath +/+ globalFolder }
@@ -436,7 +450,7 @@ Project {
 		"Going down to folder: ".post;
 		selectedProject.postln;
 		targetFolder = PathName(startupFolder) +/+ selectedProject;
-		postln("The new projectfolder will become:" + targetFolder);
+		postln("The new project folder will become:" + targetFolder);
 		fullPath = PathName(Platform.userHomeDir)  +/+ targetFolder;
 		postln("The full path is " + fullPath);
 		postln("There are " + fullPath.folders.size + "subfolders to work with.");

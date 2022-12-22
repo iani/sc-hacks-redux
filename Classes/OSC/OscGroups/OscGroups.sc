@@ -56,6 +56,26 @@ OscGroups {
 		}, \codeEvaluation)
 	}
 
+	*activateCodeMessageSpecial {
+		var x;
+		x = \code_x;
+		postln("activating code message:" + x);
+		OSC.add(x, { | n, msg |
+			var code;
+			code = msg[1].asString;
+			if (code.isSafe) {
+				postf("========= Remote evaluation: X ========= \n\(\n\%\n\)\n", code);
+				{	// permit window operations via remote evaluated code
+					code.interpret.postln;
+					this.changed(\evalCode, code);
+				}.defer;
+			}{
+				"WARNING: UNSAFE CODE RECEIVED!:".postln;
+				code.postln;
+			}
+		}, \codeEvaluationx)
+	}
+
 	*codeMessage_ { | newCodeMessage |
 		postln("removing old code message:" + codeMessage);
 		OSC.remove(codeMessage, \codeEvaluation);
@@ -193,7 +213,7 @@ OscGroups {
 		this.changedStatus;
 	}
 
-	*openUDPPort { // TODO: Use oscRecvPort instead
+	*openUDPPort { //
 		thisProcess.openUDPPort(oscRecvPort); //oscRecvPort
 	}
 
