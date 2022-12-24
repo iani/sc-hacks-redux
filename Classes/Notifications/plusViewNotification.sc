@@ -2,7 +2,20 @@
 Enable disabling of file through yaml config.
 By placing this extension in separate file.
 
-*/+ View {
+*/
+
++ Window {
+	addNotifier { | notifier, message, action |
+		super.addNotifier(notifier, message, { | ... args |
+		// defer needed when called from OSC or other SystemClock based process
+			{ action.value(*args) }.defer
+		});
+		// release view when closed
+		this.onClose = { this.objectClosed };
+    }
+}
+
++ View {
 	addNotifier { | notifier, message, action |
 		super.addNotifier(notifier, message, { | ... args |
 		// defer needed when called from OSC or other SystemClock based process

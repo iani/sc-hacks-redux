@@ -27,4 +27,10 @@ Preferences {
 		this.load;
 		^this.preferences.at(*path);
 	}
+
+	*list { | key |
+		this.preferences.at(key) keysValuesDo: { | key, value |
+			postln("key:" + key + "value:" + value);
+		}
+	}
 }

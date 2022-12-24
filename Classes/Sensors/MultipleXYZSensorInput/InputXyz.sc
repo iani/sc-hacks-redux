@@ -26,6 +26,7 @@ The enable method does this:
 InputXyz {
 	classvar <values, <instances;
 	var <id, <valueIndex, <busses;
+	classvar <>verbose = false;
 	*enable { | numIds = 30 |
 		postln("InputXyz: Creating" + numIds + "x-y-z bus groups");
 		values = 0.dup(numIds * 3);
@@ -65,6 +66,9 @@ InputXyz {
 	setValues { | xyz |
 		xyz do: { | v, i |
 			values[i + valueIndex] = v;
+			if (verbose) {
+				postln("setting bus" + busses[i] + "to value" + v);
+			};
 			busses[i].set(v);
 		};
 		this.class.changed(\sensors, [values]);

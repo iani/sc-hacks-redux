@@ -33,5 +33,11 @@ String - PathName utilities
 + String {
 	concatFolders { | ... folders |
 		// TODO
+		var result;
+		result = PathName(this);
+		folders do: { | f |
+			result = result +/+ f;
+		};
+		^result;
 	}
 }
