@@ -1,0 +1,122 @@
+#+TITLE: Project
+* Folder structure
+
+Example:
+
+| *homeFolder* |                |                |                |
+|              | /superFolder1/ |                |                |
+|              |                | projectFolder1 |                |
+|              |                | projectFolder2 |                |
+|              | /superFolder2/ |                |                |
+|              |                | projectFolder3 |                |
+|              |                | projectFolder4 |                |
+|              |                | /superfolder3/ |                |
+|              |                |                | projectFolder5 |
+|              |                |                | projectFolder6 |
+
+- All projects are contained in subfolders of the homeFolder.
+- Projects may be organized inside nested subfolders of the homeFolder.
+- A folder immediately containing a project folder is called a superFolder of that project folder.
+
+* Variables
+
+** homeFolder
+
+The folder that contains all project folders.
+
+** projectFolder
+
+The folder that contains the currently selected project
+
+** projectSuperfolder
+
+The folder that contains the current projectFolder.  I.e. The projectFolder is an immediate subfolder
+
+
+1. projectFolder: Path to folder containing the currently selected project scripts (and subfolders).
+	The contents of this folder are displayed in the right list view of the gui window.
+	classvar <projectFolder; // Full PathName to selected project
+2. 	projectSuperfolder: Path to folder containing the currently selected projectFolder
+	The contents of this folder are displayed in the left list view of the gui window.
+	classvar <projectSuperfolder; // Full PathName to selected project
+3.	path to folder containing all project folders and subfolders.
+	classvar topFolder;      // Full PathName to folder containing the selected project
+	//========================================
+4, 5.
+	classvar <projects, <projectIndex = 0;
+6, 7.
+	classvar <projectItems, <projectItemIndex = 0;
+8.
+	classvar preferences; // Dictionary with: root, rootProject, selectedProject, audiofile, synthdef
+
+
+
+projectRoot: root folder. Default: PathName("~/projectRoot")
+
+This is the folder that is scanned to find projects, and whose subfolders
+are listed in the left pane of the project gui.
+The currently selected project is an immediate subfolder of the projectRoot folder.
+
+The projectRoot changes when the user navigates inside a subfolder or superfolder.
+
+Additionally, there is a defaultRootFolder
+
+selectedProject: path to selected project.
+The selectedProject path is the full Pathname of the most recently selected project.
+It is saved onto file between sessions and can be retrieved when a new gui is made.
+It is created by selecting via index from PathName.folders (from the ListView of folders).
+
+When sharing over OSC groups, its component relative to projectRoot is extracted for sending.
+The receiver re-composes the path with their own project root.
+
+Sender:
+input: selectedProject (full path)
+processing:
+	1. decompose to folders: PathName(selectedProject).allFolders.
+	2. delete from beginning of array those folders which belong to PathName("~projectRoot").allFolders
+output sent via OSC: array of remaining folders (without the projectRoot folders)
+
+Receiver:
+input: array of remaining folders (without the projectRoot folders)
+processing:
+	1. add to array of folders of receiver's projectRoot. Store in variable pathArray.
+	2. concatenate pathArray into new pathname inserting +/+ between folders
+	(implementation: use custom String method: concatFolders)
+
+synthdefRoot: root folder of synthdefs. String.
+audiofileRoot: root folder of audiofiles.  String.
+
+==================== PATH VARIABLES DISCUSSION =====================
+Overview:
+
+Details:
+projectRoot: The folder immediately containing the selectedProject folder.
+	Used to display a list of folders in the left pane of the gui.
+	The user selects a project from these folders and views the contents
+	of the selected folder in the right pane.
+
+	The projectRoot changes when the user selects a different folder.
+	This change is done in one of the following ways:
+	1. Going up a folder via keyboard < ^ ...
+	2. Going down a folder via keyboard > . ...
+	3. Going back to the defaultProjectRoot
+	... ?
+	To reset the projectRoot, one uses the value stored in defaultProjectRoot.
+
+selectedProjectPath:
+defaultProjectRoot:
+
+projects:
+projectIndex:
+
+projectItems:
+projectItemIndex:
+
+======= earlier simpler version - under discussion:
+
+Under revision (no longer valid:)
+If Project has never been used, there is no selectedProject value. In that case,
+selectedProject path defaults to PathName("~/sc-projects");
+If no such folder exists, then Projects gets a root folder from the user via File Dialog.
+
+*/
