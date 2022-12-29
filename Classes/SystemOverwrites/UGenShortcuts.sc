@@ -16,8 +16,8 @@ To explore:
 	// value mapping + comparing shortcuts
 	lin { | lo = 0.0, hi = 1.0 | ^this.linlin(0.0, 1.0, lo, hi) }
 	exp { | lo = 0.0, hi = 1.0 | ^this.linexp(0.0, 1.0, lo, hi) }
-	lt { | thresh = 0.5 | ^this < thresh; }
-	gt { | thresh = 0.5 | ^this > thresh; }
+	lt { | thresh = 0.5, lag = 0 | ^(this < thresh).lag(lag); }
+	gt { | thresh = 0.5, lag = 0 | ^(this > thresh).lag(lag); }
 	slope { ^Slope.kr(this) }
 
 	// for SynthDef code:

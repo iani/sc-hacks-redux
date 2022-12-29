@@ -1,11 +1,13 @@
 /*  9 Aug 2021 23:38
 Utility: Iterate an action on all files that match a search.
-
+PathName(Platform.userHomeDir).fullPath.size;
 
 */
 
-
 + String {
+	userRelative {
+		^"~" ++ this[PathName(Platform.userHomeDir).fullPath.size..]
+	}
 	stripInitialBlanks {
 		var b = 0; // blank
 		while { this[b] === $\n } {  b = b + 1 };

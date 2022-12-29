@@ -17,7 +17,7 @@ Simplenumber @> \symbol // set bus to number
 		});
 	}
 	pget { | format = "%" |
-		this.get({ | v | format(format, v).postln; })
+		this.get({ | v | format(format, v, this).postln; })
 	}
 
 	scope { | name = \bus |
@@ -144,10 +144,12 @@ Simplenumber @> \symbol // set bus to number
 }
 
 + SimpleNumber {
-	@> { | bus, playerEnvir | // set bus value
+	@> { | bus, playerEnvir = \sensors | // set bus value
 		// works with new AND already existing busses.
 		// Stop processes playing in this bus before setting a new value:
 		bus.stopPlayer(playerEnvir);
+		// postln("playerEnvir:" + playerEnvir);
+		// postln("bus " + bus + "at playerEnvir: " + bus.bus(nil, playerEnvir));
 		bus.bus(nil, playerEnvir ? currentEnvironment.name).set(this);
 	}
 }

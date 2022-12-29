@@ -7,10 +7,13 @@ Tentative.
 
 */
 
++ String {
+	butLast {  ^this[..this.size-2] }
+}
 
 + Array {
 	butLast {
-		^this[..this.size-1]
+		^this[..this.size-2]
 	}
 	putLast { | object |
 		this.put(this.size - 1, object);

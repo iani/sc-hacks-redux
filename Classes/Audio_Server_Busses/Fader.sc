@@ -15,9 +15,11 @@ Fader {
 	*new { | fin = 0.01, fout = 0.3, amp = 1 |
 		var finl, foutl;
 		finl = Linen.kr(1, fin, 1, 1, 0);
-		// finl = Linen.kr(1, \fin.kr(fin), 1, 1, 0);
 		foutl = Linen.kr(\gate.kr(1), 0.0, 1.0, fout, 2);
-		// foutl = Linen.kr(\gate.kr(1), 0.01, 1.0, \fout.kr(0.3), 2);
-		^finl * foutl * amp;
+		// convert amp argument to control - or keep it if it is bus-based control:
+		// could not write def: ...  error ????
+		// if (amp isKindOf: SimpleNumber) { amp =  \amp.kr(amp) };
+		// ^finl * foutl * \amp.kr(amp);
+		^finl * foutl * \amp.br(amp);
 	}
 }
