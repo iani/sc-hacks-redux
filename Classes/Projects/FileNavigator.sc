@@ -4,6 +4,9 @@ Creates listviews for navigating the contents of folders
 inside a home folder.
 
 Based on the new version of Project.
+!!!!!!!!!!!!!!!!!!!!!!!
+See FileNavigator2
+
 */
 
 FileNavigator {
