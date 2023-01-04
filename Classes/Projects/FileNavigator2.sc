@@ -8,44 +8,45 @@ FileNavigator2 {
 	var <outerList, <outerItem, <outerIndex = 0;
 	var <innerList, <innerItem, <innerIndex = 0;
 
-	// provide defaults for homeDir and currentRoot
-	homeDir {
-		^homeDir ?? { homeDir = PathName(Platform.userHomeDir) +/+ "sc-projects"; }
-	}
-
-	currentRoot {
-		^currentRoot ?? { currentRoot = this.homeDir }
-	}
-
 	getItems {
-		outerList = this.currentRoot.folders;
+		outerList = this.getOuterListItesm;
 		if (outerList.size == 0) {
 			^postln("No items found in" + currentRoot.fullPath);
 		};
 		outerIndex = 0;
+		outerItem = outerList[outerIndex];
 		this.changed(\outerList);
 		this.getInnerList;
 	}
 
-	getInnerList {
-		outerItem = outerList[outerIndex];
-		if (outerItem.isNil) {
+	// subclasses may overwrite this:
+	getOuterListItesm { ^this.currentRoot.folders; }
+	// provide defaults for homeDir and currentRoot
+	currentRoot { ^currentRoot ?? { currentRoot = this.homeDir } }
+	homeDir { ^homeDir ?? { homeDir = (PathName(Platform.userHomeDir) +/+ "sc-projects").asDir; } }
 
+
+	getInnerList {
+		if (outerItem.isNil) {
+			^postln("No outer item is selected. cannot get linner list");
 		};
-		innerList = outerItem.entries;
+		innerList =  this.getInnerListItems;
 		innerIndex = 0;
+		innerItem = innerList[innerIndex];
 		this changed: \innerList;
 	}
 
+	getInnerListItems { ^outerItem.entries; }
+
 	// make outerItem the currentRoot
-	enter {
+	zoomIn {
 		currentRoot = outerItem;
 		this.getItems;
 	}
 
 	// make currentRoot's superfolder the currentRoot;
-	exit {
-		if (currentRoot == this.homeDir) {
+	zoomOut {
+		if (this.currentRoot.asDir.fullPath == this.homeDir.asDir.fullPath) {
 			^postln("Cannot go above the homeDir: " + homeDir)
 		};
 		currentRoot = currentRoot.up;

@@ -5,6 +5,7 @@ String - PathName utilities
 */
 
 + PathName {
+	asDir { ^this +/+ "" }
 	up {
 		^PathName(this.parentPath)
 	}
@@ -31,13 +32,13 @@ String - PathName utilities
 }
 
 + String {
+	up { ^PathName(this).up.fullPath; }
 	concatFolders { | ... folders |
-		// TODO
 		var result;
 		result = PathName(this);
 		folders do: { | f |
 			result = result +/+ f;
 		};
-		^result;
+		^result.fullPath;
 	}
 }
