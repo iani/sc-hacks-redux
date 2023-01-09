@@ -11,9 +11,10 @@ OscMonitor.gui;
 #+RESULTS:
 : OscMonitor.gui;
 
+A gui window appears:
+
 [[oscmonitor.png]]
 
-A gui window appears.
 
 To start recording, click on the button "Record OSC".
 The button changes to "Stop Recording OSC"
