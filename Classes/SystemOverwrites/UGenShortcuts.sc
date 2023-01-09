@@ -25,8 +25,12 @@ To explore:
 		^this.fader(fin, fout, amp).out(bus, numChannels);
 	}
 
-	fader { | fin = 0.1, fout = 0.3, amp = 1 |
-		^this * Fader(fin, fout, amp);
+	fader { | fadeTime = 0.01, amp = 1 |
+		^this * Fader(fadeTime) * \amp.br(amp); // add amplitude control on bus
+	}
+
+	fader2 { | fin = 0.1, fout = 0.3, amp = 1 |
+		^this * Fader2(fin, fout, amp) * \amp.br(amp); // add amplitude control on bus
 	}
 
 	out { | bus = \outbus, numChannels = 2 |
@@ -86,9 +90,12 @@ To explore:
 
 // Make this work also with UGenArrays (usuall obtained from multichannel expansion)
 + Array {
+	fader { | fadeTime = 0.02, amp = 1 |
+		^this * Fader(fadeTime) * \amp.br(amp); // add amplitude control on bus
+	}
 
-	fader { | fin = 0.1, fout = 0.3, amp = 1 |
-		^this * Fader(fin, fout, amp);
+	fader2 { | fin = 0.02, fout = 0.3, amp = 1 |
+		^this * Fader2(fin, fout, amp) * \amp.br(amp); // add amplitude control on bus
 	}
 
 	fout {  | bus = \outbus, numChannels = 2, fin = 0.1, fout = 0.3, amp = 1 |

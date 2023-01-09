@@ -1,14 +1,11 @@
-/*  3 Jan 2023 23:44
-Navigate in a File Directory using 2 panes.
-Save / reload the current position on disc.
-
-Creates 2 ListViews (inner / outer) that can be built into other guis.
-
+/* 9 Jan 2023 09:55
+Navigate in a MultiLevelIdentityDictionary using 2 panes.
+Add and remove items in this dictionary.
 */
 
-FileNavigator {
+DictNavigator {
 	var <>key = \default;
-	var >homeDir;  // top folder holding all items.
+	var >dict;  // top folder holding all items.
 	var >currentRoot; // path for getting outerList items
 	var <>outerList, <>outerItem, <outerIndex = 0;
 	var <>innerList, <>innerItem, <innerIndex = 0;
@@ -24,7 +21,7 @@ FileNavigator {
 		// save info needed to regenerate state,
 		// plus human-readable relevant info.
 		^(
-			homeDir: homeDir,
+			dict: dict,
 			currentRoot: currentRoot,
 			outerItem: outerItem, // human readable
 			outerIndex: outerIndex,
@@ -52,7 +49,7 @@ FileNavigator {
 		prefs ?? {
 			^postln("Could not get preferences for" + this.class.name + "at" + key);
 		};
-		homeDir = prefs[\homeDir];
+		dict = prefs[\dict];
 		currentRoot = prefs[\currentRoot];
 		outerIndex = prefs[\outerIndex];
 		innerIndex = prefs[\innerIndex];
@@ -63,18 +60,19 @@ FileNavigator {
 	}
 
 	goHome {
-		currentRoot = this.homeDir;
+		currentRoot = this.dict;
 		this.getOuterItems;
 	}
 
 	setProjectHomeDialog {
 		FileDialog({ | path |
-			homeDir = PathName(path[0]).asDir;
+			dict = PathName(path[0]).asDir;
 			this.goHome;
 		}, {}, 2)
 	}
+
 	getOuterItems {
-		outerList = this.getOuterItemsList;
+		outerList = this.getOuterListItems;
 		if (outerList.size == 0) {
 			^postln("No items found in" + currentRoot.fullPath);
 		};
@@ -88,17 +86,17 @@ FileNavigator {
 
 	// update contents of inner list when selecting new outer item
 	getInnerItems {
-		innerList = this.getInnerItemsList;
+		innerList = this.getInnerListItems;
 		innerItem = innerList[innerIndex];
 		this.changed(\innerItems);
 	}
 
 	// subclasses may overwrite this:
-	getOuterItemsList { ^this.currentRoot.folders; }
-	getInnerItemsList { ^outerItem.entries; }
-	// provide defaults for homeDir and currentRoot
-	currentRoot { ^currentRoot ?? { currentRoot = this.homeDir } }
-	homeDir { ^homeDir ?? { homeDir = (PathName(Platform.userHomeDir) +/+ "sc-projects").asDir; } }
+	getOuterListItems { ^this.currentRoot.folders; }
+	getInnerListItems { ^outerItem.entries; }
+	// provide defaults for dict and currentRoot
+	currentRoot { ^currentRoot ?? { currentRoot = this.dict } }
+	dict { ^dict ?? { dict = MultiLevelIdentityDictionary(); } }
 
 	// make outerItem the currentRoot
 	zoomIn {
@@ -118,22 +116,23 @@ FileNavigator {
 
 	// make currentRoot's superfolder the currentRoot;
 	zoomOut {
-		if (this.currentRoot.asDir.fullPath == this.homeDir.asDir.fullPath) {
-			^postln("Cannot go above the homeDir: " + homeDir)
+		if (this.currentRoot.asDir.fullPath == this.dict.asDir.fullPath) {
+			^postln("Cannot go above the dict: " + dict)
 		};
 		currentRoot = currentRoot.up;
 		this.getOuterItems;
 	}
 
 	*gui {
-		var fn;
-		fn = this.new;
-		{ fn.getOuterItems }.defer(0.1);
-		^fn.hlayout(
-			fn.outerListView,
-			fn.innerListView
+		var dn;
+		dn = this.new;
+		{ dn.getOuterItems }.defer(0.1);
+		^dn.hlayout(
+			dn.outerListView,
+			dn.innerListView
 		)
 	}
+
 	outerListView {
 		^ListView()
 		.addNotifier(this, \setOuterListAndIndex, { | n, list, outerIndex |
@@ -226,4 +225,19 @@ FileNavigator {
 	saveBookmark { this.save }
 	gotoBookmark { this.load }
 
+	addFileDialog {
+
+	}
+
+	addFolderDialog {
+
+	}
+
+	deleteSubtree {
+
+	}
+
+	deleteEntry {
+
+	}
 }

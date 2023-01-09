@@ -10,7 +10,7 @@ String - PathName utilities
 		^PathName(this.parentPath)
 	}
 	shortName {
-		if (this.isFolder) {
+		if (fullPath.last.isPathSeparator) {
 			// ad hoc format. For Project.gui
 			^format("[%]", this.folderName);
 		}{
