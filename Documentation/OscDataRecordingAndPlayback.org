@@ -1,0 +1,47 @@
+#+TITLE: Osc Data Recording And Playback
+
+* Recording Osc Data
+
+Open a Gui for recording Osc Data (and audio):
+
+#+begin_src sclang
+OscMonitor.gui;
+#+end_src
+
+#+RESULTS:
+: OscMonitor.gui;
+
+[[oscmonitor.png]]
+
+A gui window appears.
+
+To start recording, click on the button "Record OSC".
+The button changes to "Stop Recording OSC"
+To stop recording, click on "Stop Recording OSC".
+
+The data are recorded in the default directory for supercollider audio recordings.  This can be found by this code:
+
+#+begin_src sclang
+Platform.recordingsDir;
+#+end_src
+
+* Loading and Playing back OSC data
+
+** Load recorded osc data from a file
+
+#+begin_src sclang
+OscDataReader.openDialog;
+#+end_src
+
+Select multiple contiguous files from a session folder, and click OK.
+
+** Playback recorded osc data.
+
+#+begin_src sclang
+// make a player
+p = OscDataReader.makePlayer;
+// play back all data
+p.play;
+// alternatively, play back only selected messages:
+p.playSelect(['/minibee', '/code']);
+#+end_src

@@ -1,14 +1,28 @@
 /* 9 Jan 2023 09:55
-Navigate in a MultiLevelIdentityDictionary using 2 panes.
+
+Utility for creating groups (arrays or "sets") of files and folders
+and storing each set under name so that it can be retrieved
+to load (or remove) its elements. Use:
+
+Navigate in a IdentityDictionary using 2 panes.
 Add and remove items in this dictionary.
+
+Values of the Dictionary are Arrays.
+The elements of the Arrays are PathNames (Folders or Files).
+
+Each array is an "asset" or just "set", and can be accessed by the name (key)
+under which it is stored in the Dictionary.  Get the array
+stored under a key, and then load its elements.
+
 */
 
 DictNavigator {
-	var <>key = \default;
+	var <>key = \default; // for storing the settings in Preferences
 	var >dict;  // top folder holding all items.
-	var >currentRoot; // path for getting outerList items
 	var <>outerList, <>outerItem, <outerIndex = 0;
 	var <>innerList, <>innerItem, <innerIndex = 0;
+
+	var >currentRoot; // not needed! (TODO: remove this variable)
 
 	*new { | key = \default | ^this.newCopyArgs(key).getOuterItems }
 
@@ -92,11 +106,11 @@ DictNavigator {
 	}
 
 	// subclasses may overwrite this:
-	getOuterListItems { ^this.currentRoot.folders; }
+	getOuterListItems { ^this.dict.keys.asArray.sort; }
 	getInnerListItems { ^outerItem.entries; }
 	// provide defaults for dict and currentRoot
 	currentRoot { ^currentRoot ?? { currentRoot = this.dict } }
-	dict { ^dict ?? { dict = MultiLevelIdentityDictionary(); } }
+	dict { ^dict ?? { dict = IdentityDictionary(); } }
 
 	// make outerItem the currentRoot
 	zoomIn {
