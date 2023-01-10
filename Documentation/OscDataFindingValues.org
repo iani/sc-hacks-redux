@@ -4,6 +4,8 @@ Find the minimum and maximum values in the arguments of a given osc message, fro
 
 Here we give a concrete example based on data received from an M5StickPlus sensor from an interface programmed in arduino by Takumi Ikeda. (See: https://github.com/piperauritum/IMUOSC)
 
+*NOTE: The data for running the examples here are found in the present folder in file: [[oscdata.scd]]*
+
 * Part 1: Looking at '/ahrsdata'
 #+begin_src sclang
 OscDataReader.openDialog; // read data from one or more files

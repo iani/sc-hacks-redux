@@ -6,6 +6,8 @@ We plot the x, y, z data for messages ='/ahrsdata'= and ='/accldata'=.
 
 This example based on data received from an M5StickPlus sensor from an interface programmed in arduino by Takumi Ikeda. (See: https://github.com/piperauritum/IMUOSC)
 
+*NOTE: The data for running the examples here are found in the present folder in file: [[oscdata.scd]]*
+
 #+begin_src sclang
 OscDataReader.openDialog; // omit this step if you have already loaded the data
 ~data = OscDataReader.allData; // refresh the data.

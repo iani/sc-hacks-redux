@@ -27,6 +27,8 @@ Platform.recordingsDir;
 
 * Loading and Playing back OSC data
 
+*NOTE: The data for running the examples here are found in the present folder in file: [[oscdata.scd]]*
+
 ** Load recorded osc data from a file
 
 #+begin_src sclang
