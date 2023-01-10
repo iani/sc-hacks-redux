@@ -1,0 +1,22 @@
+#+TITLE: Osc Data Plotting
+
+Here we show how to plot data from messages read with OscDataReader.
+
+We plot the x, y, z data for messages ='/ahrsdata'= and ='/accldata'=.
+
+This example based on data received from an M5StickPlus sensor from an interface programmed in arduino by Takumi Ikeda. (See: https://github.com/piperauritum/IMUOSC)
+
+#+begin_src sclang
+OscDataReader.openDialog; // omit this step if you have already loaded the data
+~data = OscDataReader.allData; // refresh the data.
+// Select and reformat the data in one statement:
+~ahrs = ~data.select({ | i | i[1][0] === '/ahrsdata' }).collect(_[1]).flop;
+~accl = ~data.select({ | i | i[1][0] === '/accldata' }).collect(_[1]).flop;
+// Plot
+[~ahrs[2], ~ahrs[3], ~ahrs[4], ~accl[2], ~accl[3], ~accl[4]].plot;
+#+end_src
+
+This is the resulting plot:
+
+
+[[ahrs_accl_data_plot.png]]
