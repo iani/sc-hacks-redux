@@ -20,5 +20,4 @@ OscDataReader.openDialog; // omit this step if you have already loaded the data
 
 This is the resulting plot:
 
-
 [[ahrs_accl_data_plot.png]]

@@ -27,6 +27,8 @@ OscGroups {
 	classvar localAddress;
 
 	*initClass {
+		// NOTE: always notify code evaluations to the system -
+		// indepenently of whether OscGroups are enabled. (!)
 		StartUp add: {
 			thisProcess.interpreter.preProcessor = { | code |
 				// Interpreter.changed(\code, code);

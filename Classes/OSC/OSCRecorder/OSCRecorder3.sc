@@ -16,12 +16,14 @@ OSCRecorder3 {
 	classvar <>excludedMessages;
 	classvar <>verbose = false;
 	classvar <currentRecordingPath = "";
+	classvar <>filter; // if true, ignore the message
 
 	*initClass {
 		excludedMessages = [
 			'/cbmon', '/status.reply', '/done', '/n_end',
 			'/recordingDuration', '/n_go', '/d_removed', '/synced', '/minibee/rssi'
 		];
+		filter = { | msg | excludedMessages includes: msg };
 		ShutDown add: { this.closeFile };
 	}
 
@@ -30,7 +32,10 @@ OSCRecorder3 {
 	}
 
 	*update { | self, cmd, msg, time, addr, port |
-		if (excludedMessages includes: msg[0]) {
+		if (
+			// excludedMessages includes: msg[0]
+			filter.(msg[0])
+		) {
 			// do not record excluded message!
 			if (verbose) { postln("osc recorder ignores: " + msg[0]); };
 		}{
@@ -140,6 +145,23 @@ OSCRecorder3 {
 
 	*fullPath {
 		^currentRecordingPath = this.folderPath +/+ fileHeader ++ Date.getDate.stamp ++ ".scd";
+	}
+
+	// record code messages received from OscGroups + messages included in argument list
+	// Note: internal code messages (from locally evaluated code), are always
+	// recorded by default, (even when OscGroups is disabled!).
+	*codeRecord { | ... args |
+		this.record(*(args add: OscGroups.codeMessage));
+	}
+
+
+	// record only messages included in argument list
+	// (+ code messages from local evaluation!)
+	// Note: internal code messages (from locally evaluated code), are always
+	// recorded by default, (even when OscGroups is disabled!).
+	*record { | ... args |
+		filter = { | m | (args includes: m).not };
+		this.enable;
 	}
 
 	*enable {
