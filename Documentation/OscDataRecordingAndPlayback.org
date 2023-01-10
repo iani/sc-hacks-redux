@@ -15,7 +15,6 @@ A gui window appears:
 
 [[oscmonitor.png]]
 
-
 To start recording, click on the button "Record OSC".
 The button changes to "Stop Recording OSC"
 To stop recording, click on "Stop Recording OSC".
