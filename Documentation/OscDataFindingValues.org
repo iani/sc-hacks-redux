@@ -60,6 +60,7 @@ Result:
 
 // Alternative approach: Collect argument (variable) values in a sepate arrays:
 // collect the messages (ignore timestamps):
+a = ~data select: { | i | i[1][0] === '/accldata' }; // select entries with the desired message
 c = a collect: { | i | i[1] }; // collect messages
 d = c.flop; // put message values in separate arrays
 ~messages = d[0]; // message

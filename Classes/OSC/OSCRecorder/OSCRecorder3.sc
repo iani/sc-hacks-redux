@@ -154,7 +154,6 @@ OSCRecorder3 {
 		this.record(*(args add: OscGroups.codeMessage));
 	}
 
-
 	// record only messages included in argument list
 	// (+ code messages from local evaluation!)
 	// Note: internal code messages (from locally evaluated code), are always
