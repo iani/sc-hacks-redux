@@ -27,14 +27,14 @@ OscDataPlayer {
 	play { | repeats = 1, player = \oscdata, envir = \oscdata, playEvent |
 		if (enableCodeEvaluation) { OscGroups.enableCodeEvaluation; };
 		playEvent ?? { playEvent = this.makePlayEvent(nil, repeats) };
-		playEvent.playInEnvir(player, envir);
+		^playEvent.playInEnvir(player, envir);
 	}
 
 	playSelect { | selectMessages, repeats = 1, player = \oscdata, envir = \oscdata |
-		this.play(repeats, player, envir,
+		^this.play(repeats, player, envir,
 			this.makePlayEvent({ | argAddr |
 				{
-					var theMessage;
+	 				var theMessage;
 					theMessage = ~message;
 					if (selectMessages includes: theMessage[0]) {
 						argAddr.sendMsg(*theMessage)
@@ -47,7 +47,7 @@ OscDataPlayer {
 	}
 
 	playReject { | rejectMessages, repeats = 1, player = \oscdata, envir = \oscdata |
-		this.play(repeats, player, envir,
+		^this.play(repeats, player, envir,
 			this.makePlayEvent({ | argAddr |
 				{
 					var theMessage;
@@ -74,4 +74,15 @@ OscDataPlayer {
 		playFunc ?? { playFunc = { | argAddr | { argAddr.sendMsg(*~message) } } };
 		^playFunc.(addr ?? { LocalAddr() }); // make addr known to playfunc
 	}
+
+	// utility methods
+	messageSet {
+		^messages.flop[0].asSet;
+	}
+
+	info {
+
+	}
+
+
 }

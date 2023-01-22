@@ -68,6 +68,14 @@ OscDataReader {
 		^(PathName(Platform.userHomeDir) +/+ "OscDataReader_LastRead.scd").fullPath;
 	}
 
+	*reRead {  | key = \oscdata | // reread last read paths
+		this.readAndMergePaths(this.pathsLastRead, key)
+	}
+
+	*pathsLastRead {
+		^Object.readArchive(this.pathsArchivePath);
+	}
+
 	*readAndMergePaths { | argPaths, key = \oscdata |
 		argPaths do: { | path, index |
 			if (File exists: path) {
@@ -164,7 +172,7 @@ OscDataReader {
 		postln("... Done. Collected" + allData.size + "messages.");
 	}
 
-	*sortMerged { // sort data by *ENTRY TIME* in ascending order
+	*sortMerged { // sor§t data by *ENTRY TIME* in ascending order
 		allData = allData.sort({| a, b | a[0] < b[0] })
 	}
 
@@ -187,6 +195,13 @@ OscDataReader {
 		);
 	}
 
+	*play {  | start = 0, length, repeats = 1, player = \oscdata |
+		^this.makePlayer(start, length).play;
+	}
+
+	*info {
+
+	}
 	// These are done by OscDataPlayer with playSelect, playReject
 	// *select {}
 	// *reject {}

@@ -150,6 +150,7 @@ OSCRecorder3 {
 	// record code messages received from OscGroups + messages included in argument list
 	// Note: internal code messages (from locally evaluated code), are always
 	// recorded by default, (even when OscGroups is disabled!).
+	// For this, see: OscGroups initClass method.
 	*codeRecord { | ... args |
 		this.record(*(args add: OscGroups.codeMessage));
 	}
@@ -159,7 +160,9 @@ OSCRecorder3 {
 	// Note: internal code messages (from locally evaluated code), are always
 	// recorded by default, (even when OscGroups is disabled!).
 	*record { | ... args |
-		filter = { | m | (args includes: m).not };
+		// Note: IGNORE messages included in args.
+		// i.e RECORD messages NOT included in args.
+		filter = { | m | (args includes: m).not }; // !!! if NOT included, then IGNORE me.
 		this.enable;
 	}
 

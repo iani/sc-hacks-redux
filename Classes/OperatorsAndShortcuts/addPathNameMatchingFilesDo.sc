@@ -5,6 +5,7 @@ String - PathName utilities
 */
 
 + PathName {
+	loadAudiofile { this.fullPath.loadAudiofile }
 	asDir { ^this +/+ "" }
 	up {
 		^PathName(this.parentPath)
@@ -16,6 +17,20 @@ String - PathName utilities
 		}{
 			^this.fileNameWithoutExtension;
 		}
+	}
+
+	matchingFiles { | ... types |
+		var match;
+		types = types collect: _.asSymbol;
+		postln("Looking for files in" + this.fullPath + "...");
+		this.deepFiles do: { | p |
+			if (types includes: p.extension.asSymbol) {
+				match = match add: p;
+			}{
+				postln("Skipping non-matching file type:" + p.fileName);
+			}
+		};
+		^match
 	}
 
 	matchingFilesDo { | action, template |

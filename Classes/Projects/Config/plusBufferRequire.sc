@@ -5,6 +5,15 @@ to be loaded when the buffer is booted.
 
 + Buffer {
 	*require { | ... directories |
+		this.addNotifier(Server.default, \serverRunning, { | n |
+			if (n.notifier.serverRunning) {
+				// { this.required.postln; } ! 10;
+				this.required do: this.loadRequiredIfExists(_)
+			}{
+				Library.put(Buffer, nil);
+			}
+		}
+		);
 		directories do: this.require1(_);
 	}
 
@@ -15,18 +24,18 @@ to be loaded when the buffer is booted.
 		if (required includes: directory) {
 			postln("The directory" + directory + "is already required");
 		}{
-			this.loadRequiredIfExists(required, directory);
+			required add: directory;
+			this.loadRequiredIfExists(directory);
 		}
 	}
 
-	*required { ^Registry(this, \required, { Set() }); }
+	*required { ^Registry(\buffers, \required, { Set() }); }
 
-	*loadRequiredIfExists { | required, directory |
+	*loadRequiredIfExists { | required |
 		var thePath;
 		thePath = this.makeLoadPathname(required);
-		if (File.exist(thePath.fullPath)) {
-			required add: directory;
-			this.loadRequired(directory);
+		if (File.exists(thePath.fullPath)) {
+			this.loadRequired(required);
 		}{
 			postln("Directory not found:" + thePath.fullPath);
 		}
@@ -34,16 +43,51 @@ to be loaded when the buffer is booted.
 
 	*loadRequired { | required |
 		Server.default.waitForBoot({
-			Project.loadAudioFiles(this.makeLoadPathname(required));
+			this.loadAudioFiles(this.makeLoadPathname(required));
 		})
 	}
 
+	*loadAudioFiles { | pathName |
+		pathName.matchingFiles("wav", "WAV", "aiff", "aif") do: _.loadAudiofile;
+	}
+
 	*makeLoadPathname { | required |
-		^PathName("~/sc-audiofiles") +/+ required.asString;
+		// ^PathName("~/sc-audiofiles") +/+ required.asString;
+		^this.audioFilesRoot +/+ required.asString;
 	}
 
 	*clearRequired {
 		// TODO: free buffers???
-		Registry.remove(this, \required);
+		Registry.remove(\buffers, \required);
+	}
+
+	*audioFilesRoot { | key = \default |
+		^Preferences.get(\audioFilesRoot, key) ?? { PathName("~/sc-audiofiles") }
+	}
+
+	*audioFolders { | key = \default |
+		^Preferences.get(\audioFolders, key) ?? { Set() }
+	}
+
+	*saveAudioFolders { | key = \default |
+		^Preferences.put(\audioFolders, key, this.required);
+	}
+
+	*setAudioFilesRootDialog { | key = \default |
+		FileDialog({ | path |
+			this.setAudioFilesRoot(PathName(path[0]), key);
+		}, fileMode: 2)
+	}
+
+	*setAudioFilesRoot { | path, key = \default |
+		Preferences.put(\audioFilesRoot, key, path);
+	}
+
+	*projectFolders { // list subfolders of audioFilesRoot
+		^this.audioFilesRoot.folders;
+	}
+
+	*listProjectFolders {
+		this.projectFolders do: { | f | f.shortName.postln; }
 	}
 }

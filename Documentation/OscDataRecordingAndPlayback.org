@@ -47,3 +47,59 @@ p.play;
 // alternatively, play back only selected messages:
 p.playSelect(['/minibee', '/code']);
 #+end_src
+
+* Displaying data playback on a window
+
+There is a simple gui system for displaying data from messages set in the following fixed format:
+
+=[/message, id, x, y, z]=
+
+The gui system can handle messages with an id between 0 and about 30, displaying x, y and z as dots on a multislider.  For this, the range values of x, y and z must be normalized (they must always be in the range between 0 and 1.).
+
+If the values of the message sent by the sensors are in a range other than 0 to 1, then it is possible to normalize these and send them again to sclang under a new message name.  This is done through class MapXyz like this:
+
+
+
+
+is in the
+
+Example:
+
+For messages of the format
+
+#+begin_src sclang
+[/minibee, 0, x, y, z]
+#+end_src
+
+Prepare sc to listen to =/minibee= and to notify the gui and set sensors:
+
+#+begin_src sclang
+// prepare for listening to ID numbers from 0 to 11:
+InputXyz enable: 12; // note: this boots the server and writes to control busses
+// Prepare to display messages matching '/minibee'
+InputXyz.addMessage('/minibee');
+// Open Gui
+InputXyz.gui;
+// Load some data from file
+OscDataReader.openDialog;
+//:create a playsr
+p = OscDataReader.makePlayer;
+// play back the data, selecting only messages that match '/minibee'
+p.playSelect(['/minibee']);
+#+end_src
+
+#+RESULTS:
+#+begin_example
+// prepare for listening to ID numbers from 0 to 11:
+InputXyz enable: 12; // note: this boots the server and writes to control busses
+// Prepare to display messages matching '/minibee'
+InputXyz.addMessage('/minibee');
+// Open Gui
+InputXyz.gui;
+// Load some data from file
+OscDataReader.openDialog;
+//:create a playsr
+p = OscDataReader.makePlayer;
+// play back the data, selecting only messages that match '/minibee'
+p.playSelect(['/minibee']);
+#+end_example
