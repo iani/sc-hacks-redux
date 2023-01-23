@@ -6,12 +6,17 @@ AudioFolders : PreferenceSet {
 	var >rootPath, folders;
 	var <>activep = false;
 
-	*activate { ServerBoot.add(this); }
+	*activate {
+		ServerBoot.add(this);
+		ServerQuit.add(this);
+	}
 
 	*doOnServerBoot { | server |
 		// workaround for a bug: make sure the server is booted:
 		server.doWhenBooted({ this.all do: _.loadFoldersIfActive;})
 	}
+
+	*doOnServerQuit { Library.put(Buffer, nil); }
 
 	loadFoldersIfActive { if (activep) { this.loadFolders; } }
 	loadFolders { this.folders do: this.loadFolder(_); }
