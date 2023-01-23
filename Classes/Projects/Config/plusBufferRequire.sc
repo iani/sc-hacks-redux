@@ -30,6 +30,8 @@ to be loaded when the buffer is booted.
 	}
 
 	*required { ^Registry(\buffers, \required, { Set() }); }
+	// New alternative, using separate class:
+	// *required { ^Registry(\buffers, \required, { RequiredAudioFolders() }); }
 
 	*loadRequiredIfExists { | required |
 		var thePath;

@@ -2,7 +2,7 @@
 Handle loading of audio files from disk.
 */
 
-AudioFiles : Preferences {
+AudioFilesOld : Preferences {
 	// classvar preferences;
 	classvar <>homeFolder; // where all audiofiles are stored
 	classvar <>projects;   // dictionary of <projectName>->[pathnames]
