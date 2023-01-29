@@ -4,6 +4,8 @@
 
 + Symbol {
 
+	putGlobal { | object | Mediator.putGlobal(this, object) }
+
 	//============================================================/
 	// add bus and target to environment
 	addBus { | bus, name = \outbus |

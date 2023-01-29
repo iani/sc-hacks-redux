@@ -7,18 +7,23 @@ See README.
 */
 
 Mediator : EnvironmentRedirect {
-	classvar default;
+	classvar default, global;
 	var <name, busses;
+
+	*global {
+		^global ?? { global = Environment() }
+	}
+	*putGlobal { | key, object | this.global.put(key, object) }
 
 	*new { | name, envir |
 			^this.newCopyArgs(
-				envir ?? { Environment.new(32, Environment.new) },
+				envir ?? { Environment.new(32, Environment.new, this.global) },
 				nil, name
 			).dispatch = MediatorHandler();
 	}
 
 	init { | ... args |
-		// postf("my iit args are: %\n", args);
+		// postf("my init args are: %\n", args);
 	}
 
 	printOn { | stream |
@@ -28,12 +33,9 @@ Mediator : EnvironmentRedirect {
 		stream << " ]" ;
 	}
 
-	*initClass {
-		StartUp add: { this.push }
-	}
-
+	*initClass { StartUp add: { this.push } }
 	*push { this.default.push }
-	push { // get rid of annoying warning
+	push { // get rid of warning
 		if(currentEnvironment !== this) {
 			Environment.push(this)
 		} // { "this environment is already current".warn }
@@ -46,6 +48,7 @@ Mediator : EnvironmentRedirect {
 		^super.fromLib(key);
 	}
 	*/
+	parent { ^envir.parent }
 	put { | key, obj |
 		dispatch.value(key, obj);
 		// this.changed(key, obj);

@@ -1,5 +1,7 @@
 /* 23 Jan 2023 23:35
 Redoing Buffer.require - using PreferenceSet
+
+See also FileLoader
 */
 
 AudioFolders : PreferenceSet {
