@@ -43,6 +43,11 @@ Sensors {
 		^specs;
 	}
 
+	*addSpec { | message, spec |
+		this.specs[message] = spec;
+		this addMessage: message;
+	}
+
 	*addMessage { | message | this.messages add: message.asSymbol }
 	*messages { ^messages ?? { messages = Set() } }
 
@@ -93,25 +98,23 @@ Sensors {
 
 	input { | args | values = inputs collect: _.input(args);}
 
-	plot { this.class.plot(this); }
+	plot { ^this.class.plot(this); }
 	*plot { | sensor |
 		var poller, plotter;
-		poller = this.pollRoutine.start;
+		poller = this.pollRoutine;
+		if (poller.isRunning.not) { poller.start };
 		plotter = Registry(sensor, \plot, {
 			0.dup(100).dup(sensor.values.size)
 			.plot(sensor.key, minval: 0, maxval: 1.0);
 		});
-		plotter.onClose = { plotter.objectClosed };
-
-		plotter.addNotifier(this, \sensors, { | n |
-			{
-				plotter.setValue(
-					plotter.value.rotateAddColumn(sensor.values),
-					minval: 0, maxval: 1.0
-				);
-			}.defer;
+		plotter.parent.addNotifier(this, \sensors, { | n |
+			plotter.setValue(
+				plotter.value.rotateAddColumn(sensor.values), minval: 0, maxval: 1.0
+			);
 		});
+		plotter.addNotifier(plotter.parent, \objectClosed, { plotter.objectClosed; });
 		this.enable;
+		^plotter;
 	}
 
 	*pollRoutine { ^PollRoutine(this, \sensors, 0.1) }
