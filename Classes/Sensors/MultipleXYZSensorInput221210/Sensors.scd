@@ -5,6 +5,7 @@ Creates some currently used configurations.
 Configurable through these classvars:
 	maps
 	numSensorIds
+30 Jan 2023 05:29 ---- replaced by newer version
 
 */
 

@@ -21,7 +21,7 @@ FileLoader : PreferenceSet {
 
 	*doOnServerBoot { | server |
 		// workaround for a bug: make sure the server is booted:
-		server.doWhenBooted({ this.enabled do: _.load;})
+		server doWhenBooted: { this.enabled do: _.load;};
 	}
 
 	*doOnServerQuit { this.clearItems }

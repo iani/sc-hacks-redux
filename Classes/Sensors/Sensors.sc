@@ -2,25 +2,31 @@
 Semi-automated detection and mapping of sensor input.
 */
 
-SensorMapper {
+Sensors {
 	classvar all, specs, messages;
-	var <message, <id, <inputs, <values, busses, <key, <envir;
+	var <message, <id, <inputs, <values, <busses, <key, <envir;
 
 	*initClass { ServerBoot add: this; }
 	*doOnServerBoot { | server |
+		// "Sensors do on server boot".postln;
 		// workaround for a bug: make sure the server is booted:
 		server doWhenBooted: { // remake busses
+			this.makeMessages;
 			this.all.leaves.flat do: _.makeInputs;
 		}
 	}
 
+	*makeMessages {
+		this.messages;
+		this.specs.keys do: messages.add(_);
+	}
 	doesNotUnderstand { | message |
 		var bus;
 		bus = busses[message];
 		if (bus.isNil) {
 			postln("Message" + message + "not understood by" + this);
 		}{
-			^bus;
+			^In.kr(bus.index);
 		};
 	}
 
@@ -33,7 +39,8 @@ SensorMapper {
 			[\x, -86, 86],
 			[\y, -100, 100],
 			[\z, -189, 172]
-		]
+		];
+		^specs;
 	}
 
 	*addMessage { | message | this.messages add: message.asSymbol }
@@ -44,30 +51,35 @@ SensorMapper {
 	}
 
 	init {
-		key = format("%%", message, id).asSymbol;
+		key = format("%%", message, id);
+		if (key[0] === $/) { key = key[1..] };
+		key = key.asSymbol;
 		envir = key.envir;
-		Mediator.addGlobal(this);
 		this.makeInputs;
 		this.class.addMessage(message);
 		this.all.put(message, id, this);
+		Mediator.putGlobal(key, this);
 	}
 
 	makeInputs {
 		inputs = this.specs[message] collect: { | spec, valueIndex |
-			ScalarMap(message, id, valueIndex + 2, *spec)
+			ScalarMap(message, valueIndex + 2, *spec)
 		};
+		values = inputs collect: _.val;
 		busses = ();
 		inputs do: { | i |
 			busses[i.valuename] = i.bus
 		};
 	}
 
+	specs { ^this.class.specs }
+
 	*init { this.enable; }
 	*enable { this.all; OSC addDependant: this }
 	*disable { OSC removeDependant: this }
 
 	*update { | osc, message, args |
-		if (all includes: message) { this.respondTo(message, args) }
+		if (messages includes: message) { this.respondTo(message, args) }
 	}
 
 	*respondTo { | message, args |
@@ -76,21 +88,40 @@ SensorMapper {
 		input ?? {
 			input = this.new(message, args[1]);
 		};
-		input(args);
+		input.input(args);
 	}
 
-	update { | args |
-		values = inputs collect: _.input(args);
+	input { | args | values = inputs collect: _.input(args);}
+
+	plot { this.class.plot(this); }
+	*plot { | sensor |
+		var poller, plotter;
+		poller = this.pollRoutine.start;
+		plotter = Registry(sensor, \plot, {
+			0.dup(100).dup(sensor.values.size)
+			.plot(sensor.key, minval: 0, maxval: 1.0);
+		});
+		plotter.onClose = { plotter.objectClosed };
+
+		plotter.addNotifier(this, \sensors, { | n |
+			{
+				plotter.setValue(
+					plotter.value.rotateAddColumn(sensor.values),
+					minval: 0, maxval: 1.0
+				);
+			}.defer;
+		});
+		this.enable;
 	}
 
+	*pollRoutine { ^PollRoutine(this, \sensors, 0.1) }
+	*stopPlot { this.pollRoutine.stop; }
 
-	*plot { | message, id |
+	*monitor { | message, id | // INCOMPLETE
 		Registry(\plot, message, id, {  }) // ...
 	}
-
-	*monitor { | message, id |
-		Registry(\plot, message, id, {  }) // ...
-	}
+	minval { ^inputs collect: _.min }
+	maxval { ^inputs collect: _.max }
 }
 
 ScalarMap {
