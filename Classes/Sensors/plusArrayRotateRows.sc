@@ -3,7 +3,21 @@ Utilites for real-time plotting
 */
 
 + Array {
-	replace { | index = 0, subarray | // modifies me!
+	// NOTE: defining a replace method here would conflict
+	// with ArrayedCollection:replace
+	// and breaks synth concurrent playing.
+	// relevant error message dump passage is:
+	// 	Array:replace
+	// 	arg this = [*6]
+	// 	arg index = <instance of OSCFuncAddrMessageMatcher>
+	// 	arg subarray = <instance of OSCFuncAddrMessageMatcher>
+	// FunctionList:replaceFunc
+	// 	arg this = <instance of FunctionList>
+	// 	arg find = <instance of OSCFuncAddrMessageMatcher>
+	// 	arg replace = <instance of OSCFuncAddrMessageMatcher>
+	// < FunctionDef in Method AbstractWrappingDispatcher:updateFuncForFuncProxy >
+
+	replacePart { | index = 0, subarray | // modifies me!
 		subarray do: { | val, i |
 			this.put(i + index, val)
 		}

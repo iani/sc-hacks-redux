@@ -37,6 +37,10 @@ For sc-hacks-redux: playInEnvir.  Create synth, providing arguments from current
 		);
 
 		synth = Synth.basicNew(def.name, server);
+		// debugging  3 May 2023 08:04
+		// NOTE: d_free is now run somewhere else in the system.
+		// THe code below is not needed and couses problems
+		// when playing/releaseing synths in overlapping intervals
 		if (server.notified) {
 			OSCFunc({
 				server.sendMsg(\d_free, def.name);
