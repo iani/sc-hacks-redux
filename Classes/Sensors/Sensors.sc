@@ -20,6 +20,34 @@ Sensors {
 		this.messages;
 		this.specs.keys do: messages.add(_);
 	}
+
+	*new { | message, id = 0 |
+		^this.newCopyArgs(message.asSymbol, id).init;
+	}
+
+	init {
+		key = format("%%", message, id);
+		if (key[0] === $/) { key = key[1..] };
+		key = key.asSymbol;
+		envir = key.envir;
+		this.makeInputs;
+		this.class.addMessage(message);
+		this.all.put(message, id, this);
+		Mediator.putGlobal(key, this);
+	}
+
+	makeInputs {
+		inputs = this.specs[message] collect: { | spec, valueIndex |
+			Sensor2Bus(message, valueIndex + 2, *spec)
+		};
+		values = inputs collect: _.val;
+		busses = ();
+		inputs do: { | i |
+			busses[i.valuename] = i.bus
+		};
+	}
+
+	// enable access to busses by their name.
 	doesNotUnderstand { | message |
 		var bus;
 		bus = busses[message];
@@ -29,7 +57,6 @@ Sensors {
 			^In.kr(bus.index);
 		};
 	}
-
 	all { ^this.class.all }
 	*all { ^all ?? { all = MultiLevelIdentityDictionary() } }
 	*specs { ^specs ?? { specs = this.makeSpecs } }
@@ -51,31 +78,6 @@ Sensors {
 	*addMessage { | message | this.messages add: message.asSymbol }
 	*messages { ^messages ?? { messages = Set() } }
 
-	*new { | message, id = 0 |
-		^this.newCopyArgs(message.asSymbol, id).init;
-	}
-
-	init {
-		key = format("%%", message, id);
-		if (key[0] === $/) { key = key[1..] };
-		key = key.asSymbol;
-		envir = key.envir;
-		this.makeInputs;
-		this.class.addMessage(message);
-		this.all.put(message, id, this);
-		Mediator.putGlobal(key, this);
-	}
-
-	makeInputs {
-		inputs = this.specs[message] collect: { | spec, valueIndex |
-			ScalarMap(message, valueIndex + 2, *spec)
-		};
-		values = inputs collect: _.val;
-		busses = ();
-		inputs do: { | i |
-			busses[i.valuename] = i.bus
-		};
-	}
 
 	specs { ^this.class.specs }
 
@@ -127,31 +129,3 @@ Sensors {
 	maxval { ^inputs collect: _.max }
 }
 
-ScalarMap {
-	var <sensorname, valueindex, <valuename = \x, <>min = -1, <>max = 1;
-	var <val = 0, <bus, <busindex;
-	// var <>server; // may be used for faster bus setting method
-
-	*new { | sensorname, valueindex = 1, valuename = \x,
-		min = -1, max = 1 |
-		^this.newCopyArgs(sensorname, valueindex, valuename, min, max).init;
-	}
-
-	init {
-		bus = valuename.bus(nil, sensorname);
-		busindex = bus.index;
-		// server = Server.default; // may be used for faster bus setting method
-	}
-
-	input { | args |
-		// this.adaptBounds(args[valueindex]);
-		val = args[valueindex].linlin(min, max, 0, 1);
-		bus.set(val);
-		^val;
-	}
-
-	adaptBounds { | inputValue | // adapt min or max if required
-		min = min min: inputValue;
-		max = max max: inputValue;
-	}
-}

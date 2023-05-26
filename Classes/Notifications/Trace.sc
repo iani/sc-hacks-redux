@@ -23,6 +23,18 @@ Trace {
 			postln("changed:" + changer + "args:" + args);
 		}
 	}
+
+	*ping {
+		^{
+			var startTime, addr;
+			startTime = Date.localtime.asString;
+			addr = LocalAddr();
+			inf do: { | i |
+				addr.sendMsg(\oscping, startTime, i,  Date.localtime.asString);
+				1.wait;
+			};
+		}.fork;
+	}
 }
 
 
