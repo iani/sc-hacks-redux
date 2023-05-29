@@ -161,8 +161,9 @@ OSCRecorder3 {
 	// recorded by default, (even when OscGroups is disabled!).
 	*record { | ... args |
 		// Note: IGNORE messages included in args.
-		// i.e RECORD messages NOT included in args.
-		filter = { | m | (args includes: m).not }; // !!! if NOT included, then IGNORE me.
+		// i.e RECORD messages NOT included in args
+		// TODO: Check consistency.  What does the filter function do?
+		filter = { | m | (args includes: m).not };
 		this.enable;
 	}
 
@@ -208,7 +209,7 @@ OSCRecorder3 {
 		this.changed(\enabled_p, false);
 		postln("OSCRecorder3 stopped recording at:");
 		postln(currentRecordingPath);
-	"OSCRecorder"
+		"OSCRecorder" // TODO: Do we need this line?
 	}
 
 	*isRecording { ^this.isEnabled; }

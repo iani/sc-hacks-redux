@@ -1,0 +1,8 @@
+#+TITLE: 10osc_input Monitoring
+
+* =OscMonitor= class
+
+#+begin_src sclang
+OscMonitor.gui;
+#+end_src
+

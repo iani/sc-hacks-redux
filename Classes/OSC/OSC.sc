@@ -12,7 +12,11 @@ OSC {
 	*enable { enabled = true }
 	*disable { enabled = false }
 
-	// 14 Dec 2022 14:06: enable disabling of reception
+	*filterServerMessages { | status = true |
+		Trace.filterServerMessages(status)
+	}
+
+	// 14 Dec 2022 14:06: Simulate reception of an osc message.
 	*respondTo { |  time, replyAddr, recvPort, msg |
 		if (enabled) {
 			// From earlier Main:recvOSCmessage:
@@ -56,14 +60,20 @@ OSC {
 		(key ? message).removeNotifier(this, message.asOscMessage);
 	}
 
-	*forward { | message, address = 12345, key |
+	*forward { | message, address = 12345 |
 		if (address isKindOf: Integer) {
 			address = NetAddr("127.0.0.1", address)
 		};
-		key ?? { key = message };
 		this.add(message, { | n, msg |
 			address.sendMsg(*msg);
-		}, key);
+		}, address.asSymbol);
+	}
+
+	*unforward { | message, address = 12345 |
+		if (address isKindOf: Integer) {
+			address = NetAddr("127.0.0.1", address)
+		};
+		this.remove(message, address.asSymbol);
 	}
 
 	*addRaw { | message, function, key |

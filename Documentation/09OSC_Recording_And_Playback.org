@@ -1,0 +1,42 @@
+#+TITLE: 09osc_recording_and_playback
+
+* Recording: =OSCRecorder3=
+
+** Start recording:
+#+begin_src sclang
+OSCRecorder3.enable;
+#+end_src
+
+
+** Stop recording:
+#+begin_src sclang
+OSCRecorder3.disable;
+#+end_src
+
+
+* Playback: =OSCDataPlayer=
+
+Currently, playback is a little complicated. It involves 2 classes:
+1. =OscDataReader=
+2. =OscDataPlayer=
+
+
+Use =OscDataReader= to read data from file.
+
+#+begin_src sclang
+OscDataReader.openDialog;
+#+end_src
+
+To reread from last path selected, use:
+
+#+begin_src sclang
+OscDataReader.reread;
+#+end_src
+
+The last path selected is saved inside SC user support directory, so it persists even when recompiling SC.
+
+After reading the data, you can play them with:
+
+#+begin_src sclang
+OscDataReader.play;
+#+end_src

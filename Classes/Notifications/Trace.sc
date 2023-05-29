@@ -16,6 +16,13 @@ Trace {
 		]
 	}
 
+	*serverMessages {
+		^['/status.reply', '/done', '/n_end',
+		 '/recordingDuration', '/n_go', '/d_removed', '/synced']
+	}
+
+
+
 	*update { | changer ... args |
 		if (excludedMessages includes: args[0]) {
 
@@ -26,11 +33,10 @@ Trace {
 
 	*ping {
 		^{
-			var startTime, addr;
+			var startTime;
 			startTime = Date.localtime.asString;
-			addr = LocalAddr();
 			inf do: { | i |
-				addr.sendMsg(\oscping, startTime, i,  Date.localtime.asString);
+				LocalAddr().sendMsg(\oscping, startTime, i,  Date.localtime.asString);
 				1.wait;
 			};
 		}.fork;
