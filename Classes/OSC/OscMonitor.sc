@@ -71,7 +71,16 @@ OscMonitor {
 			})
 			.enterKeyAction_({ | me |
 				me.item.asSymbol.watch;
-			})
+			}),
+			HLayout(
+				CheckBox()
+				.string_("Post OSC Input")
+				.action_({ | me | if (me.value) { OSC.trace } { OSC.untrace }; }),
+				CheckBox()
+				.string_("Filter Server Messages")
+				.value_(Trace.excludeServerMessages_p)
+				.action_({ | me | OSC.filterServerMessages(me.value); })
+			)
 		);
 		{ this changed: \messages } defer: 1.0;
 	}

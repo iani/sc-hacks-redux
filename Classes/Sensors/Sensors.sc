@@ -4,7 +4,13 @@ Semi-automated detection and mapping of sensor input.
 
 Sensors {
 	classvar all, specs, messages;
-	var <message, <id, <inputs, <values, <busses, <key, <envir;
+	var <message;
+	var <id;
+	var <inputs;
+	var <values;
+	var <busses;
+	var <key;
+	var <envir;
 
 	*initClass { ServerBoot add: this; }
 	*doOnServerBoot { | server |

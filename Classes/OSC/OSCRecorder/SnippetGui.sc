@@ -1,5 +1,7 @@
 /* 28 Oct 2022 09:35
 
+Edit and playback snippets from a file chosen from Project gui.
+
 */
 
 SnippetGui {
