@@ -80,6 +80,11 @@ OscMonitor {
 				.string_("Filter Server Messages")
 				.value_(Trace.excludeServerMessages_p)
 				.action_({ | me | OSC.filterServerMessages(me.value); })
+			),
+			HLayout(
+				CheckBox()
+				.string_("OSCFunc trace")
+				.action_({ | me | OSCFunc.trace(me.value); })
 			)
 		);
 		{ this changed: \messages } defer: 1.0;

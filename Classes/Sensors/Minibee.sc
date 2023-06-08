@@ -13,7 +13,7 @@ Minibee {
 	classvar <>defaultmin = 0.44;
 	classvar <>defaultmax = 0.56;
 	var <id = 0;
-	var <>specs
+	var <>specs;
 	var <busses;
 
 	*initClass { ServerBoot add: this; }
@@ -39,20 +39,12 @@ Minibee {
 
 	*update { | sender, cmd, msg |
 		if (cmd === sensormsg) { msg.postln; }
-		// Prototype 1:
-
-		// msg[2..] do: { | val, index |
-		// 	busses[index].set(specs[index].unmap(val)))
-		// }
-		//
-		// Prototype 2
-		// all do: {  }
-		// busses do: { | b | b.map(msg[2+index]) }
 
 		// Prototype 3
 		// var index, inputvalues, mappedvalues;
 		//   index = msg[1];
-		// this.changed(\values, index,
+		//   inputvalues = msg[2..];
+		// this.changed(\values, index, all[index].input(msg[2..])
 		//    busses.collect()
 		//)
 	}
