@@ -1,6 +1,6 @@
 #+TITLE: Osc Data Monitoring, Recording, and Playback
 
-* Recording Osc Data
+* Recording OSC Data
 
 Open a Gui for recording Osc Data (and audio):
 
@@ -24,6 +24,12 @@ The data are recorded in the default directory for supercollider audio recording
 #+begin_src sclang
 Platform.recordingsDir;
 #+end_src
+
+* Monitoring OSC data
+
+
+
+Click the checkbox "Post OSC input"
 
 * Loading and Playing back OSC data
 

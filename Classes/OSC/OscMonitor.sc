@@ -74,17 +74,23 @@ OscMonitor {
 			}),
 			HLayout(
 				CheckBox()
-				.string_("Post OSC Input")
+				.string_("OSC trace")
 				.action_({ | me | if (me.value) { OSC.trace } { OSC.untrace }; }),
 				CheckBox()
 				.string_("Filter Server Messages")
 				.value_(Trace.excludeServerMessages_p)
-				.action_({ | me | OSC.filterServerMessages(me.value); })
-			),
-			HLayout(
+				.action_({ | me | OSC.filterServerMessages(me.value); }),
 				CheckBox()
 				.string_("OSCFunc trace")
 				.action_({ | me | OSCFunc.trace(me.value); })
+			),
+			HLayout(
+				CheckBox()
+				.string_("Minibee")
+				.action_({ | me |
+					if (me.value) { Minibee.enable }{ Minibee.disable }
+				}),
+				Button().states_([["Minibee gui"]]).action_({ Minibee.gui })
 			)
 		);
 		{ this changed: \messages } defer: 1.0;
