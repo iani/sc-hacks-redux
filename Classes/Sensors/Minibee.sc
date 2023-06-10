@@ -27,7 +27,7 @@ Minibee {
 	}
 
 	*init {
-		all = { | i | this.new(i + 1) } ! numSensors;
+		all = { | i | this.new(i + 1) } ! numSensors; // 1-12
 		this.getValues;
 	}
 
@@ -60,17 +60,17 @@ Minibee {
 
 	*busses { ^all collect: _.busses }
 
-	*enable {
-		OSC addDependant: this;
-	}
+	*enable { OSC addDependant: this; this.changed(\status) }
 
-	*disable { OSC removeDependant: this }
+	*disable { OSC removeDependant: this; this.changed(\status) }
+
+	*enabled { ^OSC.dependants includes: this }
 
 	*update { | sender, cmd, msg |
 		var index;
 		if (cmd === sensormsg) {
 			index = msg[1];
-			this.changed(\values, index, all[index].input(msg[2..]));
+			this.changed(\values, index, all[index - 1].input(msg[2..]));
 		}
 	}
 

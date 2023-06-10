@@ -89,11 +89,30 @@ OscMonitor {
 				.string_("Minibee")
 				.action_({ | me |
 					if (me.value) { Minibee.enable }{ Minibee.disable }
+				})
+				.addNotifier(Minibee, \status, { | n |
+					if (n.notifier.enabled) {
+						n.listener.value = true;
+					}{
+						n.listener.value = false;
+					}
 				}),
 				Button().states_([["Minibee gui"]]).action_({ Minibee.gui })
+			),
+			HLayout(
+				Button().states_([["Read OSC"]]).action_({ OscDataReader.openDialog }),
+				Button().states_([["Re-Read OSC"]]).action_({ OscDataReader.reRead }),
+				CheckBox()
+				.string_("Playback OSC")
+				.action_({ | me |
+					if (me.value) { Minibee.enable }{ Minibee.disable }
+				}),
 			)
 		);
-		{ this changed: \messages } defer: 1.0;
+		{
+			this changed: \messages;
+			Minibee changed: \status;
+		} defer: 1.0;
 	}
 
 	*startOscAndAudioRecording {
