@@ -69,7 +69,19 @@ OscDataReader {
 	}
 
 	*reRead {  | key = \oscdata | // reread last read paths
-		this.readAndMergePaths(this.pathsLastRead, key)
+		if (this.hasSavedPaths) {
+			this.readAndMergePaths(this.pathsLastRead, key);
+		}{
+			"There is no osc data path to read.".postln;
+			"Running openDialog to select files to read.".postln;
+			this.openDialog;
+		}
+	}
+
+	*hasData { ^allData.notNil }
+
+	*hasSavedPaths {
+		^File exists: this.pathsArchivePath;
 	}
 
 	*pathsLastRead {

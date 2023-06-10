@@ -8,7 +8,7 @@ EventStream {
 	// getNextEvent uses filter to modify stream if needed
 
 	*new { | event, filter |
-		^this.newCopyArgs(event, filter).reset;
+		^this.newCopyArgs(event, filter).init.reset;
 	}
 
 	// playing evenstream after adding a filter:
@@ -31,6 +31,16 @@ EventStream {
 		}, envir ? player);
 		^new;
 	}
+
+	init {
+		CmdPeriod add: this;
+	}
+
+	doOnCmdPeriod {
+		routine = nil;
+		this.changed(\stopped);
+	}
+
 	reset { this.makeStream }
 
 	makeStream {
@@ -56,6 +66,7 @@ EventStream {
 	stop {
 		routine.stop;
 		routine = nil;
+		this changed: \stopped;
 	}
 
 	makeRoutine { | quant |

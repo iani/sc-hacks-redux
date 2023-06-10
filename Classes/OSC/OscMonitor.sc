@@ -5,6 +5,7 @@ Open windows for viewing input arriving at any selected message.
 
 OscMonitor {
 	classvar <messages;
+	classvar <oscdataplayer; // EnventStreamInstance;
 	*enable {
 		messages ?? { messages = Set() };
 		OSC addDependant: this;
@@ -16,6 +17,39 @@ OscMonitor {
 		size = messages.size;
 		messages add: message;
 		if (messages.size > size) { this changed: \messages }
+	}
+
+	*playOsc {
+		if (this.hasPlayer) {
+			if (oscdataplayer.isPlaying) {
+				"Osc data player is already playing".postln;
+			}{
+				oscdataplayer.start;
+			}
+		}{
+			oscdataplayer = this.makePlayer;
+		}
+	}
+
+	*stopPlayingOsc { oscdataplayer.stop }
+
+	*hasPlayer { ^oscdataplayer.notNil }
+	*isPlaying { ^oscdataplayer.isPlaying }
+	*makePlayer {
+		var player;
+		if (OscDataReader.hasData) {
+			if (oscdataplayer.notNil) {
+				this.removeNotifier(oscdataplayer, \osclplayerstopped);
+			};
+			player = OscDataReader.makePlayer.play;
+			this.addNotifier(player, \stopped, { this changed: \oscplayerstopped; });
+			^player;
+		}{
+			"OscDataReader is empty".postln;
+			"Please run Load OscFiles or Reload to get osc data".postln;
+			{ this changed: \oscplayerstopped; }.defer(0.1);
+			^nil;
+		}
 	}
 
 	*gui {
@@ -61,6 +95,23 @@ OscMonitor {
 					n.listener.value = d.asInteger;
 				})
 			),
+			HLayout(
+				Button().states_([["Load OscFiles"]])
+				.action_({ OscDataReader.openDialog }),
+				Button().states_([["Reload"]])
+				.action_({ OscDataReader.reRead }),
+				CheckBox()
+				.addNotifier(this, \oscplayerstopped, { | n | n.listener.value = false })
+				// .addΝοtifier(this, \oscplayerstopped, { | n | n.listener.value = false })
+				.string_("play osc")
+				.action_({ | me |
+					if (me.value) {
+						this.playOsc;
+					}{
+						this.stopPlayingOsc;
+					}
+				})
+			),
 			ListView()
 			.palette_(QPalette.dark
 				.highlight_(Color(0.1, 0.1, 0.7))
@@ -99,15 +150,6 @@ OscMonitor {
 				}),
 				Button().states_([["Minibee gui"]]).action_({ Minibee.gui })
 			),
-			HLayout(
-				Button().states_([["Read OSC"]]).action_({ OscDataReader.openDialog }),
-				Button().states_([["Re-Read OSC"]]).action_({ OscDataReader.reRead }),
-				CheckBox()
-				.string_("Playback OSC")
-				.action_({ | me |
-					if (me.value) { Minibee.enable }{ Minibee.disable }
-				}),
-			)
 		);
 		{
 			this changed: \messages;
