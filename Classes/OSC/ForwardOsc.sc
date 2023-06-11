@@ -1,6 +1,10 @@
 /* 28 Nov 2022 10:24
 Forward osc messages to a list of addresses.
 
+This class forwards a single message with the class method "forward".
+It does not arrange to automatically forward selected incoming messages to
+other clients.  To do that, use class OscForwarder.
+
 	Operator options:
 	with adverb: send locally to port given by adverb
 	without adverb:

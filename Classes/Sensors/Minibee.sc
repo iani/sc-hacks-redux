@@ -14,6 +14,7 @@ Minibee {
 	classvar <values;
 	classvar <>min = 0.44;
 	classvar <>max = 0.56;
+	classvar <>forwardAddr;
 	var <id = 1;
 	var <busses;
 
@@ -26,10 +27,33 @@ Minibee {
 		}
 	}
 
+	*testSendOsc {
+		NetAddr("127.0.0.1", 1000).sendMsg(\testing, *Array.rand(10, 0, 10));
+	}
+
 	*init {
+		"Minibee initing".postln;
+		this.makeForwardAddresses;
+		postln("all before initing is:" + all);
 		all = { | i | this.new(i + 1) } ! numSensors; // 1-12
+		postln("all after initing is:" + all);
 		this.getValues;
 	}
+
+	*makeForwardAddresses {
+		this.addForwardAddr(10000)
+	}
+
+	*addForwardAddr { | portnum = 10000 |
+		this.getForwardAddr add: NetAddr("127.0.0.1", portnum);
+	}
+
+	*getForwardAddr {
+		forwardAddr ?? { this.resetForwardAddr };
+		^forwardAddr;
+	}
+
+	*resetForwardAddr { forwardAddr = Set() }
 
 	*getValues {
 		values = 0.dup(all.size * 3);
@@ -75,7 +99,12 @@ Minibee {
 	}
 
 	input { | xyz |
-		^xyz.linlin(min, max, 0.0, 1.0) do: { | val, i |
+		var scaledValues;
+		scaledValues = xyz.linlin(min, max, 0.0, 1.0);
+		// this.class.testSendOsc;
+		// forwardAddr.postln;
+		forwardAddr do: { | addr | addr.sendMsg('/minibee', *scaledValues) }
+		^scaledValues do: { | val, i |
 			values[id - 1 * 3 + i] = val;
 			busses[i].set(val);
 		}

@@ -64,6 +64,9 @@ OSC {
 		if (address isKindOf: Integer) {
 			address = NetAddr("127.0.0.1", address)
 		};
+		if (address == LocalAddr()) {
+			^"OSC refuses to forward to local address".postln;
+		};
 		this.add(message, { | n, msg |
 			address.sendMsg(*msg);
 		}, address.asSymbol);

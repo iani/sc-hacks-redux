@@ -164,7 +164,7 @@ OscDataReader {
 		times = times.differentiate;
 		times[0] = times[1];
 		times = times rotate: -1;
-		postf("data duration is:" + this.duration);
+		postln("data duration is:" + this.duration);
 	}
 
 	*duration { times !? {^times.sum.formatTime} }
