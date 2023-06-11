@@ -90,6 +90,7 @@ OscDataReader {
 
 	*readAndMergePaths { | argPaths, key = \oscdata |
 		allData = []; messages = []; times = [];
+		this.clear;
 		argPaths do: { | path, index |
 			if (File exists: path) {
 				Library.put(this, key, index, this.new(path));
@@ -99,6 +100,12 @@ OscDataReader {
 		};
 		this.merge(key);
 		this.processMerged;
+	}
+
+	*clear {
+		Library.at(this).postln;
+		Library.put(this, nil);
+		Library.at(this).postln;
 	}
 
 	*readLastSaved { | key = \oscdata |
