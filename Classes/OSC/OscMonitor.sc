@@ -112,17 +112,6 @@ OscMonitor {
 					}
 				})
 			),
-			ListView()
-			.palette_(QPalette.dark
-				.highlight_(Color(0.1, 0.1, 0.7))
-				.highlightText_(Color(0.9, 0.8, 0.7))
-			)
-			.addNotifier(this, \messages, { | n |
-				n.listener.items = messages.asArray.sort;
-			})
-			.enterKeyAction_({ | me |
-				me.item.asSymbol.watch;
-			}),
 			HLayout(
 				CheckBox()
 				.string_("OSC trace")
@@ -150,6 +139,17 @@ OscMonitor {
 				}),
 				Button().states_([["Minibee gui"]]).action_({ Minibee.gui })
 			),
+			ListView()
+			.palette_(QPalette.dark
+				.highlight_(Color(0.1, 0.1, 0.7))
+				.highlightText_(Color(0.9, 0.8, 0.7))
+			)
+			.addNotifier(this, \messages, { | n |
+				n.listener.items = messages.asArray.sort;
+			})
+			.enterKeyAction_({ | me |
+				me.item.asSymbol.watch;
+			}),
 		);
 		{
 			this changed: \messages;

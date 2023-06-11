@@ -89,6 +89,7 @@ OscDataReader {
 	}
 
 	*readAndMergePaths { | argPaths, key = \oscdata |
+		allData = []; messages = []; times = [];
 		argPaths do: { | path, index |
 			if (File exists: path) {
 				Library.put(this, key, index, this.new(path));
@@ -117,7 +118,7 @@ OscDataReader {
 		^this.newCopyArgs(path).readData;
 	}
 	readData {
-		postln("Reading data from" + path + "...");
+		// postln("Reading data from" + path + "...");
 		this.parseDataOSC(File.readAllString(path));
 	}
 
@@ -141,7 +142,8 @@ OscDataReader {
 				entry.copyRange(timeend + 1, entry.size - 1)
 			];
 		};
-		postln("... read " + data.size + "entries.")
+		// postln("... read " + data.size + "entries.")
+		post(" . ");
 	}
 
 	*merge { | key |
@@ -151,10 +153,10 @@ OscDataReader {
 		dict.keys.asArray.sort do: { | i |
 			var newData;
 			newData = dict[i].data;
-			postln("Adding" + newData.size + "entries to allData ...");
+			// post("Read" + newData.size + "entries. ");
 			allData = allData ++ newData;
 		};
-		postln("DONE. allData has" + allData.size + "entries.")
+		postln("\nallData has" + allData.size + "entries.")
 	}
 
 	*calculateTimes {
@@ -162,7 +164,10 @@ OscDataReader {
 		times = times.differentiate;
 		times[0] = times[1];
 		times = times rotate: -1;
+		postf("data duration is:" + this.duration);
 	}
+
+	*duration { times !? {^times.sum.formatTime} }
 
 	*processMerged { | filter = true |
 		var exclude, converted;
@@ -180,8 +185,8 @@ OscDataReader {
 		// sort data by *ENTRY TIME* in ascending order
 		// use sortMerget method instead of this line: ?
 		allData = converted.sort({| a, b | a[0] < b[0] });
-		this.calculateTimes;
 		postln("... Done. Collected" + allData.size + "messages.");
+		this.calculateTimes;
 	}
 
 	*sortMerged { // sor§t data by *ENTRY TIME* in ascending order

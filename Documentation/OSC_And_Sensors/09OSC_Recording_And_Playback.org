@@ -40,3 +40,6 @@ After reading the data, you can play them with:
 #+begin_src sclang
 OscDataReader.play;
 #+end_src
+
+#+RESULTS:
+: OscDataReader.play;
