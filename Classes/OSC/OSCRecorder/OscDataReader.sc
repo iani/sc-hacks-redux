@@ -64,6 +64,14 @@ OscDataReader {
 		}, multipleSelection: true);
 	}
 
+	*open { // open all files
+		this.all do: _.openDocument;
+	}
+
+	*all { | key = \oscdata |
+		^Library.at(this, key).asArray;
+	}
+
 	*pathsArchivePath {
 		^(PathName(Platform.userHomeDir) +/+ "OscDataReader_LastRead.scd").fullPath;
 	}
