@@ -2,13 +2,13 @@
 
 Tue 13 Jun 2023 07:46 - notes for new implementaton:
 
-* Class OscData
+* Class OscDataPlayer
 
 ** Instance variables:
 
 *** Files - A FileList instance
 *** Messages - An array of messages red from file
-*** Dtimes - array of dtimes calculated from Messages
+*** Settings - an array of settings specifying
 *** EventStream - Event stream playing the messages
 
 ** Methods:

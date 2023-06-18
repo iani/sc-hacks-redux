@@ -3,7 +3,7 @@
 
 */
 
-OscDataPlayer {
+OscDataPlayerOld {
 	classvar <>enableCodeEvaluation = true;
 	var <data, <>addr;
 	var <times, <messages;
