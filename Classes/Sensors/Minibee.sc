@@ -15,6 +15,7 @@ Minibee {
 	classvar <>min = 0.44;
 	classvar <>max = 0.56;
 	classvar <>forwardAddr;
+	classvar <of;
 	var <id = 1;
 	var <busses;
 
@@ -41,7 +42,8 @@ Minibee {
 	}
 
 	*makeForwardAddresses {
-		this.addForwardAddr(10000);
+		of = NetAddr("127.0.0.1", 10000);
+		this.addForwardAddr(of);
 		OscGroups.enable;
 		this.addForwardAddr(OscGroups.sendAddress)
 	}
@@ -103,12 +105,11 @@ Minibee {
 	*update { | sender, cmd, msg |
 		var index;
 		switch(cmd,
-			sensormsg, {
+			sensormsg, { // handle values input from local sensors
 				index = msg[1];
 				this.changed(\values, index, all[index - 1].input(msg[2..]));
 			},
-			'/minibee', {
-				// msg.postln;
+			'/minibee', { // handle values input via OscGroups
 				index = msg[1];
 				this.changed(\values, all[index - 1].inputScaled(msg[2..]));
 			}
@@ -128,12 +129,8 @@ Minibee {
 		}
 	}
 
-	inputScaled { | xyz |
-		var scaledValues;
-		scaledValues = xyz; // .linlin(min, max, 0.0, 1.0);
-		// this.class.testSendOsc;
-		// forwardAddr.postln;
-		// forwardAddr do: { | addr | addr.sendMsg('/minibee', id, *scaledValues) }
+	inputScaled { | scaledValues |
+		of.sendMsg('/minibee', id, *scaledValues);
 		^scaledValues do: { | val, i |
 			values[id - 1 * 3 + i] = val;
 			busses[i].set(val);
