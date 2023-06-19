@@ -41,11 +41,17 @@ Minibee {
 	}
 
 	*makeForwardAddresses {
-		this.addForwardAddr(10000)
+		this.addForwardAddr(10000);
+		OscGroups.enable;
+		this.addForwardAddr(OscGroups.sendAddress)
 	}
 
 	*addForwardAddr { | portnum = 10000 |
-		this.getForwardAddr add: NetAddr("127.0.0.1", portnum);
+		if (portnum.isKindOf(NetAddr)) {
+			this.getForwardAddr add: portnum;
+		}{
+			this.getForwardAddr add: NetAddr("127.0.0.1", portnum);
+		}
 	}
 
 	*getForwardAddr {
@@ -84,7 +90,11 @@ Minibee {
 
 	*busses { ^all collect: _.busses }
 
-	*enable { OSC addDependant: this; this.changed(\status) }
+	*enable {
+		Server.default.waitForBoot({
+			OSC addDependant: this; this.changed(\status);
+		})
+	}
 
 	*disable { OSC removeDependant: this; this.changed(\status) }
 
