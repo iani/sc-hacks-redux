@@ -109,8 +109,8 @@ Minibee {
 			},
 			'/minibee', {
 				// msg.postln;
-				// index = msg[1];
-				this.changed(\values, msg.postln);
+				index = msg[1];
+				this.changed(\values, all[index - 1].inputScaled(msg[2..]));
 			}
 		);
 		// if (cmd === sensormsg) }
@@ -122,6 +122,18 @@ Minibee {
 		// this.class.testSendOsc;
 		// forwardAddr.postln;
 		forwardAddr do: { | addr | addr.sendMsg('/minibee', id, *scaledValues) }
+		^scaledValues do: { | val, i |
+			values[id - 1 * 3 + i] = val;
+			busses[i].set(val);
+		}
+	}
+
+	inputScaled { | xyz |
+		var scaledValues;
+		scaledValues = xyz; // .linlin(min, max, 0.0, 1.0);
+		// this.class.testSendOsc;
+		// forwardAddr.postln;
+		// forwardAddr do: { | addr | addr.sendMsg('/minibee', id, *scaledValues) }
 		^scaledValues do: { | val, i |
 			values[id - 1 * 3 + i] = val;
 			busses[i].set(val);
