@@ -96,21 +96,33 @@ OscMonitor {
 				})
 			),
 			HLayout(
-				Button().states_([["Load OscFiles"]])
-				.action_({ OscDataReader.openDialog }),
-				Button().states_([["Reload"]])
-				.action_({ OscDataReader.reRead }),
-				CheckBox()
-				.addNotifier(this, \oscplayerstopped, { | n | n.listener.value = false })
-				// .addΝοtifier(this, \oscplayerstopped, { | n | n.listener.value = false })
-				.string_("play osc")
+				CheckBox().string_("OscGroups")
+				.value_(OscGroups.isEnabled)
 				.action_({ | me |
-					if (me.value) {
-						this.playOsc;
-					}{
-						this.stopPlayingOsc;
-					}
+					if (me.value) { OscGroups.enable } { OscGroups.disable }
 				})
+				.addNotifier(OscGroups, \status, { | n |
+					// postln("OscGroups enabled status is now:" + OscGroups.isEnabled)
+					n.listener.value = OscGroups.isEnabled;
+				}),
+				Button().states_([["Osc File Lists"]])
+				.action_({ OscDataGui.gui }),
+
+				// Button().states_([["Load OscFiles"]])
+				// .action_({ OscDataReader.openDialog }),
+				// Button().states_([["Reload"]])
+				// .action_({ OscDataReader.reRead }),
+				// CheckBox()
+				// .addNotifier(this, \oscplayerstopped, { | n | n.listener.value = false })
+				// // .addΝοtifier(this, \oscplayerstopped, { | n | n.listener.value = false })
+				// .string_("play osc")
+				// .action_({ | me |
+				// 	if (me.value) {
+				// 		this.playOsc;
+				// 	}{
+				// 		this.stopPlayingOsc;
+				// 	}
+				// })
 			),
 			HLayout(
 				CheckBox()

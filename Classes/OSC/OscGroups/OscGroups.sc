@@ -220,7 +220,7 @@ OscGroups {
 	}
 
 	*changedStatus {
-		"OscGroups testing enabled status".postln;
+		// "OscGroups testing enabled status".postln;
 		this.changed(\status);
 	}
 
@@ -251,7 +251,6 @@ OscGroups {
 		if (isCodeForwarding) {
 			// "Enabling code f orwarding - return to original state".postln;
 			this.enableCodeForwarding;
-
 		}{
 			// "I will not enable code forwarding!".postln;
 		};

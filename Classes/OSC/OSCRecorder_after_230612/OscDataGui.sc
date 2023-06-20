@@ -12,19 +12,33 @@ OscDataGui {
 		this.vlayout(
 			Button().states_([["Add Filelist"]])
 			.action_({ this.addListFromUser }),
-			ListView()
-			.addNotifier(fileListHistory, \history, { | n |
-				"updating filelist".postln;
-				n.listener.items = fileListHistory.lists collect: _.asString;
-			})
-			.action_({ | me |
-				selectedList = me.items[me.value];
-				fileListHistory.changed(\fileList, me.value);
-			})
-			.enterKeyAction_(({ | me |
-				selectedList = me.items[me.value];
-				fileListHistory.changed(\fileList, me.value);
-			}))
+			HLayout(
+				ListView()
+				.addNotifier(fileListHistory, \history, { | n |
+					// "updating filelist".postln;
+					n.listener.items = fileListHistory.lists collect: _.asString;
+					selectedList = fileListHistory.lists.first;
+					this.changed(\selectedList);
+				})
+				.action_({ | me |
+					selectedList = fileListHistory.lists[me.value];
+					fileListHistory.changed(\fileList, me.value);
+					this.changed(\selectedList);
+				})
+				.enterKeyAction_({ | me |
+					selectedList = fileListHistory.lists[me.value];
+					fileListHistory.changed(\fileList, me.value);
+					this.changed(\selectedList);
+				}),
+				ListView()
+				.addNotifier(this, \selectedList, { | n |
+					// selectedList.postln;
+					// selectedList.class.postln;
+					// selectedList.
+					n.listener.items = selectedList.paths collect: _.basename;
+					selectedPath = selectedList.paths.first;
+				})
+			)
 		);
 		{ fileListHistory.changed(\history) }.defer(0.1);
 	}
