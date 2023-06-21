@@ -77,8 +77,13 @@ OscData {
 					#hi, lo = 1 - [me.lo, me.hi];
 					postln("original: " + me.lo + me.hi + "inverted" +
 					lo + hi);
+					this.selectTimeRange(lo, hi);
 				})
-				.addNotifier(this, \range, { | n, lo = 0, hi = 1 |
+				.addNotifier(this, \items, { | n ... selection |
+					n.listener.lo = this.mapTime(selection.first);
+					n.listener.hi = this.mapTime(selection.last);
+				})
+				.addNotifier(this, \timerange, { | n, lo = 0, hi = 1 |
 					postln("setting range to lo" + lo + "hi" + hi);
 					n.listener.lo = lo;
 					n.listener.hi = hi;
@@ -91,9 +96,9 @@ OscData {
 				)
 				.selectionMode_(\contiguous)
 				.action_({ | me |
-					this.changed(\selection, me.selection)
+					this.changed(\timeselection, me.selection)
 				})
-				.addNotifier(this, \selection, { | n ... selection |
+				.addNotifier(this, \items, { | n ... selection |
 					n.listener.items = times[selection]
 				})
 				.addNotifier(this, \inited, { | n |
@@ -105,17 +110,36 @@ OscData {
 					.highlight_(Color(0.7, 1.0, 0.9))
 					.highlightText_(Color(0.0, 0.0, 0.0))
 				)
-				.addNotifier(this, \selection, { | n ... selection |
+				.addNotifier(this, \items, { | n ... selection |
 					n.listener.items = messages[selection]
 				})
+				.addNotifier(this, \timeselection, { | n ... selection |
+					n.listener.items = messages[selection]
+				})
+
 			)
 		);
 		{ this.selectAll; }.defer(0.1);
 	}
 
+	selectTimeRange { | lo = 0, hi = 1 |
+		this.changed(\items, (this.findTimeIndex(lo)..this.findTimeIndex(hi)));
+	}
+
+	findTimeIndex { | time |
+		var result;
+		result = times indexOf: (times detect: { | t | t >= time });
+		result.postln;
+		^result;
+	}
+
+	mapTime { | time |
+
+	}
+
 	selectAll {
-		this.changed(\selection, (0..times.size - 1));
-		this.changed(\range, 0, 1)
+		this.changed(\items, (0..times.size - 1));
+		this.changed(\timerange, 0, 1)
 	}
 
 	makePlayer {
