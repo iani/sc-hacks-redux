@@ -19,6 +19,13 @@ FileList {
 		}, multipleSelection: true)
 	}
 
+	removePathsAt { | pathindices |
+		var copy;
+		copy = paths.copy;
+		pathindices do: { | i | paths remove: copy[i] };
+		this.changed(\paths);
+	}
+
 	asString {
 		^timestamp + name
 	}

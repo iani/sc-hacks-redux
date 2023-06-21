@@ -39,11 +39,15 @@ FileListHistory {
 		lists = lists add: list;
 		if (lists.size > maxitems) { lists = lists[1..] };
 		this.save;
-		this.changed(\history)
+		this changed: \history
 	}
 
+	removeAt { | index |
+		this.remove(lists[index]);
+	}
 	remove { | list |
-		lists remove: list
+		lists remove: list;
+		this.save;
+		this changed: \history;
 	}
-
 }

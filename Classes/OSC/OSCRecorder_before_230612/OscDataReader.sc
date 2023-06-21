@@ -43,7 +43,6 @@ ignored.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 */
 
-
 OscDataReader {
 	classvar <allData;
 	var <path, <dataString, <data;
@@ -234,6 +233,25 @@ OscDataReader {
 	*info {
 
 	}
+
+	// reject messages matching '/code';
+	rejectCode {
+		^this.reject("/code")
+	}
+	// reject messages matching a certain messages
+	*reject { | ... messages |
+
+	}
+
+	*messages2text {
+
+	}
+
+	// construct header from time in the format //:--[12345.123456789]
+	*time2text { | time |
+		^format("//:--[%]", time)
+	}
+
 	// These are done by OscDataPlayer with playSelect, playReject
 	// *select {}
 	// *reject {}

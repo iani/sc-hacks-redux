@@ -95,10 +95,14 @@ Minibee {
 	*enable {
 		Server.default.waitForBoot({
 			OSC addDependant: this; this.changed(\status);
+			"Minibee enabled".postln;
 		})
 	}
 
-	*disable { OSC removeDependant: this; this.changed(\status) }
+	*disable {
+		OSC removeDependant: this; this.changed(\status);
+		"Minibee disabled".postln;
+	}
 
 	*enabled { ^OSC.dependants includes: this }
 
