@@ -31,6 +31,7 @@ OscData {
 		// Collect interpreted time and message from each message.
 		parsedEntries = [];
 		[sourceStrings, paths].flop do: this.parseString(_);
+		postln("Parsed " + parsedEntries.size + "entries");
 		// sort messages in ascending timestamp order first!????
 		#times, messages = parsedEntries.flop;
 		times = times - times.first;
@@ -66,10 +67,6 @@ OscData {
 		post(" . ");
 	}
 
-	makePlayer {
-
-	}
-
 	gui {
 		this.br_(800, 300).vlayout(
 			HLayout(
@@ -80,9 +77,14 @@ OscData {
 					#hi, lo = 1 - [me.lo, me.hi];
 					postln("original: " + me.lo + me.hi + "inverted" +
 					lo + hi);
+				})
+				.addNotifier(this, \range, { | n, lo = 0, hi = 1 |
+					postln("setting range to lo" + lo + "hi" + hi);
+					n.listener.lo = lo;
+					n.listener.hi = hi;
 				}),
 				ListView() // times
-				.maxWidth_(140)
+				.maxWidth_(160)
 				.palette_(QPalette.light
 					.highlight_(Color(1.0, 0.9, 0.7))
 					.highlightText_(Color(0.0, 0.0, 0.0))
@@ -90,6 +92,9 @@ OscData {
 				.selectionMode_(\contiguous)
 				.action_({ | me |
 					this.changed(\selection, me.selection)
+				})
+				.addNotifier(this, \selection, { | n ... selection |
+					n.listener.items = times[selection]
 				})
 				.addNotifier(this, \inited, { | n |
 					// n.listener.items =
@@ -101,11 +106,19 @@ OscData {
 					.highlightText_(Color(0.0, 0.0, 0.0))
 				)
 				.addNotifier(this, \selection, { | n ... selection |
-					postln("n selection:" + selection);
 					n.listener.items = messages[selection]
 				})
 			)
 		);
-		{ this.changed(\inited) }.defer(0.1)
+		{ this.selectAll; }.defer(0.1);
+	}
+
+	selectAll {
+		this.changed(\selection, (0..times.size - 1));
+		this.changed(\range, 0, 1)
+	}
+
+	makePlayer {
+
 	}
 }

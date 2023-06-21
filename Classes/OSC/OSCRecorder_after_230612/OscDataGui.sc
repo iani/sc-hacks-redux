@@ -21,7 +21,6 @@ OscDataFileList {
 			HLayout(
 				ListView()
 				.addNotifier(fileListHistory, \history, { | n |
-					// "updating filelist".postln;
 					n.listener.items = fileListHistory.lists collect: _.asString;
 					selectedList = fileListHistory.lists.first;
 					this.changed(\selectedList);
@@ -39,11 +38,6 @@ OscDataFileList {
 						me.keyDownAction(me, *args)
 					};
 				}),
-				// .enterKeyAction_({ | me |
-				// 	selectedList = fileListHistory.lists[me.value];
-				// 	fileListHistory.changed(\fileList, me.value);
-				// 	this.changed(\selectedList);
-				// }),
 				ListView()
 				.selectionMode_(\contiguous)
 				.addNotifier(this, \selectedList, { | n |
