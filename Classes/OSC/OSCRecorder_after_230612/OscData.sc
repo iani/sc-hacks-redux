@@ -51,15 +51,13 @@ OscData {
 		var delimiters, entry, string, path;
 		var timebeg, timeend;
 		#string, path = stringAndPath;
-		if ("//code" == string[..string.find("\n")-1]) {
-			Error("File" + path + "is a code file. Use OscDataScore.").throw
-		};
+		this.checkFileType(string, path);
 		delimiters = string.findAll("\n//:--[");
 		delimiters do: { | b, i |
 			var end;
 			end = delimiters[i + 1];
 			if (end.notNil) {
-				entry = string.copyRange(b, end)
+				entry = string.copyRange(b, end);
 			}{
 				entry = string.copyRange(b, string.size - 1)
 			};
@@ -67,10 +65,16 @@ OscData {
 			timeend = entry.find("]", 4);
 			parsedEntries = parsedEntries add: [
 				entry.copyRange(timebeg + 4, timeend - 1).interpret,
-				entry.copyRange(timeend + 1, entry.size - 1)
+				entry.copyRange(timeend + 2, if (end.notNil) { entry.size - 2 } { entry.size - 1 })
  			];
 		};
 		post(" . ");
+	}
+
+	checkFileType { | string, path |
+		if ("//code" == string[..string.find("\n")-1]) {
+			Error("File" + path + "is a code file. Use OscDataScore.").throw
+		};
 	}
 
 	gui {
@@ -296,9 +300,16 @@ OscData {
 	}
 
 	makePlayFunc { // OscDataScore customizes this
-		var addr;
-		addr = LocalAddr();
-		^{ addr.sendMsg(*(~message.interpret)) }
+		var localaddr, oscgroupsaddr;
+		localaddr = LocalAddr();
+		OscGroups.enable;
+		oscgroupsaddr = OscGroups.sendAddress;
+		^{
+			var msg;
+			msg = ~message.interpret;
+			localaddr.sendMsg(*msg);
+			oscgroupsaddr.sendMsg(*msg);
+		}
 	}
 
 	isPlaying { ^stream.isPlaying }

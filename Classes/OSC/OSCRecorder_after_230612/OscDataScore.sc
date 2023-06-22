@@ -19,11 +19,25 @@ Is equivalent to:
 
 OscDataScore : OscData {
 
+	checkFileType { | string, path |
+		if ("//code" == string[..string.find("\n")-1]) {
+		}{
+			Error("File" + path + "is not a code file. Use OscData.").throw
+		};
+	}
+
 	convertTimes { times = times.integrate }
 
 	makePlayFunc {
-		var addr;
-		addr = LocalAddr();
-		^{ addr.sendMsg('/code', ~message) }
+		var localaddr, oscgroupsaddr;
+		localaddr = LocalAddr();
+		OscGroups.enable;
+		oscgroupsaddr = OscGroups.sendAddress;
+		^{
+			var msg;
+			msg = ~message.interpret;
+			localaddr.sendMsg('/code', ~message);
+			oscgroupsaddr.sendMsg('/code', ~message);
+		}
 	}
 }
