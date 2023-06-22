@@ -13,7 +13,7 @@ OscData {
 	var <times, <messages; // times and messages obtained from parsedEntries
 	// ============= Store state from user selection for simpler updates ==============
 	var <selectedMinTime = 0, <selectedMaxTime = 0; // section selected
-	var <selectedTimes, <selectedMessages;
+	var <timesMessages, <selectedTimes, <selectedMessages;
 
 	*new { | paths |
 		^this.newCopyArgs(paths).init;
@@ -37,6 +37,8 @@ OscData {
 		// sort messages in ascending timestamp order first!????
 		#times, messages = parsedEntries.flop;
 		times = times - times.first;
+		timesMessages = [times, messages].flop;
+		// timesMessages.postln;
 		this.changed(\inited);
 	}
 
@@ -63,7 +65,7 @@ OscData {
 			parsedEntries = parsedEntries add: [
 				entry.copyRange(timebeg + 4, timeend - 1).interpret,
 				entry.copyRange(timeend + 1, entry.size - 1)
-			];
+ 			];
 		};
 		post(" . ");
 	}
@@ -73,70 +75,57 @@ OscData {
 			RangeSlider() // select a range of times
 			.orientation_(\horizontal)
 			.action_({ | me |
-				this.selectTimeRange(
-					selectedMinTime = me.lo * this.duration,
-					selectedMaxTime = me.hi * this.duration
-				);
+				selectedMinTime = me.lo * this.duration;
+				selectedMaxTime = me.hi * this.duration;
+				this.updateTimesMessages(me);
 			})
 			.addNotifier(this, \selection, { | n |
-				postln("rangeslider new update - selection")
-			})
-			.addNotifier(this, \timeselection, { | n ... selection |
-				// resize when user selects time range in time list
+				postln("rangeslider new update - selection");
 				n.listener.setSpan(
-					this.mapTime(selection.minItem),
-					this.mapTime(selection.maxItem)
-				);
-			})
-			.addNotifier(this, \timerange, { | n, lo = 0, hi = 1 |
-				postln("setting range to lo" + lo + "hi" + hi);
-				n.listener.lo = lo;
-				n.listener.hi = hi;
+					selectedMinTime / this.duration,
+					selectedMaxTime / this.duration
+				)
 			}),
 			HLayout(
 				StaticText().string_("beginning"),
 				NumberBox()
 				.decimals_(3)
 				.action_({ | me |
-					selectedMinTime = me.value;
-					this.selectTimeRange(selectedMinTime, selectedMaxTime);
+					selectedMinTime = me.value.clip(0, selectedMaxTime);
+					me.value = selectedMinTime;
+					this.updateTimesMessages(me);
 				})
-				.addNotifier(this, \selection, { | n |
-					postln("mintimebox new update - selection")
-				})
-				.addNotifier(this, \timeselection, { | n ... selection |
-					n.listener.value = selectedMinTime = times[selection.minItem];
-				})
-				.addNotifier(this, \items, { | n ... selection |
-					n.listener.value = selectedMinTime = times[selection].minItem;
+				.addNotifier(this, \selection, { | n, who |
+					if (who != n.listener) { n.listener.value = selectedMinTime; }
 				}),
 				StaticText().string_("end"),
 				NumberBox()
 				.decimals_(3)
-				.addNotifier(this, \timeselection, { | n ... selection |
-					n.listener.value = selectedMaxTime = times[selection.maxItem];
+				.action_({ | me |
+					selectedMaxTime = me.value.clip(selectedMinTime, this.duration);
+					me.value = selectedMinTime;
+					this.updateTimesMessages(me);
 				})
-				.addNotifier(this, \selection, { | n |
-					postln("maxtimebox new update - selection")
-				})
-				.addNotifier(this, \items, { | n ... selection |
-					n.listener.value = selectedMaxTime = times[selection].maxItem;
+				.addNotifier(this, \selection, { | n, who |
+					if (n.listener != who) { n.listener.value = selectedMaxTime; }
 				}),
 				StaticText().string_("duration"),
 				NumberBox()
 				.decimals_(3)
-				.addNotifier(this, \selection, { | n |
-					postln("duration timebox new update - selection")
+				.action_({ | me |
+					var clippedVal, clippedDuration;
+					clippedVal = me.value.max(0);
+					clippedDuration = me.value.clip(0, this.duration.min(clippedVal - selectedMinTime));
+					me.value_(clippedDuration);
+					selectedMaxTime = selectedMinTime + clippedDuration;
+					this.updateTimesMessages(me);
 				})
-				.addNotifier(this, \timeselection, { | n ... selection |
-					n.listener.value = times[selection.maxItem] - times[selection.minItem];
-				})
-				.addNotifier(this, \items, { | n ... selection |
-					n.listener.value = times[selection].maxItem - times[selection].minItem;
+				.addNotifier(this, \selection, { | n, who |
+					if (who != n.listener) {
+						n.listener.value = selectedMaxTime - selectedMinTime;
+					}
 				}),
-				StaticText().string_("total duration:" + this.duration),
-				// NumberBox(),
-				// StaticText().string_("end"),
+				StaticText().string_("total duration:" + this.duration)
 			),
 			HLayout(
 				ListView() // times
@@ -147,21 +136,30 @@ OscData {
 				)
 				.selectionMode_(\contiguous)
 				.action_({ | me |
-					// "running times list	MAIN action".postln;
-					this.changed(\timeselection, me.selection)
+					#selectedTimes, selectedMessages = timesMessages.copyRange(
+						me.selection.minItem, me.selection.maxItem;
+					).flop;
+					selectedMinTime = selectedTimes.minItem;
+					selectedMaxTime = selectedTimes.maxItem;
+					this.changed(\selection, me);
 				})
 				.selectionAction_({ | me |
-					// "running times list SELECTION action".postln;
-					// postln("selection action selection:" + me.selection);
-					// this.changed(\timeselection, me.selection)
+					// do not use selection action because it blocks update
+					// use keyDownAction instead.
 				})
 				.keyDownAction_({ | me ... args |
 					// enable updates from cursor keys + Cmd-a (select all)
 					me.defaultKeyDownAction(me, *args);
-					{ this.changed(\timeselection, me.selection) }.defer(0.1);
+					{ this.selectTimesMessages(me, me.selection) }.defer(0.1);
 				})
-				.addNotifier(this, \selection, { | n |
-					postln("times list new update - selection")
+				.addNotifier(this, \selection, { | n, who |
+					postln("updating selection" + n.listener + who);
+					if (who === n.listener) {
+						// do not update
+					}{
+						n.listener.items = selectedTimes;
+					};
+					// postln("times list new update - selection")
 				})
 				.addNotifier(this, \items, { | n ... selection |
 					n.listener.items = times[selection]
@@ -175,44 +173,50 @@ OscData {
 					.highlight_(Color(0.7, 1.0, 0.9))
 					.highlightText_(Color(0.0, 0.0, 0.0))
 				)
-				.addNotifier(this, \selection, { | n |
-					postln("messages list new update - selection")
+				.addNotifier(this, \selection, { | n, who |
+					if (who != n.listener) {
+						n.listener.items = selectedMessages;
+					}
 				})
-
-				.addNotifier(this, \items, { | n ... selection |
-					n.listener.items = messages[selection]
-				})
-				.addNotifier(this, \timeselection, { | n ... selection |
-					n.listener.items = messages[selection]
-				})
-
 			)
 		);
 		{ this.selectAll; }.defer(0.1);
 	}
 
-	selectTimeRange { | lo = 0, hi = 1 |
-		this.changed(\items, (this.findTimeIndex(lo)..this.findTimeIndex(hi)));
-		//
-	}
+	findTimeIndex { | time | ^times indexOf: (times detect: { | t | t >= time }); }
 
-	findTimeIndex { | time |
-		// var result;
-		^times indexOf: (times detect: { | t | t >= time });
-		// result.postln;
-		// ^result;
-	}
-
-	mapTime { | index |
-		// postln("Map time" + times[index] + "to duration" + this.duration + "result is" + (times[index] / this.duration));
-		^times[index] / this.duration;
-	}
+	mapTime { | index | ^times[index] / this.duration; }
 
 	duration { ^times.last }
 
 	selectAll {
-		this.changed(\items, (0..times.size - 1));
-		this.changed(\timerange, 0, 1)
+		// this.changed(\items, (0..times.size - 1));
+		// this.changed(\timerange, 0, 1);
+			// var <selectedMinTime = 0, <selectedMaxTime = 0; // section selected
+	// var <timesMessages, <selectedTimes, <selectedMessages;
+		selectedMinTime = 0;
+		selectedMaxTime = this.duration;
+		#selectedTimes, selectedMessages = timesMessages.flop;
+		selectedTimes.postln;
+		selectedMessages.postln;
+		this.changed(\selection);
+	}
+
+	selectTimesMessages { | who, selection |
+		#selectedTimes, selectedMessages = timesMessages.copyRange(
+			selection.minItem, selection.maxItem;
+		).flop;
+		selectedMinTime = selectedTimes.minItem;
+		selectedMaxTime = selectedTimes.maxItem;
+		this.changed(\selection, who);
+	}
+
+	updateTimesMessages { | who |
+		#selectedTimes, selectedMessages = timesMessages.copyRange(
+			this.findTimeIndex(selectedMinTime),
+			this.findTimeIndex(selectedMaxTime)
+		).flop;
+		this.changed(\selection, who);
 	}
 
 	makePlayer {
