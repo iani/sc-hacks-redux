@@ -14,6 +14,7 @@ OscData {
 	// ============= Store state from user selection for simpler updates ==============
 	var <selectedMinTime = 0, <selectedMaxTime = 0; // section selected
 	var <timesMessages, <selectedTimes, <selectedMessages;
+	var <stream;
 
 	*new { | paths |
 		^this.newCopyArgs(paths).init;
@@ -36,11 +37,13 @@ OscData {
 		postln("Parsed " + parsedEntries.size + "entries");
 		// sort messages in ascending timestamp order first!????
 		#times, messages = parsedEntries.flop;
-		times = times - times.first;
+		this.convertTimes;
 		timesMessages = [times, messages].flop;
 		// timesMessages.postln;
 		this.changed(\inited);
 	}
+
+	convertTimes { times = times - times.first; }
 
 	parseString { | stringAndPath |
 		// parse a string read from a file, in the format of //:--[timestamp] message.
@@ -71,7 +74,7 @@ OscData {
 	}
 
 	gui {
-		this.br_(800, 300).vlayout(
+		this.br_(800, 500).vlayout(
 			RangeSlider() // select a range of times
 			.orientation_(\horizontal)
 			.action_({ | me |
@@ -89,6 +92,7 @@ OscData {
 			HLayout(
 				StaticText().string_("beginning"),
 				NumberBox()
+				.maxWidth_(100)
 				.decimals_(3)
 				.action_({ | me |
 					selectedMinTime = me.value.clip(0, selectedMaxTime);
@@ -98,12 +102,13 @@ OscData {
 				.addNotifier(this, \selection, { | n, who |
 					if (who != n.listener) { n.listener.value = selectedMinTime; }
 				}),
-				StaticText().string_("end"),
+				StaticText().string_("end").maxWidth_(50),
 				NumberBox()
+				.maxWidth_(100)
 				.decimals_(3)
 				.action_({ | me |
 					selectedMaxTime = me.value.clip(selectedMinTime, this.duration);
-					me.value = selectedMinTime;
+					me.value = selectedMaxTime;
 					this.updateTimesMessages(me);
 				})
 				.addNotifier(this, \selection, { | n, who |
@@ -111,6 +116,7 @@ OscData {
 				}),
 				StaticText().string_("duration"),
 				NumberBox()
+				.maxWidth_(100)
 				.decimals_(3)
 				.action_({ | me |
 					var clippedVal, clippedDuration;
@@ -124,6 +130,12 @@ OscData {
 					if (who != n.listener) {
 						n.listener.value = selectedMaxTime - selectedMinTime;
 					}
+				}),
+				StaticText().string_("size"),
+				NumberBox()
+				.maxWidth_(70)
+				.addNotifier(this, \selection, { | n |
+					n.listener.value = selectedTimes.size;
 				}),
 				StaticText().string_("total duration:" + this.duration)
 			),
@@ -153,13 +165,7 @@ OscData {
 					{ this.selectTimesMessages(me, me.selection) }.defer(0.1);
 				})
 				.addNotifier(this, \selection, { | n, who |
-					postln("updating selection" + n.listener + who);
-					if (who === n.listener) {
-						// do not update
-					}{
-						n.listener.items = selectedTimes;
-					};
-					// postln("times list new update - selection")
+					if (who != n.listener) { n.listener.items = selectedTimes; };
 				})
 				.addNotifier(this, \items, { | n ... selection |
 					n.listener.items = times[selection]
@@ -178,7 +184,31 @@ OscData {
 						n.listener.items = selectedMessages;
 					}
 				})
-			)
+			),
+			HLayout(
+				CheckBox().string_("Play")
+				.action_({ | me |
+					if (me.value) { this.start; } { this.stop; };
+				}),
+				Button().states_([["Reset player"]])
+				.action_({ this.resetStream }),
+				Button().states_([["Reread files"]])
+				.action_({ this.reread }),
+				StaticText().string_("Export selection:"),
+				Button().states_([["messages"]])
+				.action_({ | me |
+					"export not implemented".postln;
+				}),
+				Button().states_([["code"]])
+				.action_({ | me |
+					"export not implemented".postln;
+				}),
+				Button().states_([["both"]])
+				.action_({ | me |
+					"export not implemented".postln;
+				})
+			),
+			Slider().orientation_(\horizontal)
 		);
 		{ this.selectAll; }.defer(0.1);
 	}
@@ -216,10 +246,42 @@ OscData {
 			this.findTimeIndex(selectedMinTime),
 			this.findTimeIndex(selectedMaxTime)
 		).flop;
+		selectedMinTime = selectedTimes.minItem;
+		selectedMaxTime = selectedTimes.maxItem;
 		this.changed(\selection, who);
 	}
 
-	makePlayer {
+	reread { this.init }
 
+	resetStream {
+		var restart = false;
+		if (this.isPlaying) { restart = true; this.stop; };
+		this.makeStream;
+		if (restart) { this.start; }
 	}
+	makeStream { // Thu 22 Jun 2023 16:40 Test version
+		var addr;
+		addr = LocalAddr();
+		^stream = (
+			dur: selectedTimes.differentiate.pseq(1),
+			message: selectedMessages.pseq(1),
+			play: this.makePlayFunc; // OscDataScore customizes this
+		).asEventStream;
+	}
+
+	makePlayFunc { // OscDataScore customizes this
+		var addr;
+		addr = LocalAddr();
+		^{ addr.sendMsg(*(~message.interpret)) }
+	}
+
+	isPlaying { ^stream.isPlaying }
+
+	start {
+		if (this.isPlaying) { ^postln("Oscdata is already playing") };
+		stream ?? { this.makeStream };
+		stream.start;
+	}
+
+	stop { stream.stop; }
 }

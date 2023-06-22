@@ -19,4 +19,11 @@ Is equivalent to:
 
 OscDataScore : OscData {
 
+	convertTimes { times = times.integrate }
+
+	makePlayFunc {
+		var addr;
+		addr = LocalAddr();
+		^{ addr.sendMsg('/code', ~message) }
+	}
 }
