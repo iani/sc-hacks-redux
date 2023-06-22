@@ -83,7 +83,7 @@ OscData {
 				this.updateTimesMessages(me);
 			})
 			.addNotifier(this, \selection, { | n |
-				postln("rangeslider new update - selection");
+				// postln("rangeslider new update - selection");
 				n.listener.setSpan(
 					selectedMinTime / this.duration,
 					selectedMaxTime / this.duration
@@ -187,14 +187,20 @@ OscData {
 			),
 			HLayout(
 				CheckBox().string_("Play")
+				.maxWidth_(50)
 				.action_({ | me |
 					if (me.value) { this.start; } { this.stop; };
+				})
+				.addNotifier(this, \playing, { | n, status |
+					n.listener.value = status;
 				}),
+				Button().states_([["->code"]])
+				.action_({ this.findNextCode }),
 				Button().states_([["Reset player"]])
 				.action_({ this.resetStream }),
 				Button().states_([["Reread files"]])
 				.action_({ this.reread }),
-				StaticText().string_("Export selection:"),
+				StaticText().string_("Export:"),
 				Button().states_([["messages"]])
 				.action_({ | me |
 					"export not implemented".postln;
@@ -213,6 +219,24 @@ OscData {
 		{ this.selectAll; }.defer(0.1);
 	}
 
+	findNextCode {
+		var found, index;
+		found = selectedMessages detect: { | m |
+			m.interpret.first === '/code';
+			// true;
+		};
+		// found.postln;
+		index = selectedMessages indexOf: found;
+		selectedMinTime = times[index];
+		selectedMaxTime = selectedMinTime max: selectedMaxTime;
+		this.updateTimesMessages(this);
+		// index.postln;
+		// selectedMessages do: { | m |
+		// 	m.postln;
+		// }
+
+	}
+
 	findTimeIndex { | time | ^times indexOf: (times detect: { | t | t >= time }); }
 
 	mapTime { | index | ^times[index] / this.duration; }
@@ -227,8 +251,8 @@ OscData {
 		selectedMinTime = 0;
 		selectedMaxTime = this.duration;
 		#selectedTimes, selectedMessages = timesMessages.flop;
-		selectedTimes.postln;
-		selectedMessages.postln;
+		// selectedTimes.postln;
+		// selectedMessages.postln;
 		this.changed(\selection);
 	}
 
@@ -262,11 +286,13 @@ OscData {
 	makeStream { // Thu 22 Jun 2023 16:40 Test version
 		var addr;
 		addr = LocalAddr();
-		^stream = (
+		stream = (
 			dur: selectedTimes.differentiate.pseq(1),
 			message: selectedMessages.pseq(1),
 			play: this.makePlayFunc; // OscDataScore customizes this
 		).asEventStream;
+		this.addNotifier(stream, \stopped, { this.changed(\playing, false) });
+		this.addNotifier(stream, \started, { this.changed(\playing, true) });
 	}
 
 	makePlayFunc { // OscDataScore customizes this
