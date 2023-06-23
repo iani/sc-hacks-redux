@@ -26,7 +26,7 @@ Asc to confirm before evaluating a function.
 		)
 	}
 
-	userInput {  | default = "something", prompt = "Enter a new string" |
+	inputText {  | default = "something", prompt = "Enter a new string" |
 		var window;
 		window = this.vlayout(
 			StaticText().string_(prompt),
