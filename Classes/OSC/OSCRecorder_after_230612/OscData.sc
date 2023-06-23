@@ -20,8 +20,10 @@ OscData {
 
 	cloneCode {
 		^this.class.newCopyArgs(paths, sourceStrings,
-			parsedEntries.select({ | e | e[1][2..8] == "'/code'" }),
-			unparsedEntries.select({ | e | e.find("[ '/code', ").notNil })
+			parsedEntries.copyRange(minIndex, maxIndex)
+			.select({ | e | e[1][2..8] == "'/code'" }),
+			unparsedEntries.copyRange(minIndex, maxIndex)
+			.select({ | e | e.find("[ '/code', ").notNil })
 		).convertTimesMessages.gui;
 	}
 
@@ -190,8 +192,10 @@ OscData {
 				)
 				.selectionMode_(\contiguous)
 				.action_({ | me |
+					minIndex = me.selection.minItem;
+					maxIndex = me.selection.maxItem;
 					#selectedTimes, selectedMessages = timesMessages.copyRange(
-						me.selection.minItem, me.selection.maxItem;
+						minIndex, maxIndex;
 					).flop;
 					selectedMinTime = selectedTimes.minItem;
 					selectedMaxTime = selectedTimes.maxItem;
@@ -366,10 +370,15 @@ OscData {
 	stop { stream.stop; progressRoutine.stop; }
 
 	export {
+		// "WARNING: Cannot export as code yet. Exporting as messages".postln;
+		// 	this.exportMessages;
+		// "WARNING: Cannot export as code yet. Exported as messages".postln;
 		if (this.hasMessages) {
-			this.exportMessages
+			this.exportMessages;
 		}{
-			this.exportCode
+			// "Cannot export as code yet. Exporting as messages".postln;
+			this.exportCode;
+			// "Cannot export as code yet. Exported as messages".postln;
 		}
 	}
 
@@ -393,22 +402,24 @@ OscData {
 	exportCode {
 		var exportPath, convertedTimesMessages, t, m;
 		exportPath = this.codeExportPath;
-		#t, m = timesMessages.flop;
-		convertedTimesMessages = [t.differentiate, m].flop;
+		// #t, m = timesMessages.flop;
+		// convertedTimesMessages = [t.differentiate, m].flop;
 		postln("Exporting code to" + exportPath);
 		File.use(this.codeExportPath, "w", { | f |
-			f.write("//code");
-			convertedTimesMessages do: { | tm |
-				f.write(
-					"\n//:--[" ++
-					tm[0].asString ++
-					"]\n" ++
-					tm[1]
-				)
-			};
-			postln("now closing" + f);
-			f.close;
+			f.write("//code\n");
+			 [selectedTimes.rotate(-1).differentiate.max(0), selectedMessages].flop do: { | e |
+				var time, message;
+				#time, message = e;
+				f.write(format("//:--[%] ", time));
+				f.write(message.interpret[1]);
+			}
+			// unparsedEntries.size.postln;
+			// unparsedEntries.class.postln;
+			// unparsedEntries.first.postln;
 		});
+		// postln("now closing" + f);
+		// f.close;
+		// });
 		"Export done".postln;
 	}
 
@@ -427,12 +438,25 @@ OscData {
 		}).notNil
 	}
 
+	isCodeMessage { | s |
+		^s[2..8] == "'/code'"
+	}
+
 	debug {
-		unparsedEntries.select({ | e |
-			e.find("[ '/code', ").notNil
-		}) do: { | e |
-			"\n================================================\n".postln;
-			e.postln;
-		};
+		parsedEntries.first[1].class.postln;
+		parsedEntries.first[1].interpret[1].postln;
+		messages.first.interpret[1].postln;
+
+
+		// unparsedEntries.class.postln;
+		// minIndex.postln;
+		// maxIndex.postln;
+		// unparsedEntries.copyRange(minIndex, maxIndex).postln;
+		// .select({ | e |
+		// 	e.find("[ '/code', ").notNil
+		// }) do: { | e |
+		// 	"\n================================================\n".postln;
+		// 	e.postln;
+		// };
 	}
 }
