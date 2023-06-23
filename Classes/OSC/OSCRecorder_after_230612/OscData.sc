@@ -10,11 +10,30 @@ OscData {
 	// float: timestamp
 	// array: The message and its arguments. Obtained by interpreting
 	// the source string of the message.
+	var <unparsedEntries; // the entries as read from file. For export!
 	var <times, <messages; // times and messages obtained from parsedEntries
 	// ============= Store state from user selection for simpler updates ==============
 	var <selectedMinTime = 0, <selectedMaxTime = 0; // section selected
 	var <timesMessages, <selectedTimes, <selectedMessages;
 	var <stream, <progressRoutine;
+	var <minIndex, <maxIndex;
+
+	cloneCode {
+		^this.class.newCopyArgs(paths, sourceStrings,
+			parsedEntries.select({ | e | e[1][2..8] == "'/code'" }),
+			unparsedEntries.select({ | e | e.find("[ '/code', ").notNil })
+		).convertTimesMessages.gui;
+	}
+
+	cloneMessages {
+		^this.class.newCopyArgs(paths, sourceStrings,
+			parsedEntries.select({ | e | e[1][2..8] != "'/code'" }),
+			unparsedEntries.select({ | e | e.find("[ '/code', ").isNil })
+		).convertTimesMessages.gui; // .gui;
+		// ^this.class.newCopyArgs(paths, sourceStrings,
+		// 	parsedEntries.select({ | e | e[1].interpret[0] != '/code';})
+		// ).convertTimesMessages.gui;
+	}
 
 	*new { | paths |
 		^this.newCopyArgs(paths).init;
@@ -41,14 +60,27 @@ OscData {
 		[sourceStrings, paths].flop do: this.parseString(_);
 		postln("Parsed " + parsedEntries.size + "entries");
 		// sort messages in ascending timestamp order first!????
-		#times, messages = parsedEntries.flop;
-		this.convertTimes;
-		timesMessages = [times, messages].flop;
+		// #times, messages = parsedEntries.flop;
+		// this.convertTimes;
+		// timesMessages = [times, messages].flop;
 		// timesMessages.postln;
 		// this.changed(\selection);
+		this.convertTimesMessages;
 	}
 
-	convertTimes { times = times - times.first; }
+	convertTimesMessages {
+		if (parsedEntries.size == 0) {
+			Error("Found no entries. cannot clone empty data.").throw;
+		};
+		#times, messages = parsedEntries.flop;
+		times.postln;
+		this.convertTimes;
+		timesMessages = [times, messages].flop;
+	}
+
+	convertTimes {
+		times = times - times.first;
+	}
 
 	parseString { | stringAndPath |
 		// parse a string read from a file, in the format of //:--[timestamp] message.
@@ -72,6 +104,7 @@ OscData {
 				entry.copyRange(timebeg + 4, timeend - 1).interpret,
 				entry.copyRange(timeend + 2, if (end.notNil) { entry.size - 2 } { entry.size - 1 })
  			];
+			unparsedEntries = unparsedEntries add: entry;
 		};
 		post(" . ");
 	}
@@ -204,18 +237,18 @@ OscData {
 				.action_({ this.resetStream }),
 				Button().states_([["Reread files"]])
 				.action_({ this.reread }),
-				StaticText().string_("Export:").maxWidth_(50),
-				Button().states_([["messages"]])
-				.action_({ | me |
-					"export not implemented".postln;
-				}),
+				StaticText().string_("Clone:").maxWidth_(50),
 				Button().states_([["code"]])
 				.action_({ | me |
-					"export not implemented".postln;
+					this.cloneCode;
 				}),
-				Button().states_([["both"]])
+				Button().states_([["messages"]])
 				.action_({ | me |
-					"export not implemented".postln;
+					this.cloneMessages;
+				}),
+				Button().states_([["Export"]])
+				.action_({ | me |
+					this.export;
 				})
 			),
 			Slider().orientation_(\horizontal)
@@ -245,6 +278,8 @@ OscData {
 	duration { ^times.last }
 
 	selectAll {
+		minIndex = 0;
+		maxIndex = unparsedEntries.size - 1;
 		selectedMinTime = 0;
 		selectedMaxTime = this.duration;
 		#selectedTimes, selectedMessages = timesMessages.flop;
@@ -252,8 +287,10 @@ OscData {
 	}
 
 	selectTimesMessages { | who, selection |
+		minIndex = selection.minItem;
+		maxIndex = selection.maxItem;
 		#selectedTimes, selectedMessages = timesMessages.copyRange(
-			selection.minItem, selection.maxItem;
+			minIndex, maxIndex;
 		).flop;
 		selectedMinTime = selectedTimes.minItem;
 		selectedMaxTime = selectedTimes.maxItem;
@@ -261,9 +298,10 @@ OscData {
 	}
 
 	updateTimesMessages { | who |
+		minIndex = this.findTimeIndex(selectedMinTime);
+		maxIndex = this.findTimeIndex(selectedMaxTime);
 		#selectedTimes, selectedMessages = timesMessages.copyRange(
-			this.findTimeIndex(selectedMinTime),
-			this.findTimeIndex(selectedMaxTime)
+			minIndex, maxIndex
 		).flop;
 		selectedMinTime = selectedTimes.minItem;
 		selectedMaxTime = selectedTimes.maxItem;
@@ -278,8 +316,8 @@ OscData {
 		this.makeStream;
 		if (restart) { this.start; }
 	}
-	makeStream { // Thu 22 Jun 2023 16:40 Test version
-		stream = (
+	makeStream {
+		stream = ( // convert times to dt
 			dur: selectedTimes.differentiate.rotate(-1).putLast(0).pseq(1),
 			message: selectedMessages.pseq(1),
 			play: this.makePlayFunc; // OscDataScore customizes this
@@ -300,16 +338,6 @@ OscData {
 			localaddr.sendMsg(*msg);
 			oscgroupsaddr.sendMsg(*msg);
 		}
-	}
-
-	debug {
-		var timeIndex, prevTime;
-		selectedMinTime.postln;
-		selectedTimes.differentiate.postln;
-		"time index is: ".post;
-		timeIndex = this.findTimeIndex(selectedTimes.first).postln;
-		prevTime = times[timeIndex];
-		postln("prevTime is:" + prevTime);
 	}
 
 	isPlaying { ^stream.isPlaying }
@@ -336,4 +364,75 @@ OscData {
 	}
 
 	stop { stream.stop; progressRoutine.stop; }
+
+	export {
+		if (this.hasMessages) {
+			this.exportMessages
+		}{
+			this.exportCode
+		}
+	}
+
+	exportMessages {
+		var exportPath;
+		exportPath = this.messageExportPath;
+		postln("exporting messages to" + exportPath);
+		File.use(this.messageExportPath, "w", { | f |
+			timesMessages do: { | tm |
+				f.write(
+					"\n//:--[" ++
+					tm[0].asString ++
+					"]\n" ++
+					tm[1]
+				)
+			}
+		});
+		"Export done".postln;
+	}
+
+	exportCode {
+		var exportPath, convertedTimesMessages, t, m;
+		exportPath = this.codeExportPath;
+		#t, m = timesMessages.flop;
+		convertedTimesMessages = [t.differentiate, m].flop;
+		postln("Exporting code to" + exportPath);
+		File.use(this.codeExportPath, "w", { | f |
+			f.write("//code");
+			convertedTimesMessages do: { | tm |
+				f.write(
+					"\n//:--[" ++
+					tm[0].asString ++
+					"]\n" ++
+					tm[1]
+				)
+			};
+			postln("now closing" + f);
+			f.close;
+		});
+		"Export done".postln;
+	}
+
+
+	messageExportPath { ^this.exportPath("oscmessages") }
+
+	codeExportPath { ^this.exportPath("code") }
+	exportPath { | folder = "oscmessages" |
+		^Platform.recordingsDir +/+ "exports" +/+ folder +/+
+		(Date.getDate.stamp ++ ".scd");
+	}
+
+	hasMessages {
+		^messages.detect({ | m |
+			this.isCodeMessage(m).not;
+		}).notNil
+	}
+
+	debug {
+		unparsedEntries.select({ | e |
+			e.find("[ '/code', ").notNil
+		}) do: { | e |
+			"\n================================================\n".postln;
+			e.postln;
+		};
+	}
 }

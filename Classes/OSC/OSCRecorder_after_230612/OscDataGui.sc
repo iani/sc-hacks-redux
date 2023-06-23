@@ -84,14 +84,27 @@ OscDataFileList {
 	*makeOscDataGui { | paths |
 		// decide whether to use OscData or OscDataScore,
 		// based on the header of the first file.
-		var f, h;
-		f = File(paths.first,"r");
-		h = f.getLine(1024).postln;
-		if (h == "//code") {
+		var isCode;
+		File.use(paths.first,"r", { | f |
+			var h;
+			f.postln;
+			h = f.getLine(1024).postln;
+			if (h == "//code") {
+				//	OscDataScore(paths).gui;
+				"THIS IS CODE".postln;
+				isCode = true;
+			}{
+				// OscData(paths).gui;
+				"THIS IS MESSSAGES".postln;
+				isCode = false;
+			};
+		});
+		if (isCode) {
 			OscDataScore(paths).gui;
 		}{
 			OscData(paths).gui;
-		};
+		}
+
 	}
 
 	*addListFromUser {
