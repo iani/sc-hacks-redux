@@ -31,12 +31,13 @@ OscDataFileList {
 					this.changed(\selectedList);
 				})
 				.keyDownAction_({ | me ... args |
-					if (args[0].ascii == 127) {
-						{ fileListHistory removeAt: me.value; }
-						.confirm("Do you really want to delete" + me.item + "?")
-					}{
-						me.keyDownAction(me, *args)
-					};
+					case
+					{ args[0] == 127.asAscii } {
+							{ fileListHistory removeAt: me.value; }
+							.confirm("Do you really want to delete" + me.item + "?")
+					}
+					{ args[0] == $r } { "will rename this".postln }
+					{ true }{ me.keyDownAction(me, *args)};
 				}),
 				ListView()
 				.selectionMode_(\contiguous)

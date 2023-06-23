@@ -2,6 +2,7 @@
 Asc to confirm before evaluating a function.
 
 { "Yes I did this".postln; }.confirm;
+{}.userInput;
 */
 
 + Function {
@@ -18,7 +19,31 @@ Asc to confirm before evaluating a function.
 				}),
 				Button().states_([["CANCEL"]])
 				.action_({
-					"Action cancelled by user".postln;
+					"Action canceled by user".postln;
+					window.close;
+				})
+			)
+		)
+	}
+
+	userInput {  | default = "something", prompt = "Enter a new string" |
+		var window;
+		window = this.vlayout(
+			StaticText().string_(prompt),
+			TextField().string_(default)
+			.addNotifier(this, \ok, { | n |
+				postln("the new string is" + n.listener.string.asCompileString);
+				this.(n.listener.string)
+			}),
+			HLayout(
+				Button().states_([["OK"]])
+				.action_({
+					// "I will really do this".postln;
+					this.changed(\ok);
+				}),
+				Button().states_([["CANCEL"]])
+				.action_({
+					"Action canceled by user".postln;
 					window.close;
 				})
 			)
