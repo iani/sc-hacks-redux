@@ -38,4 +38,9 @@ OscDataScore : OscData {
 			oscgroupsaddr.sendMsg('/code', ~message);
 		}
 	}
+
+	sendItemAsOsc { | string | // OscDataScore prepends '/code' here
+		localAddr.sendMsg('/code', string);
+		oscgroupsAddr.sendMsg('/code', string);
+	}
 }

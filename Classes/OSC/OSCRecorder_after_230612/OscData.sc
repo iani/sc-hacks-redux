@@ -10,13 +10,14 @@ OscData {
 	// float: timestamp
 	// array: The message and its arguments. Obtained by interpreting
 	// the source string of the message.
-	var <unparsedEntries; // the entries as read from file. For export!
+	var <unparsedEntries; // the entries as read from file. For export! // NOT USED?
 	var <times, <messages; // times and messages obtained from parsedEntries
 	// ============= Store state from user selection for simpler updates ==============
 	var <selectedMinTime = 0, <selectedMaxTime = 0; // section selected
 	var <timesMessages, <selectedTimes, <selectedMessages;
 	var <stream, <progressRoutine;
-	var <minIndex, <maxIndex;
+	var <minIndex, <maxIndex; // not used?
+	var <localAddr, <oscgroupsAddr;
 
 	cloneCode {
 		^this.class.newCopyArgs(paths, sourceStrings,
@@ -44,6 +45,9 @@ OscData {
 	init {
 		this.readSource;
 		this.makeMessages;
+		localAddr = NetAddr.localAddr;
+		OscGroups.enable(verbose: false);
+		oscgroupsAddr = OscGroups.sendAddress;
 		// remake player stream when selection changes:
 		this.addNotifier(this, \selection, {
 			if (this.isPlaying.not) { { this.makeStream }.fork };
@@ -218,6 +222,11 @@ OscData {
 					.highlight_(Color(0.7, 1.0, 0.9))
 					.highlightText_(Color(0.0, 0.0, 0.0))
 				)
+				.enterKeyAction_({ | me |
+					// me.value.postln;
+					// me.item.postln;
+					this.sendItemAsOsc(me.item);
+				})
 				.addNotifier(this, \selection, { | n, who |
 					if (who != n.listener) {
 						n.listener.items = selectedMessages;
@@ -233,7 +242,7 @@ OscData {
 					if (me.value) { this.start; } { this.stop; };
 				})
 				.addNotifier(this, \playing, { | n, status |
-					n.listener.value = status;
+		 			n.listener.value = status;
 				}),
 				Button().states_([["->code"]])
 				.action_({ this.findNextCode }),
@@ -264,6 +273,12 @@ OscData {
 		{ this.selectAll; }.defer(0.1);
 	}
 
+	sendItemAsOsc { | string | // OscDataScore prepends '/code' here
+		var msg;
+		msg = string.interpret;
+		localAddr.sendMsg(*msg);
+		oscgroupsAddr.sendMsg(*msg);
+	}
 	findNextCode {
 		var found, index;
 		found = selectedMessages detect: { | m |

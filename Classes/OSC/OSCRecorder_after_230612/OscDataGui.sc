@@ -36,8 +36,20 @@ OscDataFileList {
 							{ fileListHistory removeAt: me.value; }
 							.confirm("Do you really want to delete" + me.item + "?")
 					}
-					{ args[0] == $r } { "will rename this".postln }
+					{ args[0] == $r } {
+						{ | name |
+							fileListHistory.lists[me.value].name = name;
+							fileListHistory.save;
+							this.changed(\mainList);
+						}.inputText(
+							fileListHistory.lists[me.value].name,
+							"Enter a new name for " + me.item
+						)
+					}
 					{ true }{ me.keyDownAction(me, *args)};
+				})
+				.addNotifier(this, \mainList, { | n |
+					n.listener.items = fileListHistory.lists collect: _.asString
 				}),
 				ListView()
 				.selectionMode_(\contiguous)

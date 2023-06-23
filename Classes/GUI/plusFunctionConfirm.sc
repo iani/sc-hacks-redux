@@ -2,7 +2,7 @@
 Asc to confirm before evaluating a function.
 
 { "Yes I did this".postln; }.confirm;
-{}.userInput;
+{}.inputText;
 */
 
 + Function {
@@ -33,7 +33,8 @@ Asc to confirm before evaluating a function.
 			TextField().string_(default)
 			.addNotifier(this, \ok, { | n |
 				postln("the new string is" + n.listener.string.asCompileString);
-				this.(n.listener.string)
+				this.(n.listener.string);
+				window.close;
 			}),
 			HLayout(
 				Button().states_([["OK"]])
