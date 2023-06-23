@@ -14,7 +14,7 @@ OscData {
 	// ============= Store state from user selection for simpler updates ==============
 	var <selectedMinTime = 0, <selectedMaxTime = 0; // section selected
 	var <timesMessages, <selectedTimes, <selectedMessages;
-	var <stream;
+	var <stream, <progressRoutine;
 
 	*new { | paths |
 		^this.newCopyArgs(paths).init;
@@ -219,6 +219,10 @@ OscData {
 				})
 			),
 			Slider().orientation_(\horizontal)
+			.addNotifier(this, \progress, { | n, p |
+				// postln("progress: " + p);
+				n.listener.value = p;
+			})
 		);
 		{ this.selectAll; }.defer(0.1);
 	}
@@ -282,6 +286,7 @@ OscData {
 		).asEventStream;
 		this.addNotifier(stream, \stopped, { this.changed(\playing, false) });
 		this.addNotifier(stream, \started, { this.changed(\playing, true) });
+		this.makeProgressRoutine;
 	}
 
 	makePlayFunc { // OscDataScore customizes this
@@ -313,7 +318,22 @@ OscData {
 		if (this.isPlaying) { ^postln("Oscdata is already playing") };
 		stream ?? { this.makeStream };
 		stream.start;
+		progressRoutine.start;
 	}
 
-	stop { stream.stop; }
+	makeProgressRoutine {
+		var streamduration, dt;
+		progressRoutine.stop;
+		streamduration = selectedMaxTime - selectedMinTime;
+		// streams of duration < 1 sec will not display properly;
+		dt = streamduration / 100 max: 0.01;
+		progressRoutine = (
+			dur: dt,
+			progress: (1..100).normalize.pseq(1),
+			play: { this.changed(\progress, ~progress) }
+		).asEventStream;
+		this.changed(\progress, 0);
+	}
+
+	stop { stream.stop; progressRoutine.stop; }
 }
