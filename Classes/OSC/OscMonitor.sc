@@ -9,7 +9,6 @@ OscMonitor {
 	*enable {
 		messages ?? { messages = Set() };
 		OSC addDependant: this;
-
 	}
 	*disable { OSC removeDependant: this; }
 	*update { | sender, message |
@@ -97,6 +96,7 @@ OscMonitor {
 			),
 			HLayout(
 				CheckBox().string_("OscGroups")
+				.backColor_(Color(0.7, 0.9, 0.8))
 				.value_(OscGroups.isEnabled)
 				.action_({ | me |
 					if (me.value) { OscGroups.enable } { OscGroups.disable }
@@ -139,8 +139,9 @@ OscMonitor {
 			HLayout(
 				CheckBox()
 				.string_("Minibee")
+				.backColor_(Color(0.9, 0.8, 0.7))
 				.action_({ | me |
-					if (me.value) { Minibee.enable }{ Minibee.disable }
+					if (me.value) { Minibee.enable.gui }{ Minibee.disable }
 				})
 				.addNotifier(Minibee, \status, { | n |
 					if (n.notifier.enabled) {

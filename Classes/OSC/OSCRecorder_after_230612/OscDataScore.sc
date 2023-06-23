@@ -26,16 +26,14 @@ OscDataScore : OscData {
 		};
 	}
 
-	convertTimes { times = times.integrate }
+	convertTimes { times = ([0] ++ times).integrate.butLast }
 
 	makePlayFunc {
 		var localaddr, oscgroupsaddr;
 		localaddr = LocalAddr();
-		OscGroups.enable;
+		OscGroups.enable(verbose: false);
 		oscgroupsaddr = OscGroups.sendAddress;
 		^{
-			var msg;
-			msg = ~message.interpret;
 			localaddr.sendMsg('/code', ~message);
 			oscgroupsaddr.sendMsg('/code', ~message);
 		}

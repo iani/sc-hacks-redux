@@ -40,8 +40,8 @@ OscGroups {
 		}
 	}
 
-	*activateCodeMessage {
-		postln("activating code message:" + codeMessage);
+	*activateCodeMessage { | verbose = true |
+		if (verbose) { postln("activating code message:" + codeMessage); };
 		OSC.add(codeMessage, { | n, msg |
 			var code;
 			code = msg[1].asString;
@@ -147,15 +147,17 @@ OscGroups {
 		OSC.remove(message, 'forward');
 	}
 
-	*enable { | sendPort = 22244, receivePort = 22245 |
-		postln("Enabling OscGroups. Send Port:" + sendPort + "Receive Port:" + receivePort);
+	*enable { | sendPort = 22244, receivePort = 22245, verbose = true |
+		if (verbose) {
+			postln("Enabling OscGroups. Send Port:" + sendPort + "Receive Port:" + receivePort);
+		};
 		oscSendPort = sendPort;
 		oscRecvPort = receivePort;
-		this.makeSendAddress;
+		this.makeSendAddress(verbose);
 		this.enableCodeForwarding;
-		this.enableCodeReception;
+		this.enableCodeReception(verbose);
 		this.enableCmdPeriod;
-		"OscGroups enabled".postln;
+		if (verbose) { "OscGroups enabled".postln; };
 		this.changedStatus;
 	}
 	*disable {
@@ -197,17 +199,17 @@ OscGroups {
 		this.changedStatus;
 	}
 
-	*enableCodeReception {
+	*enableCodeReception { | verbose = true |
 		// TODO: Use oscRecvPort instead
 		thisProcess.openUDPPort(oscRecvPort); // oscRecvPort
-		this.enableCodeEvaluation;
+		this.enableCodeEvaluation(verbose);
 		this.changedStatus;
 	}
 
 	// obsolete - must rewrite for compatibility with setting codeMessage var!!!
-	*enableCodeEvaluation {
+	*enableCodeEvaluation { | verbose = true |
 		// OSC.enableCodeEvaluation;
-		this.activateCodeMessage;
+		this.activateCodeMessage(verbose);
 	}
 
 	*disableCodeReception {
@@ -226,9 +228,9 @@ OscGroups {
 
 	// *sendAddress { ^sendAddress ?? { sendAddress = this.makeSendAddress } }
 
-	*makeSendAddress {
+	*makeSendAddress { | verbose |
 		sendAddress = NetAddr("127.0.0.1", oscSendPort);
-		postf("OscGroups set OSC send port to: %\n", oscSendPort);
+		if (verbose) { postf("OscGroups set OSC send port to: %\n", oscSendPort); }
 		^sendAddress;
 	}
 

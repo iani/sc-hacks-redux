@@ -12,6 +12,7 @@ array.sprandi becomes: Pub(Prand(array, inf)) etc.
 
 + Object {
 	pn { | repeats = inf | ^Pn(this, repeats); }
+	p1 { ^Pn(this, 1) }
 }
 
 + SequenceableCollection {

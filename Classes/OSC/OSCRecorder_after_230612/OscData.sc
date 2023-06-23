@@ -23,6 +23,11 @@ OscData {
 	init {
 		this.readSource;
 		this.makeMessages;
+		// remake player stream when selection changes:
+		this.addNotifier(this, \selection, {
+			if (this.isPlaying.not) { { this.makeStream }.fork };
+		});
+		this.selectAll;
 	}
 
 	readSource {
@@ -40,7 +45,7 @@ OscData {
 		this.convertTimes;
 		timesMessages = [times, messages].flop;
 		// timesMessages.postln;
-		this.changed(\inited);
+		// this.changed(\selection);
 	}
 
 	convertTimes { times = times - times.first; }
@@ -170,14 +175,7 @@ OscData {
 				})
 				.addNotifier(this, \selection, { | n, who |
 					if (who != n.listener) { n.listener.items = selectedTimes; };
-				})
-				.addNotifier(this, \items, { | n ... selection |
-					n.listener.items = times[selection]
-				})
-				.addNotifier(this, \inited, { | n |
-					// n.listener.items =
 				}),
-				// .items_(times),
 				ListView() // messages
 				.palette_(QPalette.light
 					.highlight_(Color(0.7, 1.0, 0.9))
@@ -190,6 +188,8 @@ OscData {
 				})
 			),
 			HLayout(
+				Button().states_([["x"]]).maxWidth_(20)
+				.action_({ this.debug }),
 				CheckBox().string_("Play")
 				.maxWidth_(50)
 				.action_({ | me |
@@ -204,7 +204,7 @@ OscData {
 				.action_({ this.resetStream }),
 				Button().states_([["Reread files"]])
 				.action_({ this.reread }),
-				StaticText().string_("Export:"),
+				StaticText().string_("Export:").maxWidth_(50),
 				Button().states_([["messages"]])
 				.action_({ | me |
 					"export not implemented".postln;
@@ -227,18 +227,11 @@ OscData {
 		var found, index;
 		found = selectedMessages detect: { | m |
 			m.interpret.first === '/code';
-			// true;
 		};
-		// found.postln;
 		index = selectedMessages indexOf: found;
 		selectedMinTime = times[index];
 		selectedMaxTime = selectedMinTime max: selectedMaxTime;
 		this.updateTimesMessages(this);
-		// index.postln;
-		// selectedMessages do: { | m |
-		// 	m.postln;
-		// }
-
 	}
 
 	findTimeIndex { | time | ^times indexOf: (times detect: { | t | t >= time }); }
@@ -248,15 +241,9 @@ OscData {
 	duration { ^times.last }
 
 	selectAll {
-		// this.changed(\items, (0..times.size - 1));
-		// this.changed(\timerange, 0, 1);
-			// var <selectedMinTime = 0, <selectedMaxTime = 0; // section selected
-	// var <timesMessages, <selectedTimes, <selectedMessages;
 		selectedMinTime = 0;
 		selectedMaxTime = this.duration;
 		#selectedTimes, selectedMessages = timesMessages.flop;
-		// selectedTimes.postln;
-		// selectedMessages.postln;
 		this.changed(\selection);
 	}
 
@@ -288,10 +275,8 @@ OscData {
 		if (restart) { this.start; }
 	}
 	makeStream { // Thu 22 Jun 2023 16:40 Test version
-		var addr;
-		addr = LocalAddr();
 		stream = (
-			dur: selectedTimes.differentiate.pseq(1),
+			dur: selectedTimes.differentiate.rotate(-1).putLast(0).pseq(1),
 			message: selectedMessages.pseq(1),
 			play: this.makePlayFunc; // OscDataScore customizes this
 		).asEventStream;
@@ -302,7 +287,7 @@ OscData {
 	makePlayFunc { // OscDataScore customizes this
 		var localaddr, oscgroupsaddr;
 		localaddr = LocalAddr();
-		OscGroups.enable;
+		OscGroups.enable(verbose: false); // enable silently
 		oscgroupsaddr = OscGroups.sendAddress;
 		^{
 			var msg;
@@ -310,6 +295,16 @@ OscData {
 			localaddr.sendMsg(*msg);
 			oscgroupsaddr.sendMsg(*msg);
 		}
+	}
+
+	debug {
+		var timeIndex, prevTime;
+		selectedMinTime.postln;
+		selectedTimes.differentiate.postln;
+		"time index is: ".post;
+		timeIndex = this.findTimeIndex(selectedTimes.first).postln;
+		prevTime = times[timeIndex];
+		postln("prevTime is:" + prevTime);
 	}
 
 	isPlaying { ^stream.isPlaying }
