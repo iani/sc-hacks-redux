@@ -30,7 +30,7 @@ OscDataFileList {
 					fileListHistory.changed(\fileList, me.value);
 					this.changed(\selectedList);
 				})
-				.keyDownAction_({ | me, char |
+				.keyDownAction_({ | me, char ... args |
 					case
 					{ char == 127.asAscii } {
 							{ fileListHistory removeAt: me.value; }
@@ -46,7 +46,7 @@ OscDataFileList {
 							"Enter a new name for " + me.item
 						)
 					}
-					{ true }{ me.keyDownAction(me, *args)};
+					{ true }{ me.keyDownAction(me, char, *args)};
 				})
 				.addNotifier(this, \mainList, { | n |
 					n.listener.items = fileListHistory.lists collect: _.asString
