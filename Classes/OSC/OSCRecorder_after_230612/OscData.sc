@@ -79,7 +79,7 @@ OscData {
 			Error("Found no entries. cannot clone empty data.").throw;
 		};
 		#times, messages = parsedEntries.flop;
-		times.postln;
+		// times.postln;
 		this.convertTimes;
 		timesMessages = [times, messages].flop;
 	}
@@ -222,11 +222,8 @@ OscData {
 					.highlight_(Color(0.7, 1.0, 0.9))
 					.highlightText_(Color(0.0, 0.0, 0.0))
 				)
-				.enterKeyAction_({ | me |
-					// me.value.postln;
-					// me.item.postln;
-					this.sendItemAsOsc(me.item);
-				})
+				.enterKeyAction_({ | me | this.sendItemAsOsc(me.item); })
+				// .keyDownAction
 				.addNotifier(this, \selection, { | n, who |
 					if (who != n.listener) {
 						n.listener.items = selectedMessages;

@@ -30,13 +30,13 @@ OscDataFileList {
 					fileListHistory.changed(\fileList, me.value);
 					this.changed(\selectedList);
 				})
-				.keyDownAction_({ | me ... args |
+				.keyDownAction_({ | me, char |
 					case
-					{ args[0] == 127.asAscii } {
+					{ char == 127.asAscii } {
 							{ fileListHistory removeAt: me.value; }
 							.confirm("Do you really want to delete" + me.item + "?")
 					}
-					{ args[0] == $r } {
+					{ char == $r } {
 						{ | name |
 							fileListHistory.lists[me.value].name = name;
 							fileListHistory.save;
@@ -100,15 +100,15 @@ OscDataFileList {
 		var isCode;
 		File.use(paths.first,"r", { | f |
 			var h;
-			f.postln;
-			h = f.getLine(1024).postln;
+			// f.postln;
+			h = f.getLine(1024); // .postln;
 			if (h == "//code") {
 				//	OscDataScore(paths).gui;
-				"THIS IS CODE".postln;
+				// "THIS IS CODE".postln;
 				isCode = true;
 			}{
 				// OscData(paths).gui;
-				"THIS IS MESSSAGES".postln;
+				// "THIS IS MESSSAGES".postln;
 				isCode = false;
 			};
 		});
