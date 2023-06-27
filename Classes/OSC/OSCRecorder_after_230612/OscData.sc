@@ -196,23 +196,33 @@ OscData {
 				)
 				.selectionMode_(\contiguous)
 				.action_({ | me |
-					minIndex = me.selection.minItem;
-					maxIndex = me.selection.maxItem;
-					#selectedTimes, selectedMessages = timesMessages.copyRange(
-						minIndex, maxIndex;
-					).flop;
-					selectedMinTime = selectedTimes.minItem;
-					selectedMaxTime = selectedTimes.maxItem;
-					this.changed(\selection, me);
+					this.selectIndexRange(me.selection.minItem,  me.selection.maxItem, me)
+					// minIndex = me.selection.minItem;
+					// maxIndex = me.selection.maxItem;
+					// #selectedTimes, selectedMessages = timesMessages.copyRange(
+					// 	minIndex, maxIndex;
+					// ).flop;
+					// selectedMinTime = selectedTimes.minItem;
+					// selectedMaxTime = selectedTimes.maxItem;
+					// this.changed(\selection, me);
 				})
 				.selectionAction_({ | me |
 					// do not use selection action because it blocks update
 					// use keyDownAction instead.
 				})
-				.keyDownAction_({ | me ... args |
+				.keyDownAction_({ | me, key ... args |
 					// enable updates from cursor keys + Cmd-a (select all)
-					me.defaultKeyDownAction(me, *args);
-					{ this.selectTimesMessages(me, me.selection) }.defer(0.1);
+					case
+					{ key == $r } {
+						this.reread;
+					}
+					{ key == $a } {
+						this.selectIndexRange(0, messages.size - 1);
+					}
+					{ true } {
+					me.defaultKeyDownAction(me, key, *args);
+						{ this.selectTimesMessages(me, me.selection) }.defer(0.1);
+					}
 				})
 				.addNotifier(this, \selection, { | n, who |
 					if (who != n.listener) { n.listener.items = selectedTimes; };
@@ -270,6 +280,16 @@ OscData {
 		{ this.selectAll; }.defer(0.1);
 	}
 
+	selectIndexRange { | argMinIndex, argMaxIndex, view |
+			minIndex = argMinIndex;
+			maxIndex = argMaxIndex;
+			#selectedTimes, selectedMessages = timesMessages.copyRange(
+					minIndex, maxIndex;
+			).flop;
+			selectedMinTime = selectedTimes.minItem;
+			selectedMaxTime = selectedTimes.maxItem;
+			this.changed(\selection, view);
+	}
 	sendItemAsOsc { | string | // OscDataScore prepends '/code' here
 		var msg;
 		msg = string.interpret;

@@ -19,7 +19,11 @@ OscDataFileList {
 				.action_({ this.changed(\editSelection) })
 			),
 			HLayout(
-				ListView()
+				ListView() // List of lists
+				.palette_(QPalette.light
+					.highlight_(Color(1.0, 0.9, 0.7))
+					.highlightText_(Color(0.0, 0.0, 0.0))
+				)
 				.addNotifier(fileListHistory, \history, { | n |
 					n.listener.items = fileListHistory.lists collect: _.asString;
 					selectedList = fileListHistory.lists.first;
@@ -51,7 +55,11 @@ OscDataFileList {
 				.addNotifier(this, \mainList, { | n |
 					n.listener.items = fileListHistory.lists collect: _.asString
 				}),
-				ListView()
+				ListView() // list of files in a list
+				.palette_(QPalette.light
+					.highlight_(Color(0.7, 1.0, 0.9))
+					.highlightText_(Color(0.0, 0.0, 0.0))
+				)
 				.selectionMode_(\contiguous)
 				.addNotifier(this, \selectedList, { | n |
 					n.listener.items = selectedList.paths collect: _.basename;
@@ -63,10 +71,12 @@ OscDataFileList {
 					this.makeOscDataGui(selectedList.paths[me.selection]);
 					// OscData(selectedList.paths[me.selection]).gui;
 				})
-				.keyDownAction_({ | me ... args |
-					if (args[0].ascii == 127) {
-						me.selection.postln;
-						me.items[me.selection].postln;
+				.keyDownAction_({ | me, char ... args |
+					case
+
+					{ char == 127.asAscii } {
+						// me.selection.postln;
+						// me.items[me.selection].postln;
 						{
 							selectedList.removePathsAt(me.selection);
 							fileListHistory.save;
@@ -78,8 +88,28 @@ OscDataFileList {
 						)
 						// { fileListHistory removeAt: me.value; }
 						// .confirm("Do you really want to delete" + me.item + "?")
-					}{
-						me.keyDownAction(me, *args)
+					}
+					{ char == $+ } {
+						// "I will add some files to this slist".postln;
+						var thePaths;
+						thePaths = selectedList.paths;
+						Dialog.openPanel({ | argPaths |
+							argPaths do: { | p |
+								thePaths = thePaths addString: p
+							};
+							selectedList.paths = thePaths;
+							fileListHistory.save;
+							postln("Added" + argPaths);
+						}, multipleSelection: true)
+					}
+					{ char == $e } {
+						this.changed(\editSelection);
+					}
+					{ char == $v } {
+						this.changed(\viewSelection);
+					}
+					{ true } {
+						me.keyDownAction(me, char, *args)
 					};
 				})
 				.addNotifier(this, \viewSelection, { | n |
