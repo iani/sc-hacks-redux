@@ -196,7 +196,7 @@ OscData {
 				)
 				.selectionMode_(\contiguous)
 				.action_({ | me |
-					this.selectIndexRange(me.selection.minItem,  me.selection.maxItem, me)
+					this.selectIndexRange(me.selection.minItem,  me.selection.maxItem, me);
 					// minIndex = me.selection.minItem;
 					// maxIndex = me.selection.maxItem;
 					// #selectedTimes, selectedMessages = timesMessages.copyRange(
@@ -217,7 +217,10 @@ OscData {
 						this.reread;
 					}
 					{ key == $a } {
-						this.selectIndexRange(0, messages.size - 1);
+						this.selectIndexRange(0, messages.size - 1, me);
+						me.items = selectedTimes;
+						// me.items.first.postln;
+						// me.items.last.postln;
 					}
 					{ true } {
 					me.defaultKeyDownAction(me, key, *args);
@@ -225,7 +228,9 @@ OscData {
 					}
 				})
 				.addNotifier(this, \selection, { | n, who |
-					if (who != n.listener) { n.listener.items = selectedTimes; };
+					if (who != n.listener) {
+						n.listener.items = selectedTimes;
+					};
 				}),
 				ListView() // messages
 				.palette_(QPalette.light
@@ -235,7 +240,7 @@ OscData {
 				.enterKeyAction_({ | me | this.sendItemAsOsc(me.item); })
 				// .keyDownAction
 				.addNotifier(this, \selection, { | n, who |
-					if (who != n.listener) {
+					 if (who != n.listener) {
 						n.listener.items = selectedMessages;
 					}
 				})
