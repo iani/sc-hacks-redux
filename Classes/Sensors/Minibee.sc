@@ -96,7 +96,8 @@ Minibee {
 		Server.default.waitForBoot({
 			OSC addDependant: this; this.changed(\status);
 			"Minibee enabled".postln;
-		})
+		});
+		OscGroups.enable;
 	}
 
 	*disable {
