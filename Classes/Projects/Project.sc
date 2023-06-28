@@ -551,7 +551,14 @@ Project {
 	*loadProjectPath { | dict |
 		var newSelectedProject;
 		dict ?? {
-			dict = Object.readArchive(this.selectedProjectArchivePath);
+			File.doIfExists(this.selectedProjectArchivePath, {
+				dict = Object.readArchive(this.selectedProjectArchivePath)
+			}, {
+				dict = (
+					startupFolder: "blah"
+					selectedProject: "blih"
+				);
+			});
 		};
 		startupFolder = dict[\startupFolder].asString;
 		selectedProject = dict[\selectedProject].asSymbol;

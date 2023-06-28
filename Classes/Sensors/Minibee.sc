@@ -33,11 +33,11 @@ Minibee {
 	}
 
 	*init {
-		"Minibee initing".postln;
+		// "Minibee initing".postln;
 		this.makeForwardAddresses;
-		postln("all before initing is:" + all);
+		// postln("all before initing is:" + all);
 		all = { | i | this.new(i + 1) } ! numSensors; // 1-12
-		postln("all after initing is:" + all);
+		// postln("all after initing is:" + all);
 		this.getValues;
 	}
 
