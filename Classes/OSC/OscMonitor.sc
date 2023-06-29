@@ -53,7 +53,7 @@ OscMonitor {
 
 	*gui {
 		this.enable;
-		this.tl_(400, 400).vlayout(
+		this.tl_(400, 380).vlayout(
 			HLayout(
 				Button()
 				.states_([["Record OSC"], ["Stop Recording OSC"]])

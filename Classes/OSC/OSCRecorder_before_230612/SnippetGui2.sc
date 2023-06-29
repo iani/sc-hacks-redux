@@ -4,7 +4,7 @@ Edit and playback snippets from a file chosen from Project gui.
 
 */
 
-SnippetGui {
+SnippetGui2 {
 	var <source, <snippets, <snippetPositions;
 	var <followProjectGui = true;
 	var <snippetindex = 0, sourcePath, isEdited = false;
@@ -33,16 +33,21 @@ SnippetGui {
 	read { | path |
 		source = File.readAllString(path);
 		sourcePath = path;
+
 		// postln("source now is:" + source);
 	}
 
 	*gui { | path |
-		^this.fromLib(\default).gui;
+		var name;
+		name = path.basename.asSymbol
+		^this.fromLib(name).readAndUpdate(path)
+		.gui(name);
+		// ^this.fromLib(\default).readAndUpdate(path).gui;
 	}
 
-	gui {
+	gui { | name = "a Snippet Gui" |
 		var window;
-		window = this.br_(600, 400).vlayout(
+		window = this.br_(800, 500).vlayout(
 			HLayout(
 				Button().maxWidth_(50).states_([["play"]])
 				.action_({
@@ -84,25 +89,22 @@ SnippetGui {
 				.action_({ this.changed(\save); })
 				.addNotifier(this, \edited, { | n, edited |
 					if (edited) { n.listener.value = 1 }
-				}),
-				Button().maxWidth_(50).states_([["detach"], ["attach"]])
-				.action_({ | me |
-					followProjectGui = [true, false][me.value];
-					if (followProjectGui) {
-						this.readAndUpdate(Project.selectedProjectItem.fullPath)
-					}
 				})
 			),
 			[ListView()
 				// .items_(snippets collect: _.header)
 				.palette_(QPalette.dark
+					// .base_(Color(0.91, 0.91, 0.93))
 					.highlight_(Color(0.1, 0.1, 0.7))
-					.highlightText_(Color(0.9, 0.8, 0.7))
+					// .highlightText_(Color(0.9, 0.8, 0.7))
+					.highlightText_(Color.yellow)
 				)
+				.font_(Font("Arial", 16))
 				.action_({ | me |
 					snippetindex = me.value;
 					this.changed(\snippet, me.value);
 				})
+				.items_(snippets collect: _.header)
 				.addNotifier(Project, \selectedProjectItem, { | n |
 					this.doIfScript(n.listener, {
 						this.readAndUpdate(Project.selectedProjectItem.fullPath);
@@ -114,10 +116,14 @@ SnippetGui {
 				}), stretch: 1],
 			[TextView()
 				.palette_(QPalette.dark
-					.highlight_(Color(0.1, 0.1, 0.7))
-					.highlightText_(Color(0.9, 0.8, 0.7))
+					// .base_(Color(0.3, 0.3, 0.3))
+					.base_(Color(0.61, 0.61, 0.63))
+					.highlight_(Color(0.3, 0.3, 0.3))
+					.highlightText_(Color.white /*Color(0.9, 0.8, 0.7) */)
 				)
-				.string_("NO SCRIPT SELECTED.\nSELECT A SCRIPT FILE ON PROJECT GUI.")
+				.font_(Font("Monaco", 16))
+				// .string_("NO SCRIPT SELECTED.\nSELECT A SCRIPT FILE ON PROJECT GUI.")
+				.string_(snippets.first)
 				.keyDownAction_({ | me ... args |
 					this.changed(\edited, isEdited = true);
 					me.defaultKeyDownAction(me, *args);
@@ -134,7 +140,7 @@ SnippetGui {
 					postln("its contents are:" + n.listener.string);
 					this.saveScript(n.listener.string.postln);
 				}),
-				stretch: 3]
+				stretch: 5]
 		);
 		window.addNotifier(Project, \selectedProjectItem, { | n |
 			// "Debugging window renaming".postln;
@@ -146,6 +152,8 @@ SnippetGui {
 		})
 		.view.mouseEnterAction = { this.rereadIfNeeded; };
 		// Project.notifyProjectItem;
+		window.name_(name);
+		{ this.changed(\snippets) }.defer(0.1);
 		^window;
 	}
 

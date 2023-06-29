@@ -13,7 +13,7 @@ FileNavigator {
 	var <>outerList, <>outerItem, <outerIndex = 0;
 	var <>innerList, <>innerItem, <innerIndex = 0;
 
-	*new { | key = \default | ^this.newCopyArgs(key).getOuterItems }
+	*new { | key = \default | ^this.newCopyArgs(key) /* .getOuterItems */ }
 
 	save {
 		postln("Saving preferences for:" + this.class.name + "at key" + key + "prefs" + this.prefs);
@@ -76,6 +76,11 @@ FileNavigator {
 	getOuterItems {
 		outerList = this.getOuterItemsList;
 		if (outerList.size == 0) {
+			this.setProjectHomeDialog;
+			// FileDialog({ | path |
+			// 	"You selected:".postln;
+			// 	path[0].postln;
+			// });
 			^postln("No items found in" + currentRoot.fullPath);
 		};
 		outerIndex = 0;
@@ -126,22 +131,80 @@ FileNavigator {
 	}
 
 	*gui {
-		var fn;
-		fn = this.new;
-		{ fn.getOuterItems }.defer(0.1);
-		^fn.hlayout(
-			fn.outerListView,
-			fn.innerListView
-		)
+		this.new.gui;
 	}
+
+	gui {
+		this.load; // load last saved path from preferences
+		// this.recall; // do not go to last saved folder!
+		{ this.getOuterItems }.defer(0.1);
+		^this.vlayout(
+			HLayout(
+				Button()
+				.maxWidth_(50)
+				.canFocus_(false)
+				.states_([["menu", Color.red, Color.white]])
+				.action_({ Menu(
+					MenuAction("Save bookmark", { this.save }),
+					MenuAction("Goto saved bookmark", { this.load }),
+					MenuAction("Go to subfolder", { this.zoomIn }),
+					MenuAction("Go to superfolder", { this.zoomOut })
+				).front }),
+				Button().states_([["save bookmark"]])
+				.action_({ this.save }),
+				Button().states_([["recall"]]).maxWidth_(70)
+				.action_({ this.load }),
+				Button().states_([["<"]]).maxWidth_(30)
+				.action_({ this.zoomOut }),
+				Button().states_([[">"]]).maxWidth_(30)
+				.action_({ this.zoomIn }),
+				// NOT YET IMPLEMENTED:
+				Button().states_([["edit"]]).maxWidth_(70)
+				.action_({
+					if (innerItem.isFolder) {
+						innerItem.folderName.post;
+						" is a folder".postln;
+						"Select a file to open instead".postln;
+					}{
+						Document.open(innerItem.fullPath);
+					}
+				}),
+				Button().states_([["browse"]]).action_({
+					// outerItem.postln;
+					// innerItem.postln;
+					// innerItem.isFolder.postln;
+					// innerItem.postln;
+					if (innerItem.isFolder) {
+						innerItem.folderName.post;
+						" is a folder".postln;
+						"Select a file to open instead".postln;
+					}{
+						SnippetGui2.gui(innerItem.fullPath);
+					}
+				})
+			),
+			HLayout(
+				this.outerListView,
+				this.innerListView
+			)
+		).bounds_(Rect(0, 230, 350, 180))
+
+	}
+
 	outerListView {
 		^ListView()
 		.addNotifier(this, \setOuterListAndIndex, { | n, list, outerIndex |
+			if (list.size == 0) {
+				"Outer list is empty. Cannot refresh.".postln;
+				"Please use the opened dialog to select a new project root".postln;
+				"or save the current position for next time."
+			}{
 			outerList = list;
 			n.listener.items = outerList collect: _.shortName;
 			n.listener.value = outerIndex;
 			outerItem = outerList[outerIndex];
 			innerList = outerItem.entries;
+			}
 			// NOTE: deferred selectionAction triggers update of inner list!!!
 		})
 		.addNotifier(this, \outerItems, { | n |
@@ -225,5 +288,4 @@ FileNavigator {
 	}
 	saveBookmark { this.save }
 	gotoBookmark { this.load }
-
 }
