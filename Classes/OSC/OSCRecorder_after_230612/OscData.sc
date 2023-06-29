@@ -123,7 +123,7 @@ OscData {
 	}
 
 	gui {
-		this.br_(800, 500).vlayout(
+		this.br_(850, 500).vlayout(
 			RangeSlider() // select a range of times
 			.orientation_(\horizontal)
 			.action_({ | me |
@@ -190,7 +190,7 @@ OscData {
 			),
 			HLayout(
 				ListView() // times
-				.maxWidth_(160)
+				.maxWidth_(230)
 				.palette_(QPalette.light
 					.highlight_(Color(1.0, 0.9, 0.7))
 					.highlightText_(Color(0.0, 0.0, 0.0))
