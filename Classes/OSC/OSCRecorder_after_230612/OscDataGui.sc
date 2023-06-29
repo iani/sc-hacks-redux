@@ -143,6 +143,7 @@ OscDataFileList {
 			};
 		});
 		if (isCode) {
+			paths.postln;
 			OscDataScore(paths).gui;
 		}{
 			OscData(paths).gui;

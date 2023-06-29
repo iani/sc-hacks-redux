@@ -43,4 +43,10 @@ OscDataScore : OscData {
 		localAddr.sendMsg('/code', string);
 		oscgroupsAddr.sendMsg('/code', string);
 	}
+
+	selectedTimesItems {
+		^[selectedTimes, selectedTimes.differentiate].flop collect:
+		{ | bd | format("beg: % | dur: %", bd[0], bd[1]) }
+	}
+
 }

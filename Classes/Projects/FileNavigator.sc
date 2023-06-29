@@ -179,7 +179,15 @@ FileNavigator {
 						" is a folder".postln;
 						"Select a file to open instead".postln;
 					}{
-						SnippetGui2.gui(innerItem.fullPath);
+						innerItem.fullPath.doIfExists({ | p |
+							if(p.isCode) {
+								OscDataScore([innerItem.fullPath]).gui
+							}{
+								SnippetGui2.gui(innerItem.fullPath);
+							};
+						},{ | p |
+							postln("File not found:" + p);
+						});
 					}
 				})
 			),
@@ -193,6 +201,10 @@ FileNavigator {
 
 	outerListView {
 		^ListView()
+		.palette_(QPalette.light
+					.highlight_(Color(1.0, 0.9, 0.4))
+					.highlightText_(Color(0.0, 0.0, 1.0))
+		)
 		.addNotifier(this, \setOuterListAndIndex, { | n, list, outerIndex |
 			if (list.size == 0) {
 				"Outer list is empty. Cannot refresh.".postln;
@@ -238,6 +250,11 @@ FileNavigator {
 
 	innerListView {
 		^ListView()
+		.palette_(
+			QPalette.light
+			.highlight_(Color(0.4, 0.9, 1.0))
+			.highlightText_(Color(1.0, 0.0, 0.0))
+		)
 		.addNotifier(this, \innerItems, { | n |
 			// restore index overwritten by selectionAction!
 			var index;

@@ -124,6 +124,7 @@ SnippetGui2 {
 				.font_(Font("Monaco", 16))
 				// .string_("NO SCRIPT SELECTED.\nSELECT A SCRIPT FILE ON PROJECT GUI.")
 				.string_(snippets.first)
+				// .syntaxColorize
 				.keyDownAction_({ | me ... args |
 					this.changed(\edited, isEdited = true);
 					me.defaultKeyDownAction(me, *args);
