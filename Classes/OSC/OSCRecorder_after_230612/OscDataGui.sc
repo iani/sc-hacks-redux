@@ -146,10 +146,10 @@ OscDataFileList {
 			};
 		});
 		if (isCode) {
-			paths.postln;
-			OscDataScore(paths).gui;
+			// paths.postln;
+			OscDataScore(paths).gui(paths);
 		}{
-			OscData(paths).gui;
+			OscData(paths).gui(paths);
 		}
 
 	}

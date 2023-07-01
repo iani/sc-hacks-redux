@@ -1,0 +1,57 @@
+#+TITLE: Sound File Event Catalogue Guis
+
+* Classes
+
+** SoundFileGui
+
+A SoundFileView with mouse-scrolling functionality.
+Below it a horizontal range view for selecting o
+
+EventSets
+** SoundFileEvents (.gui)
+
+Opens a gui for browsing a set of sound file events.
+
+* Storing sound file events and playfuncs
+
+By default inside the projects folder (default: ~/sc-projects), in subfolder =AudioSampleEvents=.
+
+At the top level below =AudioSampleEvents= are folders corresponding to "Sets", where each folder contains a set consisting of playfuncs and of event configurations for playing
+
+#+begin_example
+sc-projects
+     AudioSampleEvents  // contains all sets, each set in its own folder
+          Set1          // contains Playfuncs and Event settings
+              Playfuncs // contains the playfuncs
+                    playfunc1.scd  // a playfunc - see example below
+                    playfunc2.scd
+              Settings  // contains settings organized by buffer name.
+                    crickets // contains setttings for buffer =\crickets=
+                          crickets00.scd // example of event settings - see below.
+#+end_example
+
+** playfunc example
+
+#+begin_src sclang
+{
+	PlayBuf.ar(
+		~buf.buf.numChannels,
+		~buf.buf,
+		\rate.br(~rate ? 1),
+		\trigger.br(1),
+		\startpos.br(~startpos ? 0),
+		\loop.br(~loop ? 0),
+		Done.freeSelf
+	)
+}
+#+end_src
+
+** event settings example
+
+#+begin_src sclang
+// the next line is implied by the folder name in which the file is based:
+// ~buf = \crickets;
+
+~synthfunc = \playbuf; // which playfunc to use
+// ~startpos = ... // additional parameter settings
+#+end_src

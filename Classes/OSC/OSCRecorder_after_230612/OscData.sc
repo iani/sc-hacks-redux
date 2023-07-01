@@ -23,7 +23,6 @@ OscData {
 
 	*currentDocumentGui {
 		Document.current.path.postln;
-		Document.current.currentString.asCompileString.postln;
 	}
 
 	cloneCode {
@@ -137,8 +136,9 @@ OscData {
 
 	}
 
-	gui {
-		this.br_(850, 500).vlayout(
+	gui { | paths |
+		var window;
+		window = this.br_(850, 500).vlayout(
 			RangeSlider() // select a range of times
 			.orientation_(\horizontal)
 			.action_({ | me |
@@ -288,6 +288,7 @@ OscData {
 				n.listener.value = p;
 			})
 		);
+		if (paths.size == 1) { window.name = paths[0]; };
 		{ this.selectAll; }.defer(0.1);
 	}
 

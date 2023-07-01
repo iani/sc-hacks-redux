@@ -75,7 +75,9 @@ PathName(Platform.userHomeDir).fullPath.size;
 			buffer !? {
 				postf("Loaded buffer %, % channels, %\n",
 					name, buffer.numChannels, buffer.dur.formatTime);
-				Library.put(Buffer, name, buffer)
+				Library.put(Buffer, name, buffer);
+				// "buffer issuing changed loaded".postln;
+				Buffer.changed(\loaded);
 			};
 		}
 	}
