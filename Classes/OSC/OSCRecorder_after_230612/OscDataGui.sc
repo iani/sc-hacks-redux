@@ -7,6 +7,11 @@ OscDataFileList {
 	classvar fileListHistory;
 	classvar <selectedList, <selectedPath;
 
+	*openCurrentDocument { // TODO!
+		Document.current.path.postln;
+		this.makeOscDataGui([Document.current.path]);
+	}
+
 	*gui {
 		fileListHistory ?? { this.readFileListHistory; };
 		this.vlayout(

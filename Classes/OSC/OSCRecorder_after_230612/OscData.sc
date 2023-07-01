@@ -21,6 +21,11 @@ OscData {
 	var totalDuration, selectedDuration, totalOnsetsDuration;
 	var <timeline; // handle onsets and durations!
 
+	*currentDocumentGui {
+		Document.current.path.postln;
+		Document.current.currentString.asCompileString.postln;
+	}
+
 	cloneCode {
 		^this.class.newCopyArgs(paths, sourceStrings,
 			parsedEntries.copyRange(minIndex, maxIndex)
