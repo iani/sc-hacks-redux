@@ -1,6 +1,11 @@
 /*  1 Jul 2023 11:50
 Browse loaded buffers.
 Open buffer gui on selected buffer.
+
+
+Only a prototype.
+
+See SoundFileGui, SoundFileSettings.
 */
 
 BufferGui {
@@ -19,7 +24,7 @@ BufferGui {
 				Buffer.all[me.value].buf.gui;
 			})
 			.addNotifier(Buffer, \loaded, { | n |
-				"buffer loaded msessage recdived by buffer gui".postln;
+				// "buffer loaded msessage recdived by buffer gui".postln;
 				n.listener.items = Buffer.all
 			})
 		);

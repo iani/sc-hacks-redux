@@ -6,12 +6,12 @@ Asc to confirm before evaluating a function.
 */
 
 + Function {
-	confirm { | string = "Do you really want to do this?" |
+	confirm { | message = "Do you really want to do this?", ok = "OK" |
 		var window;
 		window = this.vlayout(
-			TextView().string_(string),
+			TextView().string_(message),
 			HLayout(
-				Button().states_([["OK"]])
+				Button().states_([[ok]])
 				.action_({
 					// "I will really do this".postln;
 					this.value;

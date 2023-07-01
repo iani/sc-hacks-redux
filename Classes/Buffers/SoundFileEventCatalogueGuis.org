@@ -8,9 +8,31 @@ A SoundFileView with mouse-scrolling functionality.
 Below it a horizontal range view for selecting o
 
 EventSets
-** SoundFileEvents (.gui)
+** SoundFileSettings (.gui)
 
 Opens a gui for browsing a set of sound file events.
+
+Class variable =sets= contains a dictionary of sets, where each set corresponds to a folder under =Project.rootFolder +/+ AudioSampleEvents/=.
+
+Each set contains the contents parsed from the corresponding subfolder of =AudioSampleEvents=, stored as dictionaries in 2 instance variables of =SoundFileSettings=, =playfuncs= and =events=.
+
+1. playfuncs :: Functions for playing the buffer, to used by the play event. Each entry corresponds to a file inside folder =playfuncs=, and is stored using the base name of the file (without extension) as key.
+2. events :: Scripts setting key variables of the sound file buffer playing event.
+
+Assembles an event for playing an (audio file) buffer by combining elements from the 2 dictionaries above.
+
+The event is created in 3 steps:
+
+1. Create an event =e= by evaluating the string of an event file inside an event with =Event make: ...=. (see code below)
+2. Store in event =e= the play function: =~play = { ~playfunc.play }=.
+3. Store the playfunc obtained by loading the selected playfunc file in event =e= under key =~playfunc=.
+
+*** Code for creating the event from an event file (must test this!)
+#+begin_src sclang
+// eventfile is an instance variable of SoundFileSettings ?
+Event make: { eventfile.load } // hypothetical example code
+#+end_src
+
 
 * Storing sound file events and playfuncs
 
