@@ -18,7 +18,7 @@ Is equivalent to:
 */
 
 OscDataScore : OscData {
-
+	var durations;
 	checkFileType { | string, path |
 		if ("//code" == string[..string.find("\n")-1]) {
 		}{
@@ -26,7 +26,15 @@ OscDataScore : OscData {
 		};
 	}
 
-	convertTimes { times = ([0] ++ times).integrate.butLast }
+	makeTimeline { | argTimes | timeline = Timeline.fromDurations(argTimes); }
+
+	convertTimes {
+		durations = times;
+		times = ([0] ++ times).integrate.butLast;
+		totalOnsetsDuration = times.last;
+		totalDuration = durations.sum;
+		selectedDuration = totalDuration;
+	}
 
 	makePlayFunc {
 		var localaddr, oscgroupsaddr;
@@ -45,8 +53,18 @@ OscDataScore : OscData {
 	}
 
 	selectedTimesItems {
-		^[selectedTimes, selectedTimes.differentiate].flop collect:
+		// "onset times are".postln;
+		// selectedTimes.postln;
+		// "Differentiated times are:".postln;
+		// selectedTimes.rotate(-1).differentiate.postln;
+		// "durations are".postln;
+		// durations.postln;
+		// postln("minIndex" + minIndex + "maxIndex" + maxIndex);
+		^[selectedTimes, durations.copyRange(minIndex, maxIndex)].flop collect:
 		{ | bd | format("beg: % | dur: %", bd[0], bd[1]) }
 	}
 
+	updateSelectedDuration {
+		selectedDuration = durations.copyRange(minIndex, maxIndex).sum;
+	}
 }

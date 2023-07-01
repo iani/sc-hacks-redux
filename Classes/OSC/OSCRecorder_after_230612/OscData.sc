@@ -16,8 +16,10 @@ OscData {
 	var <selectedMinTime = 0, <selectedMaxTime = 0; // section selected
 	var <timesMessages, <selectedTimes, <selectedMessages;
 	var <stream, <progressRoutine;
-	var <minIndex, <maxIndex; // not used?
+	var <minIndex, <maxIndex;
 	var <localAddr, <oscgroupsAddr;
+	var totalDuration, selectedDuration, totalOnsetsDuration;
+	var <timeline; // handle onsets and durations!
 
 	cloneCode {
 		^this.class.newCopyArgs(paths, sourceStrings,
@@ -65,12 +67,6 @@ OscData {
 		parsedEntries = [];
 		[sourceStrings, paths].flop do: this.parseString(_);
 		postln("Parsed " + parsedEntries.size + "entries");
-		// sort messages in ascending timestamp order first!????
-		// #times, messages = parsedEntries.flop;
-		// this.convertTimes;
-		// timesMessages = [times, messages].flop;
-		// timesMessages.postln;
-		// this.changed(\selection);
 		this.convertTimesMessages;
 	}
 
@@ -79,13 +75,18 @@ OscData {
 			Error("Found no entries. cannot clone empty data.").throw;
 		};
 		#times, messages = parsedEntries.flop;
+		this.makeTimeline(times);
 		// times.postln;
 		this.convertTimes;
 		timesMessages = [times, messages].flop;
 	}
 
+	makeTimeline { | argTimes | timeline = Timeline.fromOnsets(argTimes); }
 	convertTimes {
 		times = times - times.first;
+		totalDuration = times.last;
+		selectedDuration = times.last;
+		totalOnsetsDuration = times.last;
 	}
 
 	parseString { | stringAndPath |
@@ -122,71 +123,82 @@ OscData {
 		};
 	}
 
+	guiTested {
+		"Will make gui later".postln;
+		postln("onsets" + timeline.onsets);
+		postln("durations" + timeline.durations);
+		postln("timeline duration" + timeline.duration);
+		postln("timeline maxIndex" + timeline.maxIndex);
+
+	}
+
 	gui {
 		this.br_(850, 500).vlayout(
 			RangeSlider() // select a range of times
 			.orientation_(\horizontal)
-			.action_({ | me |
-				selectedMinTime = me.lo * this.duration;
-				selectedMaxTime = me.hi * this.duration;
-				this.updateTimesMessages(me);
+			.mouseUpAction_({ | me |
+				postln("lo" + me.lo + "mapped lo" + timeline.mapTime(me.lo));
+				postln("hi" + me.hi + "mapped hi" + timeline.mapTime(me.hi));
+				timeline.clipTime(me.lo, me.hi);
 			})
-			.addNotifier(this, \selection, { | n |
-				// postln("rangeslider new update - selection");
-				n.listener.setSpan(
-					selectedMinTime / this.duration,
-					selectedMaxTime / this.duration
-				)
+			.addNotifier(timeline, \segment, { | n, argTimeline |
+				postln("rangeslider new update - selection");
+				n.listener.setSpan(*timeline.unmapTimeSpan)
+				// postln("new timeline is:" + argTimeline);
+				// postln("timeline minindex" + argTimeline.minIndex + "maxindex" + argTimeline.maxIndex)
+
+				// n.listener.setSpan(*argTimeLine.ummapTimeSpan);
 			}),
 			HLayout(
-				StaticText().string_("beginning"),
+				StaticText().string_("1st onset"),
 				NumberBox()
 				.maxWidth_(100)
 				.decimals_(3)
 				.action_({ | me |
-					selectedMinTime = me.value.clip(0, selectedMaxTime);
-					me.value = selectedMinTime;
-					this.updateTimesMessages(me);
+					me.value =  me.value.clip(0, timeline.totalDuration);
+					postln("will set timeline beginning to" + me.value);
+					timeline.clipMinTime(me.value);
 				})
-				.addNotifier(this, \selection, { | n, who |
-					if (who != n.listener) { n.listener.value = selectedMinTime; }
+				.addNotifier(timeline, \segment, { | n, who |
+					postln("beginning time" + timeline.minTime);
+					n.listener.value = timeline.minTime;
+					// postln("this would be" + timeline.onsets[timeline.segmentMin])
+					// n.listener.value = timeline.onsets[segmentMin];
 				}),
-				StaticText().string_("end").maxWidth_(50),
+				StaticText().string_("last onset"), //.maxWidth_(50),
 				NumberBox()
 				.maxWidth_(100)
 				.decimals_(3)
 				.action_({ | me |
-					selectedMaxTime = me.value.clip(selectedMinTime, this.duration);
-					me.value = selectedMaxTime;
-					this.updateTimesMessages(me);
+					me.value = me.value.clip(timeline.minTime, timeline.totalDuration);
+					postln("setting time to", me.value);
+					timeline.clipMaxTime(me.value);
 				})
-				.addNotifier(this, \selection, { | n, who |
-					if (n.listener != who) { n.listener.value = selectedMaxTime; }
+				.addNotifier(timeline, \segment, { | n, who |
+					postln("setting last onset to" + timeline.maxTime);
+					n.listener.value = timeline.maxTime;
 				}),
-				StaticText().string_("duration"),
+				StaticText().string_("duration").maxWidth_(90),
 				NumberBox()
 				.maxWidth_(100)
 				.decimals_(3)
 				.action_({ | me |
-					var clippedVal, clippedDuration;
-					clippedVal = me.value.max(0);
-					clippedDuration = me.value.clip(0, this.duration.min(clippedVal - selectedMinTime));
-					me.value_(clippedDuration);
-					selectedMaxTime = selectedMinTime + clippedDuration;
-					this.updateTimesMessages(me);
+					me.value_(me.value.clip(0, timeline.maxDuration));
+					timeline.clipMaxTime(me.value);
 				})
-				.addNotifier(this, \selection, { | n, who |
+				.addNotifier(timeline, \segment, { | n, who |
 					if (who != n.listener) {
-						n.listener.value = selectedMaxTime - selectedMinTime;
+						// n.listener.value = selectedMaxTime - selectedMinTime;
+						n.listener.value = timeline.duration;
 					}
 				}),
-				StaticText().string_("size"),
+				StaticText().string_("total duration:" + timeline.totalDuration),
+				StaticText().string_("size").maxWidth_(70),
 				NumberBox()
 				.maxWidth_(70)
-				.addNotifier(this, \selection, { | n |
-					n.listener.value = selectedTimes.size;
-				}),
-				StaticText().string_("total duration:" + this.duration)
+				.addNotifier(timeline, \segment, { | n |
+					n.listener.value = timeline.segmentSize;
+				});
 			),
 			HLayout(
 				ListView() // times
@@ -197,32 +209,29 @@ OscData {
 				)
 				.font_(Font("Monaco", 12))
 				.selectionMode_(\contiguous)
-				.action_({ | me |
-					this.selectIndexRange(me.selection.minItem,  me.selection.maxItem, me);
-				})
 				.selectionAction_({ | me |
-					// do not use selection action because it blocks update
-					// use keyDownAction instead.
+					this.changed(\item, me.value);
 				})
 				.keyDownAction_({ | me, key ... args |
-					// enable updates from cursor keys + Cmd-a (select all)
 					case
+					{ key.ascii == 13 } {
+						timeline.indexSegment(
+							me.selection.minItem, me.selection.maxItem
+						) }
 					{ key == $r } {
 						this.reread;
 					}
 					{ key == $a } {
-						this.selectIndexRange(0, messages.size - 1, me);
-						me.items = this.selectedTimesItems;
+						timeline.selectAll;
 					}
 					{ true } {
-					me.defaultKeyDownAction(me, key, *args);
-						{ this.selectTimesMessages(me, me.selection) }.defer(0.1);
+						me.defaultKeyDownAction(me, key, *args);
 					}
 				})
-				.addNotifier(this, \selection, { | n, who |
-					if (who != n.listener) {
-						n.listener.items = this.selectedTimesItems;
-					};
+				.addNotifier(timeline, \segment, { | n, who |
+					n.listener.items = times.copyRange(
+						timeline.segmentMin, timeline.segmentMax
+					);
 				}),
 				ListView() // messages
 				.palette_(QPalette.light
@@ -232,10 +241,14 @@ OscData {
 				.font_(Font("Monaco", 12))
 				.enterKeyAction_({ | me | this.sendItemAsOsc(me.item); })
 				// .keyDownAction
-				.addNotifier(this, \selection, { | n, who |
-					 if (who != n.listener) {
-						n.listener.items = selectedMessages;
-					}
+				.addNotifier(timeline, \segment, { | n, who |
+						n.listener.items = messages.copyRange(
+						timeline.segmentMin, timeline.segmentMax
+					);
+				})
+				.addNotifier(this, \item, { | n, index |
+					// postln("messages set to index:" + index);
+					n.listener.value = index;
 				})
 			),
 			HLayout(
@@ -306,17 +319,26 @@ OscData {
 		this.updateTimesMessages(this);
 	}
 
-	findTimeIndex { | time | ^times indexOf: (times detect: { | t | t >= time }); }
+	findTimeIndex { | time |
+		time = time.clip(0, this.totalDuration);
+		postln("findIndex. time:" + time + "times" + times);
+		postln("detected" + (times detect: { | t | t >= time }));
+		^times indexOf: (times detect: { | t | t >= time });
 
-	mapTime { | index | ^times[index] / this.duration; }
+	}
 
-	duration { ^times.last }
+	mapTime { | index | ^times[index] / totalDuration; }
 
-	selectAll {
+	// selectedDuration { ^times.last }
+	// totalDuration { ^times.last }
+	// totalOnsetsDuration { ^times.last }
+
+	selectAll { timeline.selectAll }
+	selectAllOld {
 		minIndex = 0;
 		maxIndex = unparsedEntries.size - 1;
 		selectedMinTime = 0;
-		selectedMaxTime = this.duration;
+		selectedMaxTime = totalDuration;
 		#selectedTimes, selectedMessages = timesMessages.flop;
 		this.changed(\selection);
 	}
@@ -335,14 +357,24 @@ OscData {
 	updateTimesMessages { | who |
 		minIndex = this.findTimeIndex(selectedMinTime);
 		maxIndex = this.findTimeIndex(selectedMaxTime);
+			postln("minIndex" + minIndex + "minIndex class" + minIndex.class +
+		"maxIndex" + maxIndex + "maxIndex class" + maxIndex.class);
+		this.updateSelectionTimes;
+		this.changed(\selection, who);
+	}
+
+	updateSelectionTimes {
 		#selectedTimes, selectedMessages = timesMessages.copyRange(
 			minIndex, maxIndex
 		).flop;
 		selectedMinTime = selectedTimes.minItem;
 		selectedMaxTime = selectedTimes.maxItem;
-		this.changed(\selection, who);
+		this.updateSelectedDuration;
 	}
 
+	updateSelectedDuration {
+		selectedDuration = timeline.segmentDuration;
+	}
 	reread { this.init }
 
 	resetStream {
@@ -387,7 +419,7 @@ OscData {
 	makeProgressRoutine {
 		var streamduration, dt;
 		progressRoutine.stop;
-		streamduration = selectedMaxTime - selectedMinTime;
+		streamduration = timeline.segmentTotalDur;
 		// streams of duration < 1 sec will not display properly;
 		dt = streamduration / 100 max: 0.01;
 		progressRoutine = (

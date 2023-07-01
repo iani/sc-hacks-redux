@@ -11,12 +11,10 @@ OscDataFileList {
 		fileListHistory ?? { this.readFileListHistory; };
 		this.vlayout(
 			HLayout(
-				Button().states_([["Add Filelist"]])
+				Button().states_([["add filelist"]])
 				.action_({ this.addListFromUser }),
-				Button().states_([["Open in GUI"]])
-				.action_({ this.changed(\viewSelection) }),
-				Button().states_([["Edit"]])
-				.action_({ this.changed(\editSelection) })
+				Button().states_([["edit"]]).action_({ this.changed(\editSelection) }),
+				Button().states_([["browse"]]).action_({ this.changed(\viewSelection) })
 			),
 			HLayout(
 				ListView() // List of lists
