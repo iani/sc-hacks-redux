@@ -136,18 +136,14 @@ OscData {
 		this.br_(850, 500).vlayout(
 			RangeSlider() // select a range of times
 			.orientation_(\horizontal)
+			.action_({ | me |
+				this.changed(\timerange, me.lo, me.hi);
+			})
 			.mouseUpAction_({ | me |
-				postln("lo" + me.lo + "mapped lo" + timeline.mapTime(me.lo));
-				postln("hi" + me.hi + "mapped hi" + timeline.mapTime(me.hi));
-				timeline.clipTime(me.lo, me.hi);
+				timeline.mapClipTime(me.lo, me.hi);
 			})
 			.addNotifier(timeline, \segment, { | n, argTimeline |
-				postln("rangeslider new update - selection");
 				n.listener.setSpan(*timeline.unmapTimeSpan)
-				// postln("new timeline is:" + argTimeline);
-				// postln("timeline minindex" + argTimeline.minIndex + "maxindex" + argTimeline.maxIndex)
-
-				// n.listener.setSpan(*argTimeLine.ummapTimeSpan);
 			}),
 			HLayout(
 				StaticText().string_("1st onset"),
@@ -156,14 +152,13 @@ OscData {
 				.decimals_(3)
 				.action_({ | me |
 					me.value =  me.value.clip(0, timeline.totalDuration);
-					postln("will set timeline beginning to" + me.value);
 					timeline.clipMinTime(me.value);
 				})
+				.addNotifier(this, \timerange, { | n, lo, hi |
+					n.listener.value = timeline.mapTime(lo);
+				})
 				.addNotifier(timeline, \segment, { | n, who |
-					postln("beginning time" + timeline.minTime);
 					n.listener.value = timeline.minTime;
-					// postln("this would be" + timeline.onsets[timeline.segmentMin])
-					// n.listener.value = timeline.onsets[segmentMin];
 				}),
 				StaticText().string_("last onset"), //.maxWidth_(50),
 				NumberBox()
@@ -171,11 +166,12 @@ OscData {
 				.decimals_(3)
 				.action_({ | me |
 					me.value = me.value.clip(timeline.minTime, timeline.totalDuration);
-					postln("setting time to", me.value);
 					timeline.clipMaxTime(me.value);
 				})
+				.addNotifier(this, \timerange, { | n, lo, hi |
+					n.listener.value = timeline.mapTime(hi);
+				})
 				.addNotifier(timeline, \segment, { | n, who |
-					postln("setting last onset to" + timeline.maxTime);
 					n.listener.value = timeline.maxTime;
 				}),
 				StaticText().string_("duration").maxWidth_(90),
@@ -188,7 +184,6 @@ OscData {
 				})
 				.addNotifier(timeline, \segment, { | n, who |
 					if (who != n.listener) {
-						// n.listener.value = selectedMaxTime - selectedMinTime;
 						n.listener.value = timeline.duration;
 					}
 				}),

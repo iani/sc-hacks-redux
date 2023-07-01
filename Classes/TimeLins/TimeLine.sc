@@ -17,7 +17,7 @@ Also:
 
 Timeline {
 	var <onsets, <durations;
-	var <totalDuration;
+	var <totalDuration, <lastOnset;
 	var <>minIndex = 0, <>maxIndex;
 	var <segmentMin, <segmentMax;
 	var <segmentOnsets, <segmentDurations;
@@ -39,6 +39,7 @@ Timeline {
 
 	init {
 		totalDuration = durations.sum;
+		lastOnset = onsets.last;
 		maxIndex = durations.size - 1;
 		segmentMin = 0;
 		segmentMax = maxIndex;
@@ -52,7 +53,6 @@ Timeline {
 	indexSegment { | argMin, argMax |
 		segmentMin = argMin;
 		segmentMax = argMax;
-		// postln("indexSegment segmentMin" + segmentMin + "segmentMax" + segmentMax);
 		this.makeSegment;
 	}
 
@@ -63,6 +63,9 @@ Timeline {
 		this.changed(\segment);
 	}
 
+	mapClipTime { | minTime, maxTime |
+		this.clipTime(this.mapTime(minTime), this.mapTime(maxTime));
+	}
 	clipTime { | minTime, maxTime |
 		segmentMin = this.findIndex(minTime);
 		segmentMax = this.findIndex(maxTime);
@@ -71,10 +74,7 @@ Timeline {
 	}
 
 	clipMinTime { | minTime |
-		// postln("debuggging mintime. minTime is" + minTime);
-		// "Now findIndex mintime".postln;
 		segmentMin = this.findIndex(minTime) ? 0;
-		// postln("segmentMin is" + segmentMin);
 		this.makeSegment;
 	}
 
@@ -97,16 +97,16 @@ Timeline {
 	maxDuration { ^totalDuration - this.minTime; }
 	minTime { ^onsets[segmentMin] }
 	maxTime { ^onsets[segmentMax] }
-	mapTime { | argTime | // map from 0-1 to 0-totalDuration;
-		^argTime * totalDuration;
+	mapTime { | argTime | // map from 0-1 to 0-last onset;
+		^argTime * lastOnset;
 	}
 
 	unmapTime { | argTime | // map from 0-totalDuration to 0-1;
-		^argTime.clip(0, totalDuration) / totalDuration;
+		^argTime.clip(0, lastOnset) / lastOnset;
 	}
 
 	unmapTimeSpan {
-		^[this.unmapTime(onsets[minIndex]), this.unmapTime(onsets[maxIndex])]
+		^[this.unmapTime(onsets[segmentMin]), this.unmapTime(onsets[segmentMax])]
 	}
 
 	findIndex { | argTime |
