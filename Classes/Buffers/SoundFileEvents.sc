@@ -41,7 +41,7 @@ SoundFileEvents {
 		var e;
 		e = this.eventAt(argName);
 		if (e.isNil) {
-			postln("no event fond at" + argName);
+			postln("no event found at" + argName);
 		}{
 			postln("editing" + e[1]);
 			Document.open(e[1]);
@@ -67,6 +67,7 @@ SoundFileEvents {
 	makeSoundFileEvent { | argPath |
 		var sevent;
 		sevent = SoundFileEvent(this, argPath);
+		dict[sevent.eventName] = sevent;
 		// e = Event();
 		// e.push;
 		// argPath.fullPath.load; // fill e with specs from file

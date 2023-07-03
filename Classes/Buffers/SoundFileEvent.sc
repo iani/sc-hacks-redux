@@ -10,7 +10,7 @@ SoundFileEvent {
 	var <bufferName;
 	var <eventName;
 	var <event;
-	var <playFunc;
+	var <playFunc; // Function used to make the synth.
 	var <playerName; // constructed: bufferName+eventName
 
 	*new { | fileEvents, path |
@@ -20,19 +20,26 @@ SoundFileEvent {
 	init {
 		bufferName = fileEvents.name;
 		eventName = path.fileNameWithoutExtension.asSymbol;
-		playerName = bufferName ++ eventName;
+		playerName = (bufferName ++ "+" ++ eventName).asSymbol;
 		this.makeEvent;
 	}
 
 	makeEvent {
-		var synthFuncName;
 		event = ();
 		event.push;
 		path.fullPath.load;
 		event.pop;
 		event[\buf] = bufferName;
-		synthFuncName = event[\synthfunc] ?? { \playbuf };
-		playFunc = fileEvents.playFuncAt(synthFuncName);
+		this.makePlayFunc;
+	}
+
+	makePlayFunc {
+		// If playfunc is provided, use it.
+		// Else get it from FileEvents based on sfname
+		var synthFuncName;
+		^playFunc = event[\playfunc] ?? {
+			fileEvents.playFuncAt(event[\sfname])
+		};
 	}
 
 	play {

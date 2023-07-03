@@ -21,8 +21,8 @@ SoundFileSettings {
 { "r".postln; }.confirm("something", "Locate preference file");
 
 	*/
-	playFuncAt { | playFuncName |
-		^playfuncs[playFuncName] ?? { this.defultPlayFunc }
+	playFuncAt { | playFuncName = \playbuf |
+		^playfuncs[playFuncName] ?? { this.defaultPlayFunc }
 	}
 
 	defaultPlayFunc {
