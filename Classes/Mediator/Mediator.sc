@@ -10,22 +10,41 @@ Mediator : EnvironmentRedirect {
 	classvar default, global;
 	var <name, busses;
 
-	*global {
-		^global ?? { global = Environment() }
+	*global {// experimental: Use Event instead of Environment
+		^global ?? { global = Event() }
 	}
 	*putGlobal { | key, object | this.global.put(key, object) }
 
 	*new { | name, envir |
-			^this.newCopyArgs(
-				envir ?? { Environment.new(32, Environment.new, this.global) },
+		^this.newCopyArgs( // experimental: Use Event instead of Environment
+				envir ?? { Event.new(32, Event.new, this.global) },
 				nil, name
 			).dispatch = MediatorHandler();
 	}
 
 	init { | ... args |
-		// postf("my init args are: %\n", args);
+		// Make self known to your environment, to enable use of
+		// Symbol:bin, br etc.
+		// Store name instead of this to maintain postability
+		envir[\mediator] = name;
 	}
 
+	play { | argPlayFunc, argEvent |
+		envir[\play] = { argPlayFunc +> name };
+		argEvent !? {
+			argEvent keysValuesDo: { | key, val |  envir[key] = val; };
+		};
+		envir[\mediator] = name;
+		envir.play;
+	}
+
+	playPrototypeBroken { | argPlayFunc, argEvent |
+		argPlayFunc !? { envir[\play] = argPlayFunc; };
+		argEvent !? {
+			argEvent keysValuesDo: { | key, val |  envir[key] = val; };
+		};
+		envir.play;
+	}
 	printOn { | stream |
 		if (stream.atLimit) { ^this };
 		stream << "<" << this.name << ">:[ " ;
@@ -144,6 +163,7 @@ Mediator : EnvironmentRedirect {
 		});
 		synth onEnd: {
 			if (this[key] === synth) { this[key] = nil };
+			synth changed: \ended;
 		};
 		^synth;
 	}

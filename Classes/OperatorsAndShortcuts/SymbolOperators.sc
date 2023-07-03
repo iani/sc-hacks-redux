@@ -3,7 +3,10 @@
 */
 
 + Symbol {
-
+	play { | playFunc, event |
+		// play playfunc in event envir of Mediator named by me
+		Mediator.at(this).play(playFunc, event);
+	}
 	putGlobal { | object | Mediator.putGlobal(this, object) }
 
 	//============================================================/
@@ -136,6 +139,24 @@
 	}
 
 	stop { | fadeTime, envir | this.stopPlayer(envir ? this, fadeTime) }
+
+	freePlayer { | envir, followUpFunc |
+		// immediately free. Needed when setting bus to a number
+		var player;
+		envir = Mediator.at(envir ?? { currentEnvironment.name });
+		// postln("envir is:" + envir);
+		player = envir.at(this);
+		if (player isKindOf: Synth) {
+			// testing how to find out when the player frees:
+			// player onEnd: { player.changed(\ended); };
+			\test.addNotifierOneShot(player, \ended, followUpFunc);
+			player.free;
+		}{
+			player.stop;
+			followUpFunc.value
+		}
+	}
+
 	stopPlayer { | envir, fadeTime |
 		var player;
 		// postln("Stop player" + this + "for envir" + envir);

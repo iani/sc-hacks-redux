@@ -44,7 +44,10 @@ Simplenumber @> \symbol // set bus to number
 
 	// <+ { | value, envir | envir.envir.put(this, value); }
 	@> { | targetBus, player |
-		^().put(this.busify, targetBus.bus(nil, player ? currentEnvironment.name).index);
+		^().put(
+			this.busify,
+			targetBus.bus(nil, player ? currentEnvironment.name).index
+		);
 	}
 	pget { | player, format = "%" | ^this.bus(nil, player).pget(format) }
 	blag { | lag = 0.1 | ^this.bin.lag(lag) }
@@ -61,7 +64,9 @@ Simplenumber @> \symbol // set bus to number
 		// ^In.kr(this.bus(val).index)
 		var bus;
 		bus = this.bus(val);
+		// postln("debugging busIn. Bus is:" + bus + "index is" + bus.index);
 		// use b_ prefix for controls which refer to buses.
+
 		^In.kr(this.busify.kr(bus.index));
 	}
 	// prepend b_. Used to mark controls that read from busses
@@ -74,7 +79,8 @@ Simplenumber @> \symbol // set bus to number
 		// Works with new AND already existing busses.
 		var bus, envir;
 		server = server.asTarget.server;
-		player = player ?? { currentEnvironment.name };
+		player = player ?? { currentEnvironment.name ?? { ~mediator } };
+		// player.postln;
 		envir = Mediator.at(player);
 		bus = envir.busses.at(this);
 		if (bus.isNil) {
@@ -99,8 +105,9 @@ Simplenumber @> \symbol // set bus to number
 
 
 + Function {
-	@> { | bus, player | // play as kr funcction in bus (or player) name
+	@> { | bus, player | // play as kr function in bus (or player) name
 		player ?? { player = currentEnvironment.name };
+		// postln("debugging @>. bus" + bus + "player" + player);
 		{
 			Out.kr(bus.bus(nil, player), this.value.kdsr);
 			// A2K.kr(Silent.ar).kdsr;
@@ -147,13 +154,19 @@ Simplenumber @> \symbol // set bus to number
 	@> { | bus, playerEnvir = \sensors | // set bus value
 		// works with new AND already existing busses.
 		// Stop processes playing in this bus before setting a new value:
-		bus.stopPlayer(playerEnvir);
-		// postln("playerEnvir:" + playerEnvir);
-		// postln("bus " + bus + "at playerEnvir: " + bus.bus(nil, playerEnvir));
-		bus.bus(nil, playerEnvir ? currentEnvironment.name).set(this);
+		bus.freePlayer(playerEnvir, {
+			bus.bus(nil, playerEnvir ? currentEnvironment.name).set(this);
+		});
 	}
 }
 
++ Array { // generate bus names from base name + index of array element
+	@> { | bus, playerEnvir = \sensors |
+		this do: { | el, in |
+			el.perform('@>', format("%%", bus, in).asSymbol, playerEnvir);
+		}
+	}
+}
 + Nil {
 	@> { | busPlayer, envir | // Stop player for bus
 		// stop player with same name as bus in an environment

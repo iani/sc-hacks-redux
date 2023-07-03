@@ -133,6 +133,9 @@ To explore:
 	}
 
 	mix { ^Mix(this) }
+	amix { // adjust amplitude
+		^Mix(this) * this.size.reciprocal
+	}
 
 	lag { | lag = 0.1 | ^Lag.kr(this, lag); }
 	amp { | attack = 0.01, decay = 0.1 | ^Amplitude.kr(this, attack, decay); }

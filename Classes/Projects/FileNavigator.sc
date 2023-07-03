@@ -76,12 +76,13 @@ FileNavigator {
 	getOuterItems {
 		outerList = this.getOuterItemsList;
 		if (outerList.size == 0) {
-			this.setProjectHomeDialog;
+			// this.setProjectHomeDialog;
 			// FileDialog({ | path |
 			// 	"You selected:".postln;
 			// 	path[0].postln;
 			// });
-			^postln("No items found in" + currentRoot.fullPath);
+			postln("No items found in" + currentRoot.fullPath);
+			this.goHome;
 		};
 		outerIndex = 0;
 		outerItem = outerList[outerIndex];
@@ -196,6 +197,12 @@ FileNavigator {
 				this.innerListView
 			)
 		).bounds_(Rect(0, 230, 350, 180))
+		.addNotifier(this, \innerItems, { | n |
+			var p;
+			p = currentRoot.asRelativePath(homeDir);
+			if (p.size == 0) { p = "./" };
+			n.listener.name = p;
+		})
 
 	}
 

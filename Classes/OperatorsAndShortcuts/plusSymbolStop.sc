@@ -6,10 +6,16 @@
 	stop { | fadeTime = 1.0 |
 		currentEnvironment[this].stop(fadeTime);
 	}
-	play { this.start } // synonym for start
+
 	// start { currentEnvironment[this].start; }
 	// 14 Oct 2022 23:17: enable Synth restart!
-	start { currentEnvironment[this].restart(currentEnvironment, this); }
+	// Mon  3 Jul 2023 18:14 : needs fixing:
+	// should restart player argument in environment of receiver.
+	// need to revisit restart also.
+	start { | player |
+		// Mediator.at(this)
+		currentEnvironment[this].restart(currentEnvironment, player ? this);
+	}
 }
 
 + Synth {
@@ -22,22 +28,9 @@
 	}
 
 	restart { | envir, playerName |
-		// format("% +>.% %",
-		// 	SynthHistory.at(envir.name, playerName).last[1],
-		// 	envir.name, playerName.asCompileString
-		// ).interpret;
+		// Mon  3 Jul 2023 18:18 : TODO: Review this!
 		PlayerHistory.at(envir.name, playerName).last[1].interpret;
 	}
-	// cannot make this work: !
-	/*
-	start {
-		if (this.isPlaying) {
-			postf("% is already playing\n", this);
-		}{ 
-			this.startInEnvir;
-		}
-	}
-	*/
 }
 
 + Nil {
