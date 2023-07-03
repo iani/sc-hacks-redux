@@ -1,4 +1,12 @@
 /*  2 Jul 2023 10:20
+
+Holds events with parameters for playing a buffer.
+Each event is created by loading an scd file that sets the parameters
+as environment variables.
+
+
+Each event gives
+
 loads event code from files in a folder and creates events for playing a sound file.
 
 Stores the events in a dictionary, using the names of the files (without extensions) as keys.
@@ -14,13 +22,15 @@ SoundFileEvents {
 		^this.newCopyArgs(argSettings, argPath, IdentityDictionary()).read;
 	}
 
+	playFuncAt { | funcName | ^settings.playFuncAt(funcName) }
+
 	eventAt { | argName | ^dict[argName] }
 
 	playAt { | argName |
 		var e;
 		e = this.eventAt(argName);
 		if (e.isNil) {
-			postln("no event fond at" + argName);
+			postln("no event fonud at" + argName);
 		}{
 			postln("playing" + e[0]);
 			e[0].play;
@@ -39,25 +49,35 @@ SoundFileEvents {
 	}
 
 	read {
-		name = path.folderName.asSymbol;
+		name = path.folderName.asSymbol; // this is also the buffer name!
 		postln("SoundFileEvents loading" + path);
 		postln("Files are:" + path.files);
 		path.files do: { | p |
+			var soundevent;
 			postln("path " + p + "is scd" + (p.extension == "scd"));
 			if (p.extension == "scd") {
-				var e;
-				e = Event();
-				e.push;
-				p.fullPath.load;
-				e[\buf] = name;
-				e[\synthfunc] ?? { e[\synthfunc] = \playbuf };
-				e[\synthfunc] = settings.playfunc(e[\synthfunc]);
-				e[\play] = { ~synthfunc.play };
-				dict[p.fileNameWithoutExtension.asSymbol] = [e, p];
+				soundevent = this.makeSoundFileEvent(p);
+				// eventName = p.filenameWithoutE
+				// dict[name]
 			};
 		};
-
 		postln("Made these events:" + dict);
+	}
+
+	makeSoundFileEvent { | argPath |
+		var sevent;
+		sevent = SoundFileEvent(this, argPath);
+		// e = Event();
+		// e.push;
+		// argPath.fullPath.load; // fill e with specs from file
+		// e.pop;
+		// e[\buf] = name;
+		// needs review:
+		// synthFuncName =
+		// e[\synthfunc] ?? { e[\synthfunc] = \playbuf };
+		// e[\synthfunc] = settings.playfunc(e[\synthfunc]);
+		// e[\play] = { ~synthfunc.play };
+		// dict[p.fileNameWithoutExtension.asSymbol] = [e, p];
 	}
 	// ----------- gui methods not used. See SoundFileSettings gui!
 	gui {

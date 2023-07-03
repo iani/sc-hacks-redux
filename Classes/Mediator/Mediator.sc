@@ -30,6 +30,10 @@ Mediator : EnvironmentRedirect {
 	}
 
 	play { | argPlayFunc, argEvent |
+		// play a playfunc using keys in an event,
+		// within own event as environment, and setting the player.
+		// used by SoundFileEvents, SoundFileEvent for playing
+		// events + playfuncs loaded from scd file specs.
 		envir[\play] = { argPlayFunc +> name };
 		argEvent !? {
 			argEvent keysValuesDo: { | key, val |  envir[key] = val; };

@@ -160,6 +160,18 @@ Simplenumber @> \symbol // set bus to number
 	}
 }
 
++ Point {
+
+	@> { | bus, playerEnvir = \sensors | // glide with xline
+		var b;
+		b = bus.bus(nil, playerEnvir ? currentEnvironment.name);
+		b.get({ | v |
+			// Hack: permit XLine ... with 0 to positive values :
+			v = v max: 0.00000001;
+			{ XLine.kr(v, x, y) }.perform('@>', bus, playerEnvir);
+		})
+	}
+}
 + Array { // generate bus names from base name + index of array element
 	@> { | bus, playerEnvir = \sensors |
 		this do: { | el, in |
