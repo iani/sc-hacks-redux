@@ -20,7 +20,7 @@ SoundFileEvent {
 	init {
 		bufferName = fileEvents.name;
 		eventName = path.fileNameWithoutExtension.asSymbol;
-		playerName = (bufferName ++ "+" ++ eventName).asSymbol;
+		playerName = (bufferName ++ "_" ++ eventName).asSymbol;
 		this.makeEvent;
 	}
 
@@ -42,7 +42,18 @@ SoundFileEvent {
 		};
 	}
 
+	edit {
+		Document.open(path.fullPath);
+	}
 	play {
-		playerName.play(playFunc, event);
+		^playerName.play(playFunc.func, event);
+	}
+	gui { // experimental!!!!
+		// open gui with sliders for setting parameters
+		// get the specs for the sliders from the specs of the playfunc;
+		var specs;
+		specs = playFunc.specs collect: _.specs;
+		postln("specs are: " + specs);
+		postln("func is" + playFunc.func);
 	}
 }

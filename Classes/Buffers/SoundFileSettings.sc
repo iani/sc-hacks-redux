@@ -26,11 +26,13 @@ SoundFileSettings {
 	}
 
 	defaultPlayFunc {
-		^{
+		^PlayFunc.newCopyArgs(
+			nil, nil, [PlayBuf_],
+			{
 			var buf;
 			// TMP debugging messages:
-			postln("debugging playbuf. ~buf is" + ~buf);
-			postln("debugging playbuf. ~buf.buf is" + ~buf.buf);
+			// postln("debugging playbuf. ~buf is" + ~buf);
+			// postln("debugging playbuf. ~buf.buf is" + ~buf.buf);
 			buf = ~buf.buf;
 			PlayBuf.ar(
 				buf.numChannels,
@@ -45,7 +47,8 @@ SoundFileSettings {
 				// \loop.br(~loop ? 0),
 				Done.freeSelf
 			)
-		}
+			}
+		)
 	}
 	*setGui {
 		this.loadSets;
@@ -58,13 +61,14 @@ SoundFileSettings {
 			)
 			.items_(sets.values.asArray.collect(_.name).sort)
 			.enterKeyAction_({ | me |
-				sets[me.item].postln.gui;
+				sets[me.item].gui;
 			})
 		)
 	}
 
 	*gui { | set = \default |
 		sets[set].postln;
+		sets[set].gui;
 	}
 
 	gui {
@@ -104,20 +108,36 @@ SoundFileSettings {
 		)
 		.addNotifier(this, \buffer, { | n, item |
 			events[item].postln;
-			events[item].dict.keys.asArray.sort.postln;
+			events[item].dict.keys.asArray.sort;
 			n.listener.items = events[item]
 			.dict.keys.asArray.sort;
 		})
 		.enterKeyAction_({ | me |
-			events[buffer].eventAt(me.item).first.postln.play;
+			var playingEvent;
+			playingEvent = events[buffer].eventAt(me.item).play;
+			playingEvent.addNotifier(this, playingEvent[\mediator], { | n |
+				n.listener.stopSynths;
+			})
 		})
 		.keyDownAction_({ | me, key ... args |
 			case
 			{ key == $e } {
-				Document.open(events[buffer].eventAt(me.item)[1].fullPath);
+				events[buffer].eventAt(me.item).edit;
+				// Document.open(events[buffer].eventAt(me.item).fullPath);
 			}
 			{ key == $p } {
-				events[buffer].eventAt(me.item)[0].postln.play;
+				events[buffer].eventAt(me.item).play;
+			}
+			{ key == $g } { // EXPERIMENTAL!
+				events[buffer].eventAt(me.item).gui;
+			}
+			{ key == $. } { // stop only this item
+				this.changed(events[buffer].eventAt(me.item).playerName);
+			}
+			{ key == $> } { // stop all items
+				me.items do: { | i |
+					this.changed(events[buffer].eventAt(i).playerName);
+				};
 			}
 			{ true } {
 				me.defaultKeyDownAction(me, key, *args);
@@ -190,7 +210,7 @@ SoundFileSettings {
 	readPlayfuncs {
 		(path +/+ "playfuncs").files do: { | p |
 			if (p.extension == "scd") {
-				playfuncs[p.fileNameWithoutExtension.asSymbol] = p.fullPath.load;
+				playfuncs[p.fileNameWithoutExtension.asSymbol] = PlayFunc(this, p);
 			}
 		}
 	}

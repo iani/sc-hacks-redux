@@ -12,6 +12,7 @@ To explore:
 */
 
 + UGen {
+	+> { | ugenfunc | ^ugenfunc.ar(this) } // play as input to other ugen
 	br {} // return self. enable ugen args in synth func shortcuts
 	// value mapping + comparing shortcuts
 	lin { | lo = 0.0, hi = 1.0 | ^this.linlin(0.0, 1.0, lo, hi) }
@@ -90,6 +91,7 @@ To explore:
 
 // Make this work also with UGenArrays (usuall obtained from multichannel expansion)
 + Array {
+	+> { | ugenfunc | ^ugenfunc.ar(this) } // play as input to other ugen
 	fader { | fadeTime = 0.02, amp = 1 |
 		^this * Fader(fadeTime) * \amp.br(amp); // add amplitude control on bus
 	}

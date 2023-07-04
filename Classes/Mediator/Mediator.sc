@@ -39,7 +39,13 @@ Mediator : EnvironmentRedirect {
 			argEvent keysValuesDo: { | key, val |  envir[key] = val; };
 		};
 		envir[\mediator] = name;
-		envir.play;
+		envir.play; // return self! to be able to stop or do other stuff
+	}
+
+	stopSynths { | fadeTime = 0.1 | // stop both ar and kr/br (/bus) synths
+		envir do: { | s |
+			if (s isKindOf: Synth) { s release: fadeTime };
+		}
 	}
 
 	playPrototypeBroken { | argPlayFunc, argEvent |
