@@ -13,13 +13,14 @@ OscData {
 	var <unparsedEntries; // the entries as read from file. For export! // NOT USED?
 	var <times, <messages; // times and messages obtained from parsedEntries
 	// ============= Store state from user selection for simpler updates ==============
+	var <timeline; // handle onsets and durations!
+	// TODO: Cleanup many of these, below - that are no longer used.
 	var <selectedMinTime = 0, <selectedMaxTime = 0; // section selected
 	var <timesMessages, <selectedTimes, <selectedMessages;
 	var <stream, <progressRoutine;
 	var <minIndex, <maxIndex;
 	var <localAddr, <oscgroupsAddr;
 	var totalDuration, selectedDuration, totalOnsetsDuration;
-	var <timeline; // handle onsets and durations!
 
 	*currentDocumentGui {
 		Document.current.path.postln;
@@ -228,6 +229,9 @@ OscData {
 						me.defaultKeyDownAction(me, key, *args);
 					}
 				})
+				.addNotifier(this, \item, { | n, index |
+					n.listener.value = index;
+				})
 				.addNotifier(timeline, \segment, { | n, who |
 					n.listener.items = times.copyRange(
 						timeline.segmentMin, timeline.segmentMax
@@ -310,14 +314,16 @@ OscData {
 		oscgroupsAddr.sendMsg(*msg);
 	}
 	findNextCode {
-		var found, index;
-		found = selectedMessages detect: { | m |
+		var theSelectedMessages, found, index;
+		theSelectedMessages = messages.copyRange(timeline.minIndex, timeline.maxIndex);
+		found = theSelectedMessages detect: { | m |
 			m.interpret.first === '/code';
 		};
-		index = selectedMessages indexOf: found;
-		selectedMinTime = times[index];
-		selectedMaxTime = selectedMinTime max: selectedMaxTime;
-		this.updateTimesMessages(this);
+		index = theSelectedMessages indexOf: found;
+		this.changed(\item, index);
+		// selectedMinTime = times[index];
+		// selectedMaxTime = selectedMinTime max: selectedMaxTime;
+		// this.updateTimesMessages(this);
 	}
 
 	findTimeIndex { | time |
