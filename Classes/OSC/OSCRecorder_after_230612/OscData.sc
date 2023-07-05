@@ -15,7 +15,8 @@ OscData {
 	// ============= Store state from user selection for simpler updates ==============
 	var <timeline; // handle onsets and durations!
 	// TODO: Cleanup many of these, below - that are no longer used.
-	var <selectedMinTime = 0, <selectedMaxTime = 0; // section selected
+	var <selectedMinTime = 0;
+	var <selectedMaxTime = 0; // section selected
 	var <timesMessages, <selectedTimes, <selectedMessages;
 	var <stream, <progressRoutine;
 	var <minIndex, <maxIndex;
@@ -40,9 +41,6 @@ OscData {
 			parsedEntries.select({ | e | e[1][2..8] != "'/code'" }),
 			unparsedEntries.select({ | e | e.find("[ '/code', ").isNil })
 		).convertTimesMessages.gui; // .gui;
-		// ^this.class.newCopyArgs(paths, sourceStrings,
-		// 	parsedEntries.select({ | e | e[1].interpret[0] != '/code';})
-		// ).convertTimesMessages.gui;
 	}
 
 	*new { | paths |
@@ -316,14 +314,9 @@ OscData {
 	findNextCode {
 		var theSelectedMessages, found, index;
 		theSelectedMessages = messages.copyRange(timeline.minIndex, timeline.maxIndex);
-		found = theSelectedMessages detect: { | m |
-			m.interpret.first === '/code';
-		};
+		found = theSelectedMessages detect: { | m | m.interpret.first === '/code'; };
 		index = theSelectedMessages indexOf: found;
 		this.changed(\item, index);
-		// selectedMinTime = times[index];
-		// selectedMaxTime = selectedMinTime max: selectedMaxTime;
-		// this.updateTimesMessages(this);
 	}
 
 	findTimeIndex { | time |
@@ -335,10 +328,6 @@ OscData {
 	}
 
 	mapTime { | index | ^times[index] / totalDuration; }
-
-	// selectedDuration { ^times.last }
-	// totalDuration { ^times.last }
-	// totalOnsetsDuration { ^times.last }
 
 	selectAll { timeline.selectAll }
 	selectAllOld {
@@ -516,17 +505,5 @@ OscData {
 		parsedEntries.first[1].class.postln;
 		parsedEntries.first[1].interpret[1].postln;
 		messages.first.interpret[1].postln;
-
-
-		// unparsedEntries.class.postln;
-		// minIndex.postln;
-		// maxIndex.postln;
-		// unparsedEntries.copyRange(minIndex, maxIndex).postln;
-		// .select({ | e |
-		// 	e.find("[ '/code', ").notNil
-		// }) do: { | e |
-		// 	"\n================================================\n".postln;
-		// 	e.postln;
-		// };
 	}
 }
