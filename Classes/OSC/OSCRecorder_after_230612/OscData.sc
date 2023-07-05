@@ -14,14 +14,21 @@ OscData {
 	var <times, <messages; // times and messages obtained from parsedEntries
 	// ============= Store state from user selection for simpler updates ==============
 	var <timeline; // handle onsets and durations!
+	var <oscgroupsAddr; // 11 used by sendItemAsOsc
+	var <localAddr; // 10 used by sendItemAsOsc
 	// TODO: Cleanup many of these, below - that are no longer used.
-	var <selectedMinTime = 0;
-	var <selectedMaxTime = 0; // section selected
-	var <timesMessages, <selectedTimes, <selectedMessages;
-	var <stream, <progressRoutine;
-	var <minIndex, <maxIndex;
-	var <localAddr, <oscgroupsAddr;
-	var totalDuration, selectedDuration, totalOnsetsDuration;
+	var <selectedMinTime = 0; // 1
+	var <selectedMaxTime = 0; // 2 section selected
+	var <timesMessages; // 3,
+	var <selectedTimes; // 4
+	var <selectedMessages; // 5
+	var <stream; // 6
+	var <progressRoutine; // 7
+	var <minIndex;  // 8
+	var <maxIndex; // 9
+	// var totalDuration; // 12 no longer used
+	// var selectedDuration; // 13 no longer used
+	// var totalOnsetsDuration; // 14 no longer used
 
 	*currentDocumentGui {
 		Document.current.path.postln;
@@ -29,17 +36,19 @@ OscData {
 
 	cloneCode {
 		^this.class.newCopyArgs(paths, sourceStrings,
-			parsedEntries.copyRange(minIndex, maxIndex)
-			.select({ | e | e[1][2..8] == "'/code'" }),
-			unparsedEntries.copyRange(minIndex, maxIndex)
-			.select({ | e | e.find("[ '/code', ").notNil })
+			parsedEntries.copyRange(timeline.minIndex, timeline.maxIndex)
+			.select({ | e | e[1].interpret[0] == '/code' }),
+			unparsedEntries.copyRange(timeline.minIndex, timeline.maxIndex)
+			.select({ | e | e.interpret[0] == '/code' })
 		).convertTimesMessages.gui;
 	}
 
 	cloneMessages {
 		^this.class.newCopyArgs(paths, sourceStrings,
-			parsedEntries.select({ | e | e[1][2..8] != "'/code'" }),
-			unparsedEntries.select({ | e | e.find("[ '/code', ").isNil })
+			parsedEntries.copyRange(timeline.minIndex, timeline.maxIndex)
+			.select({ | e | e[1].interpret[0] != '/code' }),
+			unparsedEntries.copyRange(timeline.minIndex, timeline.maxIndex)
+			.select({ | e | e.interpret[0] != '/code' })
 		).convertTimesMessages.gui; // .gui;
 	}
 
@@ -87,9 +96,9 @@ OscData {
 	makeTimeline { | argTimes | timeline = Timeline.fromOnsets(argTimes); }
 	convertTimes {
 		times = times - times.first;
-		totalDuration = times.last;
-		selectedDuration = times.last;
-		totalOnsetsDuration = times.last;
+		// totalDuration = times.last;
+		// selectedDuration = times.last;
+		// totalOnsetsDuration = times.last;
 	}
 
 	parseString { | stringAndPath |
@@ -295,6 +304,7 @@ OscData {
 	}
 
 	selectedTimesItems { ^selectedTimes } // OscDataScore adds durations!
+	/*
 	selectIndexRange { | argMinIndex, argMaxIndex, view |
 			minIndex = argMinIndex;
 			maxIndex = argMaxIndex;
@@ -305,6 +315,8 @@ OscData {
 			selectedMaxTime = selectedTimes.maxItem;
 			this.changed(\selection, view);
 	}
+	*/
+
 	sendItemAsOsc { | string | // OscDataScore prepends '/code' here
 		var msg;
 		msg = string.interpret;
@@ -327,18 +339,11 @@ OscData {
 
 	}
 
-	mapTime { | index | ^times[index] / totalDuration; }
+	// mapTime { | index | ^times[index] / totalDuration; }
 
 	selectAll { timeline.selectAll }
-	selectAllOld {
-		minIndex = 0;
-		maxIndex = unparsedEntries.size - 1;
-		selectedMinTime = 0;
-		selectedMaxTime = totalDuration;
-		#selectedTimes, selectedMessages = timesMessages.flop;
-		this.changed(\selection);
-	}
 
+	/*
 	selectTimesMessages { | who, selection |
 		minIndex = selection.minItem;
 		maxIndex = selection.maxItem;
@@ -349,7 +354,9 @@ OscData {
 		selectedMaxTime = selectedTimes.maxItem;
 		this.changed(\selection, who);
 	}
+	*/
 
+	/*
 	updateTimesMessages { | who |
 		minIndex = this.findTimeIndex(selectedMinTime);
 		maxIndex = this.findTimeIndex(selectedMaxTime);
@@ -358,7 +365,9 @@ OscData {
 		this.updateSelectionTimes;
 		this.changed(\selection, who);
 	}
+	*/
 
+	/*
 	updateSelectionTimes {
 		#selectedTimes, selectedMessages = timesMessages.copyRange(
 			minIndex, maxIndex
@@ -367,9 +376,10 @@ OscData {
 		selectedMaxTime = selectedTimes.maxItem;
 		this.updateSelectedDuration;
 	}
+	*/
 
 	updateSelectedDuration {
-		selectedDuration = timeline.segmentDuration;
+		// selectedDuration = timeline.segmentDuration;
 	}
 	reread { this.init }
 
@@ -381,8 +391,8 @@ OscData {
 	}
 	makeStream {
 		stream = ( // convert times to dt
-			dur: selectedTimes.differentiate.rotate(-1).putLast(0).pseq(1),
-			message: selectedMessages.pseq(1),
+			dur: timeline.segmentDurations.pseq,
+			message: messages.copyRange(timeline.minIndex, timeline.maxIndex).pseq(1),
 			play: this.makePlayFunc; // OscDataScore customizes this
 		).asEventStream;
 		this.addNotifier(stream, \stopped, { this.changed(\playing, false) });
@@ -398,6 +408,7 @@ OscData {
 		^{
 			var msg;
 			msg = ~message.interpret;
+			// postln("message class" + ~message.class + "message:" + ~message);
 			localaddr.sendMsg(*msg);
 			oscgroupsaddr.sendMsg(*msg);
 		}

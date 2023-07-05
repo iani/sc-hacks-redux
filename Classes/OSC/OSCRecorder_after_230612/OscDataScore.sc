@@ -31,9 +31,9 @@ OscDataScore : OscData {
 	convertTimes {
 		durations = times;
 		times = ([0] ++ times).integrate.butLast;
-		totalOnsetsDuration = times.last;
-		totalDuration = durations.sum;
-		selectedDuration = totalDuration;
+		// totalOnsetsDuration = times.last;
+		// totalDuration = durations.sum;
+		// selectedDuration = totalDuration;
 	}
 
 	makePlayFunc {
@@ -52,6 +52,7 @@ OscDataScore : OscData {
 		oscgroupsAddr.sendMsg('/code', string);
 	}
 
+	/*
 	selectedTimesItems {
 		// "onset times are".postln;
 		// selectedTimes.postln;
@@ -63,8 +64,11 @@ OscDataScore : OscData {
 		^[selectedTimes, durations.copyRange(minIndex, maxIndex)].flop collect:
 		{ | bd | format("beg: % | dur: %", bd[0], bd[1]) }
 	}
+	*/
 
+	/*
 	updateSelectedDuration {
-		selectedDuration = durations.copyRange(minIndex, maxIndex).sum;
+		// selectedDuration = durations.copyRange(minIndex, maxIndex).sum;
 	}
+	*/
 }
