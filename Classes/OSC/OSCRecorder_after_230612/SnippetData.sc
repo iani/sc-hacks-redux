@@ -22,9 +22,9 @@ SnippetData : OscDataScore {
 			var end;
 			end = delimiters[i + 1];
 			if (end.notNil) {
-				entry = string.copyRange(b, end);
+				entry = string.copyRange(b + 1, end - 1);
 			}{
-				entry = string.copyRange(b, string.size - 1)
+				entry = string.copyRange(b + 1, string.size - 1)
 			};
 			// timebeg = entry.find(":--[");
 			// timeend = entry.find("]", 4);

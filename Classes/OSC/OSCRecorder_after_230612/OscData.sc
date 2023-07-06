@@ -426,7 +426,7 @@ OscData {
 		stream = ( // convert times to dt
 			onsets: timeline.segmentOnsets.pseq,
 			dur: timeline.segmentDurations.pseq,
-			message: messages.copyRange(timeline.minIndex, timeline.maxIndex).pseq(1),
+			message: messages.copyRange(timeline.segmentMin, timeline.segmentMax).pseq(1),
 			play: this.makePlayFunc; // OscDataScore customizes this
 		).asEventStream;
 		this.addNotifier(stream, \stopped, { this.changed(\playing, false) });
@@ -454,22 +454,23 @@ OscData {
 	isPlaying { ^stream.isPlaying }
 
 	start {
+		"STARTING".postln;
 		if (this.isPlaying) { ^postln("Oscdata is already playing") };
-		stream ?? { this.makeStream };
+		this.makeStream; // update stream to current selection
 		//: TODO: advance progress to next message when restarting!
 		stream.start;
 		progressRoutine.start;
 	}
 
 	makeProgressRoutine {
-		var streamduration, dt;
+		var streamduration, dt, numRepeats;
 		progressRoutine.stop;
 		streamduration = timeline.segmentTotalDur;
-		// streams of duration < 1 sec will not display properly;
 		dt = streamduration / 1000 max: 0.01;
+		numRepeats = (streamduration / dt);
 		progressRoutine = (
 			dur: dt,
-			progress: (1..1000).normalize.pseq(1),
+			progress: (1..numRepeats).normalize.pseq(1),
 			play: { this.changed(\progress, ~progress) }
 		).asEventStream;
 		this.changed(\progress, 0);
