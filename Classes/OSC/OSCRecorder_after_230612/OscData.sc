@@ -90,7 +90,9 @@ OscData {
 		timesMessages = [times, messages].flop;
 	}
 
-	makeTimeline { | argTimes | timeline = Timeline.fromOnsets(argTimes); }
+	makeTimeline { | argTimes | timeline =
+		Timeline(this).setOnsets(argTimes);
+	}
 	convertTimes {
 		times = times - times.first;
 		// totalDuration = times.last;
@@ -147,7 +149,7 @@ OscData {
 			.mouseUpAction_({ | me |
 				timeline.mapClipTime(me.lo, me.hi);
 			})
-			.addNotifier(timeline, \segment, { | n, argTimeline |
+			.addNotifier(this, \segment, { | n, argTimeline |
 				n.listener.setSpan(*timeline.unmapTimeSpan)
 			}),
 			HLayout(
@@ -162,7 +164,7 @@ OscData {
 				.addNotifier(this, \timerange, { | n, lo, hi |
 					n.listener.value = timeline.mapTime(lo);
 				})
-				.addNotifier(timeline, \segment, { | n, who |
+				.addNotifier(this, \segment, { | n, who |
 					n.listener.value = timeline.minTime;
 				}),
 				StaticText().string_("last onset"), //.maxWidth_(50),
@@ -176,7 +178,7 @@ OscData {
 				.addNotifier(this, \timerange, { | n, lo, hi |
 					n.listener.value = timeline.mapTime(hi);
 				})
-				.addNotifier(timeline, \segment, { | n, who |
+				.addNotifier(this, \segment, { | n, who |
 					n.listener.value = timeline.maxTime;
 				}),
 				StaticText().string_("duration").maxWidth_(90),
@@ -187,7 +189,7 @@ OscData {
 					me.value_(me.value.clip(0, timeline.maxDuration));
 					timeline.clipMaxTime(me.value);
 				})
-				.addNotifier(timeline, \segment, { | n, who |
+				.addNotifier(this, \segment, { | n, who |
 					if (who != n.listener) {
 						n.listener.value = timeline.duration;
 					}
@@ -196,7 +198,7 @@ OscData {
 				StaticText().string_("size").maxWidth_(70),
 				NumberBox()
 				.maxWidth_(70)
-				.addNotifier(timeline, \segment, { | n |
+				.addNotifier(this, \segment, { | n |
 					n.listener.value = timeline.segmentSize;
 				});
 			),
@@ -257,7 +259,7 @@ OscData {
 				.addNotifier(this, \item, { | n, index |
 					n.listener.value = index;
 				})
-				.addNotifier(timeline, \segment, { | n, who |
+				.addNotifier(this, \segment, { | n, who |
 					n.listener.items = times.copyRange(
 						timeline.segmentMin, timeline.segmentMax
 					).collect({ | t, i | this.formatTimeIndex(t, i) });
@@ -278,7 +280,7 @@ OscData {
 						me.defaultKeyDownAction(me, key, *args);
 					}
 				})
-				.addNotifier(timeline, \segment, { | n, who |
+				.addNotifier(this, \segment, { | n, who |
 						n.listener.items = messages.copyRange(
 						timeline.segmentMin, timeline.segmentMax
 					);
@@ -340,9 +342,11 @@ OscData {
 				n.listener.value = p;
 			})
 		);
-		window.name = this.class.name;
+		window.name = this.windowName;
 		{ this.selectAll; }.defer(0.1);
 	}
+
+	windowName { ^this.class.name }
 
 	formatTimeIndex { | t, i |
 		^t.asString;
@@ -386,44 +390,8 @@ OscData {
 
 	}
 
-	// mapTime { | index | ^times[index] / totalDuration; }
+	selectAll { timeline.selectAll; }
 
-	selectAll { timeline.selectAll }
-
-	/*
-	selectTimesMessages { | who, selection |
-		minIndex = selection.minItem;
-		maxIndex = selection.maxItem;
-		#selectedTimes, selectedMessages = timesMessages.copyRange(
-			minIndex, maxIndex;
-		).flop;
-		selectedMinTime = selectedTimes.minItem;
-		selectedMaxTime = selectedTimes.maxItem;
-		this.changed(\selection, who);
-	}
-	*/
-
-	/*
-	updateTimesMessages { | who |
-		minIndex = this.findTimeIndex(selectedMinTime);
-		maxIndex = this.findTimeIndex(selectedMaxTime);
-			postln("minIndex" + minIndex + "minIndex class" + minIndex.class +
-		"maxIndex" + maxIndex + "maxIndex class" + maxIndex.class);
-		this.updateSelectionTimes;
-		this.changed(\selection, who);
-	}
-	*/
-
-	/*
-	updateSelectionTimes {
-		#selectedTimes, selectedMessages = timesMessages.copyRange(
-			minIndex, maxIndex
-		).flop;
-		selectedMinTime = selectedTimes.minItem;
-		selectedMaxTime = selectedTimes.maxItem;
-		this.updateSelectedDuration;
-	}
-	*/
 
 	updateSelectedDuration {
 		// selectedDuration = timeline.segmentDuration;
@@ -493,15 +461,10 @@ OscData {
 	stop { stream.stop; progressRoutine.stop; }
 
 	export {
-		// "WARNING: Cannot export as code yet. Exporting as messages".postln;
-		// 	this.exportMessages;
-		// "WARNING: Cannot export as code yet. Exported as messages".postln;
 		if (this.hasMessages) {
 			this.exportMessages;
 		}{
-			// "Cannot export as code yet. Exporting as messages".postln;
 			this.exportCode;
-			// "Cannot export as code yet. Exported as messages".postln;
 		}
 	}
 
@@ -536,8 +499,6 @@ OscData {
 			^this;
 		};
 		exportPath = this.codeExportPath;
-		// #t, m = timesMessages.flop;
-		// convertedTimesMessages = [t.differentiate, m].flop;
 
 		("exporting code to" + exportPath).ok;
 		postln("Exporting code to" + exportPath);
@@ -549,13 +510,7 @@ OscData {
 				f.write(format("//:--[%] ", time));
 				f.write(message.interpret[1]);
 			}
-			// unparsedEntries.size.postln;
-			// unparsedEntries.class.postln;
-			// unparsedEntries.first.postln;
 		});
-		// postln("now closing" + f);
-		// f.close;
-		// });
 		"Export done".postln;
 	}
 

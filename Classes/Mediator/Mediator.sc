@@ -36,7 +36,7 @@ Mediator : EnvironmentRedirect {
 		// events + playfuncs loaded from scd file specs.
 		envir[\play] = { argPlayFunc +> name };
 		argEvent !? {
-			argEvent keysValuesDo: { | key, val |  envir[key] = val; };
+			argEvent keysValuesDo: { | key, val | envir[key] = val; };
 		};
 		envir[\mediator] = name;
 		envir.play; // return self! to be able to stop or do other stuff
@@ -48,6 +48,13 @@ Mediator : EnvironmentRedirect {
 	stopSynths { | fadeTime = 0.1 | // stop both ar and kr/br (/bus) synths
 		envir do: { | s |
 			if (s isKindOf: Synth) { s release: fadeTime };
+		}
+	}
+
+	// free all synths
+	free {
+		envir do: { | s |
+			if (s isKindOf: Synth) { s.free };
 		}
 	}
 

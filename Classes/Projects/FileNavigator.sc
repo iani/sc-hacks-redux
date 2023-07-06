@@ -340,9 +340,9 @@ FileNavigator {
 	openInnerItem { // experimental: open in oscdata type gui
 		if (this.innerItem.isFolder) {
 			this.innerItem.postln;
-			"this is a folder".postln;
+			// "this is a folder".postln;
 		}{
-			"this is a file".postln;
+			// "this is a file".postln;
 			SnippetData([innerItem.fullPath]).gui;
 		}
 	}

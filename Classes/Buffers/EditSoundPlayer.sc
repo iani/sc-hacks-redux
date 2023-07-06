@@ -52,7 +52,7 @@ EditSoundPlayer {
 	var <>event; // event stores choices by user such as buffer,
 	// parameter settings like rate etc.
 
-	*new { | mediatorName = \soundeditor |
+	*new { | mediatorName = \s |
 		^Registry(this, mediatorName, { | name |
 			this.newCopyArgs(mediatorName.envir).init;
 		});
@@ -74,6 +74,12 @@ EditSoundPlayer {
 			event[\buf] = Buffer.all.first;
 		};
 		^event;
+	}
+
+	set { | ... args |
+		args.pairsDo({ | key, value |
+			event[key] = value;
+		})
 	}
 
 	getPlayfunc {
@@ -105,8 +111,29 @@ EditSoundPlayer {
 		^"~/sc-projects/EditSoundPlayfuncs".standardizePath;
 	}
 
-	play {
-		mediator.play(this.playfunc, this.event);
+	play { | argEvent |
+		mediator.play(this.playfunc, argEvent ? this.event);
 	}
 
+	gui {
+		this.vlayout(
+			this.soundView,
+			this.settingsView
+		)
+	}
+
+	soundView {
+
+	}
+
+	settingsView {
+		^HLayout(
+			StaticText().string_("rate"),
+			NumberBox(),
+			StaticText().string_("startpos"),
+			NumberBox(),
+			StaticText().string_("duration"),
+			NumberBox(),
+		)
+	}
 }

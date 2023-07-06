@@ -40,4 +40,6 @@ SnippetData : OscDataScore {
 	formatTimeIndex { | t, i |
 		^(t.asString + messages[timeline.segmentMin + i].split(Char.nl)[0][3..])
 	}
+
+	windowName { ^PathName(paths.first).fileNameWithoutExtension }
 }

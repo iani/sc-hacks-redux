@@ -132,6 +132,8 @@
 		^this.player(envir ? this).free;
 	}
 
+	free { Mediator.at(this).free; }
+
 	reset { | envir |
 		var player;
 		player = Mediator.at(envir ? this).at(this);

@@ -6,8 +6,9 @@ and comments in superclass UGenFunc.
 
 PlayBuf_ : UGenFunc {
 	*ar {
-		var buf;
+		var buf, env, trig;
 		buf = ~buf.buf;
+		env = Env([0, 1, 1, 0], [0.02, 0.98, 0.02]);
 		^PlayBuf.ar(
 			buf.numChannels,
 			buf,
@@ -18,8 +19,9 @@ PlayBuf_ : UGenFunc {
 			// 0,
 			\startpos.br((~startpos ? 0) * buf.sampleRate),
 			// 0,
-			\loop.br(~loop ? 0),
+			\loop.br(~loop ? 1),
 			Done.freeSelf
 		)
+		* DurEnv.kr(~dur ? buf.duration) * \vol.br(~vol ? 1);
 	}
 }

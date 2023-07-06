@@ -16,6 +16,7 @@ Also:
 */
 
 Timeline {
+	var oscData;
 	var <onsets, <durations;
 	var <totalDuration, <lastOnset;
 	var <>minIndex = 0, <>maxIndex;
@@ -23,8 +24,11 @@ Timeline {
 	var <segmentOnsets, <segmentDurations;
 	var <segmentTotalDur;
 
-	*fromOnsets { | onsets |
-		^this.newCopyArgs(onsets).makeDurations.init;
+	*new { | oscData | ^this.newCopyArgs(oscData); }
+
+	setOnsets { | argOnsets |
+		onsets = argOnsets;
+		^this.makeDurations.init;
 	}
 
 	makeDurations { // from onsets.
@@ -33,8 +37,10 @@ Timeline {
 		durations = onsets.differentiate.rotate(-1);
 	}
 
-	*fromDurations { | durations |
-		^this.newCopyArgs(([0] ++ durations).integrate.butLast, durations).init;
+	setDurations { | argDurations |
+		durations = argDurations;
+		onsets = ([0] ++ durations).integrate.butLast;
+		this.init;
 	}
 
 	init {
@@ -46,10 +52,13 @@ Timeline {
 		segmentOnsets = onsets;
 		segmentDurations = durations;
 		segmentTotalDur = totalDuration;
+		oscData.changed(\segment)
 	}
 
 	// Select subsegments
-	selectAll { this.indexSegment(0, durations.size - 1) }
+	selectAll { this.indexSegment(0, durations.size - 1);
+		oscData.changed(\segment)
+	}
 	indexSegment { | argMin, argMax |
 		segmentMin = argMin;
 		segmentMax = argMax;
