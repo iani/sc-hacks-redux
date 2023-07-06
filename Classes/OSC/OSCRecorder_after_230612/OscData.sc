@@ -211,6 +211,7 @@ OscData {
 				.selectionMode_(\contiguous)
 				.selectionAction_({ | me |
 					// "this is selection action".postln;
+					this.changed(\scrollItem, me.value);
 					// this.changed(\item, me.value);
 				})
 				// .enterKeyAction_({ | me |
@@ -220,9 +221,13 @@ OscData {
 				.keyDownAction_({ | me, key ... args |
 					case
 					{ key.ascii == 13 } {
+						if (me.selection.size > 1) {
 						timeline.indexSegment(
 							me.selection.minItem, me.selection.maxItem
-						) }
+						) }{
+							this.changed(\sendtoself, me.value);
+						}
+					}
 					{ key == $r } {
 						this.reread;
 					}
@@ -255,7 +260,7 @@ OscData {
 				.addNotifier(timeline, \segment, { | n, who |
 					n.listener.items = times.copyRange(
 						timeline.segmentMin, timeline.segmentMax
-					);
+					).collect({ | t, i | this.formatTimeIndex(t, i) });
 				}),
 				ListView() // messages
 				.palette_(QPalette.light
@@ -280,6 +285,9 @@ OscData {
 				})
 				.addNotifier(this, \item, { | n, index |
 					// postln("messages set to index:" + index);
+					n.listener.value = index;
+				})
+				.addNotifier(this, \scrollItem, { | n, index |
 					n.listener.value = index;
 				})
 				.addNotifier(this, \localrun, { | n, index |
@@ -321,9 +329,9 @@ OscData {
 				.action_({ | me |
 					this.cloneMessages;
 				}),
-				Button().states_([["Export"]])
+				Button().states_([["Edit"]])
 				.action_({ | me |
-					this.export;
+					paths do: Document.open(_);
 				})
 			),
 			Slider().orientation_(\horizontal)
@@ -334,6 +342,12 @@ OscData {
 		);
 		window.name = this.class.name;
 		{ this.selectAll; }.defer(0.1);
+	}
+
+	formatTimeIndex { | t, i |
+		^t.asString;
+		// m = messages[timeline.segmentMin + i];
+		// ^(t.asString + m.copyRange(m.indexOf($]) + 1, m.indexOf(Char.nl) - 1))
 	}
 
 	selectedTimesItems { ^selectedTimes } // OscDataScore adds durations!

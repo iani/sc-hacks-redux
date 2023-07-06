@@ -52,6 +52,11 @@ OscDataScore : OscData {
 		oscgroupsAddr.sendMsg('/code', string);
 	}
 
+	formatTimeIndex { | t, i | // include header comments
+		var m;
+		m = messages[timeline.segmentMin + i];
+		^(t.asString + m.copyRange(m.indexOf($]) + 1, m.indexOf(Char.nl) - 1))
+	}
 	/*
 	selectedTimesItems {
 		// "onset times are".postln;

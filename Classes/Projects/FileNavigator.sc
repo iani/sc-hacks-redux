@@ -136,10 +136,8 @@ FileNavigator {
 	}
 
 	gui {
-		this.load; // load last saved path from preferences
-		// this.recall; // do not go to last saved folder!
 		{ this.getOuterItems }.defer(0.1);
-		^this.vlayout(
+		this.vlayout(
 			HLayout(
 				Button()
 				.maxWidth_(50)
@@ -195,6 +193,11 @@ FileNavigator {
 			HLayout(
 				this.outerListView,
 				this.innerListView
+				// ListView()
+				// .items_((1..5))
+				// .selectionMode_(\contiguous)
+				// this.innerListView .selectionMode_(\contiguous)
+				// this.innerListView .selectionMode_(\contiguous)
 			)
 		).bounds_(Rect(0, 230, 350, 180))
 		.addNotifier(this, \innerItems, { | n |
@@ -202,8 +205,8 @@ FileNavigator {
 			p = currentRoot.asRelativePath(homeDir);
 			if (p.size == 0) { p = "./" };
 			n.listener.name = p;
-		})
-
+		});
+		{ this.load; }.defer(1.1); // load last saved path from preferences
 	}
 
 	outerListView {
@@ -212,6 +215,7 @@ FileNavigator {
 					.highlight_(Color(1.0, 0.9, 0.4))
 					.highlightText_(Color(0.0, 0.0, 1.0))
 		)
+		.enterKeyAction_({ this.openAllFiles; })
 		.addNotifier(this, \setOuterListAndIndex, { | n, list, outerIndex |
 			if (list.size == 0) {
 				"Outer list is empty. Cannot refresh.".postln;
@@ -245,6 +249,14 @@ FileNavigator {
 		.keyDownAction_(this.keyboardShortcutAction);
 	}
 
+	openAllFiles {
+		outerItem.postln;
+		"Testing".postln;
+		outerItem.files.postln;
+		outerItem.files do: { | p |
+			SnippetData([p.fullPath]).gui
+		};
+	}
 	outerIndex_ { | val |
 		outerIndex = val;
 		outerItem = this.outerList[outerIndex];
@@ -255,6 +267,17 @@ FileNavigator {
 		^(outerList ? []) collect: _.shortName;
 	}
 
+	innerListViewDebug {
+		^ListView()
+		.items_((1..5))
+		.selectionMode_(\contiguous)
+		.palette_(
+			QPalette.light
+			.highlight_(Color(0.4, 0.9, 1.0))
+			.highlightText_(Color(1.0, 0.0, 0.0))
+		)
+	}
+
 	innerListView {
 		^ListView()
 		.palette_(
@@ -262,6 +285,7 @@ FileNavigator {
 			.highlight_(Color(0.4, 0.9, 1.0))
 			.highlightText_(Color(1.0, 0.0, 0.0))
 		)
+		.selectionMode_(\contiguous) // does not work. Why?
 		.addNotifier(this, \innerItems, { | n |
 			// restore index overwritten by selectionAction!
 			var index;
@@ -278,6 +302,7 @@ FileNavigator {
 		.selectionAction_({ | me |
 			this.innerIndex = me.value;
 		})
+		.enterKeyAction_({ this.openInnerItem })
 		.keyDownAction_(this.keyboardShortcutAction);
 	}
 
