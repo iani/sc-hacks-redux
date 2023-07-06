@@ -30,10 +30,9 @@ OscData {
 	// var selectedDuration; // 13 no longer used
 	// var totalOnsetsDuration; // 14 no longer used
 
-	*currentDocumentGui {
-		Document.current.path.postln;
+	*new { | paths |
+		^this.newCopyArgs(paths).init;
 	}
-
 	cloneCode {
 		^this.class.newCopyArgs(paths, sourceStrings,
 			parsedEntries.copyRange(timeline.minIndex, timeline.maxIndex)
@@ -50,10 +49,6 @@ OscData {
 			unparsedEntries.copyRange(timeline.minIndex, timeline.maxIndex)
 			.select({ | e | e.interpret[0] != '/code' })
 		).convertTimesMessages; // .gui;
-	}
-
-	*new { | paths |
-		^this.newCopyArgs(paths).init;
 	}
 
 	init {
@@ -215,8 +210,13 @@ OscData {
 				.font_(Font("Monaco", 12))
 				.selectionMode_(\contiguous)
 				.selectionAction_({ | me |
-					this.changed(\item, me.value);
+					// "this is selection action".postln;
+					// this.changed(\item, me.value);
 				})
+				// .enterKeyAction_({ | me |
+				// 	postln("enter key. value is" + me.value + "item is" + me.item);
+				// 	messages[me.value].postln;
+				// })
 				.keyDownAction_({ | me, key ... args |
 					case
 					{ key.ascii == 13 } {
@@ -232,7 +232,20 @@ OscData {
 					{ key == $. } {
 						Mediator.stopSynths;
 					}
+					{ key == $j } {
+						this.changed(\item, me.value + 1 min: (me.items.size - 1));
+					}
+					{ key == $k } {
+						this.changed(\item, me.value - 1 max: 0);
+					}
+					{ key == $l } {
+						this.changed(\localrun, me.value);
+					}
+					{ key == $s } {
+						this.changed(\sendtoself, me.value);
+					}
 					{ true } {
+						// key.ascii.postln;
 						me.defaultKeyDownAction(me, key, *args);
 					}
 				})
@@ -268,6 +281,18 @@ OscData {
 				.addNotifier(this, \item, { | n, index |
 					// postln("messages set to index:" + index);
 					n.listener.value = index;
+				})
+				.addNotifier(this, \localrun, { | n, index |
+					// postln("messages set to index:" + index);
+					n.listener.value = index;
+					"Local run not implemented. Try send to self".postln;
+					// n.listener.item.postln;
+					// n.listener.item.class.postln;
+				})
+				.addNotifier(this, \sendtoself, { | n, index |
+					// postln("messages set to index:" + index);
+					n.listener.value = index;
+					LocalAddr().sendMsg(*n.listener.item.interpret);
 				})
 			),
 			HLayout(

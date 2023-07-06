@@ -306,8 +306,19 @@ FileNavigator {
 				$<, { this.zoomOut; },
 				$^, { this.zoomOut; },
 				$?, { this.help; },
+				$x, { this.openInnerItem },
 				me.defaultKeyDownAction(char, modifiers, unicode, keycode, key);
 			)
+		}
+	}
+
+	openInnerItem { // experimental: open in oscdata type gui
+		if (this.innerItem.isFolder) {
+			this.innerItem.postln;
+			"this is a folder".postln;
+		}{
+			"this is a file".postln;
+			SnippetData([innerItem.fullPath]).gui;
 		}
 	}
 	saveBookmark { this.save }
