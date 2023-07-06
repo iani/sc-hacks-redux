@@ -20,6 +20,21 @@
 		Interpreter.changed(\code, this);
 		^this.interpret;
 	}
+
+	ok {
+		var window;
+		window = this.vlayout(
+			StaticText()
+			.background_(Color(0.9, 1.0, 1.0))
+			.font_(Font("Arial", 24))
+			.string_(this),
+			Button()
+			.states_([["OK"]])
+			.font_(Font("Arial", 24))
+			.action_({ window.close })
+		);
+		window.bounds = Rect(400, 300, 500, 500);
+	}
 }
 
 /*

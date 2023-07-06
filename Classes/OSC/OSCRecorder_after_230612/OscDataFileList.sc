@@ -18,8 +18,26 @@ OscDataFileList {
 			HLayout(
 				Button().states_([["add filelist"]])
 				.action_({ this.addListFromUser }),
-				Button().states_([["edit"]]).action_({ this.changed(\editSelection) }),
-				Button().states_([["browse"]]).action_({ this.changed(\viewSelection) })
+				Button().states_([["edit"]])
+				.action_({ this.changed(\editSelection) }),
+				Button()
+				.maxWidth_(50)
+				.canFocus_(false)
+				.states_([["browse", Color.blue, Color.white]])
+				.action_({ Menu(
+					MenuAction("code", { this.changed(\cloneCode) }),
+					MenuAction("messages", { this.changed(\cloneMessages) }),
+					MenuAction("all", { this.changed(\viewSelection) }),
+				).front }),
+				Button()
+				.maxWidth_(50)
+				.canFocus_(false)
+				.states_([["export", Color.red, Color.white]])
+				.action_({ Menu(
+					MenuAction("code", { this.changed(\exportCode) }),
+					MenuAction("messages", { this.changed(\exportMessages) }),
+					MenuAction("all", { this.changed(\exportSelection) }),
+				).front })
 			),
 			HLayout(
 				ListView() // List of lists
@@ -30,7 +48,7 @@ OscDataFileList {
 				.addNotifier(fileListHistory, \history, { | n |
 					n.listener.items = fileListHistory.lists collect: _.asString;
 					selectedList = fileListHistory.lists.first;
-					this.changed(\selectedList);
+	 				this.changed(\selectedList);
 				})
 				.action_({ | me |
 					selectedList = fileListHistory.lists[me.value];
@@ -116,18 +134,32 @@ OscDataFileList {
 					};
 				})
 				.addNotifier(this, \viewSelection, { | n |
-					// OscData(selectedList.paths[n.listener.selection]).gui;
 					this.makeOscDataGui(selectedList.paths[n.listener.selection]);
 				})
 				.addNotifier(this, \editSelection, { | n |
 					selectedList.paths[n.listener.selection] do: Document.open(_);
+				})
+				.addNotifier(this, \cloneCode, { | n |
+					this.cloneCode(selectedList.paths[n.listener.selection]).gui;
+				})
+				.addNotifier(this, \cloneMessages, { | n |
+					this.cloneMessages(selectedList.paths[n.listener.selection]).gui;
+				})
+				.addNotifier(this, \exportCode, { | n |
+					this.cloneCode(selectedList.paths[n.listener.selection]).export;
+				})
+				.addNotifier(this, \exportMessages, { | n |
+					this.cloneMessages(selectedList.paths[n.listener.selection]).export;
+				})
+				.addNotifier(this, \exportSelection, { | n |
+					this.parsePaths(selectedList.paths[n.listener.selection]).export;
 				})
 			)
 		);
 		{ fileListHistory.changed(\history) }.defer(0.1);
 	}
 
-	*makeOscDataGui { | paths |
+	*parsePaths { | paths |
 		// decide whether to use OscData or OscDataScore,
 		// based on the header of the first file.
 		var isCode;
@@ -147,12 +179,18 @@ OscDataFileList {
 		});
 		if (isCode) {
 			// paths.postln;
-			OscDataScore(paths).gui(paths);
+			^OscDataScore(paths);
 		}{
-			OscData(paths).gui(paths);
+			^OscData(paths);
 		}
-
 	}
+
+	*makeOscDataGui { | paths | this.parsePaths(paths).gui; }
+	*cloneCode { | paths | ^this.parsePaths(paths).cloneCode; }
+	*cloneMessages { | paths | ^this.parsePaths(paths).cloneMessages; }
+	*exportCode { | paths | this.parsePaths(paths).exportCode; }
+	*exportMessages { | paths | this.parsePaths(paths).cloneMessages; }
+	*exportSelection { | paths | this.parsePaths(paths).export; }
 
 	*addListFromUser {
 		this.fileListHistory.addListFromUser;
@@ -189,5 +227,4 @@ OscDataFileList {
 			this.readFileListHistory;
 		})
 	}
-
 }

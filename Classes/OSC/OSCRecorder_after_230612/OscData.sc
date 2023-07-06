@@ -40,7 +40,7 @@ OscData {
 			.select({ | e | e[1].interpret[0] == '/code' }),
 			unparsedEntries.copyRange(timeline.minIndex, timeline.maxIndex)
 			.select({ | e | e.interpret[0] == '/code' })
-		).convertTimesMessages.gui;
+		).convertTimesMessages;
 	}
 
 	cloneMessages {
@@ -49,7 +49,7 @@ OscData {
 			.select({ | e | e[1].interpret[0] != '/code' }),
 			unparsedEntries.copyRange(timeline.minIndex, timeline.maxIndex)
 			.select({ | e | e.interpret[0] != '/code' })
-		).convertTimesMessages.gui; // .gui;
+		).convertTimesMessages; // .gui;
 	}
 
 	*new { | paths |
@@ -78,13 +78,15 @@ OscData {
 		// Collect interpreted time and message from each message.
 		parsedEntries = [];
 		[sourceStrings, paths].flop do: this.parseString(_);
-		postln("Parsed " + parsedEntries.size + "entries");
+		postln("\nParsed " + parsedEntries.size + "entries");
 		this.convertTimesMessages;
 	}
 
 	convertTimesMessages {
 		if (parsedEntries.size == 0) {
-			Error("Found no entries. cannot clone empty data.").throw;
+			"Found no entries. cannot clone empty data.".ok;
+			"Found no entries. cannot clone empty data.".postln;
+			^this;
 		};
 		#times, messages = parsedEntries.flop;
 		this.makeTimeline(times);
@@ -126,7 +128,7 @@ OscData {
  			];
 			unparsedEntries = unparsedEntries add: entry;
 		};
-		post(" . ");
+		post(".");
 	}
 
 	checkFileType { | string, path |
@@ -135,17 +137,12 @@ OscData {
 		};
 	}
 
-	guiTested {
-		"Will make gui later".postln;
-		postln("onsets" + timeline.onsets);
-		postln("durations" + timeline.durations);
-		postln("timeline duration" + timeline.duration);
-		postln("timeline maxIndex" + timeline.maxIndex);
-
-	}
-
-	gui { | paths |
+	gui {
 		var window;
+		if (parsedEntries.size == 0) {
+			"Cannot open a gui for OscData without entries".ok;
+			^this;
+		};
 		window = this.br_(850, 500).vlayout(
 			RangeSlider() // select a range of times
 			.orientation_(\horizontal)
@@ -232,6 +229,9 @@ OscData {
 					{ key == $a } {
 						timeline.selectAll;
 					}
+					{ key == $. } {
+						Mediator.stopSynths;
+					}
 					{ true } {
 						me.defaultKeyDownAction(me, key, *args);
 					}
@@ -251,7 +251,15 @@ OscData {
 				)
 				.font_(Font("Monaco", 12))
 				.enterKeyAction_({ | me | this.sendItemAsOsc(me.item); })
-				// .keyDownAction
+				.keyDownAction_({ | me, key ... args |
+					case
+					{ key == $. } {
+						Mediator.stopSynths;
+					}
+					{ true } {
+						me.defaultKeyDownAction(me, key, *args);
+					}
+				})
 				.addNotifier(timeline, \segment, { | n, who |
 						n.listener.items = messages.copyRange(
 						timeline.segmentMin, timeline.segmentMax
@@ -299,7 +307,7 @@ OscData {
 				n.listener.value = p;
 			})
 		);
-		if (paths.size == 1) { window.name = paths[0]; };
+		window.name = this.class.name;
 		{ this.selectAll; }.defer(0.1);
 	}
 
@@ -391,12 +399,15 @@ OscData {
 	}
 	makeStream {
 		stream = ( // convert times to dt
+			onsets: timeline.segmentOnsets.pseq,
 			dur: timeline.segmentDurations.pseq,
 			message: messages.copyRange(timeline.minIndex, timeline.maxIndex).pseq(1),
 			play: this.makePlayFunc; // OscDataScore customizes this
 		).asEventStream;
 		this.addNotifier(stream, \stopped, { this.changed(\playing, false) });
 		this.addNotifier(stream, \started, { this.changed(\playing, true) });
+		// track progress both from onsets and progress routine
+		// If onsets are too far apart, then progressRoutine is useful
 		this.makeProgressRoutine;
 	}
 
@@ -411,6 +422,7 @@ OscData {
 			// postln("message class" + ~message.class + "message:" + ~message);
 			localaddr.sendMsg(*msg);
 			oscgroupsaddr.sendMsg(*msg);
+			this.changed(\progress, ~onsets / timeline.segmentTotalDur);
 		}
 	}
 
@@ -419,6 +431,7 @@ OscData {
 	start {
 		if (this.isPlaying) { ^postln("Oscdata is already playing") };
 		stream ?? { this.makeStream };
+		//: TODO: advance progress to next message when restarting!
 		stream.start;
 		progressRoutine.start;
 	}
@@ -428,10 +441,10 @@ OscData {
 		progressRoutine.stop;
 		streamduration = timeline.segmentTotalDur;
 		// streams of duration < 1 sec will not display properly;
-		dt = streamduration / 100 max: 0.01;
+		dt = streamduration / 1000 max: 0.01;
 		progressRoutine = (
 			dur: dt,
-			progress: (1..100).normalize.pseq(1),
+			progress: (1..1000).normalize.pseq(1),
 			play: { this.changed(\progress, ~progress) }
 		).asEventStream;
 		this.changed(\progress, 0);
@@ -454,7 +467,13 @@ OscData {
 
 	exportMessages {
 		var exportPath;
+		if (parsedEntries.size == 0) {
+			"Found no entries. cannot export empty data.".ok;
+			"Found no entries. cannot export empty data.".postln;
+			^this;
+		};
 		exportPath = this.messageExportPath;
+		("exporting messages to" + exportPath).ok;
 		postln("exporting messages to" + exportPath);
 		File.use(this.messageExportPath, "w", { | f |
 			timesMessages do: { | tm |
@@ -471,9 +490,16 @@ OscData {
 
 	exportCode {
 		var exportPath, convertedTimesMessages, t, m;
+		if (parsedEntries.size == 0) {
+			"Found no entries. cannot export empty data.".ok;
+			"Found no entries. cannot export empty data.".postln;
+			^this;
+		};
 		exportPath = this.codeExportPath;
 		// #t, m = timesMessages.flop;
 		// convertedTimesMessages = [t.differentiate, m].flop;
+
+		("exporting code to" + exportPath).ok;
 		postln("Exporting code to" + exportPath);
 		File.use(this.codeExportPath, "w", { | f |
 			f.write("//code\n");
@@ -509,7 +535,7 @@ OscData {
 	}
 
 	isCodeMessage { | s |
-		^s[2..8] == "'/code'"
+		^s.interpret[0] == '/code'
 	}
 
 	debug {
