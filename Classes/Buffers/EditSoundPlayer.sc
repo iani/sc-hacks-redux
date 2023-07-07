@@ -111,8 +111,10 @@ EditSoundPlayer {
 		^"~/sc-projects/EditSoundPlayfuncs".standardizePath;
 	}
 
+	cplay { | argEvent | this.clear.play(argEvent) }
+	clear { mediator.clear }
 	play { | argEvent |
-		mediator.play(this.playfunc, argEvent ? this.event);
+		mediator.play(this.playfunc, argEvent);
 	}
 
 	gui {

@@ -17,7 +17,7 @@ Mediator : EnvironmentRedirect {
 
 	*new { | name, envir |
 		^this.newCopyArgs( // experimental: Use Event instead of Environment
-				envir ?? { Event.new(32, Event.new, this.global) },
+				envir ?? { this.makeEnvir },
 				nil, name
 			).dispatch = MediatorHandler();
 	}
@@ -40,8 +40,17 @@ Mediator : EnvironmentRedirect {
 		};
 		envir[\mediator] = name;
 		envir.play; // return self! to be able to stop or do other stuff
+		this.push;
 	}
 
+	clear {
+		this.free;
+		this.freeBusses;
+		this.makeEnvir;
+	}
+
+	makeEnvir { ^envir = this.class.makeEnvir }
+	*makeEnvir { ^Event.new(32, Event.new, this.global)  }
 	*stopSynths {
 		this.all do: _.stopSynths;
 	}
@@ -56,6 +65,12 @@ Mediator : EnvironmentRedirect {
 		envir do: { | s |
 			if (s isKindOf: Synth) { s.free };
 		}
+	}
+
+	fb { this.freeBusses }
+	freeBusses {
+		busses do: _.free;
+		this.makeBusDict;
 	}
 
 	playPrototypeBroken { | argPlayFunc, argEvent |
@@ -123,7 +138,8 @@ Mediator : EnvironmentRedirect {
 		^this.wrap(func, envirName, true);// use: func;
 	}
 
-	busses { ^busses ?? { busses = IdentityDictionary() } }
+	busses { ^busses ?? { this.makeBusDict } }
+	makeBusDict { ^busses = IdentityDictionary(); }
 
 	playerGui { // TODO: IMPLEMENT THIS.
 		/* List with all players.

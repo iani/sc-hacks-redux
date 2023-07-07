@@ -49,8 +49,12 @@
 	b { ^this.buffer; }
 	buf { ^this.buffer; }
 	numChannels { ^this.buffer.numChannels }
-	// play buffer
-	pb { | target, outbus = 0, player, envir, params |
+	// play buffer (20230708 version)
+	** { | event, mediatorname |
+		EditSoundPlayer(mediatorname ? \s).play(event[\buf] = this);
+	}
+	// play buffer (2022 version)
+ 	pb { | target, outbus = 0, player, envir, params |
 		this.playbuf(params ? (), player, envir, target, outbus);
 	}
 

@@ -10,6 +10,7 @@ List all buffers
 	}
 	*/
 	*addBuffer { | key = \buffer, buffer |  this.dict.put(key, buffer) }
+	*first { ^this.all.first }
 	*all {
 		var bufferDict;
 		bufferDict = this.dict;

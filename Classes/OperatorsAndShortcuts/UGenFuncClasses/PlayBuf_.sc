@@ -7,7 +7,7 @@ and comments in superclass UGenFunc.
 PlayBuf_ : UGenFunc {
 	*ar {
 		var buf, env, trig;
-		buf = ~buf.buf;
+		buf = (~buf ?? { Buffer.first }).buf;
 		env = Env([0, 1, 1, 0], [0.02, 0.98, 0.02]);
 		^PlayBuf.ar(
 			buf.numChannels,
