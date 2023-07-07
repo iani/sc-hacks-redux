@@ -45,12 +45,25 @@ These elements are:
 EditSoundPlayer {
 	classvar <>mediatorName = \soundEditor;
 	classvar <playfuncs; // dictionary of playfunc names -> playfuncs
+	classvar <>defaultPlayFunc;
 	// classvar <buffers; // dictionary of buffer names -> buffers
 	// User Buffer.dict to build your menu!
 	var <mediator; // static. do not change this one.
-	var <>playfunc; // dynamic. Edited by choice from user ...
+	// var <>playfunc; // play function (!) selected via name key from
+	// playfuncts loaded from file at
+	// "~/sc-projects/EditSoundPlayfuncs" or other specified path
+	// The name is stored in event playfunc
 	var <>event; // event stores choices by user such as buffer,
 	// parameter settings like rate etc.
+
+	*getPlayFunc { | pfuncname |
+		this.loadIfNeeded;
+		if (pfuncname.isNil) {
+			^defaultPlayFunc;
+		}{
+			^playfuncs[pfuncname] ? defaultPlayFunc;
+		}
+	}
 
 	*new { | mediatorName = \s |
 		^Registry(this, mediatorName, { | name |
@@ -59,32 +72,38 @@ EditSoundPlayer {
 	}
 
 	init {
-		this.loadIfNeeded;
-		this.getPlayfunc;
-		this.getEvent;
+		this.class.loadIfNeeded;
+		this.initEvent;
+		// this.initPlayfunc;
 	}
 
-	loadIfNeeded {
-		playfuncs ?? { this.class.load };
+	*loadIfNeeded {
+		playfuncs ?? {
+			this.load;
+			defaultPlayFunc = { PlayBuf_.ar() };
+		};
 	}
 
-	getEvent {
+	initEvent {
 		event ?? {
 			event = ();
 			event[\buf] = Buffer.all.first;
+			event[\playfunc] = \playbuf;
 		};
 		^event;
 	}
 
+	/* // USE EVENT ARGUMENT in play INSTEAD OF this.
 	set { | ... args |
 		args.pairsDo({ | key, value |
 			event[key] = value;
 		})
 	}
 
-	getPlayfunc {
-		^playfunc ?? { playfunc = playfuncs[\playbuf] }
+	initPlayfunc {
+		playfunc = playfuncs[event[\playfunc] ? \playbuf]
 	}
+	*/
 
 	*load {
 		PathPreferences.doWithPathFor(
@@ -96,12 +115,12 @@ EditSoundPlayer {
 	}
 
 	*loadFromPath { | path |
-		path.postln;
-		PathName(path).files.postln;
+		// path.postln;
+		// PathName(path).files.postln;
 		playfuncs = IdentityDictionary();
 		PathName(path).files do: { | pn |
-			pn.postln;
-			pn.fullPath.load.postln;
+			// pn.postln;
+			pn.fullPath.load; // .postln;
 			playfuncs[pn.fileNameWithoutExtension.asSymbol] =
 			pn.fullPath.load;
 		}
@@ -114,7 +133,11 @@ EditSoundPlayer {
 	cplay { | argEvent | this.clear.play(argEvent) }
 	clear { mediator.clear }
 	play { | argEvent |
-		mediator.play(this.playfunc, argEvent);
+		mediator.play(argEvent);
+	}
+
+	makePlayfunc {
+
 	}
 
 	gui {

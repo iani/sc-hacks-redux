@@ -30,8 +30,8 @@ PathPreferences {
 			thePath = class.defaultPath;
 			this.savePathFor(class, thePath);
 		};
-		thePath.postln;
-		File.exists(thePath).postln;
+		// thePath.postln;
+		// File.exists(thePath).postln;
 		if (File exists: thePath) {
 			action.(thePath)
 		}{
