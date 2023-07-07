@@ -107,10 +107,10 @@ Simplenumber @> \symbol // set bus to number
 + Function {
 	@> { | bus, player | // play as kr function in bus (or player) name
 		player ?? { player = currentEnvironment.name };
-		// postln("debugging @>. bus" + bus + "player" + player);
+		// postln("debugging function @>. bus is:" + bus + "player is" + player);
+		// postln("prev synth is:" + player.envir[bus]);
 		{
 			Out.kr(bus.bus(nil, player), this.value.kdsr);
-			// A2K.kr(Silent.ar).kdsr;
 		}.playInEnvir(bus, player); // do not push envir !!!
 	}
 }
@@ -154,9 +154,15 @@ Simplenumber @> \symbol // set bus to number
 	@> { | bus, playerEnvir = \sensors | // set bus value
 		// works with new AND already existing busses.
 		// Stop processes playing in this bus before setting a new value:
-		bus.freePlayer(playerEnvir, {
-			bus.bus(nil, playerEnvir ? currentEnvironment.name).set(this);
-		});
+		// postln("must free bus synth for bus" + bus + "in envir" + playerEnvir);
+		// postln("the player is" + playerEnvir.envir[bus]);
+		// Fri  7 Jul 2023 15:55 : make sure to stop synth here
+		playerEnvir.envir[bus].free;
+		bus.bus(nil, playerEnvir ? currentEnvironment.name).set(this);
+
+		// bus.freePlayer(playerEnvir, { // Fri  7 Jul 2023 15:56 - this is obsolete now
+			// bus.bus(nil, playerEnvir ? currentEnvironment.name).set(this);
+		// });
 	}
 }
 

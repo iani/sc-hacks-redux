@@ -33,6 +33,8 @@
 		envir = envir ? player; // play in own envir, holding own busses
 		Mediator.wrap({
 			if (Server.default.serverRunning) {
+				// postln("playinEnvir envir:" + currentEnvironment);
+				// postln("playInenvir player:" + player);
 				currentEnvironment.addSynth(player, synth = this.play(
 					target, outbus,
 					player: player, envir: envir,

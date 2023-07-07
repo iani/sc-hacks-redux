@@ -34,8 +34,12 @@ Mediator : EnvironmentRedirect {
 		// used by SoundFileEvents, SoundFileEvent for playing
 		// events + playfuncs loaded from scd file specs.
 		var playfunc;
-		argEvent !? {
-			argEvent keysValuesDo: { | key, val | envir[key] = val; };
+		argEvent !? {// TODO: stop synths when replacing keys
+			// fix for non-releasable control rate funcs:
+			argEvent keysValuesDo: { | key, val |
+				envir[key].free;
+				envir[key] = val;
+			};
 		};
 		playfunc = EditSoundPlayer.getPlayFunc(envir[\playfunc]);
 		envir[\play] = { playfunc +> name };
@@ -183,6 +187,7 @@ Mediator : EnvironmentRedirect {
 	}
 
 	addSynth { | key, synth |
+		// postln("Mediator add synth, playing?" + this[key]);
 		this[key] = synth;
 		synth.addNotifier(this, \target, { | n, target |
 			// "my target has changed".postln;

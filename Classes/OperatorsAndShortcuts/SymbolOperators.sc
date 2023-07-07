@@ -144,6 +144,7 @@
 
 	freePlayer { | envir, followUpFunc |
 		// immediately free. Needed when setting bus to a number
+		// Fri  7 Jul 2023 15:47 - replacing this with code in SimpleNumber:@>
 		var player;
 		envir = Mediator.at(envir ?? { currentEnvironment.name });
 		// postln("envir is:" + envir);
