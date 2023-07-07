@@ -2,11 +2,11 @@
 tested
 */
 
-MagAbove_ : UGenFunc {
+MagBelow_ : UGenFunc {
 	*ar { | in |
 		var chain;
 		chain = FFT(LocalBuf(2048), in);
-		chain = PV_MagAbove(chain, \thresh.br(1));
+		chain = PV_MagBelow(chain, \thresh.br(100));
 		^IFFT(chain);
 	}
 }

@@ -29,6 +29,14 @@ Mediator : EnvironmentRedirect {
 		envir[\mediator] = name;
 	}
 
+	pf { | playfunc |
+		// test playing with custom funcs
+		envir[\play] = { playfunc +> name };
+		envir[\mediator] = name;
+		this.push;
+		envir.play; // return self! to be able to stop or do other stuff
+	}
+
 	play { | argEvent |
 		// play within own event as environment, and setting the player.
 		// used by SoundFileEvents, SoundFileEvent for playing

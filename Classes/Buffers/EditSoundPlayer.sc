@@ -123,6 +123,7 @@ EditSoundPlayer {
 			pn.fullPath.load; // .postln;
 			playfuncs[pn.fileNameWithoutExtension.asSymbol] =
 			pn.fullPath.load;
+
 		}
 	}
 
