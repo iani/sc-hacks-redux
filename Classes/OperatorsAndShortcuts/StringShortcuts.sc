@@ -3,6 +3,9 @@
 */
 
 + String {
+	removeFirstLine {
+		^this[this.indexOf(Char.nl)..]
+	}
 	sepcatList { arg separator = "", list;
 		// concatenate this with a list as a string
 		var string = this.copy;

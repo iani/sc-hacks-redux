@@ -14,7 +14,7 @@ Asc to confirm before evaluating a function.
 				Button().states_([[ok]])
 				.action_({
 					// "I will really do this".postln;
-					this.value;
+					this.(window);
 					window.close;
 				}),
 				Button().states_([["CANCEL"]])

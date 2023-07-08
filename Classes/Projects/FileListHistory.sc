@@ -9,7 +9,7 @@ FileListHistory {
 	// working sessions.
 	// THe list can only hold up to maxitems FileLists.
 	// When this size limit is reached, adding a new FileList
-	// will result in the oldest filelist in the list to be disarded.
+	// will discard the oldest filelist in the list.
 	var <path; // path where I save myself
 	var <maxitems = 100; // maximum number of items permitted
 	var <lists;

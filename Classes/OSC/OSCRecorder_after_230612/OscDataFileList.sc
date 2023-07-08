@@ -20,6 +20,7 @@ OscDataFileList {
 				.action_({ this.addListFromUser }),
 				Button().states_([["edit"]])
 				.action_({ this.changed(\editSelection) }),
+				Button().states_([["rename"]]).action_({ this.rename }),
 				Button()
 				.maxWidth_(50)
 				.canFocus_(false)
@@ -41,6 +42,7 @@ OscDataFileList {
 			),
 			HLayout(
 				ListView() // List of lists
+				.minWidth_(250)
 				.palette_(QPalette.light
 					.highlight_(Color(1.0, 0.9, 0.7))
 					.highlightText_(Color(0.0, 0.0, 0.0))
@@ -55,22 +57,17 @@ OscDataFileList {
 					fileListHistory.changed(\fileList, me.value);
 					this.changed(\selectedList);
 				})
+				.enterKeyAction_({ this.browseList })
 				.keyDownAction_({ | me, char ... args |
 					case
 					{ char == 127.asAscii } {
 							{ fileListHistory removeAt: me.value; }
 							.confirm("Do you really want to delete" + me.item + "?")
 					}
-					{ char == $r } {
-						{ | name |
-							fileListHistory.lists[me.value].name = name;
-							fileListHistory.save;
-							this.changed(\mainList);
-						}.inputText(
-							fileListHistory.lists[me.value].name,
-							"Enter a new name for " + me.item
-						)
-					}
+					{ char == $r } { this.rename; }
+					{ char == $m } { this.exportListMessages; }
+					{ char == $c } { this.exportListCode; }
+					{ char == $a } { this.exportListAll; }
 					{ true }{ me.keyDownAction(me, char, *args)};
 				})
 				.addNotifier(this, \mainList, { | n |
@@ -159,37 +156,68 @@ OscDataFileList {
 		{ fileListHistory.changed(\history) }.defer(0.1);
 	}
 
+	*browseList {
+		// selectedList.postln;
+		// selectedList.paths.postln;
+		this.parsePaths(selectedList.paths).gui(selectedList.name);
+	}
+
+	*exportListCode {
+		{ | window |
+			window !? { window.close };
+			this.exportCode(selectedList.paths);
+		}.confirm("Export code for " + selectedList.name + "?")
+	}
+
+	*exportListMessages {
+		{ | window |
+			window !? { window.close };
+			this.exportMessages(selectedList.paths);
+		}.confirm("Export messages for " + selectedList.name + "?")
+	}
+
+	*exportListAll {
+		{ | window |
+			window !? { window.close };
+			this.exportSelection(selectedList.paths);
+		}.confirm("Export all for" + selectedList.name + "?")
+	}
+
+	*rename {
+		{ | name |
+			selectedList.name = name;
+			fileListHistory.save;
+			this.changed(\mainList);
+		}.inputText(
+			selectedList.name,
+			"Enter a new name for " + selectedList
+		)
+	}
 	*parsePaths { | paths |
 		// decide whether to use OscData or OscDataScore,
 		// based on the header of the first file.
 		var isCode;
 		File.use(paths.first,"r", { | f |
 			var h;
-			// f.postln;
 			h = f.getLine(1024); // .postln;
 			if (h == "//code") {
-				//	OscDataScore(paths).gui;
-				// "THIS IS CODE".postln;
 				isCode = true;
 			}{
-				// OscData(paths).gui;
-				// "THIS IS MESSSAGES".postln;
 				isCode = false;
 			};
 		});
 		if (isCode) {
-			// paths.postln;
 			^OscDataScore(paths);
 		}{
 			^OscData(paths);
 		}
 	}
 
-	*makeOscDataGui { | paths | this.parsePaths(paths).gui; }
+	*makeOscDataGui { | paths, name | this.parsePaths(paths).gui(name); }
 	*cloneCode { | paths | ^this.parsePaths(paths).cloneCode; }
 	*cloneMessages { | paths | ^this.parsePaths(paths).cloneMessages; }
-	*exportCode { | paths | this.parsePaths(paths).exportCode; }
-	*exportMessages { | paths | this.parsePaths(paths).cloneMessages; }
+	*exportCode { | paths | this.parsePaths(paths).cloneCode.exportCode; }
+	*exportMessages { | paths | this.parsePaths(paths).cloneMessages.export; }
 	*exportSelection { | paths | this.parsePaths(paths).export; }
 
 	*addListFromUser {

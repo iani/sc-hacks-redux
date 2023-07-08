@@ -21,7 +21,7 @@ OscData {
 	var <selectedMaxTime = 0; // 2 section selected
 	var <timesMessages; // 3,
 	var <selectedTimes; // 4
-	var <selectedMessages; // 5
+	// var <selectedMessages; // 5 is method!
 	var <stream; // 6
 	var <progressRoutine; // 7
 	var <minIndex;  // 8
@@ -134,7 +134,7 @@ OscData {
 		};
 	}
 
-	gui {
+	gui { | argName |
 		var window;
 		if (parsedEntries.size == 0) {
 			"Cannot open a gui for OscData without entries".ok;
@@ -212,21 +212,15 @@ OscData {
 				.font_(Font("Monaco", 12))
 				.selectionMode_(\contiguous)
 				.selectionAction_({ | me |
-					// "this is selection action".postln;
 					this.changed(\scrollItem, me.value);
-					// this.changed(\item, me.value);
 				})
-				// .enterKeyAction_({ | me |
-				// 	postln("enter key. value is" + me.value + "item is" + me.item);
-				// 	messages[me.value].postln;
-				// })
 				.keyDownAction_({ | me, key ... args |
 					case
 					{ key.ascii == 13 } {
 						if (me.selection.size > 1) {
-						timeline.indexSegment(
-							me.selection.minItem, me.selection.maxItem
-						) }{
+							timeline.indexSegment(me.selection.minItem, me.selection.maxItem);
+							this.changed(\segment)
+						}{
 							this.changed(\sendtoself, me.value);
 						}
 					}
@@ -252,7 +246,6 @@ OscData {
 						this.changed(\sendtoself, me.value);
 					}
 					{ true } {
-						// key.ascii.postln;
 						me.defaultKeyDownAction(me, key, *args);
 					}
 				})
@@ -342,11 +335,11 @@ OscData {
 				n.listener.value = p;
 			})
 		);
-		window.name = this.windowName;
+		window.name = this.windowName(argName);
 		{ this.selectAll; }.defer(0.1);
 	}
 
-	windowName { ^this.class.name }
+	windowName { | argName | ^argName ? this.class.name }
 
 	formatTimeIndex { | t, i |
 		^t.asString;
@@ -391,7 +384,6 @@ OscData {
 	}
 
 	selectAll { timeline.selectAll; }
-
 
 	updateSelectedDuration {
 		// selectedDuration = timeline.segmentDuration;
@@ -476,15 +468,15 @@ OscData {
 			^this;
 		};
 		exportPath = this.messageExportPath;
-		("exporting messages to" + exportPath).ok;
+		// ("exporting messages to" + exportPath).ok;
 		postln("exporting messages to" + exportPath);
 		File.use(this.messageExportPath, "w", { | f |
-			timesMessages do: { | tm |
+			[timeline.segmentOnsets, this.selectedMessages].flop do: { | tm |
 				f.write(
 					"\n//:--[" ++
 					tm[0].asString ++
-					"]\n" ++
-					tm[1]
+					"]" ++
+					tm[1].removeFirstLine
 				)
 			}
 		});
@@ -500,11 +492,15 @@ OscData {
 		};
 		exportPath = this.codeExportPath;
 
-		("exporting code to" + exportPath).ok;
+		// ("exporting code to" + exportPath).ok;
 		postln("Exporting code to" + exportPath);
+		// postln("segmentOnsets" + timeline.segmentOnsets);
+		// postln("segmentDurations" + timeline.segmentDurations);
+		// postln("selectedMessages" + this.selectedMessages);
 		File.use(this.codeExportPath, "w", { | f |
 			f.write("//code\n");
-			 [selectedTimes.rotate(-1).differentiate.max(0), selectedMessages].flop do: { | e |
+			[timeline.segmentOnsets.rotate(-1).differentiate.max(0),
+				this.selectedMessages].flop do: { | e |
 				var time, message;
 				#time, message = e;
 				f.write(format("//:--[%] ", time));
@@ -514,6 +510,9 @@ OscData {
 		"Export done".postln;
 	}
 
+	selectedMessages {
+		^messages.copyRange(timeline.segmentMin, timeline.segmentMax);
+	}
 
 	messageExportPath { ^this.exportPath("oscmessages") }
 
@@ -534,8 +533,6 @@ OscData {
 	}
 
 	debug {
-		parsedEntries.first[1].class.postln;
-		parsedEntries.first[1].interpret[1].postln;
-		messages.first.interpret[1].postln;
+		this.selectedMessages.postln;
 	}
 }

@@ -53,6 +53,12 @@
 	** { | event, mediatorname |
 		EditSoundPlayer(mediatorname ? \s).play(event[\buf] = this);
 	}
+	// for embedding as ar source in playfuncs:
+	pbar {
+		var buf;
+		buf = this.buf;
+		^PlayBuf.ar(buf.numChannels, buf.bufnum, 1, 1, 0, 1, 2)
+	}
 	// play buffer (2022 version)
  	pb { | target, outbus = 0, player, envir, params |
 		this.playbuf(params ? (), player, envir, target, outbus);

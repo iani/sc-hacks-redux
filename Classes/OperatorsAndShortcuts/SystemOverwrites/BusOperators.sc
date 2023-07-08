@@ -157,6 +157,9 @@ Simplenumber @> \symbol // set bus to number
 		// postln("must free bus synth for bus" + bus + "in envir" + playerEnvir);
 		// postln("the player is" + playerEnvir.envir[bus]);
 		// Fri  7 Jul 2023 15:55 : make sure to stop synth here
+		// playerEnvir.envir.postln;
+		// bus.postln;
+		// playerEnvir.envir[bus].postln;
 		playerEnvir.envir[bus].free;
 		bus.bus(nil, playerEnvir ? currentEnvironment.name).set(this);
 
