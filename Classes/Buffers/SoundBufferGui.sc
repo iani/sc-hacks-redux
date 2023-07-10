@@ -206,10 +206,10 @@ SoundBufferGui {
 		restore = this.currentSelection;
 		sfv.setSelection(selections.currentSelectionIndex, [0, buffer.numFrames]);
 		this.changed(\selection);
-		postln("selection" + sfv.currentSelection + "has full duration in samples:"
-			+ sfv.selection(sfv.currentSelection)
-			+ "in seconds:" + this.selectionDur
-		);
+		// postln("selection" + sfv.currentSelection + "has full duration in samples:"
+		// 	+ sfv.selection(sfv.currentSelection)
+		// 	+ "in seconds:" + this.selectionDur
+		// );
 
 		sfv.currentSelection = restore;
 		this.changed(\selection);

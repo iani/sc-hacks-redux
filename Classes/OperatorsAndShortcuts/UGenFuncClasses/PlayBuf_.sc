@@ -17,7 +17,7 @@ PlayBuf_ : UGenFunc {
 			// 1,
 			\trigger.br(1),
 			// 0,
-			\startpos.br((~startpos ? 0) * buf.sampleRate),
+			\startpos.br(~startpos ? 0) * buf.sampleRate,
 			// 0,
 			\loop.br(~loop ? 1),
 			Done.freeSelf
