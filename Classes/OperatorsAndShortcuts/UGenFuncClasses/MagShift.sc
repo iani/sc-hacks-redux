@@ -10,7 +10,7 @@ MagShift_ : UGenFunc {
 	*ar { | in |
 		var chain;
 		chain = FFT(LocalBuf(2048), in);
-		chain = PV_MagShift(chain, \stretch.br(1), \shift.br(0));
+		chain = PV_MagShift(chain, \stretch.br(~stretch ? 1), \shift.br(~shift ? 0));
 		^IFFT(chain);
 	}
 }
