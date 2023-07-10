@@ -61,10 +61,10 @@ EditSoundPlayer {
 		if (pfuncname.isNil) {
 			^defaultPlayFunc;
 		}{
-			postln("ESP debugging getPlayfunc. funcname is" +
-				pfuncname + "func found is" + playfuncs[pfuncname]
-			);
-			postln("playfuncs are" + playfuncs);
+			// postln("ESP debugging getPlayfunc. funcname is" +
+			// 	pfuncname + "func found is" + playfuncs[pfuncname]
+			// );
+			// postln("playfuncs are" + playfuncs);
 			^playfuncs[pfuncname] ? defaultPlayFunc;
 		}
 	}

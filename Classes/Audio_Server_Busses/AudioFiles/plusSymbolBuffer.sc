@@ -51,7 +51,7 @@
 	numChannels { ^this.buffer.numChannels }
 	// play buffer (20230708 version)
 	** { | event, mediatorname |
-		postln("debugging ** event:" + event);
+		// postln("debugging ** event:" + event);
 		EditSoundPlayer(mediatorname ? \s).play(event[\buf] = this);
 	}
 	// for embedding as ar source in playfuncs:
