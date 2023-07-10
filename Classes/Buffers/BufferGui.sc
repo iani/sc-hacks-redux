@@ -13,25 +13,23 @@ See SoundFileGui, SoundFileSettings.
 BufferGui {
 	*new { this.gui }
 	*gui {
+		var selectedBuffer;
 		this.vlayout(
 			Button().states_([["open"]])
 			.action_({ | me |
-				// me.value.postln;
-				// Buffer.all[me.value].postln;
-				Buffer.all[me.value].buf.gui;
+				SoundBufferGui.gui((selectedBuffer ?? { Buffer.all.first }).buf);
 			}),
 			ListView()
 			.items_(Buffer.all)
+			.action_({ | me |
+				selectedBuffer = Buffer.all[me.value]
+			})
 			.enterKeyAction_({ | me |
-				// Buffer.all[me.value].postln;
-				// Buffer.all[me.value].buf.postln;
 				SoundBufferGui.gui(Buffer.all[me.value].buf);
 			})
 			.addNotifier(Buffer, \loaded, { | n |
-				// "buffer loaded msessage recdived by buffer gui".postln;
 				n.listener.items = Buffer.all
 			})
 		);
-		// Buffer.all.postln;
 	}
 }

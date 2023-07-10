@@ -6,6 +6,13 @@ SoundBufferGui {
 	var buffer, <sfv, colors;
 	var selection;
 	var <>selections; // remember selections because sfv seems to forget them.
+	var playfuncs; // TODO: transfer these from EditSoundPlayer. Use a different directory
+	// to load them.
+	*initClass {
+		// TODO: Rewrite this to use own playfuncs from sc-hacks repository,
+		// and if found, also extra funcs from sc-project.
+		StartUp add: { EditSoundPlayer.loadIfNeeded }
+	}
 	*gui { | buffer |
 		^this.newCopyArgs(buffer).gui;
 	}
@@ -95,17 +102,12 @@ SoundBufferGui {
 	}
 
 	selectionDur {
-		postln(
-			"selection.index" + selections.currentSelectionIndex +
-			"selection size" + sfv.selectionSize(selections.currentSelectionIndex) +
-			"selection dur" + (sfv.selectionSize(selections.currentSelectionIndex) / buffer.sampleRate)
-		);
 		^sfv.selectionSize(selections.currentSelectionIndex) / buffer.sampleRate;
 	}
 
 	selectionFrac {
-		selections.currentSelection.postln;
-		^(selections.currentSelection[1] / buffer.numFrames.postln);
+		selections.currentSelection;
+		^(selections.currentSelection[1] / buffer.numFrames);
 	}
 
 	selectionBegFrac {
@@ -125,9 +127,11 @@ SoundBufferGui {
 					"testing".postln;
 					sfv.currentSelection;
 				},
+				$a, { this.selectAll },
 				$z, { this.toggleSelectionZoom },
 				$p, { this.play },
 				$., { this.stop },
+				$ , { this.togglePlay; },
 				$1, {
 					sfv.zoomToFrac(1);
 				},
@@ -166,18 +170,35 @@ SoundBufferGui {
 		^sfv;
 	}
 
-	play {
+	start { this.play }
+	play { // TODO: rewrite this from EditSoundPlayer using own playfuncs?
 		buffer.name.perform(
 			'**',
 			(
 				startpos: this.selectionStart,
-				dur: this.selectionDur.postln
+				dur: this.selectionDur
+				// buf: buffer.name
+				// playbuf:
 			),
 			buffer.name);
 	}
 	stop {
 		buffer.name.envir.stopSynths;
 	}
+
+	togglePlay {
+		if (this.isPlaying) { this.stop } { this.start };
+	}
+
+	isPlaying {
+		^buffer.name.envir[buffer.name].isPlaying;
+	}
+
+	selectAll {
+		sfv.setSelection(selections.currentSelectionIndex, [0, buffer.numFrames]);
+		this.changed(\selection);
+	}
+
 	toggleSelectionZoom {
 		if (this.isZoomedOut) {
 			this.zoomSelection;
@@ -239,8 +260,18 @@ SoundBufferGui {
 			.maxDecimals_(6)
 			.addNotifier(this, \selection, { | n |
 				n.listener.value = this.selectionDur;
-			})
-
+			}),
+			StaticText().string_("playfunc menu:"),
+			Button()
+			// .maxWidth_(50)
+			.canFocus_(false)
+			.states_([["playbuf", Color.red, Color.white]])
+			.action_({ | me | Menu(
+				*EditSoundPlayer.playfuncs.keys.asArray.sort
+				.collect({ | f | MenuAction(f.asString, {
+					me.states_([[f.asString]]);
+					f.postln; })})
+			).front })
 		)
 	}
 }

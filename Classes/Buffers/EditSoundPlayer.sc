@@ -115,12 +115,9 @@ EditSoundPlayer {
 	}
 
 	*loadFromPath { | path |
-		// path.postln;
-		// PathName(path).files.postln;
 		playfuncs = IdentityDictionary();
 		PathName(path).files do: { | pn |
-			// pn.postln;
-			pn.fullPath.load; // .postln;
+			pn.fullPath.load;
 			playfuncs[pn.fileNameWithoutExtension.asSymbol] =
 			pn.fullPath.load;
 
