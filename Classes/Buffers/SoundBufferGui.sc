@@ -40,16 +40,7 @@ SoundBufferGui {
 					127, { this.zeroSelection },// delete
 				);
 			}),
-			ListView().maxWidth_(20)
-			.hiliteColor_(Color.white)
-			.selectedStringColor_(Color.red)
-			.addNotifier(this, \selectionIndex, { | n, index |
-				var items, mycolors;
-				items = { " " } ! 64;
-				items[index] = index.asString;
-				items[0] = index.asString;
-				n.listener.items = items;
-			})
+			this.editIndexDisplay
 		).name_(PathName(buffer.path).fileNameWithoutExtension);
 		{ // switch to first safely editable selection!
 			sfv.currentSelection = 0;
@@ -59,6 +50,32 @@ SoundBufferGui {
 		}.defer(0.5);
 	}
 
+	editIndexDisplay {
+		^VLayout(
+			NumberBox().maxWidth_(20)
+			.decimals_(0)
+			.clipHi_(63)
+			.clipLo_(0)
+			.action_({ | me |
+				sfv.currentSelection = me.value.asInteger;
+				this.changed(\selection);
+			})
+			.addNotifier(this, \selectionIndex, { | n, index |
+				n.listener.value = index;
+				sfv.currentSelection = n.listener.value.asInteger;
+				this.changed(\selection);
+			}),
+			ListView().maxWidth_(20)
+			.hiliteColor_(Color.white)
+			.selectedStringColor_(Color.red)
+			.addNotifier(this, \selection, { | n, index |
+				var theindex;
+				n.listener.items = selections.edited;
+				theindex = n.listener.items indexOf: selections.currentSelectionIndex;
+				theindex !?  { n.listener.value = theindex };
+			})
+		)
+	}
 
 	zeroSelection {
 		sfv.setSelection(sfv.currentSelection, [0, 0]);
@@ -116,6 +133,7 @@ SoundBufferGui {
 		.mouseUpAction_({ |view, x, y, mod| //
 			// divert non-drag clicks to last selection.
 			sfv.currentSelection = 63;
+			// this.changed(\selection);
 		})
 		.action_({ | me | // Runs on mouseclick
 			// do not change current selection on mouse click.
