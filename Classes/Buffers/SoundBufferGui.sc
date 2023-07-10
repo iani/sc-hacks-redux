@@ -16,15 +16,17 @@ SoundBufferGui {
 			[
 				Color(0, i, 0), Color(0, 0, i),
 				Color(i, i, 0), Color(i, 0, i), Color(0, i, i), Color(i, 0, 0), Color(i, i, i)
-			]
-		}).flat add: (Color(0.3, 0.2, 0.9))).reverse;
+			] // last selection reserved for deactivation. Color = black.
+		}).flat.reverse add: (Color.black));
+		// decorative detail:
+		colors[0] = Color(0.95, 0.95, 0.5);
 		this.bl_(1400, 400).hlayout(
 			VLayout(
 			sfv = this.sfView,
 			this.rangeSlider,
 				this.posDisplay(sfv)
 			),
-			ListView().maxWidth_(40)
+			ListView().maxWidth_(30)
 			.items_((0..63))
 			.colors_(colors)
 			.action_({ | me |
@@ -32,20 +34,57 @@ SoundBufferGui {
 				me.selectedStringColor_(colors[me.value].complement);
 				this.changed(\selectionIndex, me.value);
 			})
+			.keyDownAction_({ | me, char ... args |
+				switch(char.ascii,
+					122, { this.toggleSelectionZoom },//z
+					127, { this.zeroSelection },// delete
+				);
+			}),
+			ListView().maxWidth_(20)
+			.hiliteColor_(Color.white)
+			.selectedStringColor_(Color.red)
+			.addNotifier(this, \selectionIndex, { | n, index |
+				var items, mycolors;
+				items = { " " } ! 64;
+				items[index] = index.asString;
+				items[0] = index.asString;
+				n.listener.items = items;
+			})
 		).name_(PathName(buffer.path).fileNameWithoutExtension);
+		{ // switch to first safely editable selection!
+			sfv.currentSelection = 0;
+			this.changed(\selection);
+			this.changed(\selectionIndex, 0);
+
+		}.defer(0.5);
 	}
 
+
+	zeroSelection {
+		sfv.setSelection(sfv.currentSelection, [0, 0]);
+		this.changed(\selection);
+	}
 	selectionStart {
-		^sfv.selectionStart(sfv.currentSelection) / buffer.sampleRate;
+		^(sfv.selectionStart(sfv.currentSelection) / buffer.sampleRate);
 	}
 
 	selectionEnd {
-		^(sfv.selectionStart(sfv.currentSelection) + sfv.selectionSize(sfv.currentSelection))
+		^sfv.selectionStart(sfv.currentSelection) + sfv.selectionSize(sfv.currentSelection)
 		/ buffer.sampleRate;
 	}
 
 	selectionDur {
 		^sfv.selectionSize(sfv.currentSelection) / buffer.sampleRate;
+	}
+
+	selectionFrac {
+		selections.currentSelection.postln;
+		^(selections.currentSelection[1] / buffer.numFrames.postln).postln;
+	}
+
+	selectionBegFrac {
+		selections.currentSelection.postln;
+		^(selections.currentSelection[0] / buffer.numFrames.postln).postln;
 	}
 
 	sfView {
@@ -57,25 +96,12 @@ SoundBufferGui {
 		.keyDownAction_({ | me, char ... args |
 			switch(char,
 				$x, { // experimental
-					sfv.setSelectionStart(0, 0);
-					sfv.setSelectionSize(0, 100000);
+					"testing".postln;
+					sfv.currentSelection.postln;
 				},
-				$z, {
-					// postln("numFrames" + sfv.numFrames + "viewFrames" + sfv.numFrames);
-					postln("before zoom selection" + sfv.selection(sfv.currentSelection)
-						+ "index" + sfv.currentSelection);
-					sfv.zoomSelection(sfv.currentSelection);
-					postln("after zoom selection" + sfv.selection(sfv.currentSelection)
-						+ "index" + sfv.currentSelection);
-					postln("own cache:" + selections.currentSelection);
-				},
+				$z, { this.toggleSelectionZoom },
 				$1, {
-					postln("before zoom selection" + sfv.selection(sfv.currentSelection)
-						+ "index" + sfv.currentSelection);
 					sfv.zoomToFrac(1);
-					postln("after zoom selection" + sfv.selection(sfv.currentSelection)
-						+ "index" + sfv.currentSelection);
-					postln("own cache:" + selections.currentSelection);
 				},
 				$2, { sfv.zoomToFrac(1/2) },
 				$3, { sfv.zoomToFrac(1/3) },
@@ -85,17 +111,44 @@ SoundBufferGui {
 			);
 		})
 		.mouseDownAction_({ |view, x, y, mod, buttonNumber|
-			mouseButton = buttonNumber;
-			// mouseButton.postln;
+			mouseButton = buttonNumber; // not used for now
 		})
-		.mouseUpAction_({ |view, x, y, mod|
-			// mouseButton = nil;
+		.mouseUpAction_({ |view, x, y, mod| //
+			// divert non-drag clicks to last selection.
+			sfv.currentSelection = 63;
 		})
-		.action_({ | me | // Runs on mouseclick!
-			this.changed(\selection);
+		.action_({ | me | // Runs on mouseclick
+			// do not change current selection on mouse click.
+			// only change selection when drag-clicking on trackpad.
+			// This does not work when currentSelection == 0;
+			if (sfv.selectionSize(sfv.currentSelection) < 100) {
+				sfv.currentSelection = 63;
+			}{
+				sfv.currentSelection = selections.currentSelectionIndex;
+				this.changed(\selection);
+			};
 		});
 		colors do: { | c, i | sfv.setSelectionColor(i, c) };
 		^sfv;
+	}
+
+	toggleSelectionZoom {
+		if (this.isZoomedOut) {
+			this.zoomSelection;
+		}{
+			sfv.zoomToFrac(1);
+			sfv.setSelection(selections.currentSelectionIndex, selections.currentSelection);
+		}
+	}
+
+	isZoomedOut {
+		^sfv.xZoom.round(0.00001) == buffer.dur.round(0.00001)
+	}
+
+	zoomSelection {
+		{
+			sfv.zoomSelection(selections.currentSelectionIndex);
+		}.fork(AppClock);
 	}
 
 	rangeSlider {
@@ -104,7 +157,11 @@ SoundBufferGui {
 
 	posDisplay { | sfv |
 		^HLayout(
-			StaticText().string_("selection"),
+			StaticText().string_("selection")
+			.addNotifier(this, \selectionIndex, { | n, index |
+				n.listener.background = colors[index];
+				n.listener.stringColor = colors[index].complement;
+			}),
 			NumberBox()
 			.maxWidth_(40)
 			.decimals_(0)
