@@ -68,6 +68,10 @@ SoundBufferGui {
 			ListView().maxWidth_(20)
 			.hiliteColor_(Color.white)
 			.selectedStringColor_(Color.red)
+			.action_({ | me |
+				sfv.currentSelection = me.value.asInteger;
+				this.changed(\selection);
+			})
 			.addNotifier(this, \selection, { | n, index |
 				var theindex;
 				n.listener.items = selections.edited;
@@ -91,17 +95,22 @@ SoundBufferGui {
 	}
 
 	selectionDur {
-		^sfv.selectionSize(sfv.currentSelection) / buffer.sampleRate;
+		postln(
+			"selection.index" + selections.currentSelectionIndex +
+			"selection size" + sfv.selectionSize(selections.currentSelectionIndex) +
+			"selection dur" + (sfv.selectionSize(selections.currentSelectionIndex) / buffer.sampleRate)
+		);
+		^sfv.selectionSize(selections.currentSelectionIndex) / buffer.sampleRate;
 	}
 
 	selectionFrac {
 		selections.currentSelection.postln;
-		^(selections.currentSelection[1] / buffer.numFrames.postln).postln;
+		^(selections.currentSelection[1] / buffer.numFrames.postln);
 	}
 
 	selectionBegFrac {
-		selections.currentSelection.postln;
-		^(selections.currentSelection[0] / buffer.numFrames.postln).postln;
+		selections.currentSelection;
+		^(selections.currentSelection[0] / buffer.numFrames);
 	}
 
 	sfView {
@@ -114,9 +123,11 @@ SoundBufferGui {
 			switch(char,
 				$x, { // experimental
 					"testing".postln;
-					sfv.currentSelection.postln;
+					sfv.currentSelection;
 				},
 				$z, { this.toggleSelectionZoom },
+				$p, { this.play },
+				$., { this.stop },
 				$1, {
 					sfv.zoomToFrac(1);
 				},
@@ -124,7 +135,13 @@ SoundBufferGui {
 				$3, { sfv.zoomToFrac(1/3) },
 				$4, { sfv.zoomToFrac(1/4) },
 				$5, { sfv.zoomToFrac(1/5) },
-				$6, { sfv.zoomToFrac(1/6) }
+				$6, { sfv.zoomToFrac(1/6) },
+				$7, { sfv.zoomToFrac(1/7) },
+				$8, { sfv.zoomToFrac(1/8) },
+				$9, { sfv.zoomToFrac(1/9) },
+				$(, { sfv.scrollTo(0); this.changed(\zoom) },
+				$>, { sfv.scroll(1/10);  this.changed(\zoom) },
+				$<, { sfv.scroll(-1/10);  this.changed(\zoom) }
 			);
 		})
 		.mouseDownAction_({ |view, x, y, mod, buttonNumber|
@@ -138,10 +155,9 @@ SoundBufferGui {
 		.action_({ | me | // Runs on mouseclick
 			// do not change current selection on mouse click.
 			// only change selection when drag-clicking on trackpad.
-			// This does not work when currentSelection == 0;
 			if (sfv.selectionSize(sfv.currentSelection) < 100) {
-				sfv.currentSelection = 63;
-			}{
+				sfv.currentSelection = 63; // divert to last selection
+			}{  // use current selection when range dragged is > 100
 				sfv.currentSelection = selections.currentSelectionIndex;
 				this.changed(\selection);
 			};
@@ -150,6 +166,18 @@ SoundBufferGui {
 		^sfv;
 	}
 
+	play {
+		buffer.name.perform(
+			'**',
+			(
+				startpos: this.selectionStart,
+				dur: this.selectionDur.postln
+			),
+			buffer.name);
+	}
+	stop {
+		buffer.name.envir.stopSynths;
+	}
 	toggleSelectionZoom {
 		if (this.isZoomedOut) {
 			this.zoomSelection;
