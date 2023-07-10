@@ -17,7 +17,7 @@ w.layout = VLayout(
 );
 ​
 sfZoom.lo_(0).range_(1)
-.action_({ |view|
+.action_({ | view |
     var divisor, rangeStart;
     rangeStart = view.lo;
     divisor = 1 - sfZoom.range;
@@ -49,7 +49,15 @@ sfv.mouseDownAction_({ |view, x, y, mod, buttonNumber|
 		postln("rangeStart" + (rangeStart * dur) + "rangeSize" + (dur * rangeSize)
 			+ "rangeEnd" + (rangeStart + rangeSize * dur)
 		);
-    };
+    }{
+		view.selections.postln;
+		view.setSelection(1, [10000, 80000]);
+		rangeSize = view.xZoom / dur;
+        rangeStart = view.scrollPos * (1 - rangeSize);
+		postln("rangeStart" + (rangeStart * dur) + "rangeSize" + (dur * rangeSize)
+			+ "rangeEnd" + (rangeStart + rangeSize * dur)
+		);
+	};
 });
 ​
 w.front;

@@ -9,3 +9,7 @@ AmpSlopeXyz {
 		}).sum
 	}
 }
+
+// Shortcut:
+
+Xyz : AmpSlopeXyz {}

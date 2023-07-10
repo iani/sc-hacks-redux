@@ -1,0 +1,47 @@
+#+TITLE: Global Sensor Envir
+
+* concept
+
+Provide on-off mappings from all sensors in one environment,
+and methods from accessing them in any Synth function.
+Main implementation class: =SS=
+
+For each sensor, there are 3 mappings:
+
+- AmpSlopeXyz :: [class Xyz] Sum of Amplitudes of Slopes of x, y, z is greater than 0.5. See class =AmpSlopeXyz=
+- x (1-12) :: the x values of the sensor input on busses for sensors 1-12
+- z :: the z values of the sensor input on busses for sensors 1-12
+
+This makes 48 + 12 = 60 mappings (or control busses) for the 12 sensors available in the currently used 3 sets of 4 sensors each, as follows:
+
+- [\xyz1, \xyz2 ... \xyz12] (12 sensors)
+- [\x1a, \x1b, \z1a, \z1b] (4 control sets for sensor 1 x, z above and below thrshold)
+- [\x2a, \x2b, \z2a, \z2b] (4 control sets for sensor 2 x, z above and below thrshold)
+- ... 10 more sets for the remaining sensors 3-12.
+
+In all: 12 busses for xyz1-xyz12 and 4 x 12 = 48 busses for x1a, x1b, z1a, z1b 1-12 = 60 busses.
+
+Synth functions can use these busses by operators that multiply the output proxy output by the function with the value of the bus corresponding to to each
+
+The operators would be:
+
+<function> ** <sensor number> : multiplies with AmpSlopeXyz(sensor number);
+<function> >**.<sensorid> <lag>: multiplies with <sensorid>.br(lag) > thresh;
+<function> <**.<sensorid> <lag>: multiplies with <sensorid>.br(lag) < thresh;
+
+... where =thresh= is set by class SS as follows:
+
+SS.thresh(\x1a, 0.3);
+
+
+* Usage examples (templates in pseudo-code)
+
+{ SinOsc.ar(400, 0, 0.1).dup } **.1 Xyz +> \player
+
+{ SinOsc.ar(400, 0, 0.1).dup } >**.x1 0.5 +> \player
+
+To specify lag time, use array as argument:
+
+{ SinOsc.ar(400, 0, 0.1).dup } >**.x1 [0.5, 1.2] +> \player
+
+{ SinOsc.ar(400, 0, 0.1).dup } <**.z5 0.1 +> \player

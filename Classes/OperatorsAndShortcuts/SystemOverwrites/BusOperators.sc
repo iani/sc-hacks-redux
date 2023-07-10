@@ -154,23 +154,13 @@ Simplenumber @> \symbol // set bus to number
 	@> { | bus, playerEnvir = \sensors | // set bus value
 		// works with new AND already existing busses.
 		// Stop processes playing in this bus before setting a new value:
-		// postln("must free bus synth for bus" + bus + "in envir" + playerEnvir);
-		// postln("the player is" + playerEnvir.envir[bus]);
-		// Fri  7 Jul 2023 15:55 : make sure to stop synth here
-		// playerEnvir.envir.postln;
-		// bus.postln;
-		// playerEnvir.envir[bus].postln;
 		playerEnvir.envir[bus].free;
 		bus.bus(nil, playerEnvir ? currentEnvironment.name).set(this);
-
-		// bus.freePlayer(playerEnvir, { // Fri  7 Jul 2023 15:56 - this is obsolete now
-			// bus.bus(nil, playerEnvir ? currentEnvironment.name).set(this);
-		// });
 	}
 }
 
 + Point {
-
+	// create XLine from current value to x in y seconds
 	@> { | bus, playerEnvir = \sensors | // glide with xline
 		var b;
 		b = bus.bus(nil, playerEnvir ? currentEnvironment.name);
