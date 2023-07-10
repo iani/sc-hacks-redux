@@ -123,11 +123,12 @@ SoundBufferGui {
 		.timeCursorOn_(true)
 		.keyDownAction_({ | me, char ... args |
 			switch(char,
-				$x, { // experimental
+				$t, { // experimental
 					"testing".postln;
 					sfv.currentSelection;
 				},
 				$a, { this.selectAll },
+				$c, { this.clearSelection },
 				$z, { this.toggleSelectionZoom },
 				$p, { this.play },
 				$., { this.stop },
@@ -172,6 +173,12 @@ SoundBufferGui {
 
 	start { this.play }
 	play { // TODO: rewrite this from EditSoundPlayer using own playfuncs?
+		if (this.selectionDur == 0) {
+			^postln("refusing to play selection" + selections.currentSelectionIndex
+				+ "because its duration is 0");
+		};
+		postln("playing selection" + selections.currentSelectionIndex + "of duration"
+		+ this.selectionDur);
 		buffer.name.perform(
 			'**',
 			(
@@ -197,6 +204,19 @@ SoundBufferGui {
 	selectAll {
 		sfv.setSelection(selections.currentSelectionIndex, [0, buffer.numFrames]);
 		this.changed(\selection);
+		postln("selection" + sfv.currentSelection + "has full duration in samples:"
+			+ sfv.selection(sfv.currentSelection)
+			+ "in seconds:" + this.selectionDur
+		)
+	}
+
+	clearSelection {
+		sfv.setSelection(selections.currentSelectionIndex, [0, 0]);
+		this.changed(\selection);
+		postln("selection" + sfv.currentSelection + "has cleared duration in samples:"
+			+ sfv.selection(sfv.currentSelection)
+			+ "in seconds:" + this.selectionDur
+		)
 	}
 
 	toggleSelectionZoom {
