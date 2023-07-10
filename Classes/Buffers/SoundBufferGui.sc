@@ -202,22 +202,38 @@ SoundBufferGui {
 	}
 
 	selectAll {
+		var restore;
+		restore = this.currentSelection;
 		sfv.setSelection(selections.currentSelectionIndex, [0, buffer.numFrames]);
 		this.changed(\selection);
 		postln("selection" + sfv.currentSelection + "has full duration in samples:"
 			+ sfv.selection(sfv.currentSelection)
 			+ "in seconds:" + this.selectionDur
-		)
+		);
+
+		sfv.currentSelection = restore;
+		this.changed(\selection);
 	}
 
 	clearSelection {
+		var restore;
+		// postln("selection before clearing - cache index is:" + this.currentSelection);
+		restore = this.currentSelection;
 		sfv.setSelection(selections.currentSelectionIndex, [0, 0]);
 		this.changed(\selection);
-		postln("selection" + sfv.currentSelection + "has cleared duration in samples:"
-			+ sfv.selection(sfv.currentSelection)
-			+ "in seconds:" + this.selectionDur
-		)
+		// postln("selection" + this.currentSelection + "has cleared duration in samples:"
+		// 	+ sfv.selection(this.currentSelection)
+		// 	+ "in seconds:" + this.selectionDur
+		// );
+		sfv.currentSelection = restore;
+		// postln("the current selection index of sfv is" + sfv.currentSelection);
+		this.changed(\selection);
+		// postln("the current selection index of selections is" + this.currentSelection);
+		// postln("repeat from source"  + selections.currentSelectionIndex);
+
 	}
+
+	currentSelection { ^selections.currentSelectionIndex }
 
 	toggleSelectionZoom {
 		if (this.isZoomedOut) {
