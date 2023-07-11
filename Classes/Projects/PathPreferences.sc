@@ -1,4 +1,6 @@
 /*  4 Jul 2023 22:39
+Incomplete. Rewriting as Preferences2 as of Tue 11 Jul 2023 12:38
+
 Save a path for a class.
 Load it when needed.
 If path does not exist, then prompt the user to select another path.
@@ -32,9 +34,11 @@ PathPreferences {
 		};
 		// thePath.postln;
 		// File.exists(thePath).postln;
+
 		if (File exists: thePath) {
 			action.(thePath)
 		}{
+			postln("path not found" + thePath);
 			{ | newPath |
 				newPath = newPath.first;
 				action.(newPath);

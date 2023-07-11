@@ -6,17 +6,21 @@ SoundBufferGui {
 	var buffer, <sfv, colors;
 	var selection;
 	var <>selections; // remember selections because sfv seems to forget them.
-	var playfuncs; // TODO: transfer these from EditSoundPlayer. Use a different directory
+	var <playfuncs; // TODO: transfer these from EditSoundPlayer. Use a different directory
+	var <playfunc = \playbuf; // name of playfunc selected from menu
 	// to load them.
 	*initClass {
 		// TODO: Rewrite this to use own playfuncs from sc-hacks repository,
 		// and if found, also extra funcs from sc-project.
 		StartUp add: { EditSoundPlayer.loadIfNeeded }
 	}
-	*gui { | buffer |
-		^this.newCopyArgs(buffer).gui;
-	}
 
+	*default { ^this.new(Buffer.all.first.buf) }
+
+	*new { | buffer | ^this.newCopyArgs(buffer) }
+	*gui { | buffer | this.new(buffer).gui; }
+
+	name { ^buffer.name }
 	gui {
 		selections = SfSelections(this);
 		colors = (((1..9).normalize * (2/3) + (1/3)).collect({ | i |
@@ -133,6 +137,7 @@ SoundBufferGui {
 				$p, { this.play },
 				$., { this.stop },
 				$ , { this.togglePlay; },
+				$e, { this.edit },
 				$1, {
 					sfv.zoomToFrac(1);
 				},
@@ -169,6 +174,11 @@ SoundBufferGui {
 		});
 		colors do: { | c, i | sfv.setSelectionColor(i, c) };
 		^sfv;
+	}
+
+	edit {
+		"edit not yet implemented".postln;
+		BufCode(this).makeDoc;
 	}
 
 	start { this.play }
@@ -306,7 +316,7 @@ SoundBufferGui {
 				*EditSoundPlayer.playfuncs.keys.asArray.sort
 				.collect({ | f | MenuAction(f.asString, {
 					me.states_([[f.asString]]);
-					f.postln; })})
+					f.postln; playfunc = f.asSymbol })})
 			).front })
 		)
 	}

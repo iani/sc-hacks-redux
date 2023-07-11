@@ -7,6 +7,14 @@
 3. Define shortcut methods Function:gt and lt (sensor, thresh, player, lagtime)
 4. Define shortcut methods sensor:maplin and mapexp (min, max, player, param)
 
+* List of things to implement
+
+-
+
+
+
+
+-------- Details --------
 ---- Newer draft - modular system with methods.
 
 * { ugenfunc } ** 1.xyzenv +> \player
@@ -29,7 +37,7 @@ Translates to:
 
 { ugenfunc.value *  (\x1.sr > thresh).lag(lag) } +> \player;
 
-* [#B] Simpler way { ugenfunc }.gt(\x1, thresh, lag, \player);
+* [ Simpler way { ugenfunc }.gt(\x1, thresh, lag, \player);
 
 { ugenfunc }.gt(\x1, thresh, lag, \player);
 

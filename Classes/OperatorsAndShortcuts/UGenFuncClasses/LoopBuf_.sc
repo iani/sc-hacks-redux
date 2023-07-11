@@ -16,7 +16,7 @@ LoopBuf_ : UGenFunc {
 			rate: \rate.br(~rate ? 1),
 			// 1,
 			// trigger: Impulse.kr(\loopdur.br(~loopdur ? 1).reciprocal),
-			trigger: Impulse.kr(\loopdur.br(~loopdur ?? { 1 })),
+			trigger: Impulse.kr(\loopdur.br(~loopdur ?? { 1 }).reciprocal),
 			// Impulse.kr(\loopdur.br(~loopdur ? 1).reciprocal),
 			// 0,
 			startPos: \startpos.br(~startpos ? { 0 }) * buf.sampleRate,

@@ -3,6 +3,6 @@ Specs for PlayBuf_
 */
 
 (
-rate: [0.01, 10],
-loop: [0, 1, 1, 0]
+rate: 1, // [0.01, 10],
+loop: 0, //  [0, 1, 1, 0]
 )

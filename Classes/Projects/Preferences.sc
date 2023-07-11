@@ -1,5 +1,7 @@
 /* 19 Dec 2022 17:30
 Save and retrieve preferencees for diverse classes.
+
+Replaced by new class of same name on: Tue 11 Jul 2023 13:12
 */
 
 Preferences {

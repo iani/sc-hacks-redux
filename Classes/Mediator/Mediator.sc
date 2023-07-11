@@ -54,6 +54,7 @@ Mediator : EnvironmentRedirect {
 		envir[\mediator] = name;
 		this.push;
 		envir.play; // return self! to be able to stop or do other stuff
+		this.class.changed(\started, name);
 	}
 
 	clear {

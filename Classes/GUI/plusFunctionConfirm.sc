@@ -26,6 +26,11 @@ Asc to confirm before evaluating a function.
 		)
 	}
 
+	getPath { | object, message = "Choose a path for" |
+		message = message + object;
+
+	}
+
 	inputText {  | default = "something", prompt = "Enter a new string" |
 		var window;
 		window = this.vlayout(

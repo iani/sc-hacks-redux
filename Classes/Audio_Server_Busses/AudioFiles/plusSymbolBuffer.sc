@@ -54,6 +54,12 @@
 		// postln("debugging ** event:" + event);
 		EditSoundPlayer(mediatorname ? \s).play(event[\buf] = this);
 	}
+	// Tue 11 Jul 2023 22:40 - even shorter version:
+	@@ { | event, playfunc = \playbuf |
+		event[\buf] = this;
+		event[\playfunc] = playfunc;
+		EditSoundPlayer(this).play(event)
+	}
 	// for embedding as ar source in playfuncs:
 	pbar {
 		var buf;

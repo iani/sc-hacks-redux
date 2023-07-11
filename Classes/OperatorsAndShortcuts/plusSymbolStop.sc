@@ -3,6 +3,9 @@
 */
 
 + Symbol {
+
+	stopSynths { this.envir.stopSynths }
+
 	stop { | fadeTime = 1.0 |
 		currentEnvironment[this].stop(fadeTime);
 	}
