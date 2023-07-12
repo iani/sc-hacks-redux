@@ -48,11 +48,15 @@ Mediator : EnvironmentRedirect {
 				envir[key].free;
 				envir[key] = val;
 			};
+			// "disabled".postln;
 		};
-		playfunc = EditSoundPlayer.getPlayFunc(envir[\playfunc]);
+		// postln("Mediator play event playfunc is" + envir[\playfunc]);
+		// postln("func from PlayBufTemplate is" + PlayBufTemplate.getFunc(envir[\playfunc]));
+		playfunc = PlayBufTemplate.getFunc(envir[\playfunc]);
+		// playfunc = PlayBufTemplate.getFunc(\loopbuf);
 		envir[\play] = { playfunc +> name };
 		envir[\mediator] = name;
-		this.push;
+			this.push;
 		envir.play; // return self! to be able to stop or do other stuff
 		this.class.changed(\started, name);
 	}

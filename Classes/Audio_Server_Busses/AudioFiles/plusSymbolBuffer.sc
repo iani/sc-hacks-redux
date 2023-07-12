@@ -51,14 +51,21 @@
 	numChannels { ^this.buffer.numChannels }
 	// play buffer (20230708 version)
 	** { | event, mediatorname |
-		// postln("debugging ** event:" + event);
 		EditSoundPlayer(mediatorname ? \s).play(event[\buf] = this);
 	}
 	// Tue 11 Jul 2023 22:40 - even shorter version:
+	/* // Wed 12 Jul 2023 08:03 - FIX: first time the playfunc does not work!
 	@@ { | event, playfunc = \playbuf |
 		event[\buf] = this;
 		event[\playfunc] = playfunc;
 		EditSoundPlayer(this).play(event)
+	}
+	*/
+
+	@@ { | event, playfunc = \playbuf |
+		event[\playfunc] = playfunc;
+		event[\buf] = this;
+		this.envir.play(event);
 	}
 	// for embedding as ar source in playfuncs:
 	pbar {

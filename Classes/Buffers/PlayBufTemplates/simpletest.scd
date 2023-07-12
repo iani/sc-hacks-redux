@@ -1,0 +1,1 @@
+{ SinOsc.ar(400 + SinOsc.kr(4).range(400, 440), 0, 0.1).dup }

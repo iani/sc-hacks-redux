@@ -8,6 +8,7 @@ DurEnv {
 		adjustedDur = dur - (ad * 2 max: 0.01);
 		env = Env([0.0, 1.0, 1.0, 0.0], [ad, adjustedDur, ad], -4, releaseNode: 2);
 		trig = Trig.kr(1, adjustedDur - ad max: ad /* adjustedDur */);
+		// trig = Impulse.kr(\trig.kr(1) * adjustedDur - ad max: ad);
 		^EnvGen.kr(env, trig, doneAction: Done.freeSelf);
 	}
 }

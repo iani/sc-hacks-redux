@@ -190,14 +190,12 @@ SoundBufferGui {
 		postln("playing selection" + selections.currentSelectionIndex + "of duration"
 		+ this.selectionDur);
 		buffer.name.perform(
-			'**',
+			'@@',
 			(
 				startpos: this.selectionStart,
-				dur: this.selectionDur
-				// buf: buffer.name
-				// playbuf:
+				dur: this.selectionDur,
 			),
-			buffer.name);
+			(playfunc ?? { \playbuf }).postln);
 	}
 	stop {
 		buffer.name.envir.stopSynths;
@@ -313,7 +311,7 @@ SoundBufferGui {
 			.canFocus_(false)
 			.states_([["playbuf", Color.red, Color.white]])
 			.action_({ | me | Menu(
-				*EditSoundPlayer.playfuncs.keys.asArray.sort
+				*PlayBufTemplate.playfuncs.keys.asArray.sort
 				.collect({ | f | MenuAction(f.asString, {
 					me.states_([[f.asString]]);
 					f.postln; playfunc = f.asSymbol })})

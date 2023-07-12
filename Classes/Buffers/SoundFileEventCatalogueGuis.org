@@ -1,5 +1,28 @@
 #+TITLE: Sound File Event Catalogue Guis
 
+-------- draft 230712 --------
+
+* Classes
+** PlayBufTemplates
+
+** SoundBufferGui
+
+** BufCode
+
+** EditSoundPlayer
+
+** PlayFunc
+
+* Folders and Files
+
+** sc-project/PlayBuf
+*** sc-project/PlayBuf/code
+*** sc-project/PlayBuf/playfuncs
+
+** sc-hacks-redux/Classes/OperatorsAndShortcuts/UGenFuncClasses
+
+
+-------- draft before 230712 --------
 * Classes
 
 ** SoundFileGui

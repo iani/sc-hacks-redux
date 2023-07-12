@@ -135,6 +135,7 @@ EditSoundPlayer {
 	cplay { | argEvent | this.clear.play(argEvent) }
 	clear { mediator.clear }
 	play { | argEvent |
+		argEvent.postln;
 		mediator.play(argEvent);
 	}
 

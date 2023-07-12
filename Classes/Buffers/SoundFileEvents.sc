@@ -30,7 +30,7 @@ SoundFileEvents {
 		var e;
 		e = this.eventAt(argName);
 		if (e.isNil) {
-			postln("no event fonud at" + argName);
+			postln("no event found at" + argName);
 		}{
 			postln("playing" + e[0]);
 			e[0].play;
@@ -50,18 +50,18 @@ SoundFileEvents {
 
 	read {
 		name = path.folderName.asSymbol; // this is also the buffer name!
-		postln("SoundFileEvents loading" + path);
-		postln("Files are:" + path.files);
+		// postln("SoundFileEvents loading" + path);
+		// postln("Files are:" + path.files);
 		path.files do: { | p |
 			var soundevent;
-			postln("path " + p + "is scd" + (p.extension == "scd"));
+			// postln("path " + p + "is scd" + (p.extension == "scd"));
 			if (p.extension == "scd") {
 				soundevent = this.makeSoundFileEvent(p);
 				// eventName = p.filenameWithoutE
 				// dict[name]
 			};
 		};
-		postln("Made these events:" + dict);
+		// postln("Made these events:" + dict);
 	}
 
 	makeSoundFileEvent { | argPath |
@@ -86,7 +86,7 @@ SoundFileEvents {
 			this.dictList,
 			this.eventList
 		).name_(name + "Sound File Settings");
-		postln(name + "Sound File Settings");
+		// postln(name + "Sound File Settings");
 
 	}
 

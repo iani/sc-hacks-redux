@@ -88,10 +88,10 @@ Project {
 
 	*matchingFilesDo { | pathName, func ... types |
 		types = types collect: _.asSymbol;
-		postln("Looking for files in" + pathName.fullPath + "...");
-		postln("... found:" + (pathName +/+ "*").fullPath.pathMatch
-			.collect({|p| PathName(p).fileName})
-		);
+		// postln("Looking for files in" + pathName.fullPath + "...");
+		// postln("... found:" + (pathName +/+ "*").fullPath.pathMatch
+		// 	.collect({|p| PathName(p).fileName})
+		// );
 		pathName filesDo: { | p | // ! filesDo recurses over subfolders!
 			if (types includes: p.extension.asSymbol) {
 				func.(p.fullPath)
@@ -122,7 +122,7 @@ Project {
 		this.matchingFilesDo(
 			pathName,
 			{ | p |
-				postf("Loading : %\n", p);
+				// postf("Loading : %\n", p);
 				p.load;
 			},
 			"scd"
@@ -163,10 +163,10 @@ Project {
 			OscGroups.enableCodeForwarding;
 		};
 		}{
-			"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!".postln;
-			postln("Synthdef loading for project" + selectedProject + "is disabled.");
-			"To enable autoload synthdefs, add a file named autoload_synthdefs.scd in the project's folder".postln;
-			"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!".postln;
+			// "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!".postln;
+			// postln("Synthdef loading for project" + selectedProject + "is disabled.");
+			// "To enable autoload synthdefs, add a file named autoload_synthdefs.scd in the project's folder".postln;
+			// "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!".postln;
 		}
 	}
 

@@ -151,17 +151,18 @@ Simplenumber @> \symbol // set bus to number
 }
 
 + SimpleNumber {
-	@> { | bus, playerEnvir = \sensors | // set bus value
+	@> { | bus, playerEnvir | // set bus value
 		// works with new AND already existing busses.
 		// Stop processes playing in this bus before setting a new value:
+		playerEnvir ?? { playerEnvir = currentEnvironment.name };
 		playerEnvir.envir[bus].free;
-		bus.bus(nil, playerEnvir ? currentEnvironment.name).set(this);
+		bus.bus(nil, playerEnvir).set(this);
 	}
 }
 
 + Point {
 	// create XLine from current value to x in y seconds
-	@> { | bus, playerEnvir = \sensors | // glide with xline
+	@> { | bus, playerEnvir | // glide with xline
 		var b;
 		b = bus.bus(nil, playerEnvir ? currentEnvironment.name);
 		b.get({ | v |
@@ -172,7 +173,7 @@ Simplenumber @> \symbol // set bus to number
 	}
 }
 + Array { // generate bus names from base name + index of array element
-	@> { | bus, playerEnvir = \sensors |
+	@> { | bus, playerEnvir |
 		this do: { | el, in |
 			el.perform('@>', format("%%", bus, in).asSymbol, playerEnvir);
 		}

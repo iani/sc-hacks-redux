@@ -14,6 +14,7 @@ See class SoundFileEvent.
 
 PlayFunc {
 	var <settings, <path, <specs, <func;
+	var <template; // template for BufCode
 
 	*new { | settings, path |
 		^this.newCopyArgs(settings, path).load;
@@ -29,8 +30,14 @@ PlayFunc {
 		}{
 			specs = string[..delimiters[0]].interpret ?? { this.defaultSpecs };
 			func = string[delimiters[0]..].interpret;
+			template = this.makeTemplate;
 		}
 	}
 
 	defaultSpecs { ^[PlayBuf_] }
+
+	makeTemplate {
+		// TODO!
+		^""
+	}
 }

@@ -73,8 +73,8 @@ PathName(Platform.userHomeDir).fullPath.size;
 		}{
 			buffer = Buffer.readWithInfo(server, this);
 			buffer !? {
-				postf("Loaded buffer %, % channels, %\n",
-					name, buffer.numChannels, buffer.dur.formatTime);
+				// postf("Loaded buffer %, % channels, %\n",
+				// 	name, buffer.numChannels, buffer.dur.formatTime);
 				Library.put(Buffer, name, buffer);
 				// "buffer issuing changed loaded".postln;
 				Buffer.changed(\loaded);

@@ -1,8 +1,11 @@
-/*  4 Jul 2023 18:43
-Specs for PlayBuf_
-*/
-
-(
-rate: 1, // [0.01, 10],
-loop: 0, //  [0, 1, 1, 0]
-)
+//:dur -- not settable while running.
+//:rate
+0.1 @> \rate;
+{ LFNoise0.kr(10).range(0.4, 3) } @> \rate;
+//:trigger
+{ Impulse.kr(2) } @> \trigger
+//:startpos
+0.85 @> \startpos
+//:loop
+1 @> \loop
+//:

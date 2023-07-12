@@ -24,6 +24,15 @@ BufCode {
 		})
 	}
 
+	// alternative init: init PlayBufTemplates to get necessary path + templates
+	// Under development
+	altInit {
+		PlayBufTemplates.withFolder({ | f |
+			PlayBufTemplates.init;
+			this.makeScript;
+		})
+	}
+
 	*defaultPath {
 		^PathName("~/sc-projects" +/+ "BufferPlayers/").fullPath;
 	}
