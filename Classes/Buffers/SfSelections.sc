@@ -14,7 +14,15 @@ SfSelections {
 		this.addNotifier(sbgui, \selection, { this.setSelection });
 	}
 
-	setSelection {
+	currentSelectionValues {
+		^selections[currentSelectionIndex];
+	}
+
+	setCurrentSelectionValues { | lo, hi |
+		selections[currentSelection] = [lo, hi];
+	}
+
+	setSelection { // need a better name!
 		currentSelectionIndex = sbgui.sfv.currentSelection;
 		currentSelection = sbgui.sfv.selection(currentSelectionIndex);
 		selections[currentSelectionIndex] = currentSelection;

@@ -141,15 +141,17 @@ SoundBufferGui {
 				$e, { this.edit },
 				$1, {
 					sfv.zoomToFrac(1);
+					this.changed(\zoom);
+			// postln("I changed zoom!");
 				},
-				$2, { sfv.zoomToFrac(1/2) },
-				$3, { sfv.zoomToFrac(1/3) },
-				$4, { sfv.zoomToFrac(1/4) },
-				$5, { sfv.zoomToFrac(1/5) },
-				$6, { sfv.zoomToFrac(1/6) },
-				$7, { sfv.zoomToFrac(1/7) },
-				$8, { sfv.zoomToFrac(1/8) },
-				$9, { sfv.zoomToFrac(1/9) },
+				$2, { sfv.zoomToFrac(1/2); this.changed(\zoom) },
+				$3, { sfv.zoomToFrac(1/3); this.changed(\zoom) },
+				$4, { sfv.zoomToFrac(1/4); this.changed(\zoom) },
+				$5, { sfv.zoomToFrac(1/5); this.changed(\zoom) },
+				$6, { sfv.zoomToFrac(1/6); this.changed(\zoom) },
+				$7, { sfv.zoomToFrac(1/7); this.changed(\zoom) },
+				$8, { sfv.zoomToFrac(1/8); this.changed(\zoom) },
+				$9, { sfv.zoomToFrac(1/9); this.changed(\zoom) },
 				$(, { sfv.scrollTo(0); this.changed(\zoom) },
 				$>, { sfv.scroll(1/10);  this.changed(\zoom) },
 				$<, { sfv.scroll(-1/10);  this.changed(\zoom) }
@@ -184,9 +186,9 @@ SoundBufferGui {
 
 	start { this.play }
 	play { // TODO: rewrite this from EditSoundPlayer using own playfuncs?
-		postln("debugging play. selections currentindex:" + selections.currentSelectionIndex);
-		postln("dur sel currrent (!)" + selections.currentSelection);
-		postln("this selectionDur" + this.selectionDur);
+		// postln("debugging play. selections currentindex:" + selections.currentSelectionIndex);
+		// postln("dur sel currrent (!)" + selections.currentSelection);
+		// postln("this selectionDur" + this.selectionDur);
 		if (this.selectionDur == 0) {
 			^postln("refusing to play selection" + selections.currentSelectionIndex
 				+ "because its duration is 0");
@@ -247,30 +249,75 @@ SoundBufferGui {
 
 	currentSelection { ^selections.currentSelectionIndex }
 
+	restoreSelection {
+		sfv.currentSelection = this.currentSelection;
+		this.changed(\selection);
+	}
+
 	toggleSelectionZoom {
 		if (this.isZoomedOut) {
 			this.zoomSelection;
 		}{
-			sfv.zoomToFrac(1);
-			sfv.setSelection(selections.currentSelectionIndex, selections.currentSelection);
-		}
+			this.zoomOut;
+		};
+		this.changed(\zoom);
 	}
 
 	isZoomedOut {
-		^sfv.xZoom.round(0.00001) == buffer.dur.round(0.00001)
+		^sfv.xZoom.round(0.00001) == buffer.dur.round(0.00001);
 	}
 
 	zoomSelection {
 		{
 			sfv.zoomSelection(selections.currentSelectionIndex);
+			this.changed(\zoom);
 		}.fork(AppClock);
+	}
+
+	zoomOut {
+		sfv.zoomToFrac(1);
+		sfv.setSelection(selections.currentSelectionIndex, selections.currentSelection);
+		this.restoreSelection;
+		this.changed(\zoom);
 	}
 
 	rangeSlider {
 		^RangeSlider().orientation_(\horizontal)
+		.palette_(QPalette.dark)
+		.knobColor_(Color.green)
+		.addNotifier(this, \zoom, { | n |
+			var offsetRatio, scrollRatio, scrollPos;
+			scrollPos = sfv.scrollPos;
+			scrollRatio = sfv.viewFrames / buffer.numFrames;
+			offsetRatio = scrollRatio * scrollPos;
+			n.listener.lo = 1 - scrollRatio * scrollPos;
+			n.listener.hi = 1 - scrollRatio * scrollPos + scrollRatio;
+		})
+		.keyDownAction_({ | me, char |
+			switch(char,
+				$z, {
+					if (this.isZoomedOut) {
+					this.restoreSelection;
+					selections.currentSelectionValues.postln;
+					me.lo = selections.currentSelectionValues[0] / buffer.numFrames;
+					me.hi = selections.currentSelectionValues[0]
+					+ selections.currentSelectionValues[1] / buffer.numFrames;
+					me.doAction;
+					}{
+						this.zoomOut;
+					}
+				}
+			)
+		})
+		.action_({ | me |
+			var zoomratio;
+			zoomratio = me.hi-me.lo;
+			sfv.zoomToFrac(zoomratio);
+			sfv.scrollTo(me.lo / ( 1 - zoomratio));
+		})
 	}
 
-	posDisplay { | sfv |
+	posDisplay { // | sfv |
 		^HLayout(
 			StaticText().string_("selection")
 			.addNotifier(this, \selectionIndex, { | n, index |

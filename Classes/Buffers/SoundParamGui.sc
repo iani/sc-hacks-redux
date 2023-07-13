@@ -24,7 +24,7 @@ SoundParamGui {
 		.hlayout(
 			this.pane(0, 11),
 			this.pane(12, 23)
-		)
+		).name()
 	}
 	makeParamSpecs {
 		paramSpecs = (1..24) collect: { | i |
