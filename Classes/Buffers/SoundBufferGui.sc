@@ -139,11 +139,7 @@ SoundBufferGui {
 				$., { this.stop },
 				$ , { this.togglePlay; },
 				$e, { this.edit },
-				$1, {
-					sfv.zoomToFrac(1);
-					this.changed(\zoom);
-			// postln("I changed zoom!");
-				},
+				$1, {sfv.zoomToFrac(1); this.changed(\zoom);},
 				$2, { sfv.zoomToFrac(1/2); this.changed(\zoom) },
 				$3, { sfv.zoomToFrac(1/3); this.changed(\zoom) },
 				$4, { sfv.zoomToFrac(1/4); this.changed(\zoom) },
@@ -328,7 +324,20 @@ SoundBufferGui {
 						sfv.viewFrames
 					);
 					this.restoreSelectionValuesFromSelections;
-				}
+					this.divertSelection;
+				},
+				$1, {sfv.zoomToFrac(1); this.changed(\zoom);},
+				$2, { sfv.zoomToFrac(1/2); this.changed(\zoom) },
+				$3, { sfv.zoomToFrac(1/3); this.changed(\zoom) },
+				$4, { sfv.zoomToFrac(1/4); this.changed(\zoom) },
+				$5, { sfv.zoomToFrac(1/5); this.changed(\zoom) },
+				$6, { sfv.zoomToFrac(1/6); this.changed(\zoom) },
+				$7, { sfv.zoomToFrac(1/7); this.changed(\zoom) },
+				$8, { sfv.zoomToFrac(1/8); this.changed(\zoom) },
+				$9, { sfv.zoomToFrac(1/9); this.changed(\zoom) },
+				$(, { sfv.scrollTo(0); this.changed(\zoom) },
+				$>, { sfv.scroll(1/10);  this.changed(\zoom) },
+				$<, { sfv.scroll(-1/10);  this.changed(\zoom) }
 			)
 		})
 		.action_({ | me |
