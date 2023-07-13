@@ -19,7 +19,8 @@ SfSelections {
 	}
 
 	setCurrentSelectionValues { | lo, hi |
-		selections[currentSelection] = [lo, hi];
+		// postln("debugging setCurrentSelectionValues. current")
+		selections[currentSelectionIndex] = [lo, hi];
 	}
 
 	setSelection { // need a better name!

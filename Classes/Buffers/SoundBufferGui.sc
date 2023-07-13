@@ -249,9 +249,15 @@ SoundBufferGui {
 
 	currentSelection { ^selections.currentSelectionIndex }
 
-	restoreSelection {
+	restoreSelectionIndex {
 		sfv.currentSelection = this.currentSelection;
 		this.changed(\selection);
+	}
+
+	restoreSelectionValuesFromSelections {
+		sfv.setSelection(selections.currentSelectionIndex,
+			selections.selections[selections.currentSelectionIndex]
+		)
 	}
 
 	toggleSelectionZoom {
@@ -270,6 +276,8 @@ SoundBufferGui {
 	zoomSelection {
 		{
 			sfv.zoomSelection(selections.currentSelectionIndex);
+			sfv.setSelection(selections.currentSelectionIndex, selections.currentSelection);
+			this.divertSelection;
 			this.changed(\zoom);
 		}.fork(AppClock);
 	}
@@ -277,9 +285,12 @@ SoundBufferGui {
 	zoomOut {
 		sfv.zoomToFrac(1);
 		sfv.setSelection(selections.currentSelectionIndex, selections.currentSelection);
-		this.restoreSelection;
+		this.restoreSelectionIndex;
+		this.divertSelection;
 		this.changed(\zoom);
 	}
+
+	divertSelection { sfv.currentSelection = 63; }
 
 	rangeSlider {
 		^RangeSlider().orientation_(\horizontal)
@@ -293,19 +304,30 @@ SoundBufferGui {
 			n.listener.lo = 1 - scrollRatio * scrollPos;
 			n.listener.hi = 1 - scrollRatio * scrollPos + scrollRatio;
 		})
+		.mouseUpAction_({ |view, x, y, mod| //
+			this.divertSelection;
+		})
 		.keyDownAction_({ | me, char |
 			switch(char,
-				$z, {
-					if (this.isZoomedOut) {
-					this.restoreSelection;
-					selections.currentSelectionValues.postln;
-					me.lo = selections.currentSelectionValues[0] / buffer.numFrames;
-					me.hi = selections.currentSelectionValues[0]
-					+ selections.currentSelectionValues[1] / buffer.numFrames;
-					me.doAction;
-					}{
-						this.zoomOut;
-					}
+				// // // $z, { //  zoom to current selection11
+				// // 	"NOT DEBUGGED!".postln;
+				// // 	if (this.isZoomedOut) {
+				// // 	this.restoreSelectionIndex;
+				// // 	me.lo = selections.currentSelectionValues[0] / buffer.numFrames;
+				// // 	me.hi = selections.currentSelectionValues[0]
+				// // 	+ selections.currentSelectionValues[1] / buffer.numFrames;
+				// // 	me.doAction;
+				// // 	}{
+				// // 		this.zoomOut;
+				// // 	}
+				// },
+				$s, { // set current selection to zoom
+					this.restoreSelectionIndex;
+					selections.setCurrentSelectionValues(
+						(me.lo * buffer.numFrames).asInteger,
+						sfv.viewFrames
+					);
+					this.restoreSelectionValuesFromSelections;
 				}
 			)
 		})
@@ -316,6 +338,7 @@ SoundBufferGui {
 			sfv.scrollTo(me.lo / ( 1 - zoomratio));
 		})
 	}
+
 
 	posDisplay { // | sfv |
 		^HLayout(
@@ -357,9 +380,11 @@ SoundBufferGui {
 			.addNotifier(this, \selection, { | n |
 				n.listener.value = this.selectionDur;
 			}),
+			Button()
+			.states_([["parameters"]])
+			.action_({ this.openParameterGui }),
 			StaticText().string_("playfunc menu:"),
 			Button()
-			// .maxWidth_(50)
 			.canFocus_(false)
 			.states_([["playbuf", Color.red, Color.white]])
 			.action_({ | me | Menu(
@@ -369,5 +394,9 @@ SoundBufferGui {
 					f.postln; playfunc = f.asSymbol })})
 			).front })
 		)
+	}
+
+	openParameterGui {
+
 	}
 }
