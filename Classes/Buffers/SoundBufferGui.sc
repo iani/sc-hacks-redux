@@ -106,7 +106,8 @@ SoundBufferGui {
 	}
 
 	selectionDur {
-		^sfv.selectionSize(selections.currentSelectionIndex) / buffer.sampleRate;
+		// ^sfv.selectionSize(selections.currentSelectionIndex) / buffer.sampleRate;
+		^selections.currentSelection[1] / buffer.sampleRate;
 	}
 
 	selectionFrac {
@@ -183,6 +184,9 @@ SoundBufferGui {
 
 	start { this.play }
 	play { // TODO: rewrite this from EditSoundPlayer using own playfuncs?
+		postln("debugging play. selections currentindex:" + selections.currentSelectionIndex);
+		postln("dur sel currrent (!)" + selections.currentSelection);
+		postln("this selectionDur" + this.selectionDur);
 		if (this.selectionDur == 0) {
 			^postln("refusing to play selection" + selections.currentSelectionIndex
 				+ "because its duration is 0");
@@ -281,6 +285,7 @@ SoundBufferGui {
 			.action_({ | me |
 				sfv.currentSelection = me.value.asInteger;
 				this.changed(\selection);
+				this.changed(\selectionIndex, me.value.asInteger);
 			})
 			.addNotifier(this, \selectionIndex, { | n, index |
 				n.listener.value = index;

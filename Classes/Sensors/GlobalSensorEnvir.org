@@ -2,17 +2,12 @@
 
 * Summary:
 
-1. Minibee should also sum all x,y,z inputs from each sensor and send them to bus xyz.
-2. Define shortcut method Function:xyzenv(sensorid, player, lag)
-3. Define shortcut methods Function:gt and lt (sensor, thresh, player, lagtime)
-4. Define shortcut methods sensor:maplin and mapexp (min, max, player, param)
+1. Define shortcut methods sensor: Symbol:ml, mw (maplin and mapexp) args: (min, max, param, player) (Done Wed 12 Jul 2023 16:21)
+2. Define shortcut methods Function:gt and lt (sensor, thresh, player, lagtime) (Done Wed 12 Jul 2023 16:21). Also added gtp and ltp methods that include playing to a player.
+3. Minibee should also sum all x,y,z inputs from each sensor and send them to bus xyz.
+4. Define shortcut method Function:xyzenv(sensorid, player, lag)
 
 * List of things to implement
-
--
-
-
-
 
 -------- Details --------
 ---- Newer draft - modular system with methods.
@@ -125,3 +120,7 @@ To specify lag time, use array as argument:
 { SinOsc.ar(400, 0, 0.1).dup } >**.x1 [0.5, 1.2] +> \player
 
 { SinOsc.ar(400, 0, 0.1).dup } <**.z5 0.1 +> \player
+
+* Footnotes
+
+[fn:1]

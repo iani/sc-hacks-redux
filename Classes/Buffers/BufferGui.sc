@@ -14,7 +14,7 @@ BufferGui {
 	*new { this.gui }
 	*gui {
 		var selectedBuffer;
-		this.vlayout(
+		this.br_.vlayout(
 			Button().states_([["open"]])
 			.action_({ | me |
 				SoundBufferGui.gui((selectedBuffer ?? { Buffer.all.first }).buf);
