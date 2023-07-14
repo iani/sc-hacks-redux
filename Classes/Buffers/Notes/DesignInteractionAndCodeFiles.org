@@ -1,0 +1,18 @@
+#+TITLE: Design Interaction And Code Files
+
+Fri 14 Jul 2023 07:30
+
+* template files
+** where they are located
+** creating code
+* saving sessions
+** basic principle
+Save each editing session as a single code file, where each selection setting is a separate snippet.
+The file is saved in
+** where they are located
+
+**
+** creating session files
+
+
+** playing session files

@@ -14,12 +14,12 @@ SfSelections {
 		this.addNotifier(sbgui, \selection, { this.setSelection });
 	}
 
-	currentSelectionValues {
-		^selections[currentSelectionIndex];
-	}
+	startFrame { ^selections[currentSelectionIndex][0]; }
+	endFrame { ^selections[currentSelectionIndex].sum }
+	numFrames { ^selections[currentSelectionIndex][1] }
+	currentSelectionValues { ^selections[currentSelectionIndex]; }
 
 	setCurrentSelectionValues { | lo, hi |
-		// postln("debugging setCurrentSelectionValues. current")
 		selections[currentSelectionIndex] = [lo, hi];
 	}
 

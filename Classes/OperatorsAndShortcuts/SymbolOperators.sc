@@ -3,6 +3,10 @@
 */
 
 + Symbol {
+	// convert to specs for use by Param
+	ps { | lo = 0, hi = 1.0, default = 1, map = \linear, step = 0 |
+		^[lo, hi, map, step, default, this].asSpec;
+	}
 	play { | playFunc, event |
 		// play playfunc in event envir of Mediator named by me
 		^Mediator.at(this).play(playFunc, event);

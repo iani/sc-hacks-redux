@@ -7,7 +7,7 @@ SoundBufferGui {
 	var selection;
 	var <>selections; // remember selections because sfv seems to forget them.
 	var <playfuncs; // TODO: transfer these from EditSoundPlayer. Use a different directory
-	var <playfunc = \playbuf; // name of playfunc selected from menu
+	var <playfunc = \phasebuf; // name of playfunc selected from menu
 	// to load them.
 	*initClass {
 		// TODO: Rewrite this to use own playfuncs from sc-hacks repository,
@@ -18,7 +18,7 @@ SoundBufferGui {
 	*default { ^this.new(Buffer.all.first.buf) }
 
 	*new { | buffer | ^this.newCopyArgs(buffer) }
-	*gui { | buffer | this.new(buffer).gui; }
+	*gui { this.default.gui }
 
 	name { ^buffer.name }
 	gui {
@@ -92,23 +92,36 @@ SoundBufferGui {
 		)
 	}
 
+	sendSelectionToServer {
+		this.startFrame.perform('@>', \startframe, this.name);
+		this.endFrame.perform('@>', \endframe, this.name);
+	}
+
 	zeroSelection {
 		sfv.setSelection(sfv.currentSelection, [0, 0]);
 		this.changed(\selection);
 	}
 	selectionStart {
-		^(sfv.selectionStart(sfv.currentSelection) / buffer.sampleRate);
+		// ^sfv.selectionStart(sfv.currentSelection) / buffer.sampleRate;
+		^this.startFrame / buffer.sampleRate;
 	}
 
 	selectionEnd {
-		^sfv.selectionStart(sfv.currentSelection) + sfv.selectionSize(sfv.currentSelection)
-		/ buffer.sampleRate;
+		// ^sfv.selectionStart(sfv.currentSelection) + sfv.selectionSize(sfv.currentSelection)
+		// / buffer.sampleRate;
+		^this.endFrame / this.sampleRate;
 	}
 
 	selectionDur {
 		// ^sfv.selectionSize(selections.currentSelectionIndex) / buffer.sampleRate;
-		^selections.currentSelection[1] / buffer.sampleRate;
+		// ^selections.currentSelection[1] / buffer.sampleRate;
+		^this.numFrames / this.sampleRate;
 	}
+
+	startFrame { ^selections.startFrame; }
+	endFrame { ^selections.endFrame; }
+	numFrames { ^selections.numFrames }
+	sampleRate { ^buffer.sampleRate }
 
 	selectionFrac {
 		selections.currentSelection;
@@ -158,7 +171,9 @@ SoundBufferGui {
 		})
 		.mouseUpAction_({ |view, x, y, mod| //
 			// divert non-drag clicks to last selection.
-			sfv.currentSelection = 63;
+			this.sendSelectionToServer;
+			// sfv.currentSelection = 63;
+			this.divertSelection;
 			// this.changed(\selection);
 		})
 		.action_({ | me | // Runs on mouseclick
@@ -190,14 +205,16 @@ SoundBufferGui {
 				+ "because its duration is 0");
 		};
 		postln("playing selection" + selections.currentSelectionIndex + "of duration"
-		+ this.selectionDur);
+		+ this.selectionDur + "with playfunc" + playfunc);
 		buffer.name.perform(
 			'@@',
 			(
 				startpos: this.selectionStart,
 				dur: this.selectionDur,
+				startframe: this.startFrame, // for frame-based players like PhaseBuf_
+				endframe: this.endFrame, // for frame-based players like PhaseBuf_
 			),
-			(playfunc ?? { \playbuf }).postln);
+			(playfunc ?? { \phasebuf }));
 	}
 	stop {
 		buffer.name.envir.stopSynths;
@@ -216,31 +233,17 @@ SoundBufferGui {
 		restore = this.currentSelection;
 		sfv.setSelection(selections.currentSelectionIndex, [0, buffer.numFrames]);
 		this.changed(\selection);
-		// postln("selection" + sfv.currentSelection + "has full duration in samples:"
-		// 	+ sfv.selection(sfv.currentSelection)
-		// 	+ "in seconds:" + this.selectionDur
-		// );
-
 		sfv.currentSelection = restore;
 		this.changed(\selection);
 	}
 
 	clearSelection {
 		var restore;
-		// postln("selection before clearing - cache index is:" + this.currentSelection);
 		restore = this.currentSelection;
 		sfv.setSelection(selections.currentSelectionIndex, [0, 0]);
 		this.changed(\selection);
-		// postln("selection" + this.currentSelection + "has cleared duration in samples:"
-		// 	+ sfv.selection(this.currentSelection)
-		// 	+ "in seconds:" + this.selectionDur
-		// );
 		sfv.currentSelection = restore;
-		// postln("the current selection index of sfv is" + sfv.currentSelection);
 		this.changed(\selection);
-		// postln("the current selection index of selections is" + this.currentSelection);
-		// postln("repeat from source"  + selections.currentSelectionIndex);
-
 	}
 
 	currentSelection { ^selections.currentSelectionIndex }
@@ -301,6 +304,7 @@ SoundBufferGui {
 			n.listener.hi = 1 - scrollRatio * scrollPos + scrollRatio;
 		})
 		.mouseUpAction_({ |view, x, y, mod| //
+			this.sendSelectionToServer;
 			this.divertSelection;
 		})
 		.keyDownAction_({ | me, char |
@@ -390,22 +394,36 @@ SoundBufferGui {
 				n.listener.value = this.selectionDur;
 			}),
 			Button()
-			.states_([["parameters"]])
+			.states_([["tweak synth"]])
 			.action_({ this.openParameterGui }),
 			StaticText().string_("playfunc menu:"),
 			Button()
 			.canFocus_(false)
-			.states_([["playbuf", Color.red, Color.white]])
+			.states_([["phasebuf", Color.red, Color.white]])
 			.action_({ | me | Menu(
-				*PlayBufTemplate.playfuncs.keys.asArray.sort
+				*SynthTemplate.playfuncs.keys.asArray.sort
 				.collect({ | f | MenuAction(f.asString, {
 					me.states_([[f.asString]]);
 					f.postln; playfunc = f.asSymbol })})
-			).front })
+			).front }),
+			Button()
+			.states_([["test"]])
+			.action_({ this.test })
 		)
 	}
 
 	openParameterGui {
+		this.changed(\closeSoundParams);
+		SoundParamGui(this);
+	}
 
+	test {
+		"testing".postln;
+		this.envir.postln;
+	}
+
+	bufName { ^buffer.name }
+	envir {
+		^buffer.name.envir;
 	}
 }

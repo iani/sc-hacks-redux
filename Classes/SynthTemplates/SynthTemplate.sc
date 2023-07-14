@@ -3,7 +3,7 @@ Reads templates from a directory.
 Constructs code for BufCode.
 */
 
-PlayBufTemplate {
+SynthTemplate {
 	classvar <playfuncs; // Dictionary of playfuncs
 	classvar <homefolder, <templatesfolder, <playfuncsfolder, <codefolder;
 

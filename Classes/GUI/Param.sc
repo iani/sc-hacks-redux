@@ -3,15 +3,15 @@
 */
 
 Param {
-	var <model, <name, <spec, <value;
+	var <model, <spec, <name, <value;
 
-	*new { | model, name, spec |
-		^this.newCopyArgs(model, name, spec).init;
+	*new { | model, spec |
+		^this.newCopyArgs(model, spec).init;
 	}
 
 	init {
-		spec = spec.asSpec;
-		spec.postln;
+		name = spec.units.asSymbol;
+		// spec = spec.asSpec;
 		value = spec.default;
 	}
 	gui {
@@ -21,21 +21,39 @@ Param {
 			NumberBox().maxWidth_(80)
 			.clipLo_(spec.clipLo)
 			.clipHi_(spec.clipHi)
-			.addNotifier(this, name, { | n |
+			.addNotifier(this, \value, { | n |
 				n.listener.value = value;
+				this.sendValueToSynthEnvir;
 			})
-			.action_{ | me |
+			.value_(spec.default)
+			.action_({ | me |
 				value = me.value;
-				this.changed(name);
-			},
+				// model.changed(name);
+			}),
 			Slider().orientation_(\horizontal)
-			.addNotifier(this, name, { | n |
+			.addNotifier(this, \value, { | n |
 				n.listener.value = spec.unmap(value);
 			})
+			.palette_(QPalette.light)
+			.background_(Color.grey(0.65))
+			.value_(spec.unmap(spec.default))
 			.action_{ | me |
 				value = spec.map(me.value);
-				this.changed(name);
+				this.changed(\value);
 			},
 		)
+	}
+
+	sendValueToSynthEnvir {
+		postln("sending" + value + "to param" + name + "of" + this.bufName);
+		value.perform('@>', name, this.bufName);
+	}
+
+	bufName {
+		^model.bufName;
+		// ^model.bufName;
+	}
+	notifyModel {
+		// model.notifyModel(index, name )
 	}
 }

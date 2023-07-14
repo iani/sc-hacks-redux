@@ -14,31 +14,36 @@ SoundParamGui {
 	var sbg; // SoundBufferGui
 	var paramSpecs, params;
 	*new { | sbg |
-		^this.newCopyArgs(sbg).init;
+		^this.newCopyArgs(sbg ?? { SoundBufferGui.default; }).init;
 	}
 
 	init {
-		this.makeParamSpecs;
+		// this.makeParamSpecs;
 		this.makeParams;
 		this.bounds_(Rect(400, 0, 700, 400))
 		.hlayout(
-			this.pane(0, 11),
-			this.pane(12, 23)
-		).name()
+			*params.clump(12).collect({ | ps |
+				VLayout(*ps.collect({ | p | p.gui}))
+			})
+		)
 	}
-	makeParamSpecs {
-		paramSpecs = (1..24) collect: { | i |
-			[("label" + i).asSymbol, \freq.asSpec]
-		};
-	}
-
 	makeParams {
-		params = paramSpecs collect: { | p |
-			Param(this, p[0], p[1])
-		}
+		params = (1..24) collect: { | i |
+			("label" + i).asSymbol.ps;
+		};
+		params[0] = 'rate'.ps(0.05, 20, 1);
+		params = params collect: { | p | Param(this, p) };
 	}
 
-	pane { | lo, hi |
-		^VLayout(*(params.copyRange(lo, hi).collect({ | p | p.gui})))
+	pane { |  ps |
+		^VLayout(*(ps.collect({ | p | p.gui})))
+	}
+
+	envir {
+		^sbg.name.envir;
+	}
+
+	bufName {
+		^sbg.bufName;
 	}
 }

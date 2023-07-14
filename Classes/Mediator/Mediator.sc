@@ -50,9 +50,7 @@ Mediator : EnvironmentRedirect {
 			};
 			// "disabled".postln;
 		};
-		// postln("Mediator play event playfunc is" + envir[\playfunc]);
-		// postln("func from PlayBufTemplate is" + PlayBufTemplate.getFunc(envir[\playfunc]));
-		playfunc = PlayBufTemplate.getFunc(envir[\playfunc]);
+		playfunc = SynthTemplate.getFunc(envir[\playfunc]);
 		// playfunc = PlayBufTemplate.getFunc(\loopbuf);
 		envir[\play] = { playfunc +> name };
 		envir[\mediator] = name;
