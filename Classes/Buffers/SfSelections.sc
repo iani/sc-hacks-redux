@@ -23,6 +23,31 @@ SfSelections {
 		selections[currentSelectionIndex] = [lo, hi];
 	}
 
+	moveSelectionStartBy { | frames = 1000 | // move start only. dur changes
+		this.setCurrentSelectionValues(
+			*(this.currentSelectionValues + [frames, frames.neg]); // frames
+		);
+
+	}
+
+	moveSelectionDurBy { | frames = 1000 | // move dur only
+		this.setCurrentSelectionValues(
+			*(this.currentSelectionValues + [0, frames]); // frames
+		);
+	}
+
+	moveSelectionBy { | frames = 1000 | // move start, keeping dur as is
+		this.setCurrentSelectionValues(
+			*(this.currentSelectionValues + [frames, 0]);
+		);
+	}
+
+	resizeSelectionBy { | frames = 1000 | // move start + end by equal amounts
+		this.setCurrentSelectionValues(
+			*(this.currentSelectionValues + [frames, (2 * frames).neg]);
+		);
+	}
+
 	setSelection { // need a better name!
 		currentSelectionIndex = sbgui.sfv.currentSelection;
 		currentSelection = sbgui.sfv.selection(currentSelectionIndex);

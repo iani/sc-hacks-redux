@@ -8,6 +8,7 @@ SoundBufferGui {
 	var <>selections; // remember selections because sfv seems to forget them.
 	var <playfuncs; // TODO: transfer these from EditSoundPlayer. Use a different directory
 	var <playfunc = \phasebuf; // name of playfunc selected from menu
+	var <zoomfrac = 1, scrollpos = 0;
 	// to load them.
 	*initClass {
 		// TODO: Rewrite this to use own playfuncs from sc-hacks repository,
@@ -102,19 +103,14 @@ SoundBufferGui {
 		this.changed(\selection);
 	}
 	selectionStart {
-		// ^sfv.selectionStart(sfv.currentSelection) / buffer.sampleRate;
 		^this.startFrame / buffer.sampleRate;
 	}
 
 	selectionEnd {
-		// ^sfv.selectionStart(sfv.currentSelection) + sfv.selectionSize(sfv.currentSelection)
-		// / buffer.sampleRate;
 		^this.endFrame / this.sampleRate;
 	}
 
 	selectionDur {
-		// ^sfv.selectionSize(selections.currentSelectionIndex) / buffer.sampleRate;
-		// ^selections.currentSelection[1] / buffer.sampleRate;
 		^this.numFrames / this.sampleRate;
 	}
 
@@ -136,6 +132,8 @@ SoundBufferGui {
 	sfView {
 		var mouseButton, sfZoom, sfv;
 		sfv = SoundFileView()
+		// .gridOn_(false)
+		.background_(Color(0.25, 0.1, 0.1))
 		.soundfile_(SoundFile(buffer.path))
 		.readWithTask(0, buffer.numFrames, { this.setSelection(0) })
 		.timeCursorOn_(true)
@@ -145,25 +143,29 @@ SoundBufferGui {
 					"testing".postln;
 					sfv.currentSelection;
 				},
+				$-, { this.clearSelection; },
+				$=, { this.selectAll },
+				$z, { this.toggleSelectionZoom }, // TO BE REMOVED?
 				$a, { this.selectAll },
 				$c, { this.clearSelection },
-				$z, { this.toggleSelectionZoom },
 				$p, { this.play },
 				$., { this.stop },
 				$ , { this.togglePlay; },
 				$e, { this.edit },
-				$1, {sfv.zoomToFrac(1); this.changed(\zoom);},
-				$2, { sfv.zoomToFrac(1/2); this.changed(\zoom) },
-				$3, { sfv.zoomToFrac(1/3); this.changed(\zoom) },
-				$4, { sfv.zoomToFrac(1/4); this.changed(\zoom) },
-				$5, { sfv.zoomToFrac(1/5); this.changed(\zoom) },
-				$6, { sfv.zoomToFrac(1/6); this.changed(\zoom) },
-				$7, { sfv.zoomToFrac(1/7); this.changed(\zoom) },
-				$8, { sfv.zoomToFrac(1/8); this.changed(\zoom) },
-				$9, { sfv.zoomToFrac(1/9); this.changed(\zoom) },
-				$(, { sfv.scrollTo(0); this.changed(\zoom) },
+				$1, { this.moveSelectionStartBy(1); },
+				$2, { this.moveSelectionStartBy(10); },
+				$3, { this.moveSelectionStartBy(100); },
+				$4, { this.moveSelectionStartBy(1000); },
+				$5, { this.moveSelectionStartBy(10000); },
+				$6, { this.moveSelectionStartBy(-1); },
+				$7, { this.moveSelectionStartBy(-10); },
+				$8, { this.moveSelectionStartBy(-100); },
+				$9, { this.moveSelectionStartBy(-1000); },
+				$0, { this.moveSelectionStartBy(-10000); },
 				$>, { sfv.scroll(1/10);  this.changed(\zoom) },
-				$<, { sfv.scroll(-1/10);  this.changed(\zoom) }
+				$<, { sfv.scroll(-1/10);  this.changed(\zoom) },
+				$R, { this.focusRangeSlider },
+				$Z, { this.toggleSelectionZoom }
 			);
 		})
 		.mouseDownAction_({ |view, x, y, mod, buttonNumber|
@@ -185,13 +187,21 @@ SoundBufferGui {
 				sfv.currentSelection = selections.currentSelectionIndex;
 				this.changed(\selection);
 			};
+		})
+		.addNotifier(this, \focusSoundFileView, { | n |
+			"Sound File View will focus!".postln;
+			n.listener focus: true;
 		});
 		colors do: { | c, i | sfv.setSelectionColor(i, c) };
 		^sfv;
 	}
 
+	focusRangeSlider {
+		this.changed(\focusRangeSlider)
+	}
+
 	edit {
-		"edit not yet implemented".postln;
+		// "edit not yet implemented".postln;
 		BufCode(this).makeDoc;
 	}
 
@@ -205,7 +215,7 @@ SoundBufferGui {
 				+ "because its duration is 0");
 		};
 		postln("playing selection" + selections.currentSelectionIndex + "of duration"
-		+ this.selectionDur + "with playfunc" + playfunc);
+		+ this.selectionDur + "with" + playfunc);
 		buffer.name.perform(
 			'@@',
 			(
@@ -237,13 +247,49 @@ SoundBufferGui {
 		this.changed(\selection);
 	}
 
-	clearSelection {
+	clearSelection { // TODO: Rework and check this.
 		var restore;
 		restore = this.currentSelection;
 		sfv.setSelection(selections.currentSelectionIndex, [0, 0]);
 		this.changed(\selection);
 		sfv.currentSelection = restore;
 		this.changed(\selection);
+	}
+
+	setSelection { | beg, duration | // TODO: implement this
+		// set frames of current selection to beginning and end
+		// test version:
+		selections.setCurrentSelectionValues(10000, 40000);
+		this.getSelection;
+	}
+
+	performOnSelection { | method, frames | // used by methods below.
+		// modify selections' selection by applying method with frames,
+		// set sfv selection to it, and divert.
+		selections.perform(method, frames);
+		this.getSelection;
+	}
+	getSelection {
+		// set sfv views current selection index + values from selecgtions
+		// divert selection to null (63)
+		// cause update of views
+		this.restoreSelectionValuesFromSelections;
+		this.divertSelection;
+	}
+
+	moveSelectionStartBy { | frames | // move start only. dur changes
+		this.performOnSelection(\moveSelectionStartBy, frames);
+	}
+
+	moveSelectionDurBy { | frames | // move dur only
+		this.performOnSelection(\moveSelectionDurBy, frames);
+	}
+	moveSelectionBy { | frames | // move start, keeping dur as is
+		this.performOnSelection(\moveSelectionBy, frames);
+	}
+
+	resizeSelectionBy { | frames | // move start + end by equal amounts
+		this.performOnSelection(\resizeSelectionBy, frames);
 	}
 
 	currentSelection { ^selections.currentSelectionIndex }
@@ -297,6 +343,7 @@ SoundBufferGui {
 		.knobColor_(Color.green)
 		.addNotifier(this, \zoom, { | n |
 			var offsetRatio, scrollRatio, scrollPos;
+			// postln("updating zoom view");
 			scrollPos = sfv.scrollPos;
 			scrollRatio = sfv.viewFrames / buffer.numFrames;
 			offsetRatio = scrollRatio * scrollPos;
@@ -307,6 +354,7 @@ SoundBufferGui {
 			this.sendSelectionToServer;
 			this.divertSelection;
 		})
+		.focusColor_(Color.red)
 		.keyDownAction_({ | me, char |
 			switch(char,
 				// // // $z, { //  zoom to current selection11
@@ -330,28 +378,58 @@ SoundBufferGui {
 					this.restoreSelectionValuesFromSelections;
 					this.divertSelection;
 				},
-				$1, {sfv.zoomToFrac(1); this.changed(\zoom);},
-				$2, { sfv.zoomToFrac(1/2); this.changed(\zoom) },
-				$3, { sfv.zoomToFrac(1/3); this.changed(\zoom) },
-				$4, { sfv.zoomToFrac(1/4); this.changed(\zoom) },
-				$5, { sfv.zoomToFrac(1/5); this.changed(\zoom) },
-				$6, { sfv.zoomToFrac(1/6); this.changed(\zoom) },
-				$7, { sfv.zoomToFrac(1/7); this.changed(\zoom) },
-				$8, { sfv.zoomToFrac(1/8); this.changed(\zoom) },
-				$9, { sfv.zoomToFrac(1/9); this.changed(\zoom) },
-				$(, { sfv.scrollTo(0); this.changed(\zoom) },
-				$>, { sfv.scroll(1/10);  this.changed(\zoom) },
-				$<, { sfv.scroll(-1/10);  this.changed(\zoom) }
+				$z, { this.focusSoundFileView; },
+				$1, { this.zoomToFrac(zoomfrac - 0.0001); },
+				$2, { this.zoomToFrac(zoomfrac - 0.001); },
+				$3, { this.zoomToFrac(zoomfrac - 0.01); },
+				$4, { this.zoomToFrac(zoomfrac - 0.1); },
+				$5, { this.zoomToFrac(1); },
+				$6, { this.toggleSelectionZoom; },
+				$7, { this.zoomToFrac(zoomfrac + 0.1); },
+				$8, { this.zoomToFrac(zoomfrac + 0.01); },
+				$9, { this.zoomToFrac(zoomfrac + 0.001); },
+				$0, { this.zoomToFrac(zoomfrac + 0.0001); },
+				$q, { this.scrollTo(scrollpos - 0.0001); },
+				$w, { this.scrollTo(scrollpos - 0.001); },
+				$e, { this.scrollTo(scrollpos - 0.01); },
+				$r, { this.scrollTo(scrollpos - 0.1); },
+				$t, { this.scrollTo(0); },
+				$y, { this.scrollTo(1); },
+				$u, { this.scrollTo(scrollpos + 0.1); },
+				$i, { this.scrollTo(scrollpos + 0.01); },
+				$o, { this.scrollTo(scrollpos + 0.001); },
+				$p, { this.scrollTo(scrollpos + 0.0001); },
+				// $(, { sfv.scrollTo(0); this.changed(\zoom) },
+				$>, { this.zoomToFrac(zoomfrac + 0.1); },
+				$<, { this.zoomToFrac(zoomfrac - 0.1); },
+				$z, { this.focusSoundFileView },
+				$Z, { this.focusSoundFileView }
 			)
 		})
 		.action_({ | me |
 			var zoomratio;
 			zoomratio = me.hi-me.lo;
 			sfv.zoomToFrac(zoomratio);
-			sfv.scrollTo(me.lo / ( 1 - zoomratio));
+			sfv.scrollTo(scrollpos = (me.lo / ( 1 - zoomratio)));
+			zoomfrac = me.range;
+		})
+		.addNotifier(this, \focusRangeSlider, { | n |
+			n.listener focus: true;
 		})
 	}
 
+	zoomToFrac { | frac |
+		sfv.zoomToFrac(zoomfrac = frac.clip(0, 1));
+		this.changed(\zoom); }
+	scrollTo { | pos |
+		sfv.scrollTo(scrollpos = pos.clip(0, 1));
+		this.changed(\zoom);
+	}
+
+	focusSoundFileView {
+		postln("switching focus to sound view");
+		this.changed(\focusSoundFileView);
+	}
 
 	posDisplay { // | sfv |
 		^HLayout(
@@ -418,8 +496,6 @@ SoundBufferGui {
 	}
 
 	test {
-		"testing".postln;
-		this.envir.postln;
 	}
 
 	bufName { ^buffer.name }
