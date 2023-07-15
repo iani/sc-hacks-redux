@@ -13,28 +13,27 @@ Save the resulting config in a file at folder ???? in sc-projects.
 SoundParams {
 	var model; // SfSelections;
 	var paramSpecs, params;
-	var <envir; // used for starting the synth.
+	var <dict; // used for starting the synth.
 	*new { | sbg | // or selection?
 		^this.newCopyArgs(sbg ?? { SoundBufferGui.default; }).init;
 	}
 
 	init { this.makeParams; }
 	makeParams {
-		envir = ();
+		dict = ();
 		params = (1..24) collect: { | i |
 			("label" + i).asSymbol.ps;
 		};
 		params[0] = 'rate'.ps(0.05, 20, 1);
 		params = params collect: { | p | Param(this, p) };
-		params do: {
-			envir[param.name] = param.value;
+		params do: { | param |
+			dict[param.name] = param.value;
 		};
 		// must review this!
-		// selection updates my envir at every start or duration frames change
+		// selection updates my dict at every start or duration frames change
 		// should selections store the current param separately?
-		model.updateParams(this); // write current selection values to envir;
+		model.updateParams(this); // write current selection values to dict;
 	}
-
 
 	gui {
 		this.bounds_(Rect(400, 0, 700, 400))
@@ -48,12 +47,14 @@ SoundParams {
 		^VLayout(*(ps.collect({ | p | p.gui})))
 	}
 
-	envir {
-		^sbg.name.envir;
+	// Review this?
+	envir { // the environment Mediator where I am playing
+		^model.name.envir;
 	}
 
+	// ????
 	bufName {
-		^sbg.bufName;
+		/// ^sbg.bufName;
 	}
 
 }
