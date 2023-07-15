@@ -34,8 +34,8 @@ SoundBufferGui {
 		colors[0] = Color(0.95, 0.95, 0.5);
 		this.bl_(1400, 400).hlayout(
 			VLayout(
-			sfv = this.sfView,
-			this.rangeSlider,
+				sfv = this.sfView,
+				this.rangeSlider,
 				this.posDisplay(sfv)
 			),
 			ListView().maxWidth_(30)
@@ -268,7 +268,7 @@ SoundBufferGui {
 	setSelection { | beg, duration | // TODO: implement this
 		// set frames of current selection to beginning and end
 		// test version:
-		selections.setCurrentSelectionValues(10000, 40000);
+		selections.setCurrentSelectionValues(beg, duration);
 		this.getSelection;
 	}
 

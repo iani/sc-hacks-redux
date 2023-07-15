@@ -24,6 +24,13 @@ SfSelections {
 	numFrames { ^selections[currentSelectionIndex][1] }
 	currentSelectionValues { ^selections[currentSelectionIndex]; }
 
+	// EXPERIMENTAL _ IMPORTANT _ CHECK!
+	setCurrentSelection { | index |
+		currentSelectionIndex = index;
+		currentSelection = selections[index];
+		currentParam = params[index];
+	}
+
 	setCurrentSelectionValues { | lo, hi |
 		selections[currentSelectionIndex] = [lo, hi];
 	}
