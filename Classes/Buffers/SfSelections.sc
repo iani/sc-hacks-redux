@@ -5,6 +5,11 @@ Remember SoundFileView selections because sfv seems to forget them when zooming.
 
 SfSelections {
 	var <sbgui, <selections, <currentSelection, <currentSelectionIndex;
+	var <params; // Array of SoundParams instances. The selected param instance
+		// selection updates my envir at every start or duration frames change
+		// should selections store the current param separately?
+	var <currentParam;
+	// does the playing.
 	*new { | sbgui |
 		^this.newCopyArgs(sbgui, { [0, 0] } ! 64).init;
 	}
@@ -47,12 +52,12 @@ SfSelections {
 			*(this.currentSelectionValues + [frames, (2 * frames).neg]);
 		);
 	}
-
-	setSelection { // need a better name!
-		currentSelectionIndex = sbgui.sfv.currentSelection;
-		currentSelection = sbgui.sfv.selection(currentSelectionIndex);
-		selections[currentSelectionIndex] = currentSelection;
-	}
+	// check if this is used ... may be obsolete
+	// setSelection { // need a better name!
+	// 	currentSelectionIndex = sbgui.sfv.currentSelection;
+	// 	currentSelection = sbgui.sfv.selection(currentSelectionIndex);
+	// 	selections[currentSelectionIndex] = currentSelection;
+	// }
 
 	edited { // indices of selections edited
 		var edited = [];
@@ -62,4 +67,20 @@ SfSelections {
 		edited remove: 63;
 		^edited;
 	}
+
+	openParameterGui {
+
+	}
+
+	// must review this.
+	// selections calls it everytime a selection changes start or duration frames
+	updateParams { | argParams |
+		var paramEnvir;
+		paramEnvir = this.currentParams.envir;
+		paramEnvir[\startframe] = this.startFrame;
+		paramEnvir[\endframe] = this.endFrame;
+
+	}
+
+	currentParams { ^params[currentSelectionIndex] }
 }

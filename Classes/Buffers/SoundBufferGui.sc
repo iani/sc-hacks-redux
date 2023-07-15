@@ -162,6 +162,17 @@ SoundBufferGui {
 				$8, { this.moveSelectionStartBy(-100); },
 				$9, { this.moveSelectionStartBy(-1000); },
 				$0, { this.moveSelectionStartBy(-10000); },
+				$q, { this.moveSelectionDurBy(1); },
+				$w, { this.moveSelectionDurBy(10); },
+				$e, { this.moveSelectionDurBy(100); },
+				$r, { this.moveSelectionDurBy(1000); },
+				$t, { this.moveSelectionDurBy(10000); },
+				$y, { this.moveSelectionDurBy(-1); },
+				$u, { this.moveSelectionDurBy(-10); },
+				$i, { this.moveSelectionDurBy(-100); },
+				$o, { this.moveSelectionDurBy(-1000); },
+				$p, { this.moveSelectionDurBy(-10000); },
+
 				$>, { sfv.scroll(1/10);  this.changed(\zoom) },
 				$<, { sfv.scroll(-1/10);  this.changed(\zoom) },
 				$R, { this.focusRangeSlider },
@@ -206,10 +217,8 @@ SoundBufferGui {
 	}
 
 	start { this.play }
-	play { // TODO: rewrite this from EditSoundPlayer using own playfuncs?
-		// postln("debugging play. selections currentindex:" + selections.currentSelectionIndex);
-		// postln("dur sel currrent (!)" + selections.currentSelection);
-		// postln("this selectionDur" + this.selectionDur);
+	play { // TODO: rewrite this. SfSelections should play the current selection
+		// SfSelections.playCurrentSelection;
 		if (this.selectionDur == 0) {
 			^postln("refusing to play selection" + selections.currentSelectionIndex
 				+ "because its duration is 0");
@@ -347,6 +356,7 @@ SoundBufferGui {
 			scrollPos = sfv.scrollPos;
 			scrollRatio = sfv.viewFrames / buffer.numFrames;
 			offsetRatio = scrollRatio * scrollPos;
+			// postln("scrollRatio" + scrollRatio + "scrollPos" + scrollPos);
 			n.listener.lo = 1 - scrollRatio * scrollPos;
 			n.listener.hi = 1 - scrollRatio * scrollPos + scrollRatio;
 		})
@@ -420,7 +430,10 @@ SoundBufferGui {
 
 	zoomToFrac { | frac |
 		sfv.zoomToFrac(zoomfrac = frac.clip(0, 1));
-		this.changed(\zoom); }
+		this.scrollTo(scrollpos);
+		this.changed(\zoom);
+	}
+
 	scrollTo { | pos |
 		sfv.scrollTo(scrollpos = pos.clip(0, 1));
 		this.changed(\zoom);
@@ -474,7 +487,7 @@ SoundBufferGui {
 			Button()
 			.states_([["tweak synth"]])
 			.action_({ this.openParameterGui }),
-			StaticText().string_("playfunc menu:"),
+			StaticText().string_("playfunc:"),
 			Button()
 			.canFocus_(false)
 			.states_([["phasebuf", Color.red, Color.white]])
@@ -482,7 +495,8 @@ SoundBufferGui {
 				*SynthTemplate.playfuncs.keys.asArray.sort
 				.collect({ | f | MenuAction(f.asString, {
 					me.states_([[f.asString]]);
-					f.postln; playfunc = f.asSymbol })})
+					f.postln; playfunc = f.asSymbol
+				})})
 			).front }),
 			Button()
 			.states_([["test"]])
@@ -490,10 +504,7 @@ SoundBufferGui {
 		)
 	}
 
-	openParameterGui {
-		this.changed(\closeSoundParams);
-		SoundParamGui(this);
-	}
+	openParameterGui { selections.openParameterGui; }
 
 	test {
 	}

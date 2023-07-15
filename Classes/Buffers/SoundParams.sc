@@ -10,16 +10,33 @@ Save the resulting config in a file at folder ???? in sc-projects.
 */
 //:
 
-SoundParamGui {
-	var sbg; // SoundBufferGui
+SoundParams {
+	var model; // SfSelections;
 	var paramSpecs, params;
-	*new { | sbg |
+	var <envir; // used for starting the synth.
+	*new { | sbg | // or selection?
 		^this.newCopyArgs(sbg ?? { SoundBufferGui.default; }).init;
 	}
 
-	init {
-		// this.makeParamSpecs;
-		this.makeParams;
+	init { this.makeParams; }
+	makeParams {
+		envir = ();
+		params = (1..24) collect: { | i |
+			("label" + i).asSymbol.ps;
+		};
+		params[0] = 'rate'.ps(0.05, 20, 1);
+		params = params collect: { | p | Param(this, p) };
+		params do: {
+			envir[param.name] = param.value;
+		};
+		// must review this!
+		// selection updates my envir at every start or duration frames change
+		// should selections store the current param separately?
+		model.updateParams(this); // write current selection values to envir;
+	}
+
+
+	gui {
 		this.bounds_(Rect(400, 0, 700, 400))
 		.hlayout(
 			*params.clump(12).collect({ | ps |
@@ -27,14 +44,6 @@ SoundParamGui {
 			})
 		)
 	}
-	makeParams {
-		params = (1..24) collect: { | i |
-			("label" + i).asSymbol.ps;
-		};
-		params[0] = 'rate'.ps(0.05, 20, 1);
-		params = params collect: { | p | Param(this, p) };
-	}
-
 	pane { |  ps |
 		^VLayout(*(ps.collect({ | p | p.gui})))
 	}
@@ -46,4 +55,5 @@ SoundParamGui {
 	bufName {
 		^sbg.bufName;
 	}
+
 }

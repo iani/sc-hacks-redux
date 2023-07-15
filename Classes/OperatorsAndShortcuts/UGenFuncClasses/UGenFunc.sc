@@ -14,7 +14,15 @@ See examples in ~/projects-sc/AudioSampleEvents/default/playfuncs/
 */
 
 UGenFunc {
-	*specs {
+	// specs cannot be a classvar because subclasses need their own specs.
+	// Registry permits this.
+	*specs { ^Registry(this, { this.loadSpecs }); }
+
+	// for debugging
+	*loadSpecs { ^["these are the specs for", this] }
+
+	/*
+	*loadSpecsPrototype {
 		var specpath;
 		specpath = (
 			PathName(this.filenameSymbol.asString).pathOnly ++
@@ -22,11 +30,13 @@ UGenFunc {
 			++ ".scd"
 		);
 		if (File.exists(specpath)) {
-			^specpath.load;
+			specs = specpath.load;
 		}{
 			postln("I cannot find specs file for" + this);
 			"Returning empty specs".postln;
-			^()
-		}
+			specs = []
+		};
+		^specs;
 	}
+	*/
 }

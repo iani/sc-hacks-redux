@@ -4,10 +4,10 @@ Constructs code for BufCode.
 */
 
 SynthTemplate {
-	classvar <playfuncs; // Dictionary of playfuncs
+	classvar <playfuncs; // Dictionary of SynthTemplate instances
 	classvar <homefolder, <templatesfolder, <playfuncsfolder, <codefolder;
 
-	var <path, <name, <func, <template, <specs, <code;
+	var <path, <name, <func, <specs, <code, <template;
 
 	*initClass {
 		StartUp add: { this.init }
@@ -15,9 +15,7 @@ SynthTemplate {
 
 	*init {
 		playfuncs = IdentityDictionary();
-		this.templatePaths do: { | p |
-			this.new(p)
-		}
+		this.templatePaths do: { | p | this.new(p) }
 	}
 
 	*templatePaths {
@@ -42,10 +40,11 @@ SynthTemplate {
 			specs = this.defaultSpecs;
 			func = code.interpret;
 		}{
-			specs = code[..delimiters[0]].interpret ?? { this.defaultSpecs };
 			func = code[delimiters[0]..].interpret;
+			template = code[..delimiters[0]].interpret ?? { this.defaultSpecs };
+			specs = template collect: _.specs;
 		};
-		template = this.makeTemplate;
+		// template = this.makeTemplate;
 	}
 
 	defaultSpecs { ^[PlayBuf_] }

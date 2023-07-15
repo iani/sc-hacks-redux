@@ -1,5 +1,6 @@
 /* 13 Jul 2023 10:20
 
+Model will be an instance of SoundParams
 */
 
 Param {
@@ -23,7 +24,7 @@ Param {
 			.clipHi_(spec.clipHi)
 			.addNotifier(this, \value, { | n |
 				n.listener.value = value;
-				this.sendValueToSynthEnvir;
+				this.updateModel;
 			})
 			.value_(spec.default)
 			.action_({ | me |
@@ -44,9 +45,12 @@ Param {
 		)
 	}
 
-	sendValueToSynthEnvir {
+	updateModel {
+		model.updateParam(name, value);
+		/*
 		postln("sending" + value + "to param" + name + "of" + this.bufName);
 		value.perform('@>', name, this.bufName);
+		*/
 	}
 
 	bufName {
