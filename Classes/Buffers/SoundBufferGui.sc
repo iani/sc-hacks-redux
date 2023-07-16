@@ -38,86 +38,39 @@ SoundBufferGui {
 				this.rangeSlider,
 				this.posDisplay(sfv)
 			),
-			ListView().maxWidth_(30)
-			.items_((0..63))
-			.colors_(colors)
-			.action_({ | me |
-				me.hiliteColor = colors[me.value];
-				me.selectedStringColor_(colors[me.value].complement);
-				this.changed(\selectionIndex, me.value);
-			})
-			.keyDownAction_({ | me, char ... args |
-				switch(char.ascii,
-					122, { this.toggleSelectionZoom },//z
-					127, { this.zeroSelection },// delete
-				);
-			}),
-			this.editIndexDisplay
+			this.selectionListView,
+			this.selectionEditedView
 		).name_(PathName(buffer.path).fileNameWithoutExtension);
 		{ // switch to first safely editable selection!
 			sfv.currentSelection = 0;
-			this.changed(\selection);
-			this.changed(\selectionIndex, 0);
-
+			// this.changed(\selectionIndex, 0); // set selection index
+			this.changed(\selection); // get selection data
 		}.defer(0.5);
 	}
 
-	editIndexDisplay {
-		^VLayout(
-			NumberBox().maxWidth_(20)
-			.decimals_(0)
-			.clipHi_(63)
-			.clipLo_(0)
-			.action_({ | me |
-				sfv.currentSelection = me.value.asInteger;
-				this.changed(\selection);
-			})
-			.addNotifier(this, \selectionIndex, { | n, index |
-				n.listener.value = index;
-				sfv.currentSelection = n.listener.value.asInteger;
-				this.changed(\selection);
-			}),
-			ListView().maxWidth_(20)
-			.hiliteColor_(Color.white)
-			.selectedStringColor_(Color.red)
-			.action_({ | me |
-				sfv.currentSelection = me.value.asInteger;
-				this.changed(\selection);
-			})
-			.addNotifier(this, \selection, { | n, index |
-				var theindex;
-				n.listener.items = selections.edited;
-				theindex = n.listener.items indexOf: selections.currentSelectionIndex;
-				theindex !?  { n.listener.value = theindex };
-			})
-		)
+	// basic selection actions to use throughout for selection management
+	switchToNewSelection { | index | // (NEW)
+		// User switched to a new selection.
+		// Called by view elements that choose selection index.
+		// Tell the view + selection to switch selection index.
+		sfv.currentSelection = index;
+		selections.setCurrentSelectionIndex(index);
 	}
 
-	sendSelectionToServer {
-		this.startFrame.perform('@>', \startframe, this.name);
-		this.endFrame.perform('@>', \endframe, this.name);
-	}
+	// modifyCurrentSelection { | startFrame, numFrames | // NEW
+		// User modified the frame range of current selection.
+		// Called
+		// Upd
+	// }
+
+	// prevent modification of useable selectios by mouselicks,
+	// by setting the current selection index to 63 (unused by this app).
+	divertSelection { sfv.currentSelection = 63; }
 
 	zeroSelection {
 		sfv.setSelection(sfv.currentSelection, [0, 0]);
 		this.changed(\selection);
 	}
-	selectionStart {
-		^this.startFrame / buffer.sampleRate;
-	}
-
-	selectionEnd {
-		^this.endFrame / this.sampleRate;
-	}
-
-	selectionDur {
-		^this.numFrames / this.sampleRate;
-	}
-
-	startFrame { ^selections.startFrame; }
-	endFrame { ^selections.endFrame; }
-	numFrames { ^selections.numFrames }
-	sampleRate { ^buffer.sampleRate }
 
 	selectionFrac {
 		selections.currentSelection;
@@ -130,19 +83,13 @@ SoundBufferGui {
 	}
 
 	sfView {
-		var mouseButton, sfZoom, sfv;
 		sfv = SoundFileView()
-		// .gridOn_(false)
 		.background_(Color(0.25, 0.1, 0.1))
 		.soundfile_(SoundFile(buffer.path))
 		.readWithTask(0, buffer.numFrames, { this.setSelection(0) })
 		.timeCursorOn_(true)
 		.keyDownAction_({ | me, char ... args |
 			switch(char,
-				$t, { // experimental
-					"testing".postln;
-					sfv.currentSelection;
-				},
 				$-, { this.clearSelection; },
 				$=, { this.selectAll },
 				$z, { this.toggleSelectionZoom }, // TO BE REMOVED?
@@ -179,24 +126,33 @@ SoundBufferGui {
 				$Z, { this.toggleSelectionZoom }
 			);
 		})
-		.mouseDownAction_({ |view, x, y, mod, buttonNumber|
-			mouseButton = buttonNumber; // not used for now
-		})
 		.mouseUpAction_({ |view, x, y, mod| //
-			// divert non-drag clicks to last selection.
-			this.sendSelectionToServer;
-			// sfv.currentSelection = 63;
+			// store selection range in selections, and send to sound (if playing);
+			selections.setSelectionFromGui(sfv.currentSelection, sfv.selection);
+			// this.sendSelectionToServer; // OBSOLETE. selections does this.
+			// Prevent zeroing of current selection by next click:
 			this.divertSelection;
-			// this.changed(\selection);
 		})
-		.action_({ | me | // Runs on mouseclick
-			// do not change current selection on mouse click.
-			// only change selection when drag-clicking on trackpad.
+		.action_({ | me | // Runs both on mouseclick amd on mousedrag.
+			// Mouseclick immediately changes the current selection.
+			// To avoid zeroing the current selection inadvertedly,
+			// Change the current selection to 63 as whenever the size is < 100.
 			if (sfv.selectionSize(sfv.currentSelection) < 100) {
-				sfv.currentSelection = 63; // divert to last selection
-			}{  // use current selection when range dragged is > 100
+				// Mouse will modify the selection which is not used in this app.
+				this.divertSelection;
+				// Method above is equivalent to:
+				// sfv.currentSelection = 63; // divert to last selection
+			}{  // when range dragged is > 100, set currentSelection index to the last
+				// selection chosen by the user.
 				sfv.currentSelection = selections.currentSelectionIndex;
+				// But do not send the selection's values to the server or to "selections" yet!
+				// (Note: the selections' frame values are sent to selections and the
+				// server when the user releases the button (mouseUpAction_)).
+				// However, immediatly update displays of start, end, duration values:
+				// Let other gui elements update their diplays:
 				this.changed(\selection);
+				// NOTE: Do not send the frame data on the server here, but
+				// send them only when the mouse is released (mousseUpAction)
 			};
 		})
 		.addNotifier(this, \focusSoundFileView, { | n |
@@ -207,13 +163,108 @@ SoundBufferGui {
 		^sfv;
 	}
 
+	posDisplay { // | sfv |
+		^HLayout(
+			StaticText().string_("selection")
+			.addNotifier(this, \selection, { | n |
+				var index;
+				index = this.selectionIndex;
+				n.listener.background = colors[index];
+				n.listener.stringColor = colors[index].complement;
+			}),
+			NumberBox()
+			.maxWidth_(40)
+			.decimals_(0)
+			.clipHi_(63)
+			.clipLo_(0)
+			.action_({ | me | this.setSelectionIndex(me.value.asInteger); })
+			.addNotifier(this, \selection, { | n | n.listener.value = this.selectionIndex; }),
+			StaticText().string_("begin"),
+			NumberBox()
+			.maxDecimals_(6)
+			.addNotifier(this, \selection, { | n | n.listener.value = this.selectionStart; }),
+			StaticText().string_("end"),
+			NumberBox()
+			.maxDecimals_(6)
+			.addNotifier(this, \selection, { | n | n.listener.value = this.selectionEnd; }),
+			StaticText().string_("dur"),
+			NumberBox()
+			.maxDecimals_(6)
+			.addNotifier(this, \selection, { | n | n.listener.value = this.selectionDur;}),
+			Button()
+			.states_([["tweak synth"]])
+			.action_({ this.openParameterGui }),
+			StaticText().string_("playfunc:"),
+			Button()
+			.canFocus_(false)
+			.states_([["phasebuf", Color.red, Color.white]])
+			.action_({ | me | Menu(
+				*SynthTemplate.playfuncs.keys.asArray.sort
+				.collect({ | f | MenuAction(f.asString, {
+					me.states_([[f.asString]]);
+					f.postln; playfunc = f.asSymbol
+				})})
+			).front }),
+			Button()
+			.states_([["test"]])
+			.action_({ this.test })
+		)
+	}
+
+	selectionIndex { ^selections.currentSelectionIndex }
+	selectionStart { ^this.startFrame / buffer.sampleRate; }
+	selectionEnd { ^this.endFrame / this.sampleRate;}
+	selectionDur { ^this.numFrames / this.sampleRate; }
+	startFrame { ^selections.startFrame; }
+	endFrame { ^selections.endFrame; }
+	numFrames { ^selections.numFrames }
+	sampleRate { ^buffer.sampleRate }
+
+	selectionListView {
+		^ListView().maxWidth_(30)
+			.items_((0..63))
+			.colors_(colors)
+			.action_({ | me |
+				me.hiliteColor = colors[me.value];
+				me.selectedStringColor_(colors[me.value].complement);
+				this.changed(\selectionIndex, me.value);
+			})
+			.keyDownAction_({ | me, char ... args |
+				switch(char.ascii,
+					122, { this.toggleSelectionZoom },//z
+					127, { this.zeroSelection },// delete
+				);
+			})
+	}
+
+	selectionEditedView {
+		^VLayout(
+			NumberBox().maxWidth_(20)
+			.decimals_(0)
+			.clipHi_(63)
+			.clipLo_(0)
+			.action_({ | me | this.setSelectionIndex(me.value.asInteger); })
+			.addNotifier(this, \selection, { | n | n.listener.value = this.selectionIndex; }),
+			ListView().maxWidth_(20)
+			.hiliteColor_(Color.white)
+			.selectedStringColor_(Color.red)
+			.action_({ | me | this.setSelectionIndex(me.value.asInteger); })
+			.addNotifier(this, \selection, { | n, index |
+				var theindex;
+				n.listener.items = selections.edited;
+				theindex = n.listener.items indexOf: selections.currentSelectionIndex;
+				theindex !?  { n.listener.value = theindex };
+			})
+		)
+	}
+
 	focusRangeSlider {
 		this.changed(\focusRangeSlider)
 	}
 
 	edit {
-		// "edit not yet implemented".postln;
-		BufCode(this).makeDoc;
+		"edit not yet implemented".postln;
+		// BufCode(this).makeDoc;
 	}
 
 	start { this.play }
@@ -247,16 +298,19 @@ SoundBufferGui {
 		^buffer.name.envir[buffer.name].isPlaying;
 	}
 
-	selectAll {
-		var restore;
-		restore = this.currentSelection;
-		sfv.setSelection(selections.currentSelectionIndex, [0, buffer.numFrames]);
-		this.changed(\selection);
-		sfv.currentSelection = restore;
-		this.changed(\selection);
+	maximizeCurrentSelection {// set current selection to full size of buffer
+		// set the range of current selection to 0-full buffer range
+		// the current selection is taken from selections, not from sfv,
+		// because sfv has "null" selection 63 after mouseUp.
+		// var restore;
+		// restore = this.currentSelection; ///????
+		selections.setSelectionFromGui(
+			selections.currentSelectionIndex, [0, buffer.numFrames]
+		);
+		this.changed(\selectionRange);
 	}
 
-	clearSelection { // TODO: Rework and check this.
+	clearCurrentSelection { // TODO: Rework and check this.
 		var restore;
 		restore = this.currentSelection;
 		sfv.setSelection(selections.currentSelectionIndex, [0, 0]);
@@ -265,6 +319,8 @@ SoundBufferGui {
 		this.changed(\selection);
 	}
 
+	// EXPERIMENTAL _ IMPORTANT _ CHECK!
+	setSelectionIndex { | index | selections.setCurrentSelectionIndex(index) }
 	setSelection { | beg, duration | // TODO: implement this
 		// set frames of current selection to beginning and end
 		// test version:
@@ -344,8 +400,6 @@ SoundBufferGui {
 		this.changed(\zoom);
 	}
 
-	divertSelection { sfv.currentSelection = 63; }
-
 	rangeSlider {
 		^RangeSlider().orientation_(\horizontal)
 		.palette_(QPalette.dark)
@@ -367,18 +421,6 @@ SoundBufferGui {
 		.focusColor_(Color.red)
 		.keyDownAction_({ | me, char |
 			switch(char,
-				// // // $z, { //  zoom to current selection11
-				// // 	"NOT DEBUGGED!".postln;
-				// // 	if (this.isZoomedOut) {
-				// // 	this.restoreSelectionIndex;
-				// // 	me.lo = selections.currentSelectionValues[0] / buffer.numFrames;
-				// // 	me.hi = selections.currentSelectionValues[0]
-				// // 	+ selections.currentSelectionValues[1] / buffer.numFrames;
-				// // 	me.doAction;
-				// // 	}{
-				// // 		this.zoomOut;
-				// // 	}
-				// },
 				$s, { // set current selection to zoom
 					this.restoreSelectionIndex;
 					selections.setCurrentSelectionValues(
@@ -413,7 +455,9 @@ SoundBufferGui {
 				$>, { this.zoomToFrac(zoomfrac + 0.1); },
 				$<, { this.zoomToFrac(zoomfrac - 0.1); },
 				$z, { this.focusSoundFileView },
-				$Z, { this.focusSoundFileView }
+				$Z, { this.focusSoundFileView },
+				$G, { this.openParameterGui },
+				$ , { this.togglePlay }
 			)
 		})
 		.action_({ | me |
@@ -444,64 +488,11 @@ SoundBufferGui {
 		this.changed(\focusSoundFileView);
 	}
 
-	posDisplay { // | sfv |
-		^HLayout(
-			StaticText().string_("selection")
-			.addNotifier(this, \selectionIndex, { | n, index |
-				n.listener.background = colors[index];
-				n.listener.stringColor = colors[index].complement;
-			}),
-			NumberBox()
-			.maxWidth_(40)
-			.decimals_(0)
-			.clipHi_(63)
-			.clipLo_(0)
-			.action_({ | me |
-				sfv.currentSelection = me.value.asInteger;
-				this.changed(\selection);
-				this.changed(\selectionIndex, me.value.asInteger);
-			})
-			.addNotifier(this, \selectionIndex, { | n, index |
-				n.listener.value = index;
-				sfv.currentSelection = n.listener.value.asInteger;
-				this.changed(\selection);
-			}),
-			StaticText().string_("begin"),
-			NumberBox()
-			.maxDecimals_(6)
-			.addNotifier(this, \selection, { | n |
-				n.listener.value = this.selectionStart;
-			}),
-			StaticText().string_("end"),
-			NumberBox()
-			.maxDecimals_(6)
-			.addNotifier(this, \selection, { | n, index, start, size |
-				n.listener.value = this.selectionEnd;
-			}),
-			StaticText().string_("dur"),
-			NumberBox()
-			.maxDecimals_(6)
-			.addNotifier(this, \selection, { | n |
-				n.listener.value = this.selectionDur;
-			}),
-			Button()
-			.states_([["tweak synth"]])
-			.action_({ this.openParameterGui }),
-			StaticText().string_("playfunc:"),
-			Button()
-			.canFocus_(false)
-			.states_([["phasebuf", Color.red, Color.white]])
-			.action_({ | me | Menu(
-				*SynthTemplate.playfuncs.keys.asArray.sort
-				.collect({ | f | MenuAction(f.asString, {
-					me.states_([[f.asString]]);
-					f.postln; playfunc = f.asSymbol
-				})})
-			).front }),
-			Button()
-			.states_([["test"]])
-			.action_({ this.test })
-		)
+	setSelectionIndex { | index |
+		sfv.currentSelection = index;
+		selections.changeSelectionIndex(index);
+		// update gui elements:
+		this.changed(\selection);
 	}
 
 	openParameterGui { selections.openParameterGui; }

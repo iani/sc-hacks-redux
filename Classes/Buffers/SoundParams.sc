@@ -57,4 +57,11 @@ SoundParams {
 		/// ^sbg.bufName;
 	}
 
+	/*
+
+	sendSelectionToServer {
+		this.startFrame.perform('@>', \startframe, this.name);
+		this.endFrame.perform('@>', \endframe, this.name);
+	}
+	*/
 }
