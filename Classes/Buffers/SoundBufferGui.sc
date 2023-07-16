@@ -43,7 +43,6 @@ SoundBufferGui {
 		).name_(PathName(buffer.path).fileNameWithoutExtension);
 		{ // switch to first safely editable selection!
 			sfv.currentSelection = 0;
-			// this.changed(\selectionIndex, 0); // set selection index
 			this.changed(\selection); // get selection data
 		}.defer(0.5);
 	}
@@ -127,11 +126,18 @@ SoundBufferGui {
 			);
 		})
 		.mouseUpAction_({ |view, x, y, mod| //
+			"MOUSEUP ACTION ".post;
+			sfv.currentSelection.post; " -- ".post;
+			sfv.selection(sfv.currentSelection).postln;
 			// store selection range in selections, and send to sound (if playing);
-			selections.setSelectionFromGui(sfv.currentSelection, sfv.selection);
+			// "mouseUpAction skipped the next line. restore it".postln;
+			// // selections.setSelectionFromGui(
+			// 	sfv.currentSelection,
+			// 	sfv.selection(sfv.currentSelection));
 			// this.sendSelectionToServer; // OBSOLETE. selections does this.
 			// Prevent zeroing of current selection by next click:
-			this.divertSelection;
+			// "mouseUpAction skipped the next line. restore it".postln;
+			this.divertSelection; // this does not send data to selections!
 		})
 		.action_({ | me | // Runs both on mouseclick amd on mousedrag.
 			// Mouseclick immediately changes the current selection.
@@ -139,21 +145,33 @@ SoundBufferGui {
 			// Change the current selection to 63 as whenever the size is < 100.
 			if (sfv.selectionSize(sfv.currentSelection) < 100) {
 				// Mouse will modify the selection which is not used in this app.
+					// "sfv action skipped the next line. restore it".postln;
 				this.divertSelection;
 				// Method above is equivalent to:
 				// sfv.currentSelection = 63; // divert to last selection
 			}{  // when range dragged is > 100, set currentSelection index to the last
 				// selection chosen by the user.
+					// "sfv action skipped the next line. restore it".postln;
+				// postln("selection index" + sfv.currentSelection
+				// 	+ "selection size:" + sfv.selectionSize(sfv.currentSelection));
+				// Note: the first time >= 100 there will be a glitch/inaccurate
+				// frames left from null selection. But the effect
+				// when changing the loop dimensions live is negligible.
+
 				sfv.currentSelection = selections.currentSelectionIndex;
-				// But do not send the selection's values to the server or to "selections" yet!
-				// (Note: the selections' frame values are sent to selections and the
-				// server when the user releases the button (mouseUpAction_)).
-				// However, immediatly update displays of start, end, duration values:
-				// Let other gui elements update their diplays:
+				// postln("frames after changing to current selection" +
+				// 	sfv.selection(sfv.currentSelection)
+				// );
+				selections.setSelectionFromGui(
+					sfv.currentSelection,
+					sfv.selection(sfv.currentSelection)
+				);
 				this.changed(\selection);
-				// NOTE: Do not send the frame data on the server here, but
-				// send them only when the mouse is released (mousseUpAction)
 			};
+		})
+		.addNotifier(this, \selectionIndex, { | n |
+			postln("updating sfv selection index to" + selections.currentSelectionIndex);
+			sfv.currentSelection = selections.currentSelectionIndex;
 		})
 		.addNotifier(this, \focusSoundFileView, { | n |
 			"Sound File View will focus!".postln;
@@ -222,19 +240,25 @@ SoundBufferGui {
 
 	selectionListView {
 		^ListView().maxWidth_(30)
-			.items_((0..63))
-			.colors_(colors)
-			.action_({ | me |
-				me.hiliteColor = colors[me.value];
-				me.selectedStringColor_(colors[me.value].complement);
-				this.changed(\selectionIndex, me.value);
-			})
-			.keyDownAction_({ | me, char ... args |
-				switch(char.ascii,
-					122, { this.toggleSelectionZoom },//z
-					127, { this.zeroSelection },// delete
-				);
-			})
+		.items_((0..63))
+		.colors_(colors)
+		.action_({ | me |
+			me.hiliteColor = colors[me.value];
+			me.selectedStringColor_(colors[me.value].complement);
+			this.setSelectionIndex(me.value.asInteger);
+		})
+		.addNotifier(this, \selection, { | n |
+			// postln("listener" + n.listener + "value:" + n.listener.value);
+			n.listener.value = this.selectionIndex;
+			n.listener.hiliteColor = colors[n.listener.value];
+			n.listener.selectedStringColor_(colors[n.listener.value].complement);
+		})
+		.keyDownAction_({ | me, char ... args |
+			switch(char.ascii,
+				122, { this.toggleSelectionZoom },//z
+				127, { this.zeroSelection },// delete
+			);
+		})
 	}
 
 	selectionEditedView {
@@ -307,26 +331,29 @@ SoundBufferGui {
 		selections.setSelectionFromGui(
 			selections.currentSelectionIndex, [0, buffer.numFrames]
 		);
-		this.changed(\selectionRange);
+		this.changed(\selection);
 	}
 
 	clearCurrentSelection { // TODO: Rework and check this.
-		var restore;
-		restore = this.currentSelection;
-		sfv.setSelection(selections.currentSelectionIndex, [0, 0]);
-		this.changed(\selection);
-		sfv.currentSelection = restore;
+		// var restore;
+		// restore = this.currentSelection;
+		// sfv.setSelection(selections.currentSelectionIndex, [0, 0]);
+		// this.changed(\selection);
+		// sfv.currentSelection = restore;
+		// this.changed(\selection);
+		selections.setSelectionFromGui(selections.currentSelectionIndex, [0, 0]);
 		this.changed(\selection);
 	}
 
 	// EXPERIMENTAL _ IMPORTANT _ CHECK!
 	setSelectionIndex { | index | selections.setCurrentSelectionIndex(index) }
-	setSelection { | beg, duration | // TODO: implement this
-		// set frames of current selection to beginning and end
-		// test version:
-		selections.setCurrentSelectionValues(beg, duration);
-		this.getSelection;
-	}
+
+	// setSelection { | beg, duration | // TODO: implement this
+	// 	// set frames of current selection to beginning and end
+	// 	// test version:
+	// 	selections.setCurrentSelectionValues(beg, duration);
+	// 	this.getSelection;
+	// }
 
 	performOnSelection { | method, frames | // used by methods below.
 		// modify selections' selection by applying method with frames,
@@ -488,12 +515,12 @@ SoundBufferGui {
 		this.changed(\focusSoundFileView);
 	}
 
-	setSelectionIndex { | index |
-		sfv.currentSelection = index;
-		selections.changeSelectionIndex(index);
-		// update gui elements:
-		this.changed(\selection);
-	}
+	// setSelectionIndex { | index |
+	// 	sfv.currentSelection = index;
+	// 	selections.changeSelectionIndex(index);
+	// 	// update gui elements:
+	// 	this.changed(\selection);
+	// }
 
 	openParameterGui { selections.openParameterGui; }
 

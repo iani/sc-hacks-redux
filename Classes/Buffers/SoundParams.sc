@@ -7,18 +7,27 @@ Auto-update (close and reopen) when a different UGenFunc is chosen from the menu
 
 Save the resulting config in a file at folder ???? in sc-projects.
 
+!: Store all current parameters for playing the synth of the current selection in a dict.
 */
 //:
 
 SoundParams {
 	var model; // SfSelections;
-	var paramSpecs, params;
+	var paramSpecs, params, envirname;
 	var <dict; // used for starting the synth.
-	*new { | sbg | // or selection?
-		^this.newCopyArgs(sbg ?? { SoundBufferGui.default; }).init;
+	*new { | selection | // or selection?
+		^this.newCopyArgs(selection).init;
 	}
 
-	init { this.makeParams; }
+	init {
+		this.makeEnvirName;
+		this.makeParams;
+	}
+
+	makeEnvirName {
+		model !? { envirname = model.sbgui.name };
+	}
+
 	makeParams {
 		dict = ();
 		params = (1..24) collect: { | i |
@@ -29,12 +38,25 @@ SoundParams {
 		params do: { | param |
 			dict[param.name] = param.value;
 		};
-		// must review this!
-		// selection updates my dict at every start or duration frames change
-		// should selections store the current param separately?
-		model.updateParams(this); // write current selection values to dict;
+		this.resetParams; // fill dict with defaults from params
 	}
 
+	resetParams {
+		// not yet implemented
+	}
+
+	setParam { | param, value |
+		dict[param] = value;
+		if (this.isPlaying) { this.sendParam2Synth(param, value); };
+	}
+
+	isPlaying { ^false } // TODO: implement this properly
+
+	sendParam2Synth { | param, value |
+		value.perform('@>', param, envirname);
+	}
+
+	// ======================= GUI ========================
 	gui {
 		this.bounds_(Rect(400, 0, 700, 400))
 		.hlayout(

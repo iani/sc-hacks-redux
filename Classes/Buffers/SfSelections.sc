@@ -4,7 +4,7 @@ Remember SoundFileView selections because sfv seems to forget them when zooming.
 */
 
 SfSelections {
-	var <sbgui, <selections, <currentSelection, <currentSelectionIndex;
+	var <sbgui, <selections, <currentSelection, <currentSelectionIndex = 0;
 	var <params; // Array of SoundParams instances. The selected param instance
 		// selection updates my envir at every start or duration frames change
 		// should selections store the current param separately?
@@ -16,9 +16,11 @@ SfSelections {
 
 	init {
 		currentSelection = selections[0];
-		// can we use the same method for both of the following?
-		// Trigger actions explicitly trough messages from sbgui.
-		// Do NOT employ Notifications:
+		// create params:
+		params = { SoundParams(this); } ! 64;
+		currentParam = params[0];
+		// Do NOT employ Notifications. DO NOT READD THESE!:
+		// (Instead, trigger actions explicitly trough messages from sbgui.)
 		// this.addNotifier(sbgui, \selection, { this.getSelectionFromGui });
 		// this.addNotifier(sbgui, \selectionIndex, { this.setCurrentSelection });
 
@@ -27,38 +29,43 @@ SfSelections {
 	// EXPERIMENTAL _ IMPORTANT _ CHECK!
 	setSelectionFromGui { | index, frameSpecs |
 		// set current selection dimensions.
-		// Called when the user releases the button.  Also send to synth.
-		// sfv and selections index are now the same. No need to update,
-		// NOTE but we do it anyway:
-		postln("debugging setSelectionFromGui : index" + index + "frameSpecs" + frameSpecs);
-		if (true) { ^nil };
+		// Called when the user changes selection dimensions with the mouse on
+		// the SoundFileView (see its action_ method).  Store frameSpecs and send them to synth.
+		// sfv and selections index are now the same. No need to update index
+		// but we do it anyway:
+		// postln("debugging setSelectionFromGui : index" + index + "frameSpecs" + frameSpecs);
+		// if (true) { ^nil };
 		currentSelectionIndex = index;
 		currentSelection = frameSpecs;
 		selections[currentSelectionIndex] = currentSelection;
 		currentParam = params[index];
-		// set the environment variables and send to synth:
-		currentParam.updateSelectionFrames(currentSelection);
+		currentParam.setParam('startframe', frameSpecs[0]);
+		currentParam.setParam('endframe', frameSpecs.sum);
 	}
 	setCurrentSelectionIndex { | index |
 		// Change the current selection to a different selection
 		// chosen by the user.  Update all internal caches belonging to this.
 		// If the current selection is different, and is playing,
 		// then stop it.
-		// Also update gui!
 		postln("debugging setCurrentSelectionIndex : index" + index);
-		if (true) { ^nil };
-		if (currentSelectionIndex != index) {
-			currentParam.stop;
-			currentSelectionIndex = index;
-			currentSelection = selections[index];
-			currentParam = params[index];
-			sbgui.changed(\selection); // update all gui elements
-		}{
-			// no actions if the selection did not change
-		}
+		// if (true) { ^nil };
+		if (currentSelectionIndex != index) { currentParam.stop; };
+		// update gui!
+		currentSelectionIndex = index;
+		currentSelection = selections[index];
+		currentParam = params[index];
+		sbgui.changed(\selectionIndex); // update sfv selection
+		sbgui.changed(\selection); // update all other gui elements
+		// no actions if the selection did not change
 	}
 
-	startFrame { ^selections[currentSelectionIndex][0]; }
+	startFrame {
+		postln(
+			"selections startframe index: " + currentSelectionIndex
+			+ "selections[index]" + selections[currentSelectionIndex][0]
+			+ "startframe" + selections[currentSelectionIndex][0]
+		);
+		^selections[currentSelectionIndex][0]; }
 	endFrame { ^selections[currentSelectionIndex].sum }
 	numFrames { ^selections[currentSelectionIndex][1] }
 	currentSelectionValues { ^selections[currentSelectionIndex]; }
