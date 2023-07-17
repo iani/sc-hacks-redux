@@ -4,6 +4,7 @@ Remember SoundFileView selections because sfv seems to forget them when zooming.
 */
 
 SfSelections {
+	classvar <homefolder;
 	var <sbgui, <selections, <currentSelection, <currentSelectionIndex = 0;
 	var <params; // Array of SoundParams instances. Each param holdes a dictionary
 	// of parameter values used for playing the sound, and paramater specs for creating
@@ -30,7 +31,11 @@ SfSelections {
 		// (Instead, trigger actions explicitly trough messages from sbgui.)
 		// this.addNotifier(sbgui, \selection, { this.getSelectionFromGui });
 		// this.addNotifier(sbgui, \selectionIndex, { this.setCurrentSelection });
-
+		// find out where the home folder is.
+		this.class.withFolder({ | f |
+			homefolder = f;
+			postln("SfSelections saves scripts in" + homefolder);
+		})
 	}
 
 	// EXPERIMENTAL _ IMPORTANT _ CHECK!
@@ -139,5 +144,35 @@ SfSelections {
 		currentParam.makeParams;
 		currentParam.mergeParams2Dict;
 		// We lose all settings. Don't
+	}
+
+	save {
+		this.class.withFolder({ | path |
+			var thecode;
+			homefolder = path;
+			path = path +/+ (Date.getDate.stamp ++ ".scd");
+			postln("Saving SfSelection to:" + path);
+			thecode = this.selectionsAsCode;
+			File.use(path, "w", { | f | f.write(thecode) });
+		});
+	}
+
+	selectionsAsCode {
+		var ifound, code, theselection;
+		selections do: { | s, i |
+			if (s.sum > 0) { ifound = ifound add: i }
+		};
+		ifound.postln;
+		code = "/*selections saved at" + Date.getDate.stamp + "*/\n";
+		ifound do: { | i |
+			theselection = params[i];
+			code = code ++ format("//:[1] (%)\n", i);
+			code = code ++ theselection.dict.asCompileString ++ "\n";
+		};
+		^code;
+	}
+
+	*defaultPath {
+		^PathName(Platform.userHomeDir +/+ "sc-projects/BufferPlayers/").fullPath;
 	}
 }

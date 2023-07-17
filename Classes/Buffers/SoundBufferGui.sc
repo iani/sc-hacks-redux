@@ -130,8 +130,8 @@ SoundBufferGui {
 			);
 		})
 		.mouseUpAction_({ |view, x, y, mod| //
-			"MOUSEUP ACTION ".post;
-			sfv.currentSelection.post; " -- ".post;
+			// "MOUSEUP ACTION ".post;
+			// sfv.currentSelection.post; " -- ".post;
 			sfv.selection(sfv.currentSelection).postln;
 			// store selection range in selections, and send to sound (if playing);
 			// "mouseUpAction skipped the next line. restore it".postln;
