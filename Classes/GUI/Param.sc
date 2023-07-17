@@ -16,6 +16,8 @@ Param {
 		value = spec.default;
 	}
 	gui {
+		model.dict.postln;
+		{ model.changed(\dict) }.defer(0.1);
 		^HLayout(
 			StaticText().minWidth_(100)
 			.minWidth_(100).string_(name),
@@ -23,6 +25,12 @@ Param {
 			.clipLo_(spec.clipLo)
 			.clipHi_(spec.clipHi)
 			.decimals_(5)
+			// .value_(model valueAt: name)
+			.addNotifier(model, \dict, { | n |
+				n.listener.value = model valueAt: name;
+				// postln("set number value to" + (model valueAt: name));
+				// this.updateModel;
+			})
 			.addNotifier(this, \value, { | n |
 				n.listener.value = value;
 				this.updateModel;
@@ -33,12 +41,17 @@ Param {
 				// model.changed(name);
 			}),
 			Slider().orientation_(\horizontal)
+			.addNotifier(model, \dict, { | n |
+				n.listener.value = spec.unmap (model valueAt: name);
+				// postln("set slider value to" + (spec.unmap (model valueAt: name)));
+				// this.updateModel;
+			})
 			.addNotifier(this, \value, { | n |
 				n.listener.value = spec.unmap(value);
 			})
 			.palette_(QPalette.light)
 			.background_(Color.grey(0.65))
-			.value_(spec.unmap(spec.default))
+			// .value_(spec.unmap(model valueAt: name))
 			.action_{ | me |
 				value = spec.map(me.value);
 				this.changed(\value);

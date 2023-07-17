@@ -68,12 +68,19 @@ SoundParams {
 	gui {
 		var clumped, height;
 		clumped = params.flat.clump(12);
-		height = clumped.collect(_.size).maxItem * 20;
+		height = clumped.collect(_.size).maxItem * 20 + 20;
 		this.bounds_(Rect(400, 0, 700, height))
-		.hlayout(
+		.vlayout(
+			HLayout(
+				CheckBox().string_("play")
+				.action_({ | me |
+					if (me.value) { this.play }{ this.stop }
+				})
+			),
+			HLayout(
 			*clumped.collect({ | ps |
 				VLayout(*ps.collect({ | p | p.gui}))
-			})
+			}))
 		)
 		.addNotifier(this, \close, { | n | n.listener.close })
 		.name_(format("%:%", dict[\buf], dict[\playfunc]))
@@ -114,6 +121,7 @@ SoundParams {
 		^this.numFrames / this.sampleRate;
 	}
 
+	valueAt { | param | ^dict[param.asSymbol] }
 	startFrame { ^dict[\startframe] ? 0 }
 	endFrame { ^dict[\endframe] ? 0 }
 	numFrames { ^this.endFrame - this.startFrame }

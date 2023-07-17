@@ -66,11 +66,11 @@ SfSelections {
 	}
 
 	startFrame {
-		postln(
-			"selections startframe index: " + currentSelectionIndex
-			+ "selections[index]" + selections[currentSelectionIndex][0]
-			+ "startframe" + selections[currentSelectionIndex][0]
-		);
+		// postln(
+		// 	"selections startframe index: " + currentSelectionIndex
+		// 	+ "selections[index]" + selections[currentSelectionIndex][0]
+		// 	+ "startframe" + selections[currentSelectionIndex][0]
+		// );
 		^selections[currentSelectionIndex][0]; }
 	endFrame { ^selections[currentSelectionIndex].sum }
 	numFrames { ^selections[currentSelectionIndex][1] }
@@ -116,7 +116,7 @@ SfSelections {
 	}
 
 	openParameterGui {
-
+		currentParam.gui;
 	}
 
 	// must review this.
