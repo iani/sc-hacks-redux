@@ -22,6 +22,7 @@ Param {
 			NumberBox().maxWidth_(80)
 			.clipLo_(spec.clipLo)
 			.clipHi_(spec.clipHi)
+			.decimals_(5)
 			.addNotifier(this, \value, { | n |
 				n.listener.value = value;
 				this.updateModel;
@@ -45,19 +46,6 @@ Param {
 		)
 	}
 
-	updateModel {
-		model.updateParam(name, value);
-		/*
-		postln("sending" + value + "to param" + name + "of" + this.bufName);
-		value.perform('@>', name, this.bufName);
-		*/
-	}
-
-	bufName {
-		^model.bufName;
-		// ^model.bufName;
-	}
-	notifyModel {
-		// model.notifyModel(index, name )
-	}
+	updateModel { model.setParam(name, value); }
+	bufName { ^model.bufName; }
 }

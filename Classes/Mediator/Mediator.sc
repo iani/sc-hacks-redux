@@ -48,10 +48,8 @@ Mediator : EnvironmentRedirect {
 				envir[key].free;
 				envir[key] = val;
 			};
-			// "disabled".postln;
 		};
 		playfunc = SynthTemplate.getFunc(envir[\playfunc]);
-		// playfunc = PlayBufTemplate.getFunc(\loopbuf);
 		envir[\play] = { playfunc +> name };
 		envir[\mediator] = name;
 			this.push;

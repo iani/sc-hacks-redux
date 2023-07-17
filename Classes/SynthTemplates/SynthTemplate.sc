@@ -14,8 +14,9 @@ SynthTemplate {
 	}
 
 	*init {
+		Spec.addSC_Hacks_Specs;
 		playfuncs = IdentityDictionary();
-		this.templatePaths do: { | p | this.new(p) }
+		this.templatePaths do: { | p | this.new(p) };
 	}
 
 	*templatePaths {

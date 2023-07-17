@@ -16,24 +16,22 @@ Save the resulting config in a file at folder ???? in sc-projects.
 SoundParams {
 	var model; // SfSelections;
 	var playfunc;
-	var paramSpecs, params;
+	var <paramSpecs, <params;
 	var <dict; // used for starting the synth.
 	*new { | selection, playfunc |
-		^this.newCopyArgs(selection).init;
+		^this.newCopyArgs(selection, playfunc).init;
 	}
 
 	init {
 		this.makeParams;
+		this.initDict;
 	}
 
 	makeParams {
-		// This is a dummy to be replaced by specs from a template
-		params = (1..24) collect: { | i | ("label" + i).asSymbol.ps; };
-		params[0] = 'rate'.ps(0.05, 20, 1);
-		// this is the right way to create the params:
-		params =
-		params = params collect: { | p | Param(this, p) };
-		this.initDict; // fill dict with defaults from params + model
+		// postln("making sound params. playfunc is:" + playfunc);
+		paramSpecs = SynthTemplate.getTemplate(playfunc).specs;
+		// postln("sound params found specs is:" + specs);
+		params = paramSpecs.flat collect: { | p | Param(this, p) };
 	}
 
 	addParams { | argDict | // add parameters without sending to synth
@@ -41,27 +39,13 @@ SoundParams {
 		argDict keysValuesDo: { | key, value | dict[key] = value };
 	}
 
-	/*
-	makeParamsOLD { // placeholder.
-		params = (1..24) collect: { | i |
-			("label" + i).asSymbol.ps;
-		};
-		params[0] = 'rate'.ps(0.05, 20, 1);
-		params = params collect: { | p | Param(this, p) };
-		params do: { | param |
-			dict[param.name] = param.value;
-		};
-		this.initDict; // fill dict with defaults from params
-	}
-	*/
-
 	initDict {
 		dict = ();
 		// transfer values from template
 		params do: { | param | dict[param.name] = param.value; };
 		// transfer values from selections
 		dict[\buf] = model.bufName;
-		dict[\playbuf] = model.playfunc; // this may already be in template!!!
+		dict[\playfunc] = model.playfunc; // this may already be in template!!!
 		this.setFrame(model.currentSelection);
 	}
 
@@ -82,13 +66,17 @@ SoundParams {
 
 	// ======================= GUI ========================
 	gui {
-		this.bounds_(Rect(400, 0, 700, 400))
+		var clumped, height;
+		clumped = params.flat.clump(12);
+		height = clumped.collect(_.size).maxItem * 20;
+		this.bounds_(Rect(400, 0, 700, height))
 		.hlayout(
-			*params.clump(12).collect({ | ps |
+			*clumped.collect({ | ps |
 				VLayout(*ps.collect({ | p | p.gui}))
 			})
 		)
 		.addNotifier(this, \close, { | n | n.listener.close })
+		.name_(format("%:%", dict[\buf], dict[\playfunc]))
 	}
 	pane { |  ps |
 		^VLayout(*(ps.collect({ | p | p.gui})))
@@ -104,8 +92,6 @@ SoundParams {
 		/// ^sbg.bufName;
 	}
 
-
-
 	close { // stop synths and close gui
 		this.stop; // stop synth
 		this.changed(\close); // notify gui window to close
@@ -113,18 +99,28 @@ SoundParams {
 
 	play {
 		// equivalent:
-		// dict[buf].perform('@@', dict, event[\playfunc])
-		dict[\buf].envir.play(dict);
+		// dict[buf].perform('@@', dict, event[\playfunc]);
+		if (this.dur <= 0.0) {
+			"Cannot play settings with duration 0".postln;
+		}{
+			dict[\buf].envir.play(dict);
+		}
 	}
 	stop { // stop all synths - both sound + controls
 		dict[\buf].stopSynths;
 	}
 
+	dur {
+		^this.numFrames / this.sampleRate;
+	}
 
+	startFrame { ^dict[\startframe] ? 0 }
+	endFrame { ^dict[\endframe] ? 0 }
+	numFrames { ^this.endFrame - this.startFrame }
+	sampleRate { ^dict[\buf].buf.sampleRate }
 
 	/*
-
-	sendSelectionToServer {
+	sendFramesToServer {
 		this.startFrame.perform('@>', \startframe, this.name);
 		this.endFrame.perform('@>', \endframe, this.name);
 	}

@@ -13,16 +13,20 @@ SoundBufferGui {
 	*initClass {
 		// TODO: Rewrite this to use own playfuncs from sc-hacks repository,
 		// and if found, also extra funcs from sc-project.
-		StartUp add: { EditSoundPlayer.loadIfNeeded }
+		// StartUp add: { EditSoundPlayer.loadIfNeeded }
 	}
 
 	*default { ^this.new(Buffer.all.first.buf) }
 
-	*new { | buffer | ^this.newCopyArgs(buffer) }
-	*gui { this.default.gui }
+	*new { | buffer |
+		 ^Registry(this, buffer, { this.newCopyArgs(buffer) })
+	}
+
+	*gui { ^this.default.gui }
 
 	name { ^buffer.name }
 	gui {
+		this.bl_(1400, 400).hlayout(
 		selections = SfSelections(this);
 		colors = (((1..9).normalize * (2/3) + (1/3)).collect({ | i |
 			[
@@ -32,7 +36,6 @@ SoundBufferGui {
 		}).flat.reverse add: (Color.black));
 		// decorative detail:
 		colors[0] = Color(0.95, 0.95, 0.5);
-		this.bl_(1400, 400).hlayout(
 			VLayout(
 				sfv = this.sfView,
 				this.rangeSlider,
@@ -41,10 +44,11 @@ SoundBufferGui {
 			this.selectionListView,
 			this.selectionEditedView
 		).name_(PathName(buffer.path).fileNameWithoutExtension);
+		/*
 		{ // switch to first safely editable selection!
-			sfv.currentSelection = 0;
-			this.changed(\selection); // get selection data
+			this.switchToNewSelection(0);
 		}.defer(0.5);
+		*/
 	}
 
 	// basic selection actions to use throughout for selection management
@@ -448,7 +452,7 @@ SoundBufferGui {
 			n.listener.hi = 1 - scrollRatio * scrollPos + scrollRatio;
 		})
 		.mouseUpAction_({ |view, x, y, mod| //
-			this.sendSelectionToServer;
+			// this.sendSelectionToServer;
 			this.divertSelection;
 		})
 		.focusColor_(Color.red)

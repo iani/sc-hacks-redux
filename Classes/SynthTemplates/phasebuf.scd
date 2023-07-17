@@ -4,7 +4,7 @@ Early prototype for settings:
 The settings could be names of Classes that contain specs, such as:
 PlayBuf_, PV_Magabove_ etc.  See folder
 */
-nil; // PlayFunc provides default
+[PhaseBuf_];
 //:
 {   // provides PlayBuf.ar ugen with br controls
 	PhaseBuf_.ar()

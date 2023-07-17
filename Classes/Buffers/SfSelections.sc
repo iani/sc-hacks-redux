@@ -24,7 +24,7 @@ SfSelections {
 	init {
 		currentSelection = selections[0];
 		// create params:
-		params = { SoundParams(this); } ! 64;
+		params = { SoundParams(this, this.playfunc); } ! 64;
 		currentParam = params[0];
 		// Do NOT employ Notifications. DO NOT RE-ADD THESE!:
 		// (Instead, trigger actions explicitly trough messages from sbgui.)
