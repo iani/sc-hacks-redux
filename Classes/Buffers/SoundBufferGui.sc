@@ -224,7 +224,6 @@ SoundBufferGui {
 				*SynthTemplate.playfuncs.keys.asArray.sort
 				.collect({ | f | MenuAction(f.asString, {
 					me.states_([[f.asString]]);
-					f.postln;
 					this.setPlayfunc(f.asSymbol);
 				})})
 			).front }),

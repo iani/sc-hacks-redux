@@ -15,7 +15,7 @@ Save the resulting config in a file at folder ???? in sc-projects.
 
 SoundParams {
 	var model; // SfSelections;
-	var playfunc;
+	var <>playfunc;
 	var <paramSpecs, <params;
 	var <dict; // used for starting the synth.
 	*new { | selection, playfunc |
@@ -47,6 +47,20 @@ SoundParams {
 		dict[\buf] = model.bufName;
 		dict[\playfunc] = model.playfunc; // this may already be in template!!!
 		this.setFrame(model.currentSelection);
+	}
+
+	// merge parameters from new template into existing dictionary values
+	// keep exisiting values set by user.
+	mergeParams2Dict {
+		// Create all params in the right order from tne new template.
+		// Restore the values of previously existing params in the dictionary.
+		var restore;
+		restore = dict;
+		this.init;
+		// only set those values belonging to the new playfunc's template!
+		restore keysValuesDo: { | key, value |
+			dict[key] !? { dict[key] = value; } // overwrite existing keys only!
+		}
 	}
 
 	setFrame { | frame | // set startframe and endframe as received from selections
@@ -83,7 +97,9 @@ SoundParams {
 			}))
 		)
 		.addNotifier(this, \close, { | n | n.listener.close })
-		.name_(format("%:%", dict[\buf], dict[\playfunc]))
+		.name_(format("%:%", dict[\buf], dict[\playfunc]));
+
+		{ this.changed(\dict) }.defer(0.1);
 	}
 	pane { |  ps |
 		^VLayout(*(ps.collect({ | p | p.gui})))

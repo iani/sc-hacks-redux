@@ -16,8 +16,6 @@ Param {
 		value = spec.default;
 	}
 	gui {
-		model.dict.postln;
-		{ model.changed(\dict) }.defer(0.1);
 		^HLayout(
 			StaticText().minWidth_(100)
 			.minWidth_(100).string_(name),

@@ -133,7 +133,11 @@ SfSelections {
 
 	setPlayfunc { | argPlayfunc |
 		currentParam.close; // stop synth, close gui;
-		currentParam = SoundParams();
-		// params[curren]
+		currentParam.playfunc = argPlayfunc;
+		currentParam.setParam(\playfunc, argPlayfunc);
+		// Experimental: merge parameters from new playfunc template!
+		currentParam.makeParams;
+		currentParam.mergeParams2Dict;
+		// We lose all settings. Don't
 	}
 }
