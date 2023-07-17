@@ -1,3 +1,3 @@
 [
-	\freeze.br(0, 1, 0, \linear, 1)
+	\freeze.ps(0, 1, 0, \linear, 1)
 ]

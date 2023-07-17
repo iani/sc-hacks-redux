@@ -1,3 +1,3 @@
 [
-    \thresh.br(0, 500),
+    \thresh.ps(0, 500),
 ]

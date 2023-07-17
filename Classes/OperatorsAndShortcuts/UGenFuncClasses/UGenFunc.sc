@@ -19,8 +19,26 @@ UGenFunc {
 	*specs { ^Registry(this, { this.loadSpecs }); }
 
 	// for debugging
-	*loadSpecs { ^["these are the specs for", this] }
+	*loadSpecs {
+		var path, result;
+		path = this.specPath;
+		path.postln;
+		if (File exists: path) {
+			postln("found" + path);
+			result = path.load;
+		}{
+			result = []
+		};
+		^result;
+	}
 
+	*specPath {
+		^(
+			PathName(this.filenameSymbol.asString).pathOnly ++
+			PathName(this.filenameSymbol.asString).fileNameWithoutExtension
+			++ ".scd"
+		)
+	}
 	/*
 	*loadSpecsPrototype {
 		var specpath;

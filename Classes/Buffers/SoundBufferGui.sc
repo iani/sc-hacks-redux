@@ -220,13 +220,19 @@ SoundBufferGui {
 				*SynthTemplate.playfuncs.keys.asArray.sort
 				.collect({ | f | MenuAction(f.asString, {
 					me.states_([[f.asString]]);
-					f.postln; playfunc = f.asSymbol
+					f.postln;
+					this.setPlayfunc(f.asSymbol);
 				})})
 			).front }),
 			Button()
 			.states_([["test"]])
 			.action_({ this.test })
 		)
+	}
+
+	setPlayfunc { | argPlayfunc |
+		playfunc = argPlayfunc;
+		selections.setPlayfunc(playfunc);
 	}
 
 	selectionIndex { ^selections.currentSelectionIndex }

@@ -5,21 +5,28 @@ Remember SoundFileView selections because sfv seems to forget them when zooming.
 
 SfSelections {
 	var <sbgui, <selections, <currentSelection, <currentSelectionIndex = 0;
-	var <params; // Array of SoundParams instances. The selected param instance
-		// selection updates my envir at every start or duration frames change
-		// should selections store the current param separately?
-	var <currentParam;
+	var <params; // Array of SoundParams instances. Each param holdes a dictionary
+	// of parameter values used for playing the sound, and paramater specs for creating
+	// a gui to edit these parameters.
+	var <currentParam; // SoundParams instance for currentSelection
 	// does the playing.
 	*new { | sbgui |
 		^this.newCopyArgs(sbgui, { [0, 0] } ! 64).init;
 	}
 
+	bufName { ^sbgui.name }
+	playfunc { ^sbgui.playfunc }
+	playfunc_ { | playfunc | // replace currentParam with a param from the playfunc's template
+		var newparam;
+		currentParam.close; // stop sound and close gui
+		// newparam =
+	}
 	init {
 		currentSelection = selections[0];
 		// create params:
 		params = { SoundParams(this); } ! 64;
 		currentParam = params[0];
-		// Do NOT employ Notifications. DO NOT READD THESE!:
+		// Do NOT employ Notifications. DO NOT RE-ADD THESE!:
 		// (Instead, trigger actions explicitly trough messages from sbgui.)
 		// this.addNotifier(sbgui, \selection, { this.getSelectionFromGui });
 		// this.addNotifier(sbgui, \selectionIndex, { this.setCurrentSelection });
@@ -39,8 +46,7 @@ SfSelections {
 		currentSelection = frameSpecs;
 		selections[currentSelectionIndex] = currentSelection;
 		currentParam = params[index];
-		currentParam.setParam('startframe', frameSpecs[0]);
-		currentParam.setParam('endframe', frameSpecs.sum);
+		currentParam.setFrame(frameSpecs);
 	}
 	setCurrentSelectionIndex { | index |
 		// Change the current selection to a different selection
@@ -72,6 +78,7 @@ SfSelections {
 
 	setCurrentSelectionValues { | lo, hi |
 		selections[currentSelectionIndex] = [lo, hi];
+		currentParam.setFrame([lo, hi]);
 	}
 
 	moveSelectionStartBy { | frames = 1000 | // move start only. dur changes
@@ -123,4 +130,10 @@ SfSelections {
 	}
 
 	currentParams { ^params[currentSelectionIndex] }
+
+	setPlayfunc { | argPlayfunc |
+		currentParam.close; // stop synth, close gui;
+		currentParam = SoundParams();
+		// params[curren]
+	}
 }
