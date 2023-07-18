@@ -16,17 +16,13 @@ SoundBufferGui {
 		// StartUp add: { EditSoundPlayer.loadIfNeeded }
 	}
 
-	*default { ^this.new(Buffer.all.first.buf) }
+	*default { ^this.new(Buffer.all.first) }
 
 	*new { | buffer |
-		 ^Registry(this, buffer, { this.newCopyArgs(buffer) })
+		 ^Registry(this, buffer, { this.newCopyArgs(buffer.buf).init })
 	}
 
-	*gui { ^this.default.gui }
-
-	name { ^buffer.name }
-	gui {
-		this.bl_(1400, 400).hlayout(
+	init {
 		selections = SfSelections(this);
 		colors = (((1..9).normalize * (2/3) + (1/3)).collect({ | i |
 			[
@@ -36,7 +32,14 @@ SoundBufferGui {
 		}).flat.reverse add: (Color.black));
 		// decorative detail:
 		colors[0] = Color(0.95, 0.95, 0.5);
-			VLayout(
+	}
+
+	*gui { ^this.default.gui }
+
+	name { ^buffer.name }
+	gui {
+		this.bl_(1400, 400).hlayout(
+					VLayout(
 				sfv = this.sfView,
 				this.rangeSlider,
 				this.posDisplay(sfv)
@@ -94,9 +97,9 @@ SoundBufferGui {
 		.keyDownAction_({ | me, char ... args |
 			switch(char,
 				$-, { this.clearSelection; },
-				$=, { this.selectAll },
+				$=, { this.maximizeCurrentSelection },
 				$z, { this.toggleSelectionZoom }, // TO BE REMOVED?
-				$a, { this.selectAll },
+				// $a, { this.maximizeCurrentSelection },
 				$c, { this.clearSelection },
 				$p, { this.play },
 				$., { this.stop },
@@ -107,21 +110,31 @@ SoundBufferGui {
 				$3, { this.moveSelectionStartBy(100); },
 				$4, { this.moveSelectionStartBy(1000); },
 				$5, { this.moveSelectionStartBy(10000); },
-				$6, { this.moveSelectionStartBy(-1); },
-				$7, { this.moveSelectionStartBy(-10); },
+				$6, { this.moveSelectionStartBy(-10000); },
+				$7, { this.moveSelectionStartBy(-1000); },
 				$8, { this.moveSelectionStartBy(-100); },
-				$9, { this.moveSelectionStartBy(-1000); },
-				$0, { this.moveSelectionStartBy(-10000); },
+				$9, { this.moveSelectionStartBy(-10); },
+				$0, { this.moveSelectionStartBy(-1); },
 				$q, { this.moveSelectionDurBy(1); },
 				$w, { this.moveSelectionDurBy(10); },
 				$e, { this.moveSelectionDurBy(100); },
 				$r, { this.moveSelectionDurBy(1000); },
 				$t, { this.moveSelectionDurBy(10000); },
-				$y, { this.moveSelectionDurBy(-1); },
-				$u, { this.moveSelectionDurBy(-10); },
+				$p, { this.moveSelectionDurBy(-1); },
+				$o, { this.moveSelectionDurBy(-10); },
 				$i, { this.moveSelectionDurBy(-100); },
-				$o, { this.moveSelectionDurBy(-1000); },
-				$p, { this.moveSelectionDurBy(-10000); },
+				$u, { this.moveSelectionDurBy(-1000); },
+				$y, { this.moveSelectionDurBy(-10000); },
+				$a, { this.moveSelectionBy(1); },
+				$s, { this.moveSelectionBy(10); },
+				$d, { this.moveSelectionBy(100); },
+				$f, { this.moveSelectionBy(1000); },
+				$g, { this.moveSelectionBy(10000); },
+				$h, { this.moveSelectionBy(-10000); },
+				$j, { this.moveSelectionBy(-1000); },
+				$k, { this.moveSelectionBy(-100); },
+				$l, { this.moveSelectionBy(-10); },
+				$;, { this.moveSelectionBy(-1); },
 
 				$>, { sfv.scroll(1/10);  this.changed(\zoom) },
 				$<, { sfv.scroll(-1/10);  this.changed(\zoom) },
@@ -132,7 +145,7 @@ SoundBufferGui {
 		.mouseUpAction_({ |view, x, y, mod| //
 			// "MOUSEUP ACTION ".post;
 			// sfv.currentSelection.post; " -- ".post;
-			sfv.selection(sfv.currentSelection).postln;
+			// sfv.selection(sfv.currentSelection).postln;
 			// store selection range in selections, and send to sound (if playing);
 			// "mouseUpAction skipped the next line. restore it".postln;
 			// // selections.setSelectionFromGui(
@@ -228,8 +241,8 @@ SoundBufferGui {
 				})})
 			).front }),
 			Button()
-			.states_([["test"]])
-			.action_({ this.test })
+			.states_([["save"]])
+			.action_({ this.save })
 		)
 	}
 
@@ -337,6 +350,7 @@ SoundBufferGui {
 		// because sfv has "null" selection 63 after mouseUp.
 		// var restore;
 		// restore = this.currentSelection; ///????
+		sfv.setSelection(selections.currentSelectionIndex, [0, buffer.numFrames]);
 		selections.setSelectionFromGui(
 			selections.currentSelectionIndex, [0, buffer.numFrames]
 		);
@@ -369,6 +383,7 @@ SoundBufferGui {
 		// set sfv selection to it, and divert.
 		selections.perform(method, frames);
 		this.getSelection;
+		this.changed(\selection);
 	}
 	getSelection {
 		// set sfv views current selection index + values from selecgtions
@@ -533,8 +548,7 @@ SoundBufferGui {
 
 	openParameterGui { selections.openParameterGui; }
 
-	test {
-	}
+	save { selections.save }
 
 	bufName { ^buffer.name }
 	envir {

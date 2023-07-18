@@ -147,24 +147,34 @@ SfSelections {
 	}
 
 	save {
+		var nonEmpty;
+		selections do: { | s, i |
+			if (s.sum > 0) { nonEmpty = nonEmpty add: i }
+		};
+		if (nonEmpty.size == 0) {
+			^postln("There are no selections to save for buffer" + this.bufName);
+		};
+		postln("saving these selections:" + nonEmpty);
 		this.class.withFolder({ | path |
 			var thecode;
 			homefolder = path;
-			path = path +/+ (Date.getDate.stamp ++ ".scd");
+			path = path +/+ format("%_%.scd",
+				this.bufName,
+				Date.getDate.stamp);
 			postln("Saving SfSelection to:" + path);
-			thecode = this.selectionsAsCode;
+			thecode = this.selectionsAsCode(nonEmpty);
 			File.use(path, "w", { | f | f.write(thecode) });
 		});
 	}
 
-	selectionsAsCode {
-		var ifound, code, theselection;
-		selections do: { | s, i |
-			if (s.sum > 0) { ifound = ifound add: i }
-		};
-		ifound.postln;
-		code = "/*selections saved at" + Date.getDate.stamp + "*/\n";
-		ifound do: { | i |
+	selectionsAsCode { | sel_ind |
+		var code, theselection;
+		code = format (
+			"/*selections for % saved at %*/\n",
+			this.bufName,
+			Date.getDate.stamp
+		);
+		sel_ind do: { | i |
 			theselection = params[i];
 			code = code ++ format("//:[1] (%)\n", i);
 			code = code ++ theselection.dict.asCompileString ++ "\n";

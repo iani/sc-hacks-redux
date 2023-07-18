@@ -1,3 +1,7 @@
+/* 18 Jul 2023 09:39
+Unclear how to use thid class. Remove?
+*/
+
 /* 29 Aug 2022 17:24
 Simple scheme for loading scripts stored in the same directory
 as a class.
