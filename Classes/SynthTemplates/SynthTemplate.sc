@@ -19,7 +19,7 @@ SynthTemplate {
 		this.templatePaths do: { | p | this.new(p) };
 	}
 
-	*templatePaths {
+	*templatePaths { // Load from same folder as your definition is
 		^(PathName(this.filenameSymbol.asString).pathOnly ++ "*.scd").pathMatch;
 	}
 

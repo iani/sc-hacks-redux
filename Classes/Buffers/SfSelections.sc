@@ -164,6 +164,7 @@ SfSelections {
 			postln("Saving SfSelection to:" + path);
 			thecode = this.selectionsAsCode(nonEmpty);
 			File.use(path, "w", { | f | f.write(thecode) });
+			Document.open(path);
 		});
 	}
 

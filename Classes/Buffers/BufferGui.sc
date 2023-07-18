@@ -37,6 +37,6 @@ BufferGui {
 	}
 
 	*openSelected {
-		SoundBufferGui((selectedBuffer ?? { Buffer.all.first }).buf).gui;
+		SoundBufferGui((selectedBuffer ?? { Buffer.all.first })).gui;
 	}
 }
