@@ -1,3 +1,3 @@
 [
-    \thresh.ps(0, 500),
+    \thresh.asSpec
 ]

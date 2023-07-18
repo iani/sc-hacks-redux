@@ -8,7 +8,8 @@ Some extra spect used by SynthTemplate, UGenFunc, SynthParams etc.
 		var globaldict, owndict;
 		globaldict = Spec.specs;
 		owndict = (
-			vol: ControlSpec(0, 10, 'amp', 0, 1, \vol);
+			vol: ControlSpec(0, 10, 'amp', 0, 1, \vol),
+			thresh: ControlSpec(0, 80, 'amp', 0, 0, \thresh)
 		);
 		owndict keysValuesDo: { | key, value |
 			globaldict[key] = value;

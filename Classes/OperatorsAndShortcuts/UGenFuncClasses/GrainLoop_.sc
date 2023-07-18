@@ -11,7 +11,7 @@ pos = 0 -> ~startframe / buf.sampleRate
 pos = 1 -> ~endframe / buf.sampleRate
 */
 
-GrainSlide_ : UGenFunc {
+GrainLoop_ : UGenFunc {
 	*ar {
 		var trate, dur, clk, pos, pan;
 		var buf, numChans;

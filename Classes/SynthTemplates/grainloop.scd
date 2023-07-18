@@ -1,8 +1,8 @@
 /*  7 Jul 2023 12:52
 Experimental.
 */
-[GrainSlide_];
+[GrainLoop_];
 //:
 {   // provides PlayBuf.ar ugen with br controls
-	GrainSlide_.ar()
+	GrainLoop_.ar()
 }

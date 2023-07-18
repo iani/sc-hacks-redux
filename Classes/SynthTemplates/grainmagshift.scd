@@ -1,8 +1,8 @@
 /* Fri  7 Jul 2023 21:18
 Experimental.
 */
-[PhaseBuf_, MagShift_];
+[Grain_, MagShift_];
 //:
 {   // provides PlayBuf.ar ugen with br controls
-	PhaseBuf_.ar() +> MagShift_
+	Grain_.ar() +> MagShift_
 }
