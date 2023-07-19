@@ -13,23 +13,15 @@ pos = 1 -> ~endframe / buf.sampleRate
 
 GrainHarmonics_ : UGenFunc {
 	*ar {
-		var trate, dur, clk, pos, pan;
-		var buf, numChans;
-		\trate.bus.set((~trate ?? { 50 }));
-		// ~trate.br(50);
-		buf = ~buf.buf;
-		numChans = buf.numChannels;
-		// trate = MouseY.kr(8,120,1);
-		trate = \trate.br(50);
-		dur = 12 / trate;
-		clk = Impulse.kr(trate);
-		// pos = MouseX.kr(0,BufDur.kr(buf.bufnum)) + TRand.kr(0, 0.01, clk);
-		// pos = \pos.br(0) * BufDur.kr(buf.bufnum) + TRand.kr(0, 0.01, clk);
-		pos = \pos.br(0).linlin(0, 1,
-				\startframe.br(~startframe) / buf.sampleRate,
-				\endframe.br(~endframe) / buf.sampleRate)
-				+ TRand.kr(0, 0.01, clk);
-		pan = WhiteNoise.kr(0.6);
-		^TGrains.ar(numChans, clk, buf, \rate.br(~rate ? 1), pos, dur, pan, 0.1) * \vol.br(1);
+		var trate, dur, b;
+		b = (~buf ? \default).buf ?? { \default.buf };
+		// trate = MouseY.kr(2,120,1);
+		trate = \trate.br(~trate ? 0.5).linexp(0, 1, 2, 120);
+
+		dur = 1.2 / trate;
+		^TGrains.ar(b.numChannels, Impulse.ar(trate), b,
+			(1.2 ** WhiteNoise.kr(3).round(1)),
+			Pos(b), dur, WhiteNoise.kr(0.6), 0.1)
+		* \vol.br(1);
 	}
 }

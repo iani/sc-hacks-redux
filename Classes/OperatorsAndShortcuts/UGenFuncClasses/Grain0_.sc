@@ -11,8 +11,8 @@ Grain0_ : UGenFunc {
 		trate = 40; // 100;
 		dur = 8 / trate;
 		clk = Impulse.kr(trate);
-		// pos = \pos.br(0) * BufDur.kr(buf) ;
 		pos = \pos.br(~pos ? 0).mapdur(buf);
+		// pos = Integrator.kr(BrownNoise.kr(0.001)).abs.mapdur(buf);
 		pan = WhiteNoise.kr(0.6);
 		^TGrains.ar(2, clk, buf, \rate.br(~rate ? 1), pos, dur, pan, 0.1)
 		* \vol.br(~vol ? 1);

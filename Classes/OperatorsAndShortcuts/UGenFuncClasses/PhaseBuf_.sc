@@ -20,11 +20,9 @@ PhaseBuf_ : UGenFunc {
 			Phasor.ar(
 				\trig.br(0),
 				BufRateScale.kr(buf.bufnum) * \rate.br(~rate ? 1),
-				// startpos * buf.sampleRate,
-				// dur  * buf.sampleRate min: BufFrames.kr(buf.bufnum);
 				\startframe.br(~startframe ? 0),
 				\endframe.br(~endframe ?? { buf.numFrames })
 			)
-		)
+		) * \vol.br(~vol ? 1)
 	}
 }
