@@ -27,6 +27,7 @@ SoundBufferGui {
 		sfv.soundfile_(SoundFile(buffer.path))
 		.readWithTask(0, buffer.numFrames, { this.setSelection(0) });
 		selections = SfSelections(this);
+		{ | i | sfv.setSelection(i, [0, 0]) } ! 64;
 		this.changed(\selection);
 	}
 	init {
@@ -195,6 +196,10 @@ SoundBufferGui {
 				);
 				this.changed(\selection);
 			};
+		})
+		.addNotifier(this, \selection, { | n |
+			sfv.currentSelection = selections.currentSelectionIndex;
+			this.restoreSelectionValuesFromSelections;
 		})
 		.addNotifier(this, \selectionIndex, { | n |
 			postln("updating sfv selection index to" + selections.currentSelectionIndex);
