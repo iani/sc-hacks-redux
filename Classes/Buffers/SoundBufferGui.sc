@@ -6,7 +6,7 @@ SoundBufferGui {
 	var buffer, <sfv, colors;
 	var selection;
 	var <>selections; // remember selections because sfv seems to forget them.
-	var <playfuncs; // TODO: transfer these from EditSoundPlayer. Use a different directory
+	// var <playfuncs; // TODO: transfer these from EditSoundPlayer. Use a different directory
 	var <playfunc = \phasebuf; // name of playfunc selected from menu
 	var <zoomfrac = 1, scrollpos = 0;
 	// to load them.
@@ -22,6 +22,13 @@ SoundBufferGui {
 		 ^Registry(this, buffer, { this.newCopyArgs(buffer.buf).init })
 	}
 
+	buffer_ { | argBuffer |
+		buffer = argBuffer.buf;
+		sfv.soundfile_(SoundFile(buffer.path))
+		.readWithTask(0, buffer.numFrames, { this.setSelection(0) });
+		selections = SfSelections(this);
+		this.changed(\selection);
+	}
 	init {
 		selections = SfSelections(this);
 		colors = (((1..9).normalize * (2/3) + (1/3)).collect({ | i |
@@ -46,7 +53,10 @@ SoundBufferGui {
 			),
 			this.selectionListView,
 			this.selectionEditedView
-		).name_(PathName(buffer.path).fileNameWithoutExtension);
+		).name_(PathName(buffer.path).fileNameWithoutExtension)
+		.addNotifier(this, \closeGui, { | n |
+			n.listener.close;
+		});
 		/*
 		{ // switch to first safely editable selection!
 			this.switchToNewSelection(0);
@@ -229,6 +239,18 @@ SoundBufferGui {
 			Button()
 			.states_([["tweak synth"]])
 			.action_({ this.openParameterGui }),
+			StaticText().string_("buffer:"),
+			Button()
+			.canFocus_(false)
+			.states_([[this.name, Color.red, Color.white]])
+			.action_({ | me | Menu(
+				*Buffer.all
+				.collect({ | f | MenuAction(f.asString, {
+					me.states_([[f.asString]]);
+					this.buffer = f.asSymbol;
+				})})
+			).front }),
+
 			StaticText().string_("playfunc:"),
 			Button()
 			.canFocus_(false)

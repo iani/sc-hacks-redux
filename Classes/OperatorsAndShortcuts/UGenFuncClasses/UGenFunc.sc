@@ -39,22 +39,12 @@ UGenFunc {
 			++ ".scd"
 		)
 	}
-	/*
-	*loadSpecsPrototype {
-		var specpath;
-		specpath = (
-			PathName(this.filenameSymbol.asString).pathOnly ++
-			PathName(this.filenameSymbol.asString).fileNameWithoutExtension
-			++ ".scd"
-		);
-		if (File.exists(specpath)) {
-			specs = specpath.load;
-		}{
-			postln("I cannot find specs file for" + this);
-			"Returning empty specs".postln;
-			specs = []
+
+	*play { | event |
+		event ?? { () } keysValuesDo: { | key, value |
+			// value.perform('@>', key);
+			currentEnvironment[key] = value;
 		};
-		^specs;
+		currentEnvironment pf: { this.ar };
 	}
-	*/
 }

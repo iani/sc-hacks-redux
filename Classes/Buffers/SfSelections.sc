@@ -34,7 +34,7 @@ SfSelections {
 		// find out where the home folder is.
 		this.class.withFolder({ | f |
 			homefolder = f;
-			postln("SfSelections saves scripts in" + homefolder);
+			// postln("SfSelections saves scripts in" + homefolder);
 		})
 	}
 
@@ -58,7 +58,7 @@ SfSelections {
 		// chosen by the user.  Update all internal caches belonging to this.
 		// If the current selection is different, and is playing,
 		// then stop it.
-		postln("debugging setCurrentSelectionIndex : index" + index);
+		// postln("debugging setCurrentSelectionIndex : index" + index);
 		// if (true) { ^nil };
 		if (currentSelectionIndex != index) { currentParam.stop; };
 		// update gui!

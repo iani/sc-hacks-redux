@@ -28,16 +28,16 @@ Individual subclasses may implement instance-basis preference saving schemes sep
 	}
 
 	withFolder { | action |
-		"withFolder method called ".postln;
-		postln("action is" + action);
+		// "withFolder method called ".postln;
+		// postln("action is" + action);
 		this.getPath(action, \Folder);
 	}
 
 	getPath { | action, pathType = \File |
 		var p;
 		p = this.filePref;
-		postln("getPath path is" + p);
-		postln("getPath path exists?" + (File exists: p));
+		// postln("getPath path is" + p);
+		// postln("getPath path exists?" + (File exists: p));
 		if (File exists: p) {
 			action.(p)
 			^p;

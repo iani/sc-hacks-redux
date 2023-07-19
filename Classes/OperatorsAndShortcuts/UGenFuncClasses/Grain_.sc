@@ -23,8 +23,6 @@ Grain_ : UGenFunc {
 		trate = \trate.br(50);
 		dur = 12 / trate;
 		clk = Impulse.kr(trate);
-		// pos = MouseX.kr(0,BufDur.kr(buf.bufnum)) + TRand.kr(0, 0.01, clk);
-		// pos = \pos.br(0) * BufDur.kr(buf.bufnum) + TRand.kr(0, 0.01, clk);
 		pos = \pos.br(0).linlin(0, 1,
 				\startframe.br(~startframe) / buf.sampleRate,
 				\endframe.br(~endframe) / buf.sampleRate)
