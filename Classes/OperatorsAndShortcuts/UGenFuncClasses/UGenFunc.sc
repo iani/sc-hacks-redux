@@ -40,6 +40,12 @@ UGenFunc {
 		)
 	}
 
+	*bplay { | buffer = \default, event |
+		event ?? { event = () };
+		event[\buf] = buffer;
+		this play: event;
+	}
+
 	*play { | event |
 		event ?? { () } keysValuesDo: { | key, value |
 			// value.perform('@>', key);
