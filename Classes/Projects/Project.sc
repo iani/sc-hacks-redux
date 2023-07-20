@@ -44,9 +44,10 @@ Project {
 			Server.default doWhenReallyBooted:  { | server |
 		 		this.loadGlobalBuffers;
 				server.sync;
-				this.loadLocalBuffers;
-				server.sync;
-				postf("% finished loading buffers\n", server);
+				this.changed(\loadedBuffers);
+				// this.loadLocalBuffers;
+				// server.sync;
+				// postf("% finished loading buffers\n", server);
 				this.loadGlobalSynthdefs;
 				server.sync;
 				this.loadLocalSynthdefs;
@@ -80,7 +81,9 @@ Project {
 	*projectHomePath { ^PathName(Platform.userHomeDir +/+ startupFolder); }
 	*globalHomePath { ^PathName(Platform.userHomeDir +/+ rootFolder); }
 	*globalProjectPath { ^this.globalHomePath +/+ globalFolder }
-	*globalAudiofilePath { ^this.globalProjectPath +/+ "audiofiles" }
+	// *globalAudiofileP bbath { ^this.globalProjectPath +/+ "audiofiles" }
+	// Thu 20 Jul 2023 13:41: using simpler global path.
+	*globalAudiofilePath { ^PathName(Platform.userHomeDir +/+ "audiofiles") }
 	*globalSynthdefPath { ^this.globalProjectPath +/+ "synthdefs" }
 	*localSynthdefPath { ^this.selectedProjectPath +/+ "synthdefs" }
 	*localSetupPath { ^this.selectedProjectPath +/+ "setup" }
@@ -131,6 +134,7 @@ Project {
 
 	*loadGlobalBuffers {
 		"loading global buffers".postln;
+		postln("global path is " + this.globalAudiofilePath);
 		this.loadAudioFiles(this.globalAudiofilePath);
 	}
 

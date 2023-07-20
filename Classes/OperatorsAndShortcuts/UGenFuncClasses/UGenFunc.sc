@@ -22,9 +22,9 @@ UGenFunc {
 	*loadSpecs {
 		var path, result;
 		path = this.specPath;
-		path.postln;
+		// path.postln;
 		if (File exists: path) {
-			postln("found" + path);
+			// postln("found" + path);
 			result = path.load;
 		}{
 			result = []

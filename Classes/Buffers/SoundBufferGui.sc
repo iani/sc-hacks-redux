@@ -13,7 +13,11 @@ SoundBufferGui {
 	*initClass {
 		// TODO: Rewrite this to use own playfuncs from sc-hacks repository,
 		// and if found, also extra funcs from sc-project.
-		// StartUp add: { EditSoundPlayer.loadIfNeeded }
+		// StartUp add: {}
+	}
+
+	*openOnProjectBufferLoad {
+		this.addNotifier(Project, \loadedBuffers, {this.new(\default).gui})
 	}
 
 	*default { ^this.new(Buffer.all.first) }
