@@ -47,6 +47,20 @@ SoundParams {
 		dict[\buf] = model.bufName;
 		dict[\playfunc] = model.playfunc; // this may already be in template!!!
 		this.setFrame(model.currentSelection);
+		// set frame silently - do not zero all selections at init time:
+		// this.setFrameFromSelection(model.currentSelection);
+	}
+
+	// set frame silently at init time:
+	// setFrameFromSelection { | frame | // set startframe and endframe as received from selections
+	// 	this.dict['startframe'] = frame[0];
+	// 	this.dict['endframe'] = frame.sum;
+	// }
+
+	// Not using this????
+	setFrame { | frame | // set startframe and endframe as received from selections
+		this.setParam('startframe', frame[0]);
+		this.setParam('endframe', frame.sum);
 	}
 
 	// merge parameters from new template into existing dictionary values
@@ -63,20 +77,23 @@ SoundParams {
 		}
 	}
 
-	setFrame { | frame | // set startframe and endframe as received from selections
-		this.setParam('startframe', frame[0]);
-		this.setParam('endframe', frame.sum);
-	}
 
 	setParam { | param, value |
 		dict[param] = value;
-		// if (this.isPlaying) { this.sendParam2Synth(param, value); };
-		this.sendParam2Synth(param, value);
+		if (this.isPlaying) { this.sendParam2Synth(param, value); };
+		// this.sendParam2Synth(param, value);
 	}
 
-	isPlaying { ^false } // TODO: implement this properly
+	isPlaying {
+		^this.player.envir[this.player].notNil;
+ }
 
-	sendParam2Synth { | param, value | value.perform('@>', param, dict[\buf]); }
+	sendParam2Synth { | param, value |
+		// new version: run locally + share over Osc
+		format("% @>.% %%", value, this.player, "\\", param).share;
+		// Old version
+		// value.perform('@>', param, dict[\buf]);
+	}
 
 	// ======================= GUI ========================
 	gui {
@@ -107,7 +124,7 @@ SoundParams {
 
 	// Review this?
 	envir { // the environment Mediator where I am playing
-		^model.name.envir;
+		^this.player.envir;
 	}
 
 	// ????
@@ -126,11 +143,14 @@ SoundParams {
 		if (this.dur <= 0.0) {
 			"Cannot play settings with duration 0".postln;
 		}{
-			dict[\buf].envir.play(dict);
+			format("%.envir play: %", this.player.asCompileString, dict.asCompileString).share;
+			// Share the action locally and via oscgroups
+			// this.player.envir.play(dict); // this is the plain not-shared version
 		}
 	}
 	stop { // stop all synths - both sound + controls
-		dict[\buf].stopSynths;
+		format("%%.stopSynths", "\\", this.player).share;
+		// dict[\buf].stopSynths;
 	}
 
 	dur {
@@ -142,7 +162,7 @@ SoundParams {
 	endFrame { ^dict[\endframe] ? 0 }
 	numFrames { ^this.endFrame - this.startFrame }
 	sampleRate { ^dict[\buf].buf.sampleRate }
-
+	player { ^model.player }
 	/*
 	sendFramesToServer {
 		this.startFrame.perform('@>', \startframe, this.name);

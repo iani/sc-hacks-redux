@@ -15,6 +15,7 @@ SfSelections {
 		^this.newCopyArgs(sbgui, { [0, 0] } ! 64).init;
 	}
 
+	player { ^sbgui.player }
 	bufName { ^sbgui.name }
 	playfunc { ^sbgui.playfunc }
 	playfunc_ { | playfunc | // replace currentParam with a param from the playfunc's template

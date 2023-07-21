@@ -1,0 +1,11 @@
+[
+	'default',
+	'yoshi',
+	'mary',
+	'natali',
+	'justine',
+	'jun',
+	'asayo',
+	'vicky',
+	'iani'
+];

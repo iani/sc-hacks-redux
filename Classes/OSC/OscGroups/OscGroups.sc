@@ -25,6 +25,7 @@ OscGroups {
 	// See methods enableCodeBroadcasting, disableCodeBroadcasting
 	classvar <>localUser = \localuser; // TODO: delete this if it is not used!!!
 	classvar localAddress;
+	classvar <>notifyCodeSending = false;
 
 	*initClass {
 		// NOTE: always notify code evaluations to the system -
@@ -186,7 +187,10 @@ OscGroups {
 		// send evaluated code to sendAddress using oscMessage and adding localUser
 		this.addNotifier(Interpreter, \code, { | n, code |
 			this.changed(\localcode, code); // OSCRecorder records the code here.
-			// postln("sending message" + codeMessage + "to address " + sendAddress);
+			if (notifyCodeSending) {
+				postln("sending message" + codeMessage + "and code"
+					+ code + "to address " + sendAddress);
+			};
 			sendAddress.sendMsg(codeMessage, code);
 		});
 		this.changedStatus;

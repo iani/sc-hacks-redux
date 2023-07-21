@@ -3,12 +3,14 @@
 */
 
 SoundBufferGui {
+	classvar <>players;
 	var buffer, <sfv, colors;
 	var selection;
 	var <>selections; // remember selections because sfv seems to forget them.
 	// var <playfuncs; // TODO: transfer these from EditSoundPlayer. Use a different directory
 	var <playfunc = \phasebuf; // name of playfunc selected from menu
 	var <zoomfrac = 1, scrollpos = 0;
+	var <>player;
 	// to load them.
 	*initClass {
 		// TODO: Rewrite this to use own playfuncs from sc-hacks repository,
@@ -35,6 +37,8 @@ SoundBufferGui {
 		this.changed(\selection);
 	}
 	init {
+		players = this.loadFromLib("playernames");
+		player = players.first;
 		selections = SfSelections(this);
 		colors = (((1..9).normalize * (2/3) + (1/3)).collect({ | i |
 			[
@@ -245,17 +249,26 @@ SoundBufferGui {
 			NumberBox()
 			.maxDecimals_(6)
 			.addNotifier(this, \selection, { | n | n.listener.value = this.selectionDur;}),
+			StaticText().string_("player:"),
 			Button()
-			.states_([["tweak synth"]])
+			.states_([[player, Color.green(0.5)]])
+			.action_({ | me | Menu(
+				*players.collect({ | f | MenuAction(f.asString, {
+					me.states_([[f.asString, Color.green(0.5), Color.white]]);
+					player = f.asSymbol;
+				})})
+			).front }),
+			Button()
+			.states_([["controls", Color.white, Color.red]])
 			.action_({ this.openParameterGui }),
 			StaticText().string_("buffer:"),
 			Button()
 			.canFocus_(false)
-			.states_([[this.name, Color.red, Color.white]])
+			.states_([[this.name, Color.blue, Color.white]])
 			.action_({ | me | Menu(
 				*Buffer.all
 				.collect({ | f | MenuAction(f.asString, {
-					me.states_([[f.asString]]);
+					me.states_([[f.asString, Color.blue, Color.white]]);
 					this.buffer = f.asSymbol;
 				})})
 			).front }),
@@ -267,7 +280,7 @@ SoundBufferGui {
 			.action_({ | me | Menu(
 				*SynthTemplate.playfuncs.keys.asArray.sort
 				.collect({ | f | MenuAction(f.asString, {
-					me.states_([[f.asString]]);
+					me.states_([[f.asString, Color.red, Color.white]]);
 					this.setPlayfunc(f.asSymbol);
 				})})
 			).front }),

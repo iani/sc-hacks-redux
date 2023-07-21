@@ -3,6 +3,7 @@
 */
 
 + String {
+
 	removeFirstLine {
 		^this[this.indexOf(Char.nl)..]
 	}
@@ -18,6 +19,7 @@
 		^PathName(this).asAbsolutePath;
 	}
 
+	share { this.interpretAndShare } // Shortcut. Nicer name
 	interpretAndShare { // interpret and let OscGroups share
 		// the interpreted code.
 		Interpreter.changed(\code, this);

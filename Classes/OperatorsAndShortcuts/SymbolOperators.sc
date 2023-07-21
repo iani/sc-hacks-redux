@@ -4,6 +4,11 @@
 
 + Symbol {
 	// convert to specs for use by Param
+	linlin { | envir, param, lo, hi |
+		format(
+			"{ %%.sr.lin(%, %) } @>.% %%;", "%", this, lo, hi, envir, "%", param
+		).share;
+	}
 	asSpec2 { ^this.asSpec.units_(this) }
 	ps { | lo = 0, hi = 1.0, default = 1, map = \linear, step = 0 |
 		^[lo, hi, map, step, default, this].asSpec;
