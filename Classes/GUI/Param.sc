@@ -15,19 +15,21 @@ Param {
 		name = spec.units.asSymbol;
 		// spec = spec.asSpec;
 		value = spec.default;
+		sensorlo = spec.minval;
+		sensorhi = spec.maxval;
 	}
 	gui {
 		^HLayout(
 			StaticText().minWidth_(100)
-			.minWidth_(100).string_(name),
+			.minWidth_(100).string_(format("%(%-%)", name, spec.minval, spec.maxval)),
 			Button().maxWidth_(30)
 			.states_([["-"]])
 			.action_({ | me | Menu(
-				*['-', \x, \y, \z, 'x>', 'x<', 'z>', 'z<', 'xyz'].collect({ | f |
+				*['-', \x, \y, \z].collect({ | f |
 					MenuAction(f.asString, {
-					me.states_([[f.asString]]);
-					// player = f.asSymbol;
-				})})
+						me.states_([[f.asString]]);
+						this.setSensor(f);
+					})})
 			).front }),
 			Button().maxWidth_(20)
 			.states_([["0"]])
@@ -37,7 +39,22 @@ Param {
 					// player = f.asSymbol;
 				})})
 			).front }),
+			NumberBox().maxWidth_(55)
+			.background_(Color.gray(0.7))
+			.clipLo_(spec.clipLo)
+			.clipHi_(spec.clipHi)
+			.decimals_(5)
+			.value_(spec.minval)
+			.action_({ | me | this.setSensorLo(me.value) }),
+			NumberBox().maxWidth_(55)
+			.background_(Color.gray(0.7))
+			.clipLo_(spec.clipLo)
+			.clipHi_(spec.clipHi)
+			.decimals_(5)
+			.value_(spec.maxval)
+			.action_({ | me | this.setSensorHi(me.value) }),
 			NumberBox().maxWidth_(80)
+			.normalColor_(Color.red(0.5))
 			.clipLo_(spec.clipLo)
 			.clipHi_(spec.clipHi)
 			.decimals_(5)
@@ -75,6 +92,26 @@ Param {
 		)
 	}
 
+	setSensor { | argSensor |
+		if (argSensor == '-') {
+			sensor = nil;
+			// TODO: code to stop
+			if (model.isPlaying) {
+				format("%%.envir[%%].free", "\\", this.player, "\\", "name").share;
+			}
+		}{
+			sensor = argSensor;
+			if (model.isPlaying) {
+				sensor.linlin(this.player, name, sensorlo, sensorhi)
+			}
+		}
+	}
+	setSensorLo {
+	}
+
+	setSensorHi {
+
+	}
 	player { ^model.player }
 
 	updateModel { model.setParam(name, value); }

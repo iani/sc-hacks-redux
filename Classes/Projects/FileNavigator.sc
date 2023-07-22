@@ -108,7 +108,15 @@ FileNavigator {
 
 	// make outerItem the currentRoot
 	zoomIn {
+		var oldInnerList, oldInnerIndex;
+		// "improving zoomin".postln;
+		// postln("outerIndex" + outerIndex + "innerIndex" + innerIndex);
+		oldInnerList = innerList;
+		oldInnerIndex = innerIndex;
 		this.setCurrentRoot(outerItem);
+		// this.setOuterListAndIndex()
+		{ this.changed(\setOuterListAndIndex, oldInnerList, oldInnerIndex)}.defer(0.25);
+
 	}
 
 	setCurrentRoot { | argNewRoot |
@@ -195,7 +203,7 @@ FileNavigator {
 				this.innerListView
 				// ListView()
 				// .items_((1..5))
-				// .selectionMode_(\contiguous)
+				// .selectionMode_(\contigous)
 				// this.innerListView .selectionMode_(\contiguous)
 				// this.innerListView .selectionMode_(\contiguous)
 			)

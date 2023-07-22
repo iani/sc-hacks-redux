@@ -17,7 +17,8 @@ SoundParams {
 	var model; // SfSelections;
 	var <>playfunc;
 	var <paramSpecs, <params;
-	var <dict; // used for starting the synth.
+	var <dict; // param values for starting the synth.
+	var <switch; // controls on-off audibility
 	*new { | selection, playfunc |
 		^this.newCopyArgs(selection, playfunc).init;
 	}
@@ -96,22 +97,15 @@ SoundParams {
 	}
 
 	// ======================= GUI ========================
+	// , 'x>', 'x<', 'z>', 'z<', 'xyz'
 	gui {
 		var clumped, height;
 		clumped = params.flat.clump(12);
 		height = clumped.collect(_.size).maxItem * 20 + 20;
 		this.bounds_(Rect(400, 0, 700, height))
 		.vlayout(
-			HLayout(
-				CheckBox().string_("play")
-				.action_({ | me |
-					if (me.value) { this.play }{ this.stop }
-				})
-			),
-			HLayout(
-			*clumped.collect({ | ps |
-				VLayout(*ps.collect({ | p | p.gui}))
-			}))
+			this.playView,
+			this.paramView(clumped)
 		)
 		.addNotifier(this, \close, { | n | n.listener.close })
 		.name_(format("%:%", dict[\buf], dict[\playfunc]));
@@ -122,6 +116,20 @@ SoundParams {
 		^VLayout(*(ps.collect({ | p | p.gui})))
 	}
 
+	playView {
+		^HLayout(
+				CheckBox().string_("play")
+				.action_({ | me |
+					if (me.value) { this.play }{ this.stop }
+				})
+			)
+	}
+	paramView { | clumped |
+		^HLayout(
+			*clumped.collect({ | ps |
+				VLayout(*ps.collect({ | p | p.gui}))
+			}))
+	}
 	// Review this?
 	envir { // the environment Mediator where I am playing
 		^this.player.envir;
