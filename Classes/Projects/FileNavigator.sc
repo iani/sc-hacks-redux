@@ -102,9 +102,9 @@ FileNavigator {
 
 	// subclasses may overwrite this:
 	getOuterItemsList {
-		postln("Current root is:" + this.currentRoot);
-		postln("Folders are:");
-		this.currentRoot.folders do: _.postln;
+		// postln("Current root is:" + this.currentRoot);
+		// postln("Folders are:");
+		// this.currentRoot.folders do: _.postln;
 		^this.currentRoot.folders;
 	}
 	getInnerItemsList { ^outerItem.entries; }
@@ -114,6 +114,16 @@ FileNavigator {
 
 	// make outerItem the currentRoot
 	zoomIn {
+		// outerItem.postln;
+		// outerItem.asString.ok;
+		if (outerItem.folders.size == 0) {
+			postln("Cannot zoom into this folder");
+			postln(outerItem);
+			"Because it has no subfolders".postln;
+			("Cannot zoom into this folder" + outerItem.fullPath
+				+ "Because it has no subfolders").ok;
+			^nil;
+		};
 		currentRoot = outerItem;
 		this.setOuterListAndIndex(innerList, innerIndex);
 	}
@@ -135,11 +145,21 @@ FileNavigator {
 
 	// make currentRoot's superfolder the currentRoot;
 	zoomOut {
+		var newOuterItemPaths, newOuterItemPath;
 		if (this.currentRoot.asDir.fullPath == this.homeDir.asDir.fullPath) {
 			^postln("Cannot go above the homeDir: " + homeDir)
 		};
+		innerList = outerList;
+		innerIndex = outerIndex;
+		innerItem = outerItem;
 		currentRoot = currentRoot.up;
-		this.getOuterItems;
+		outerList = currentRoot.entries;
+		newOuterItemPaths = outerList collect: _.fullPath;
+		newOuterItemPath = outerItem.up.fullPath;
+		outerIndex = newOuterItemPaths
+		indexOf: newOuterItemPaths.detect({|p| p == newOuterItemPath});
+		outerItem = outerList[outerIndex];
+		this.changed(\everything);
 	}
 
 	*gui {
@@ -150,16 +170,6 @@ FileNavigator {
 		{ this.getOuterItems }.defer(0.1);
 		this.vlayout(
 			HLayout(
-				// Button()
-				// .maxWidth_(50)
-				// .canFocus_(false)
-				// .states_([["menu", Color.red, Color.white]])
-				// .action_({ Menu(
-				// 	MenuAction("Save bookmark", { this.save }),
-				// 	MenuAction("Goto saved bookmark", { this.load }),
-				// 	MenuAction("Go to subfolder", { this.zoomIn }),
-				// 	MenuAction("Go to superfolder", { this.zoomOut })
-				// ).front }),
 				Button().states_([["save bookmark"]])
 				.action_({ this.save }),
 				Button().states_([["recall"]]).maxWidth_(50)
@@ -236,6 +246,10 @@ FileNavigator {
 					.highlightText_(Color(0.0, 0.0, 1.0))
 		)
 		.enterKeyAction_({ this.openAllFiles; })
+		.addNotifier(this, \everything, { | n |
+			n.listener.items = outerList collect: _.shortName;
+			n.listener.value = outerIndex;
+		})
 		.addNotifier(this, \setOuterListAndIndex, { | n, list, outerIndex |
 			if (list.size == 0) {
 				"Outer list is empty. Cannot refresh.".postln;
@@ -308,15 +322,20 @@ FileNavigator {
 			.highlightText_(Color(1.0, 0.0, 0.0))
 		)
 		.selectionMode_(\contiguous) // does not work. Why?
+		.addNotifier(this, \everything, { | n |
+			n.listener.items = innerList collect: _.shortName;
+			n.listener.value = innerIndex;
+		})
 		.addNotifier(this, \innerItems, { | n |
 			// restore index overwritten by selectionAction!
 			var index;
 			index = innerIndex;
-			{
-				innerIndex = index;
-				this.changed(\innerItem);
-			}.defer(0.01);
+			// {
+				// innerIndex = index;
+				// this.changed(\innerItem);
+			// }.defer(0.01);
 			n.listener.items = this.innerListNames;
+			n.listener.value = innerIndex;
 		})
 		.addNotifier(this, \innerItem, { | n |
 			n.listener.value = innerIndex;
