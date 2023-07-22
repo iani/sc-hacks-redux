@@ -190,7 +190,8 @@ FileNavigator {
 							if(p.isCode) {
 								OscDataScore([innerItem.fullPath]).gui
 							}{
-								SnippetGui2.gui(innerItem.fullPath);
+								// SnippetDataGui2.gui(innerItem.fullPath);
+								SnippetScore([innerItem.fullPath]).gui
 							};
 						},{ | p |
 							postln("File not found:" + p);

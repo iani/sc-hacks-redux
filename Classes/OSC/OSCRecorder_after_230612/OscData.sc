@@ -339,7 +339,10 @@ OscData {
 		{ this.selectAll; }.defer(0.1);
 	}
 
-	windowName { | argName | ^argName ? this.class.name }
+	windowName { | argName |
+		//^argName ? this.class.name
+		^PathName(paths.first).fileNameWithoutExtension;
+ }
 
 	formatTimeIndex { | t, i |
 		^t.asString;
