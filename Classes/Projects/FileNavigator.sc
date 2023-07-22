@@ -12,6 +12,7 @@ FileNavigator {
 	var >currentRoot; // path for getting outerList items
 	var <>outerList, <>outerItem, <outerIndex = 0;
 	var <>innerList, <>innerItem, <innerIndex = 0;
+	var <selection; // currently selected indices of inner list
 
 	*new { | key = \default | ^this.newCopyArgs(key) /* .getOuterItems */ }
 
@@ -100,7 +101,12 @@ FileNavigator {
 	}
 
 	// subclasses may overwrite this:
-	getOuterItemsList { ^this.currentRoot.folders; }
+	getOuterItemsList {
+		postln("Current root is:" + this.currentRoot);
+		postln("Folders are:");
+		this.currentRoot.folders do: _.postln;
+		^this.currentRoot.folders;
+	}
 	getInnerItemsList { ^outerItem.entries; }
 	// provide defaults for homeDir and currentRoot
 	currentRoot { ^currentRoot ?? { currentRoot = this.homeDir } }
@@ -108,15 +114,12 @@ FileNavigator {
 
 	// make outerItem the currentRoot
 	zoomIn {
-		var oldInnerList, oldInnerIndex;
-		// "improving zoomin".postln;
-		// postln("outerIndex" + outerIndex + "innerIndex" + innerIndex);
-		oldInnerList = innerList;
-		oldInnerIndex = innerIndex;
-		this.setCurrentRoot(outerItem);
-		// this.setOuterListAndIndex()
-		{ this.changed(\setOuterListAndIndex, oldInnerList, oldInnerIndex)}.defer(0.25);
+		currentRoot = outerItem;
+		this.setOuterListAndIndex(innerList, innerIndex);
+	}
 
+	setOuterListAndIndex { | argList, argIndex |
+		 this.changed(\setOuterListAndIndex, argList, argIndex)
 	}
 
 	setCurrentRoot { | argNewRoot |
@@ -147,26 +150,27 @@ FileNavigator {
 		{ this.getOuterItems }.defer(0.1);
 		this.vlayout(
 			HLayout(
-				Button()
-				.maxWidth_(50)
-				.canFocus_(false)
-				.states_([["menu", Color.red, Color.white]])
-				.action_({ Menu(
-					MenuAction("Save bookmark", { this.save }),
-					MenuAction("Goto saved bookmark", { this.load }),
-					MenuAction("Go to subfolder", { this.zoomIn }),
-					MenuAction("Go to superfolder", { this.zoomOut })
-				).front }),
+				// Button()
+				// .maxWidth_(50)
+				// .canFocus_(false)
+				// .states_([["menu", Color.red, Color.white]])
+				// .action_({ Menu(
+				// 	MenuAction("Save bookmark", { this.save }),
+				// 	MenuAction("Goto saved bookmark", { this.load }),
+				// 	MenuAction("Go to subfolder", { this.zoomIn }),
+				// 	MenuAction("Go to superfolder", { this.zoomOut })
+				// ).front }),
 				Button().states_([["save bookmark"]])
 				.action_({ this.save }),
-				Button().states_([["recall"]]).maxWidth_(70)
+				Button().states_([["recall"]]).maxWidth_(50)
 				.action_({ this.load }),
 				Button().states_([["<"]]).maxWidth_(30)
 				.action_({ this.zoomOut }),
 				Button().states_([[">"]]).maxWidth_(30)
 				.action_({ this.zoomIn }),
-				// NOT YET IMPLEMENTED:
-				Button().states_([["edit"]]).maxWidth_(70)
+				Button().states_([["info"]]).maxWidth_(50)
+				.action_({ this.info }),
+				Button().states_([["edit"]]).maxWidth_(50)
 				.action_({
 					if (innerItem.isFolder) {
 						innerItem.folderName.post;
@@ -176,7 +180,8 @@ FileNavigator {
 						Document.open(innerItem.fullPath);
 					}
 				}),
-				Button().states_([["browse"]]).action_({
+				Button().states_([["browse"]]).maxWidth_(50)
+				.action_({
 					// outerItem.postln;
 					// innerItem.postln;
 					// innerItem.isFolder.postln;
@@ -187,17 +192,22 @@ FileNavigator {
 						"Select a file to open instead".postln;
 					}{
 						innerItem.fullPath.doIfExists({ | p |
-							if(p.isCode) {
-								OscDataScore([innerItem.fullPath]).gui
-							}{
-								// SnippetDataGui2.gui(innerItem.fullPath);
-								SnippetScore([innerItem.fullPath]).gui
-							};
+							case
+							{ p.isCode }{ OscDataScore([p]).gui }
+							{ p.hasTimestamps }{ OscData([p]).gui; }
+							{ true }{ SnippetScore([p]).gui };
+							// { true }{SnippetScore([innerItem.fullPath]).gui};
 						},{ | p |
 							postln("File not found:" + p);
-						});
+						})
 					}
-				})
+				}),
+				Button().states_([["export"]]).maxWidth_(50)
+				.action_({ Menu(
+					MenuAction("export code", { this.exportCode }),
+					MenuAction("export messages", { this.exportMessages }),
+					MenuAction("export all", { this.exportAll })
+				).front })
 			),
 			HLayout(
 				this.outerListView,
@@ -208,7 +218,7 @@ FileNavigator {
 				// this.innerListView .selectionMode_(\contiguous)
 				// this.innerListView .selectionMode_(\contiguous)
 			)
-		).bounds_(Rect(0, 230, 350, 180))
+		).bounds_(this.bounds)
 		.addNotifier(this, \innerItems, { | n |
 			var p;
 			p = currentRoot.asRelativePath(homeDir);
@@ -218,6 +228,7 @@ FileNavigator {
 		{ this.load; }.defer(1.1); // load last saved path from preferences
 	}
 
+	bounds { ^Rect(0, 230, 350, 180) }
 	outerListView {
 		^ListView()
 		.palette_(QPalette.light
@@ -243,10 +254,10 @@ FileNavigator {
 			var index;
 			// restore index overwritten by selectionAction!
 			index = outerIndex;
-			{
-				outerIndex = index;
-				this.changed(\outerItem);
-			}.defer(0.01);
+			// {
+			// 	outerIndex = index;
+			// 	this.changed(\outerItem);
+			// }.defer(0.01);
 			n.listener.items = this.outerListNames;
 		})
 		.addNotifier(this, \outerItem, { | n |
@@ -266,12 +277,14 @@ FileNavigator {
 			SnippetData([p.fullPath]).gui
 		};
 	}
+
 	outerIndex_ { | val |
 		outerIndex = val;
 		outerItem = this.outerList[outerIndex];
 		this.changed(\outerItem);
 		this.getInnerItems;
 	}
+
 	outerListNames {
 		^(outerList ? []) collect: _.shortName;
 	}
@@ -308,9 +321,12 @@ FileNavigator {
 		.addNotifier(this, \innerItem, { | n |
 			n.listener.value = innerIndex;
 		})
-		.selectionAction_({ | me |
-			this.innerIndex = me.value;
-		})
+		.action_{ | me |
+			innerIndex = me.value;
+			innerItem = innerList[innerIndex];
+			selection = me.selection;
+			innerList[selection].postln;
+		}
 		.enterKeyAction_({ this.openInnerItem })
 		.keyDownAction_(this.keyboardShortcutAction);
 	}
@@ -331,6 +347,10 @@ FileNavigator {
 	}
 	keyboardShortcutAction {
 		^{ | me, char, modifiers, unicode, keycode, key |
+			// [me, char, modifiers, unicode, keycode, key].postln;
+			if (modifiers == 1048576 and: { key == 65 }) {
+				selection = (0..(me.items.size - 1));
+			};
 			switch (char,
 				$., { this.saveBookmark; },
 				$,, { this.gotoBookmark; },
@@ -357,4 +377,54 @@ FileNavigator {
 	}
 	saveBookmark { this.save }
 	gotoBookmark { this.load }
+
+	info {
+		var all, code;
+		all = this.collectSnippets;
+		code = this.selectCode(all);
+		ok("Selection contains" + all.size + "snippets\nand" + code.size + "code messages")
+
+	}
+	exportCode { this.export(this.selectCode(this.collectSnippets), "exports/code"); }
+	exportMessages { this.export(this.selectMessages(this.collectSnippets), "exports/messsages") }
+	exportAll { this.export(this.collectSnippets, "exports/all") }
+	collectSnippets {
+		var snippets;
+		// selection.postln;
+		innerList[selection] do: { | i |
+			File.use(i.fullPath, "r", { | f |
+				var string, delimiters;
+				string = f.readAllString;
+				delimiters = string.findAll("\n//:");
+				delimiters do: { | b, i |
+					var end, entry;
+					end = delimiters[i + 1];
+					if (end.notNil) {
+						entry = string.copyRange(b + 1, end);
+					}{
+						entry = string.copyRange(b + 1, string.size - 1)
+					};
+					snippets = snippets add: entry;
+				}
+			})
+		};
+		^snippets.postln;
+	}
+
+	selectCode { | snippets |
+		^snippets select: _.hasCode;
+	}
+
+	selectMessages { | snippets |
+		^snippets reject: _.hasCode;
+	}
+
+	export { | snippets, folder |
+		var filename;
+		(this.homeDir +/+ folder).postln;
+		filename = (this.homeDir +/+ folder +/+ Date.getDate.stamp).fullPath ++ ".scd";
+		File.use(filename, "w", { | f |
+			snippets do: { | x | f write: x };
+		})
+	}
 }

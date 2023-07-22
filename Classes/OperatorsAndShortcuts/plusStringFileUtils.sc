@@ -22,6 +22,15 @@
 		});
 		^isCode;
 	}
+
+	hasCode { // true if the snippet contains "\n[ 'code'"
+		^this contains: "\n[ '/code'";
+	}
+	hasTimestamps {
+		var h;
+		File.use(this, "r", { | f | h = f.readAllString; });
+		^h contains: "\n//:--[";
+	}
 }
 
 + File {

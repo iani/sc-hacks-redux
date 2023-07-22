@@ -79,13 +79,13 @@ OscData {
 
 	convertTimesMessages {
 		if (parsedEntries.size == 0) {
-			"Found no entries. cannot clone empty data.".ok;
-			"Found no entries. cannot clone empty data.".postln;
-			^this;
+			parsedEntries = sourceStrings;
+			times = 1.dup(sourceStrings.size);
+			messages = sourceStrings;
+		}{
+			#times, messages = parsedEntries.flop;
 		};
-		#times, messages = parsedEntries.flop;
 		this.makeTimeline(times);
-		// times.postln;
 		this.convertTimes;
 		timesMessages = [times, messages].flop;
 	}
