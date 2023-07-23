@@ -120,9 +120,7 @@ SoundParams {
 			n.listener.close;
 			// n.listener.name = this.header;
 		})
-		.addNotifier(this, \player, { | n |
-			n.listener.name = this.header;
-		})
+		.addNotifier(this, \player, { | n | n.listener.name = this.header; })
 		.name_(this.header);
 
 		{ this.changed(\dict) }.defer(0.1);
@@ -142,6 +140,25 @@ SoundParams {
 				n.listener.value = false;
 				n.listener.focus(true);
 			}),
+			StaticText().maxWidth_(50).string_("sensor"),
+			Button().maxWidth_(20)
+			.states_([["1"]])
+			.action_({ | me | Menu(
+				*(1..12).collect({ | f | MenuAction(f, {
+					me.states_([[f.asString]]);
+					switch.sensorNum_(f);
+				})})
+			).front }),
+			StaticText().maxWidth_(70).string_("on-off ctl:"),
+			Button().maxWidth_(30)
+			.states_([["off"]])
+			.action_({ | me | Menu(
+				*['off', 'lx', 'lz', 'gx', 'gz', \xyz].collect({ | f |
+					MenuAction(f.asString, {
+						me.states_([[f.asString]]);
+						switch.ctl_(f);
+					})})
+			).front }),
 			StaticText().maxWidth_(40).string_("player:"),
 			Button().maxWidth_(70)
 			.states_([[player, Color.green(0.5)]])
@@ -150,6 +167,7 @@ SoundParams {
 					me.states_([[f.asString, Color.green(0.5), Color.white]]);
 					if (player != f.asSymbol) { this.stop };
 					player = f.asSymbol;
+					this.changed(\player);
 				})})
 			).front }),
 			Button().maxWidth_(10).states_([["x"]])
@@ -158,6 +176,15 @@ SoundParams {
 			.action_({ "CmdPeriod.run".share })
 
 		)
+	}
+
+	setSensor { | argId = 1 |
+		// sensor = argId;
+		// if (controlType.notNil and: { this.isPl })
+	}
+
+	setControl { | controlType |
+
 	}
 	paramView { | clumped |
 		^HLayout(
