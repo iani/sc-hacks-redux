@@ -213,7 +213,9 @@ Mediator : EnvironmentRedirect {
 			synth.set(\out, outbus);
 		});
 		synth onEnd: {
+			// only remove if it has not been replaced by something new:
 			if (this[key] === synth) { this[key] = nil };
+			this.class.changed(\ended, name, key);
 			synth changed: \ended;
 		};
 		^synth;

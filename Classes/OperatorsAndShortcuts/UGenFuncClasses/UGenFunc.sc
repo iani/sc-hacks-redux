@@ -40,13 +40,14 @@ UGenFunc {
 		)
 	}
 
-	*bplay { | buffer = \default, event |
+	*bplay { | buffer = \default, envir, event |
 		event ?? { event = () };
 		event[\buf] = buffer;
-		this play: event;
+		this.play(event, envir);
 	}
 
-	*play { | event |
+	*play { | event, envir |
+		envir !? { envir.push };
 		event ?? { () } keysValuesDo: { | key, value |
 			// value.perform('@>', key);
 			currentEnvironment[key] = value;

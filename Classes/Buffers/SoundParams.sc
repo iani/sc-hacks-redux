@@ -14,16 +14,21 @@ Save the resulting config in a file at folder ???? in sc-projects.
 //:
 
 SoundParams {
+	classvar <>players;
+
 	var model; // SfSelections;
 	var <>playfunc;
 	var <paramSpecs, <params;
 	var <dict; // param values for starting the synth.
 	var <switch; // controls on-off audibility
+	var <player;
 	*new { | selection, playfunc |
 		^this.newCopyArgs(selection, playfunc).init;
 	}
 
 	init {
+		players = this.loadFromLib("playernames");
+		player = players.first;
 		this.makeParams;
 		this.initDict;
 	}
@@ -47,7 +52,7 @@ SoundParams {
 		// transfer values from selections
 		dict[\buf] = model.bufName;
 		dict[\playfunc] = model.playfunc; // this may already be in template!!!
-		this.setFrame(model.currentSelection);
+ 		this.setFrame(model.currentSelection);
 		// set frame silently - do not zero all selections at init time:
 		// this.setFrameFromSelection(model.currentSelection);
 	}
@@ -108,21 +113,51 @@ SoundParams {
 			this.paramView(clumped)
 		)
 		.addNotifier(this, \close, { | n | n.listener.close })
-		.name_(format("%:%", dict[\buf], dict[\playfunc]));
+		.addNotifier(this.soundfileview, \buffer, { | n |
+			// must stop because sf gui controls range of different buffer
+			this.stop;
+			"closing because of Buffer".postln;
+			n.listener.close;
+			// n.listener.name = this.header;
+		})
+		.addNotifier(this, \player, { | n |
+			n.listener.name = this.header;
+		})
+		.name_(this.header);
 
 		{ this.changed(\dict) }.defer(0.1);
 	}
+	header { ^format("% -- % : %", this.player, dict[\buf], dict[\playfunc]) }
 	pane { |  ps |
 		^VLayout(*(ps.collect({ | p | p.gui})))
 	}
 
 	playView {
 		^HLayout(
-				CheckBox().string_("play")
-				.action_({ | me |
-					if (me.value) { this.play }{ this.stop }
-				})
-			)
+			CheckBox().string_("play")
+			.action_({ | me |
+				if (me.value) { this.play }{ this.stop }
+			})
+			.addNotifier(this, \stopped, { | n |
+				n.listener.value = false;
+				n.listener.focus(true);
+			}),
+			StaticText().maxWidth_(40).string_("player:"),
+			Button().maxWidth_(70)
+			.states_([[player, Color.green(0.5)]])
+			.action_({ | me | Menu(
+				*players.collect({ | f | MenuAction(f.asString, {
+					me.states_([[f.asString, Color.green(0.5), Color.white]]);
+					if (player != f.asSymbol) { this.stop };
+					player = f.asSymbol;
+				})})
+			).front }),
+			Button().maxWidth_(10).states_([["x"]])
+			.action_({ CmdPeriod.run }),
+			Button().maxWidth_(10).states_([["x", Color.yellow, Color.red]])
+			.action_({ "CmdPeriod.run".share })
+
+		)
 	}
 	paramView { | clumped |
 		^HLayout(
@@ -152,12 +187,18 @@ SoundParams {
 			"Cannot play settings with duration 0".postln;
 		}{
 			format("%.envir play: %", this.player.asCompileString, dict.asCompileString).share;
+			this.addNotifier(Mediator, \ended, { | n, playername, synthname |
+				if (playername == this.player and: { synthname == this.player}) {
+					this.changed(\stopped);
+				}
+			});
 			// Share the action locally and via oscgroups
 			// this.player.envir.play(dict); // this is the plain not-shared version
 		}
 	}
 	stop { // stop all synths - both sound + controls
 		format("%%.stopSynths", "\\", this.player).share;
+		this.changed(\stopped); // notify even when player has changed!
 		// dict[\buf].stopSynths;
 	}
 
@@ -170,7 +211,8 @@ SoundParams {
 	endFrame { ^dict[\endframe] ? 0 }
 	numFrames { ^this.endFrame - this.startFrame }
 	sampleRate { ^dict[\buf].buf.sampleRate }
-	player { ^model.player }
+	// player { ^model.player }
+	soundfileview { ^model.soundfileview }
 	/*
 	sendFramesToServer {
 		this.startFrame.perform('@>', \startframe, this.name);

@@ -27,6 +27,7 @@ Asc to confirm before evaluating a function.
 	}
 
 	getPath { | object, message = "Choose a path for" |
+		// TODO: Complete this method!
 		message = message + object;
 
 	}
@@ -53,6 +54,6 @@ Asc to confirm before evaluating a function.
 					window.close;
 				})
 			)
-		)
+		).bounds_(Rect(400, 400, 500, 300))
 	}
 }

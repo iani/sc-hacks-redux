@@ -3,14 +3,14 @@
 */
 
 SoundBufferGui {
-	classvar <>players;
+	// classvar <>players;
 	var buffer, <sfv, colors;
 	var selection;
 	var <>selections; // remember selections because sfv seems to forget them.
 	// var <playfuncs; // TODO: transfer these from EditSoundPlayer. Use a different directory
 	var <playfunc = \phasebuf; // name of playfunc selected from menu
 	var <zoomfrac = 1, scrollpos = 0;
-	var <>player;
+	// var <>player;
 	// to load them.
 	*initClass {
 		// TODO: Rewrite this to use own playfuncs from sc-hacks repository,
@@ -37,8 +37,6 @@ SoundBufferGui {
 		this.changed(\selection);
 	}
 	init {
-		players = this.loadFromLib("playernames");
-		player = players.first;
 		selections = SfSelections(this);
 		colors = (((1..9).normalize * (2/3) + (1/3)).collect({ | i |
 			[
@@ -66,11 +64,6 @@ SoundBufferGui {
 		.addNotifier(this, \closeGui, { | n |
 			n.listener.close;
 		});
-		/*
-		{ // switch to first safely editable selection!
-			this.switchToNewSelection(0);
-		}.defer(0.5);
-		*/
 	}
 
 	// basic selection actions to use throughout for selection management
@@ -81,12 +74,6 @@ SoundBufferGui {
 		sfv.currentSelection = index;
 		selections.setCurrentSelectionIndex(index);
 	}
-
-	// modifyCurrentSelection { | startFrame, numFrames | // NEW
-		// User modified the frame range of current selection.
-		// Called
-		// Upd
-	// }
 
 	// prevent modification of useable selectios by mouselicks,
 	// by setting the current selection index to 63 (unused by this app).
@@ -223,6 +210,10 @@ SoundBufferGui {
 
 	posDisplay { // | sfv |
 		^HLayout(
+			Button().maxWidth_(10).states_([["x"]])
+			.action_({ CmdPeriod.run }),
+			Button().maxWidth_(10).states_([["x", Color.yellow, Color.red]])
+			.action_({ "CmdPeriod.run".share }),
 			StaticText().string_("selection")
 			.addNotifier(this, \selection, { | n |
 				var index;
@@ -249,15 +240,6 @@ SoundBufferGui {
 			NumberBox()
 			.maxDecimals_(6)
 			.addNotifier(this, \selection, { | n | n.listener.value = this.selectionDur;}),
-			StaticText().string_("player:"),
-			Button()
-			.states_([[player, Color.green(0.5)]])
-			.action_({ | me | Menu(
-				*players.collect({ | f | MenuAction(f.asString, {
-					me.states_([[f.asString, Color.green(0.5), Color.white]]);
-					player = f.asSymbol;
-				})})
-			).front }),
 			Button()
 			.states_([["controls", Color.white, Color.red]])
 			.action_({ this.openParameterGui }),
@@ -270,6 +252,7 @@ SoundBufferGui {
 				.collect({ | f | MenuAction(f.asString, {
 					me.states_([[f.asString, Color.blue, Color.white]]);
 					this.buffer = f.asSymbol;
+					this.changed(\buffer);
 				})})
 			).front }),
 

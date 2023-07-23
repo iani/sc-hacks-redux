@@ -187,4 +187,5 @@ SfSelections {
 	*defaultPath {
 		^PathName(Platform.userHomeDir +/+ "sc-projects/BufferPlayers/").fullPath;
 	}
+	soundfileview { ^sbgui }
 }

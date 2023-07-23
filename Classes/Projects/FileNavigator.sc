@@ -1,6 +1,6 @@
 /*  3 Jan 2023 23:44
 Navigate in a File Directory using 2 panes.
-Save / reload the current position on disc.
+Saving / reloading the current position on disc, with bookmarks (TODO).
 
 Creates 2 ListViews (inner / outer) that can be built into other guis.
 
@@ -12,7 +12,8 @@ FileNavigator {
 	var >currentRoot; // path for getting outerList items
 	var <>outerList, <>outerItem, <outerIndex = 0;
 	var <>innerList, <>innerItem, <innerIndex = 0;
-	var <selection; // currently selected indices of inner list
+	var <selection; // currently selected indices of inner list (for export/browsing)
+	var bookmarks; // TODO: Impement methods to use this.
 
 	*new { | key = \default | ^this.newCopyArgs(key) /* .getOuterItems */ }
 
@@ -21,6 +22,7 @@ FileNavigator {
 		Preferences.put(this.class.name, key, this.prefs);
 	}
 
+	bookmarks { ^bookmarks ?? { bookmarks = Bookmarks() } }
 	prefs {
 		// save info needed to regenerate state,
 		// plus human-readable relevant info.
@@ -30,7 +32,8 @@ FileNavigator {
 			outerItem: outerItem, // human readable
 			outerIndex: outerIndex,
 			innerItem: innerItem, // human readable
-			innerIndex: innerIndex
+			innerIndex: innerIndex,
+			bookmarks: this.bookmarks
 		)
 	}
 
@@ -57,6 +60,7 @@ FileNavigator {
 		currentRoot = prefs[\currentRoot];
 		outerIndex = prefs[\outerIndex];
 		innerIndex = prefs[\innerIndex];
+		bookmarks = prefs[\bookmarks] ?? { Bookmarks(); }; // TODO: implement methods to use this.
 		this.changed(\setOuterListAndIndex,
 			currentRoot.folders,
 			outerIndex
@@ -166,12 +170,17 @@ FileNavigator {
 		this.new.gui;
 	}
 
+	bookmarkAction { ^{ this.save } }
+	bookmarksbutton {
+		^Button().states_([["save bookmark"]])
+		.action_(this.bookmarkAction)
+	}
+
 	gui {
 		{ this.getOuterItems }.defer(0.1);
 		this.vlayout(
 			HLayout(
-				Button().states_([["save bookmark"]])
-				.action_({ this.save }),
+				this.bookmarksbutton,
 				Button().states_([["recall"]]).maxWidth_(50)
 				.action_({ this.load }),
 				Button().states_([["<"]]).maxWidth_(30)
