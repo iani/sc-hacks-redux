@@ -4,8 +4,11 @@
 
 SoundBufferGui {
 	// classvar <>players;
-	var buffer, <sfv, colors;
-	var selection;
+	var <buffer, <sfv, colors;
+	// var selection;
+	var <selectionDict; // one selection per buffer. Remember and restore selections
+	// for all buffers.
+	// current instance of selections:
 	var <>selections; // remember selections because sfv seems to forget them.
 	// var <playfuncs; // TODO: transfer these from EditSoundPlayer. Use a different directory
 	var <playfunc = \phasebuf; // name of playfunc selected from menu
@@ -25,19 +28,34 @@ SoundBufferGui {
 	*default { ^this.new(Buffer.all.first) }
 
 	*new { | buffer |
+		buffer ?? { buffer = \default };
 		 ^Registry(this, buffer, { this.newCopyArgs(buffer.buf).init })
 	}
 
 	buffer_ { | argBuffer |
+		var bufname;
+		bufname = argBuffer;
 		buffer = argBuffer.buf;
+		selections = selectionDict[bufname];
 		sfv.soundfile_(SoundFile(buffer.path))
 		.readWithTask(0, buffer.numFrames, { this.setSelection(0) });
-		selections = SfSelections(this);
-		{ | i | sfv.setSelection(i, [0, 0]) } ! 64;
+		// selections = SfSelections(this);
+		this.restoreSelections;
+		// { | i | sfv.setSelection(i, [0, 0]) } ! 64;
 		this.changed(\selection);
 	}
+
+	restoreSelections {
+		selections.postln;
+		// selections do: { | s, i | sfv.setSelection(i, s); }
+	}
+
 	init {
-		selections = SfSelections(this);
+		selectionDict = ();
+		Buffer.all do: { | b |
+			selectionDict[b] = SfSelections(this, b.buf);
+		};
+		selections = selectionDict[\default];
 		colors = (((1..9).normalize * (2/3) + (1/3)).collect({ | i |
 			[
 				Color(0, i, 0), Color(0, 0, i),

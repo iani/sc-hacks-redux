@@ -22,12 +22,12 @@ SoundParams {
 	var <dict; // param values for starting the synth.
 	var <ampctl; // controls on-off audibility
 	var <player;
-	*new { | selection sb, playfunc |
+	*new { | selection, playfunc |
 		^this.newCopyArgs(selection, playfunc).init;
 	}
 
 	init {
-		players = this.loadFromLib("playernames");
+		players ?? { players = this.loadFromLib("playernames"); };
 		player = players.first;
 		ampctl = SensorCtl(player, \amp, 1, \off, 0, 1, \lin);
 		this.makeParams;
@@ -268,5 +268,9 @@ SoundParams {
 			paramctl[p.name] = p.sensor.saveParams;
 		};
 		^paramctl;
+	}
+
+	*fromDict { | argDict |
+
 	}
 }

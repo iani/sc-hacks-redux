@@ -1,22 +1,25 @@
 /* 10 Jul 2023 08:53
 Remember SoundFileView selections because sfv seems to forget them when zooming.
-
 */
 
 SfSelections {
 	classvar <homefolder;
-	var <sbgui, <selections, <currentSelection, <currentSelectionIndex = 0;
+	var <sbgui, <buffer, <selections, <currentSelection, <currentSelectionIndex = 0;
 	var <params; // Array of SoundParams instances. Each param holdes a dictionary
 	// of parameter values used for playing the sound, and paramater specs for creating
 	// a gui to edit these parameters.
 	var <currentParam; // SoundParams instance for currentSelection
 	// does the playing.
-	*new { | sbgui |
-		^this.newCopyArgs(sbgui, { [0, 0] } ! 64).init;
+	// var <>buffer;
+	*new { | sbgui, buffer |
+		^this.newCopyArgs(sbgui, buffer, { [0, 0] } ! 64).init;
 	}
 
+	restoreSelectionsToSfv { | sfv |
+		selections do: { | s, i | sfv.setSelection(i, s);}
+	}
 	player { ^sbgui.player }
-	bufName { ^sbgui.name }
+	bufName { ^buffer.name }
 	playfunc { ^sbgui.playfunc }
 	playfunc_ { | playfunc | // replace currentParam with a param from the playfunc's template
 		var newparam;
@@ -24,6 +27,7 @@ SfSelections {
 		// newparam =
 	}
 	init {
+		buffer = sbgui.buffer;
 		currentSelection = selections[0];
 		// create params:
 		params = { SoundParams(this, this.playfunc); } ! 64;
@@ -188,4 +192,14 @@ SfSelections {
 		^PathName(Platform.userHomeDir +/+ "sc-projects/BufferPlayers/").fullPath;
 	}
 	soundfileview { ^sbgui }
+	addSelectionFromSnippet { | index, snippet |
+		var thedict, start, end, dur;
+		thedict = snippet.interpret;
+		start = thedict[\startframe];
+		end = thedict[\endframe];
+		if (start.notNil and: { end.notNil }) {
+
+		};
+		// selections[]
+	}
 }

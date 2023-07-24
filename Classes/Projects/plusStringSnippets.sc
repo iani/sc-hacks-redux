@@ -28,9 +28,9 @@ First: Reloading selections for SoundBufferGui.
 				var end, entry;
 				end = delimiters[i + 1];
 				if (end.notNil) {
-					entry = this.copyRange(b, end);
+					entry = this.copyRange(b + 1, end);
 				}{
-					entry = this.copyRange(b, this.size - 1)
+					entry = this.copyRange(b + 1, this.size - 1)
 				};
 				snippets = snippets add: entry;
 			};
@@ -43,5 +43,29 @@ First: Reloading selections for SoundBufferGui.
 
 	selectionIndex { // used by SfSelections for loading.
 		^this.header.findRegexp("\\(\\d*\\)").first.last.interpret;
+	}
+
+	openSoundFileSelections { // called from emacs dired ...
+		// see function dired-open-soundfile-selections-script
+		var snippets, parsedsnippets, sbgui, selections;
+		postln("opening sound file selections for" + this);
+		snippets = this.readSnippets;
+		"==========".postln;
+		snippets.postln;
+		snippets do: { | s |
+			var header;
+			// s.header.postln;
+			// postln ("s size is" + s.size);
+			header = s.header;
+			if (header.size < 3) { // avoid empty snippets
+				postln("snippet not parseable:" + s);
+			}{
+				parsedsnippets = parsedsnippets add: [s.selectionIndex, s];
+			}
+		};
+		// ^parsedsnippets.postln;
+		sbgui = SoundBufferGui.new();
+		selections = sbgui.selections;
+		selections.postln;
 	}
 }

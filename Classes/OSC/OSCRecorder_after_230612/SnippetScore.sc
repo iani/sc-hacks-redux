@@ -2,6 +2,7 @@
 
 Parse snippets without timestamps.
 Provide default duration of 1 second for each snippet.
+
 */
 
 SnippetScore : OscDataScore {
