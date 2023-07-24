@@ -36,18 +36,14 @@ SoundBufferGui {
 		var bufname;
 		bufname = argBuffer;
 		buffer = argBuffer.buf;
+		selections.getSelectionsFromSfv(sfv);
 		selections = selectionDict[bufname];
 		sfv.soundfile_(SoundFile(buffer.path))
 		.readWithTask(0, buffer.numFrames, { this.setSelection(0) });
 		// selections = SfSelections(this);
-		this.restoreSelections;
+		selections.restoreSelectionsToSfv(sfv);
 		// { | i | sfv.setSelection(i, [0, 0]) } ! 64;
 		this.changed(\selection);
-	}
-
-	restoreSelections {
-		selections.postln;
-		// selections do: { | s, i | sfv.setSelection(i, s); }
 	}
 
 	init {

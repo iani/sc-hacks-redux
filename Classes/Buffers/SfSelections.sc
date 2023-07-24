@@ -15,9 +15,11 @@ SfSelections {
 		^this.newCopyArgs(sbgui, buffer, { [0, 0] } ! 64).init;
 	}
 
-	restoreSelectionsToSfv { | sfv |
-		selections do: { | s, i | sfv.setSelection(i, s);}
+	getSelectionsFromSfv { | sfv |
+		selections = sfv.selections;
 	}
+	restoreSelectionsToSfv { | sfv | selections do: { | s, i | sfv.setSelection(i, s);} }
+
 	player { ^sbgui.player }
 	bufName { ^buffer.name }
 	playfunc { ^sbgui.playfunc }
@@ -27,7 +29,6 @@ SfSelections {
 		// newparam =
 	}
 	init {
-		buffer = sbgui.buffer;
 		currentSelection = selections[0];
 		// create params:
 		params = { SoundParams(this, this.playfunc); } ! 64;

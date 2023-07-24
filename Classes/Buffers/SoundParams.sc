@@ -114,13 +114,13 @@ SoundParams {
 			this.paramView(clumped)
 		)
 		.addNotifier(this, \close, { | n | n.listener.close })
-		.addNotifier(this.soundfileview, \buffer, { | n |
+		// .addNotifier(this.soundfileview, \buffer, { | n |
 			// must stop because sf gui controls range of different buffer
-			this.stop;
-			"closing because of Buffer".postln;
-			n.listener.close;
+			// this.stop;
+			// "closing because of Buffer".postln;
+			// n.listener.close;
 			// n.listener.name = this.header;
-		})
+		// })
 		.addNotifier(this, \player, { | n | n.listener.name = this.header; })
 		.name_(this.header);
 
