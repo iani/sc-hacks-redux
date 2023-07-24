@@ -18,7 +18,7 @@ SensorCtl {
 	var <id = 1, <ctl = \off;
 	var <lo = 0, <hi = 1, <map = \lin;
 
-	*new { | player, param = \vol, id = 1, ctl = \xyz, lo = 0, hi = 1, map = \lin |
+	*new { | player, param = \amp, id = 1, ctl = \xyz, lo = 0, hi = 1, map = \lin |
 		^this.newCopyArgs(player, param, id, ctl, lo, hi, map) // .init
 	}
 
@@ -32,5 +32,14 @@ SensorCtl {
 
 	stop { format("nil @>. % %", player, param.slash).share; }
 	start { id.perform(ctl, player, param, lo, hi, map); }
+
+	saveParams { // of params for saving as code.
+		^[player, param, id, ctl, lo, hi, map;]
+	}
+
+	*fromParams { | params | // recreate from parameters saved as code
+		^this.newCopyArgs(*params)
+	}
+
 
 }

@@ -6,6 +6,7 @@ Model will be an instance of SoundParams
 Param {
 	var <model, <spec, <name, <value;
 	var <sensor, <sensorlo, <sensorhi;
+	var <player;
 	// model: a SoundParams
 	*new { | model, spec |
 		^this.newCopyArgs(model, spec).init;
@@ -17,6 +18,12 @@ Param {
 		value = spec.default;
 		sensorlo = spec.minval;
 		sensorhi = spec.maxval;
+		player = model.player;
+		sensor = SensorCtl(player, name, 1, \off, sensorlo, sensorhi, \lin);
+	}
+	player_ { | argPlayer |
+		player = argPlayer;
+		sensor.player = player;
 	}
 	gui {
 		^HLayout(
@@ -25,7 +32,7 @@ Param {
 			Button().maxWidth_(30)
 			.states_([["-"]])
 			.action_({ | me | Menu(
-				*['-', \x, \y, \z].collect({ | f |
+				*['off', \x, \z].collect({ | f |
 					MenuAction(f.asString, {
 						me.states_([[f.asString]]);
 						this.setSensor(f);
@@ -93,26 +100,19 @@ Param {
 	}
 
 	setSensor { | argSensor |
-		if (argSensor == '-') {
-			sensor = nil;
-			// TODO: code to stop
-			if (model.isPlaying) {
-				format("%%.envir[%%].free", "\\", this.player, "\\", "name").share;
-			}
-		}{
-			sensor = argSensor;
-			if (model.isPlaying) {
-				sensor.linlin(this.player, name, sensorlo, sensorhi)
-			}
-		}
+		postln("setting sensor" + sensor + "to" + argSensor);
+		sensor.ctl = argSensor;
 	}
-	setSensorLo {
+	setSensorLo { | arglo |
+		sensorlo = arglo;
+		sensor.lo = sensorlo;
 	}
 
-	setSensorHi {
-
+	setSensorHi { | arghi |
+		sensorhi = arghi;
+		sensor.hi = arghi;
 	}
-	player { ^model.player }
+	// player { ^model.player }
 
 	updateModel { model.setParam(name, value); }
 	bufName { ^model.bufName; }

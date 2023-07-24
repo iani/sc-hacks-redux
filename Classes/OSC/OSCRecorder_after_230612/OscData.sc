@@ -214,6 +214,9 @@ OscData {
 				.selectionAction_({ | me |
 					this.changed(\scrollItem, me.value);
 				})
+				.enterKeyAction_({ | me |
+					this.shareSnippet(messages[me.value]);
+				})
 				.keyDownAction_({ | me, key ... args |
 					case
 					{ key.ascii == 13 } {
@@ -299,8 +302,10 @@ OscData {
 				})
 			),
 			HLayout(
-				Button().states_([["x"]]).maxWidth_(20)
-				.action_({ this.debug }),
+				Button().states_([["x"]]).maxWidth_(10)
+				.action_({ CmdPeriod.run }),
+				Button().states_([["x", Color.white, Color.red]]).maxWidth_(10)
+				.action_({ "CmdPeriod.run".share }),
 				CheckBox().string_("Play")
 				.maxWidth_(50)
 				.action_({ | me |
@@ -339,6 +344,12 @@ OscData {
 		{ this.selectAll; }.defer(0.1);
 	}
 
+	shareSnippet { | argSnippet |
+		var themessage;
+		themessage = argSnippet.interpret;
+		LocalAddr().sendMsg(*themessage);
+		OscGroups.broadcast(themessage[0], *themessage[1..]);
+	}
 	windowName { | argName |
 		//^argName ? this.class.name
 		^PathName(paths.first).fileNameWithoutExtension;

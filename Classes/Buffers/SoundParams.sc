@@ -20,15 +20,16 @@ SoundParams {
 	var <>playfunc;
 	var <paramSpecs, <params;
 	var <dict; // param values for starting the synth.
-	var <switch; // controls on-off audibility
+	var <ampctl; // controls on-off audibility
 	var <player;
-	*new { | selection, playfunc |
+	*new { | selection sb, playfunc |
 		^this.newCopyArgs(selection, playfunc).init;
 	}
 
 	init {
 		players = this.loadFromLib("playernames");
 		player = players.first;
+		ampctl = SensorCtl(player, \amp, 1, \off, 0, 1, \lin);
 		this.makeParams;
 		this.initDict;
 	}
@@ -146,17 +147,17 @@ SoundParams {
 			.action_({ | me | Menu(
 				*(1..12).collect({ | f | MenuAction(f, {
 					me.states_([[f.asString]]);
-					switch.sensorNum_(f);
+					ampctl.id_(f);
 				})})
 			).front }),
 			StaticText().maxWidth_(70).string_("on-off ctl:"),
 			Button().maxWidth_(30)
 			.states_([["off"]])
 			.action_({ | me | Menu(
-				*['off', 'lx', 'lz', 'gx', 'gz', \xyz].collect({ | f |
+				*['off', \xyz, 'lx', 'lz', 'gx', 'gz'].collect({ | f |
 					MenuAction(f.asString, {
 						me.states_([[f.asString]]);
-						switch.ctl_(f);
+						ampctl.ctl_(f);
 					})})
 			).front }),
 			StaticText().maxWidth_(40).string_("player:"),
@@ -165,9 +166,7 @@ SoundParams {
 			.action_({ | me | Menu(
 				*players.collect({ | f | MenuAction(f.asString, {
 					me.states_([[f.asString, Color.green(0.5), Color.white]]);
-					if (player != f.asSymbol) { this.stop };
-					player = f.asSymbol;
-					this.changed(\player);
+
 				})})
 			).front }),
 			Button().maxWidth_(10).states_([["x"]])
@@ -176,6 +175,15 @@ SoundParams {
 			.action_({ "CmdPeriod.run".share })
 
 		)
+	}
+
+	player_ { | argPlayer |
+		argPlayer = argPlayer.asSymbol;
+		if (player != argPlayer) { this.stop };
+		player = argPlayer;
+		ampctl.player = player;
+		params do: { | p | p.player = player };
+		this.changed(\player);
 	}
 
 	setSensor { | argId = 1 |
@@ -246,4 +254,19 @@ SoundParams {
 		this.endFrame.perform('@>', \endframe, this.name);
 	}
 	*/
+	// ====================== Saving and loading ===================
+	asDict {
+		dict[\ampctl] = ampctl.saveParams;
+		dict[\paramctl] = this.paramCtl;
+		^dict;
+	}
+
+	paramCtl {
+		var paramctl;
+		paramctl = ();
+		params do: { | p |
+			paramctl[p.name] = p.sensor.saveParams;
+		};
+		^paramctl;
+	}
 }

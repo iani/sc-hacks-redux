@@ -179,7 +179,7 @@ SfSelections {
 		sel_ind do: { | i |
 			theselection = params[i];
 			code = code ++ format("//:[1] (%)\n", i);
-			code = code ++ theselection.dict.asCompileString ++ "\n";
+			code = code ++ theselection.asDict.asCompileString ++ "\n";
 		};
 		^code;
 	}

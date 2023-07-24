@@ -200,27 +200,7 @@ FileNavigator {
 					}
 				}),
 				Button().states_([["browse"]]).maxWidth_(50)
-				.action_({
-					// outerItem.postln;
-					// innerItem.postln;
-					// innerItem.isFolder.postln;
-					// innerItem.postln;
-					if (innerItem.isFolder) {
-						innerItem.folderName.post;
-						" is a folder".postln;
-						"Select a file to open instead".postln;
-					}{
-						innerItem.fullPath.doIfExists({ | p |
-							case
-							{ p.isCode }{ OscDataScore([p]).gui }
-							{ p.hasTimestamps }{ OscData([p]).gui; }
-							{ true }{ SnippetScore([p]).gui };
-							// { true }{SnippetScore([innerItem.fullPath]).gui};
-						},{ | p |
-							postln("File not found:" + p);
-						})
-					}
-				}),
+				.action_({ this.openInnerItem; }),
 				Button().states_([["export"]]).maxWidth_(50)
 				.action_({ Menu(
 					MenuAction("export code", { this.exportCode }),
@@ -395,12 +375,20 @@ FileNavigator {
 	}
 
 	openInnerItem { // experimental: open in oscdata type gui
-		if (this.innerItem.isFolder) {
-			this.innerItem.postln;
-			// "this is a folder".postln;
+		if (innerItem.isFolder) {
+			innerItem.folderName.post;
+			" is a folder".postln;
+			"Select a file to open instead".postln;
 		}{
-			// "this is a file".postln;
-			SnippetData([innerItem.fullPath]).gui;
+			innerItem.fullPath.doIfExists({ | p |
+				case
+				{ p.isCode }{ OscDataScore([p]).gui }
+				{ p.hasTimestamps }{ OscData([p]).gui; }
+				{ true }{ SnippetScore([p]).gui };
+				// { true }{SnippetScore([innerItem.fullPath]).gui};
+			},{ | p |
+				postln("File not found:" + p);
+			})
 		}
 	}
 	saveBookmark { this.save }

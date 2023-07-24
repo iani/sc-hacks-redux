@@ -52,6 +52,6 @@ UGenFunc {
 			// value.perform('@>', key);
 			currentEnvironment[key] = value;
 		};
-		currentEnvironment pf: { this.ar };
+		currentEnvironment pf: { this.ar * \amp.br(1) };
 	}
 }

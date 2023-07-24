@@ -11,27 +11,45 @@ Called by SensorCtl in Param, SoundParams.
 
 	lx { | player, param, lo, hi, map |
 		// this.sensorClip.
-
+		format("{ (%.sr < 0.5).lag(0.5) } @>.% %",
+			\x.slash, this.sensorClip, player, param.slash
+		).share;
 	}
 	lz { | player, param, lo, hi, map |
-
+		format("{ (%.sr < 0.5).lag(0.5) } @>.% %",
+			\z.slash, this.sensorClip, player, param.slash
+		).share;
 	}
 	gx { | player, param, lo, hi, map |
-
+		format("{ (%.sr > 0.5).lag(0.5) } @>.% %",
+			\x.slash, this.sensorClip, player, param.slash
+		).share;
 	}
 	gz { | player, param, lo, hi, map |
-
+		format("{ (%.sr > 0.5).lag(0.5) } @>.% %",
+			\z.slash, this.sensorClip, player, param.slash
+		).share;
 	}
-	xyz { | player, param, lo, hi, map |
-
+	xyz { | player, param, lo, hi, map | // this may be tweaked later...
+		format("XyzGt(%) @>.% %", this.sensorClip, player, param.slash).share;
 	}
 
 	x { | player, param, lo, hi, map |
-
+		format("{ %%.sr.%(%, %) } @>.% %",
+			\z.slash, this.sensorClip, map, lo, hi, player, param.slash
+		).share
+		// // var sensor;
+		// // sensor = "\\" + "x" + this.sensorClip;
+		// // sensor.postln;
+		// // format("{ %.sr.%(%, %) } @>.% %",
+		// // 	sensor, map, lo, hi, player, param.slash
+		// ).share;
 	}
 
 	z { | player, param, lo, hi, map |
-
+		format("{ %%.sr.%(%, %) } @>.% %",
+			\z.slash, this.sensorClip, map, lo, hi, player, param.slash
+		).share;
 	}
 
 }
