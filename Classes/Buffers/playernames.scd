@@ -1,5 +1,7 @@
 [
-	'default',
+	'tokyo',
+	'athens',
+	'corfu',
 	'yoshi',
 	'mary',
 	'natali',

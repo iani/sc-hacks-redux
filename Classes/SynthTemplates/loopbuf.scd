@@ -7,5 +7,5 @@ PlayBuf_, PV_Magabove_ etc.  See folder
 nil; // PlayFunc provides default
 //:
 {   // provides PlayBuf.ar ugen with br controls
-	LoopBuf_.ar()
+	LoopBuf_.ar() * \amp.br(1)
 }

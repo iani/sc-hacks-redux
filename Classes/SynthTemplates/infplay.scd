@@ -2,11 +2,11 @@
 Experimental: play for very long time, looping.
 PlayBuf_, PV_Magabove_ etc.  See folder
 */
-nil; // PlayFunc provides default
+[PlayBuf_];
 //:
 {   // provides PlayBuf.ar ugen with br controls
 	~dur = 2 ** 100;
 	~loop = 1;
 	// ~rate = 0.25;
-	PlayBuf_.ar()
+	PlayBuf_.ar() * \amp.br(1)
 }

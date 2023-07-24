@@ -215,7 +215,7 @@ SoundParams {
 		}{
 			format("%.envir play: %", this.player.asCompileString, dict.asCompileString).share;
 			this.addNotifier(Mediator, \ended, { | n, playername, synthname |
-				if (playername == this.player and: { synthname == this.player}) {
+				if (playername == this.player and: { synthname == this.player }) {
 					this.changed(\stopped);
 				}
 			});

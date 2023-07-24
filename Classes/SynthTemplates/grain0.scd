@@ -3,5 +3,5 @@
 [Grain0_];
 //:
 {
-	Grain0_.ar()
+	Grain0_.ar() * \amp.br(1)
 }

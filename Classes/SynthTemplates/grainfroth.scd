@@ -4,5 +4,5 @@ Experimental.
 [GrainFroth_];
 //:
 {   // provides PlayBuf.ar ugen with br controls
-	GrainFroth_.ar()
+	GrainFroth_.ar() * \amp.br(1)
 }

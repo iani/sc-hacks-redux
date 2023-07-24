@@ -7,5 +7,5 @@ PlayBuf_, PV_Magabove_ etc.  See folder
 [PlayBuf_]
 //:
 {   // provides PlayBuf.ar ugen with br controls
-	PlayBuf_.ar()
+	PlayBuf_.ar() * \amp.br(1)
 }

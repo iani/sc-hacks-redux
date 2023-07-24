@@ -4,11 +4,13 @@ Called by SensorCtl in Param, SoundParams.
 */
 
 + Integer {
-	off { // turn control synth off.
-
+	sensorClip { ^this.clip(1, 12) } // constrain to existing sensor ids in current systsm
+	off {  | player, param, lo, hi, map | // turn control synth off.
+		format("nil @>.% %", player, param.slash).share;
 	}
 
 	lx { | player, param, lo, hi, map |
+		// this.sensorClip.
 
 	}
 	lz { | player, param, lo, hi, map |

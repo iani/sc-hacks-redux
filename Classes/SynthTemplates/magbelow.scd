@@ -4,5 +4,5 @@ Experimental.
 [PlayBuf_, MagAbove_];
 //:
 {   // provides PlayBuf.ar ugen with br controls
-	PlayBuf_.ar() +> MagBelow_
+	PlayBuf_.ar() +> MagBelow_ * \amp.br(1)
 }
