@@ -18,7 +18,14 @@ SfSelections {
 	getSelectionsFromSfv { | sfv |
 		selections = sfv.selections;
 	}
-	restoreSelectionsToSfv { | sfv | selections do: { | s, i | sfv.setSelection(i, s);} }
+	restoreSelectionsToSfv { | sfv | selections do: { | s, i |
+		// if (s.sum > 0) {
+		// 	postln("selection !!!!!!!!!!!" + i + "is" + s);
+		// }{
+		// 	postln("selection" + i + "is 0")
+		// };
+		sfv.setSelection(i, s);}
+	}
 
 	player { ^sbgui.player }
 	bufName { ^buffer.name }
@@ -144,12 +151,6 @@ SfSelections {
 
 	setPlayfunc { | argPlayfunc |
 		currentParam.setPlayfunc(argPlayfunc);
-		// currentParam.close; // stop synth, close gui;
-		// currentParam.playfunc = argPlayfunc;
-		// currentParam.setParam(\playfunc, argPlayfunc);
-		// // Experimental: merge parameters from new playfunc template!
-		// currentParam.makeParams;
-		// currentParam.mergeParams2Dict; // transfer previously set param values to new dict
 	}
 
 	asCode {
@@ -216,14 +217,25 @@ SfSelections {
 		^PathName(Platform.userHomeDir +/+ "sc-projects/BufferPlayers/").fullPath;
 	}
 	soundfileview { ^sbgui }
-	addSelectionFromSnippet { | index, snippet |
-		var thedict, start, end, dur;
-		thedict = snippet.interpret;
-		start = thedict[\startframe];
-		end = thedict[\endframe];
+	addSelectionFromDict { | dict |
+		var start, end, dur, index;
+		buffer.postln;
+		buffer.name.postln;
+		index = dict[\selectionNum];
+		postln("importing selection for buffer" + buffer.name + "and number" + index);
+		start = dict[\startframe];
+		end = dict[\endframe];
 		if (start.notNil and: { end.notNil }) {
-
+			dur = end - start;
+		}{
+			postln("WARNING! selection" + index + "found no frame data");
+			start = dur = 0;
 		};
-		// selections[]
+		selections[index] = [start, dur].postln;
+		postln("selection" + index + "will now import params");
+		postln("selection" + index + "of buffer" + buffer.name + "has now frames" + selections[index]);
+		postln("selections is" + this + "and my selections are\n" + selections);
+		params[index].importDict(dict);
 	}
+
 }

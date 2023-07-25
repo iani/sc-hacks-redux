@@ -60,16 +60,34 @@ SoundBufferGui {
 
 	buffer_ { | argBuffer |
 		var bufname;
-		bufname = argBuffer;
-		buffer = argBuffer.buf;
-		selections.getSelectionsFromSfv(sfv);
-		selections = selectionDict[bufname];
-		sfv.soundfile_(SoundFile(buffer.path))
-		.readWithTask(0, buffer.numFrames, { this.setSelection(0) });
-		// selections = SfSelections(this);
-		selections.restoreSelectionsToSfv(sfv);
-		// { | i | sfv.setSelection(i, [0, 0]) } ! 64;
-		this.changed(\selection);
+		postln("changing from buffer" + buffer.name + "to buffer" + argBuffer.buf.name);
+		if (buffer.name == argBuffer.buf.name) {
+			postln("I will skip changing to the same buffer!");
+		}{
+			postln("changing to the new buffer now");
+			bufname = argBuffer;
+			buffer = argBuffer.buf;
+			// "CHECKING before updating selections from sfv!!!!!!!".postln;
+			// postln("the selections for buffer" + bufname + "are\n" + selectionDict[bufname].selections);
+			// selections.getSelectionsFromSfv(sfv);
+			selections = selectionDict[bufname];
+			// "CHECKING AFTER updating selections from sfv!!!!!!!".postln;
+			// postln("the selections for buffer" + bufname + "are\n" + selectionDict[bufname].selections);
+			// postln("the LOCAL selections for buffer" + buffer.name + "are\n" + selections.selections);
+			sfv.soundfile_(SoundFile(buffer.path))
+			.readWithTask(0, buffer.numFrames, {
+				// "RESTORING SELEXTIONS after read with task".postln;
+				// selections.selections.postln;
+				// selections.restoreSelectionsToSfv(sfv);
+				// this.setSelection(0)
+			});
+			{   // "restoring again".postln;
+				selections.restoreSelectionsToSfv(sfv);
+				// sfv.setSelection(0, [ 1171670, 376275 ]);
+			}.defer(0.5);
+			// selections = SfSelections(this);
+			this.changed(\selection);
+		}
 	}
 
 	*gui { ^this.default.gui }
@@ -589,13 +607,6 @@ SoundBufferGui {
 		this.changed(\focusSoundFileView);
 	}
 
-	// setSelectionIndex { | index |
-	// 	sfv.currentSelection = index;
-	// 	selections.changeSelectionIndex(index);
-	// 	// update gui elements:
-	// 	this.changed(\selection);
-	// }
-
 	openParameterGui { selections.openParameterGui; }
 
 	save {
@@ -613,7 +624,6 @@ SoundBufferGui {
 		var path;
 		path = this.defaultPath +/+ basename ++ ".scd";
 		postln("the path is" + path);
-		// postln("the code is" + code);
 		File.use(path, "w", { | f | code.flat do: { | c | f.write(c) }});
 		{ postln("opening" + path); Document.open(path); }.defer(0.1);
 	}
@@ -624,21 +634,25 @@ SoundBufferGui {
 
 	*loadFile { | p |
 		var snippets, interpreted, instance, test;
-		"SoundBufferGui loadFile is still unimplemented".postln;
 		snippets = p.readSnippets;
 		instance = this.fromFile(p);
-		snippets do: { | s | instance.updateParam(snippets.first); };
+		snippets.postln;
+		snippets do: { | s | instance.addSelectionFromDict(s.interpret); };
+		// "Scanning all selections for frames set!".postln;
+		// instance.selectionDict do: { | s |
+		// 	postln("scanning selection for buffer" + s.buffer.name);
+		// 	postln("zero sum selections are:" + s.selections.select({|x|x.sum > 0}));
+		// };
 		instance.gui;
+		{   // "restoring again".postln;
+				instance.selectionDict[instance.buffer.name].restoreSelectionsToSfv(instance.sfv);
+				// sfv.setSelection(0, [ 1171670, 376275 ]);
+			}.defer(0.5);
+
 	}
 
-	updateParam { | snippet |
-		var index, dict;
-		index = snippet.selectionIndex;
-		dict = snippet.interpret;
-		postln("updating param from snippet no" + dict[\selectionNum] + "and buffer" + dict[\buf]);
-		selectionDict[dict[\buf]].params[index].dict.postln;
-		postln("will update using dict:" + dict);
-		selectionDict[dict[\buf]].params[index].importDict(dict);
+	addSelectionFromDict { | argDict |
+		selectionDict[argDict[\buf]].addSelectionFromDict(argDict);
 	}
 
 	bufName { ^buffer.name }
