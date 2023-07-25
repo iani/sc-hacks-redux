@@ -67,5 +67,8 @@ First: Reloading selections for SoundBufferGui.
 		sbgui = SoundBufferGui.new();
 		selections = sbgui.selections;
 		selections.postln;
+		parsedsnippets do: { | ps |
+			selections.addSelectionFromSnippet(*ps);
+		}
 	}
 }

@@ -31,7 +31,7 @@ SfSelections {
 	init {
 		currentSelection = selections[0];
 		// create params:
-		params = { SoundParams(this, this.playfunc); } ! 64;
+		params = { | n | SoundParams(this, this.playfunc, n); } ! 64;
 		currentParam = params[0];
 		// Do NOT employ Notifications. DO NOT RE-ADD THESE!:
 		// (Instead, trigger actions explicitly trough messages from sbgui.)
@@ -143,18 +143,40 @@ SfSelections {
 	currentParams { ^params[currentSelectionIndex] }
 
 	setPlayfunc { | argPlayfunc |
-		currentParam.close; // stop synth, close gui;
-		currentParam.playfunc = argPlayfunc;
-		currentParam.setParam(\playfunc, argPlayfunc);
-		// Experimental: merge parameters from new playfunc template!
-		currentParam.makeParams;
-		currentParam.mergeParams2Dict;
-		// We lose all settings. Don't
+		currentParam.setPlayfunc(argPlayfunc);
+		// currentParam.close; // stop synth, close gui;
+		// currentParam.playfunc = argPlayfunc;
+		// currentParam.setParam(\playfunc, argPlayfunc);
+		// // Experimental: merge parameters from new playfunc template!
+		// currentParam.makeParams;
+		// currentParam.mergeParams2Dict; // transfer previously set param values to new dict
+	}
+
+	asCode {
+		var scodes, bufname;
+		bufname = buffer.name;
+		selections[..62] do: { | s, i | if (s.sum > 0) {
+			scodes = scodes add: this.selectionCode(i, bufname)
+		}};
+		scodes !? {
+			scodes = [
+				format("/*selections for % saved at %*/\n", bufname, Date.getDate.stamp)
+			] ++ scodes;
+		};
+		^scodes;
+	}
+
+	selectionCode { | index, bufname |
+		var code, theselection;
+		theselection = params[index].asDict;
+		code = format("//: % % (%)\n", bufname, theselection[\playfunc], index);
+		code = code ++ theselection.asCompileString ++ "\n";
+		^code;
 	}
 
 	save {
 		var nonEmpty;
-		selections do: { | s, i |
+		selections[..62] do: { | s, i |
 			if (s.sum > 0) { nonEmpty = nonEmpty add: i }
 		};
 		if (nonEmpty.size == 0) {
@@ -175,16 +197,17 @@ SfSelections {
 	}
 
 	selectionsAsCode { | sel_ind |
-		var code, theselection;
+		var code, theselection, bufname;
+		bufname = buffer.name;
 		code = format (
 			"/*selections for % saved at %*/\n",
 			this.bufName,
 			Date.getDate.stamp
 		);
 		sel_ind do: { | i |
-			theselection = params[i];
-			code = code ++ format("//:[1] (%)\n", i);
-			code = code ++ theselection.asDict.asCompileString ++ "\n";
+			theselection = params[i].asDict;
+			code = code ++ format("//:[1] % % (%)\n", bufname, theselection[\playfunc], i);
+			code = code ++ theselection.asCompileString ++ "\n";
 		};
 		^code;
 	}

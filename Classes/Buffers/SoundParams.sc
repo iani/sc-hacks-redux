@@ -9,7 +9,6 @@ Save the resulting config in a file at folder ???? in sc-projects.
 
 !: Store all current parameters for playing the synth of the current selection in a dict.
 
-
 */
 //:
 
@@ -18,12 +17,14 @@ SoundParams {
 
 	var model; // SfSelections;
 	var <>playfunc;
+	var <selectionNum;
 	var <paramSpecs, <params;
 	var <dict; // param values for starting the synth.
 	var <ampctl; // controls on-off audibility
 	var <player;
-	*new { | selection, playfunc |
-		^this.newCopyArgs(selection, playfunc).init;
+	var <guibounds;
+	*new { | selection, playfunc, selectionNum |
+		^this.newCopyArgs(selection, playfunc, selectionNum).init;
 	}
 
 	init {
@@ -70,6 +71,19 @@ SoundParams {
 		this.setParam('endframe', frame.sum);
 	}
 
+	setPlayfunc { | argPlayfunc |
+		// postln("guibounds before close" + guibounds);
+		this.close; // stop synth, close gui;
+		// postln("guibounds after close" + guibounds);
+		playfunc = argPlayfunc;
+		this.setParam(\playfunc, argPlayfunc);
+		// Experimental: merge parameters from new playfunc template!
+		this.makeParams;
+		this.mergeParams2Dict; // transfer previously set param values to new dict
+		{ this.gui; }.defer(0.5);
+	}
+
+
 	// merge parameters from new template into existing dictionary values
 	// keep exisiting values set by user.
 	mergeParams2Dict {
@@ -105,28 +119,26 @@ SoundParams {
 	// ======================= GUI ========================
 	// , 'x>', 'x<', 'z>', 'z<', 'xyz'
 	gui {
-		var clumped, height;
+		var clumped, height, prevpos, left = 400, bottom = 0, bounds;
 		clumped = params.flat.clump(12);
 		height = clumped.collect(_.size).maxItem * 20 + 20;
-		this.bounds_(Rect(400, 0, 700, height))
+		prevpos = this.getBounds;
+		// prevpos.postln; "!!!!!!".postln;
+		if (prevpos.notNil) {
+			left = prevpos.left;
+			bottom = prevpos.bottom;
+		};
+		this.bounds_(Rect(left, bottom, 700, 10 /* height */))
 		.vlayout(
 			this.playView,
 			this.paramView(clumped)
 		)
-		.addNotifier(this, \close, { | n | n.listener.close })
-		// .addNotifier(this.soundfileview, \buffer, { | n |
-			// must stop because sf gui controls range of different buffer
-			// this.stop;
-			// "closing because of Buffer".postln;
-			// n.listener.close;
-			// n.listener.name = this.header;
-		// })
+		.addNotifier(this, \close, { | n | n.listener.close; })
 		.addNotifier(this, \player, { | n | n.listener.name = this.header; })
 		.name_(this.header);
-
 		{ this.changed(\dict) }.defer(0.1);
 	}
-	header { ^format("% -- % : %", this.player, dict[\buf], dict[\playfunc]) }
+	header { ^format("% -- % [%] : %", this.player, dict[\buf], selectionNum, dict[\playfunc]) }
 	pane { |  ps |
 		^VLayout(*(ps.collect({ | p | p.gui})))
 	}
@@ -166,7 +178,7 @@ SoundParams {
 			.action_({ | me | Menu(
 				*players.collect({ | f | MenuAction(f.asString, {
 					me.states_([[f.asString, Color.green(0.5), Color.white]]);
-
+					this.player = f.asSymbol.postln;
 				})})
 			).front }),
 			Button().maxWidth_(10).states_([["x"]])
@@ -201,14 +213,8 @@ SoundParams {
 			}))
 	}
 	// Review this?
-	envir { // the environment Mediator where I am playing
-		^this.player.envir;
-	}
-
-	// ????
-	bufName {
-		/// ^sbg.bufName;
-	}
+	envir {^this.player.envir;}  // the environment Mediator where I am playing
+	bufName { ^model.bufName; }
 
 	close { // stop synths and close gui
 		this.stop; // stop synth

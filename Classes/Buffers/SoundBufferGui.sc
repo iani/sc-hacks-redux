@@ -5,11 +5,9 @@
 SoundBufferGui {
 	// classvar <>players;
 	var <buffer, <sfv, colors;
-	// var selection;
-	var <selectionDict; // one selection per buffer. Remember and restore selections
-	// for all buffers.
-	// current instance of selections:
-	var <>selections; // remember selections because sfv seems to forget them.
+	// Restore selections when switching buffers:
+	var <selectionDict; // selections for all buffers.
+	var <>selections; // current selections instance
 	// var <playfuncs; // TODO: transfer these from EditSoundPlayer. Use a different directory
 	var <playfunc = \phasebuf; // name of playfunc selected from menu
 	var <zoomfrac = 1, scrollpos = 0;
@@ -32,20 +30,6 @@ SoundBufferGui {
 		 ^Registry(this, buffer, { this.newCopyArgs(buffer.buf).init })
 	}
 
-	buffer_ { | argBuffer |
-		var bufname;
-		bufname = argBuffer;
-		buffer = argBuffer.buf;
-		selections.getSelectionsFromSfv(sfv);
-		selections = selectionDict[bufname];
-		sfv.soundfile_(SoundFile(buffer.path))
-		.readWithTask(0, buffer.numFrames, { this.setSelection(0) });
-		// selections = SfSelections(this);
-		selections.restoreSelectionsToSfv(sfv);
-		// { | i | sfv.setSelection(i, [0, 0]) } ! 64;
-		this.changed(\selection);
-	}
-
 	init {
 		selectionDict = ();
 		Buffer.all do: { | b |
@@ -60,14 +44,34 @@ SoundBufferGui {
 		}).flat.reverse add: (Color.black));
 		// decorative detail:
 		colors[0] = Color(0.95, 0.95, 0.5);
+		ServerQuit add: {
+			this.save;
+			this.changed(\closeGui);
+			this.objectClosed;
+		};
+	}
+
+	buffer_ { | argBuffer |
+		var bufname;
+		bufname = argBuffer;
+		buffer = argBuffer.buf;
+		selections.getSelectionsFromSfv(sfv);
+		selections = selectionDict[bufname];
+		sfv.soundfile_(SoundFile(buffer.path))
+		.readWithTask(0, buffer.numFrames, { this.setSelection(0) });
+		// selections = SfSelections(this);
+		selections.restoreSelectionsToSfv(sfv);
+		// { | i | sfv.setSelection(i, [0, 0]) } ! 64;
+		this.changed(\selection);
 	}
 
 	*gui { ^this.default.gui }
 
 	name { ^buffer.name }
 	gui {
+		// var check;
 		this.bl_(1400, 400).hlayout(
-					VLayout(
+			VLayout(
 				sfv = this.sfView,
 				this.rangeSlider,
 				this.posDisplay(sfv)
@@ -75,9 +79,11 @@ SoundBufferGui {
 			this.selectionListView,
 			this.selectionEditedView
 		).name_(PathName(buffer.path).fileNameWithoutExtension)
-		.addNotifier(this, \closeGui, { | n |
-			n.listener.close;
-		});
+		.addNotifier(this, \closeGui, { | n | n.listener.close; });
+		// postln("checking window. it is" + check);
+		// check.addNotifier(this, \closeGui, { | n |
+		// 	postln("the window received close. it is:" + n.listener);
+		// });
 	}
 
 	// basic selection actions to use throughout for selection management
@@ -589,10 +595,30 @@ SoundBufferGui {
 
 	openParameterGui { selections.openParameterGui; }
 
-	save { selections.save }
+	save {
+		var code, path;
+		code = selectionDict.values.collect(_.asCode).select(_.notNil); // do: _.postln;
+		if (code.size == 0) {
+			"There are no selections to save".postln;
+		}{
+			postln("saving selections for" + code.size + "buffers");
+			{ | t | this.saveToFile(t, code.flat) }.inputText(Date.getDate.stamp, "Filename for saving:");
+		}
+	}
+
+	saveToFile { | basename, code |
+		var path;
+		path = this.defaultPath +/+ basename ++ ".scd";
+		postln("the path is" + path);
+		// postln("the code is" + code);
+		File.use(path, "w", { | f | code.flat do: { | c | f.write(c) }});
+		{ postln("opening" + path); Document.open(path); }.defer(0.1);
+	}
+
+	defaultPath {
+		^PathName(Platform.userHomeDir +/+ "sc-projects/Soundfile_Selections/").fullPath;
+	}
 
 	bufName { ^buffer.name }
-	envir {
-		^buffer.name.envir;
-	}
+	envir { ^buffer.name.envir; }
 }

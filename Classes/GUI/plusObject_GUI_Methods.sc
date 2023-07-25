@@ -73,6 +73,8 @@
 		Registry(\windowRects, this, key, {rect});
 	}
 
+	getBounds { | key = \default | ^Registry.at(\windowRects, this, key) }
+
 	bounds { | key = \default |
 		^Registry(\windowRects, this, key, {
 			GuiDefaults.bounds;
