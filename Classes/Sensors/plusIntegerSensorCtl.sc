@@ -1,4 +1,8 @@
 /* 24 Jul 2023 00:04
+
+For use with SensorCtl!
+See SensorCtl:start.
+
 Shortcuts for playing control functions with input from sensors.
 Called by SensorCtl in Param, SoundParams.
 */
@@ -9,8 +13,10 @@ Called by SensorCtl in Param, SoundParams.
 		format("nil @>.% %", player, param.slash).share;
 	}
 
+	sensor { | prefix = \x |
+		^"\\" ++ prefix ++ this.sensorClip ++ ".sr";
+	}
 	lx { | player, param, lo, hi, map |
-		// this.sensorClip.
 		format("{ (%.sr < 0.5).lag(0.5) } @>.% %",
 			\x.slash, this.sensorClip, player, param.slash
 		).share;
@@ -38,12 +44,6 @@ Called by SensorCtl in Param, SoundParams.
 		format("{ %%.sr.%(%, %) } @>.% %",
 			\z.slash, this.sensorClip, map, lo, hi, player, param.slash
 		).share
-		// // var sensor;
-		// // sensor = "\\" + "x" + this.sensorClip;
-		// // sensor.postln;
-		// // format("{ %.sr.%(%, %) } @>.% %",
-		// // 	sensor, map, lo, hi, player, param.slash
-		// ).share;
 	}
 
 	z { | player, param, lo, hi, map |
@@ -52,4 +52,24 @@ Called by SensorCtl in Param, SoundParams.
 		).share;
 	}
 
+	// ===== using custom code templates: ===== STILL TESTING!
+	// SensorCtl allways passes all parameters.
+	cx { | player, param, lo, hi, map, template, c2, c3 |
+		format("{ var x; x = %%.sr; % } @>.% %",
+			\x.slash, this.sensorClip, template, player, param.slash
+		).postln.share;
+	}
+
+	cz { | player, param, lo, hi, map, c1, template, c3 |
+		format("{ var z; z = %%.sr; % } @>.% %",
+			\z.slash, this.sensorClip, template, player, param.slash
+		).postln.share;
+	}
+
+	// experimental - checking!
+	c3 { | player, param, lo, hi, map, c1, c2, template |
+		format("{ var x, y, z; x = %; y = %; z = %; % } @>.% %",
+			this sensor: \x, this sensor: \y, this sensor: \z, template, player, param.slash
+		).postln;
+	}
 }

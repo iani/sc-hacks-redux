@@ -33,13 +33,15 @@ Param {
 		^HLayout(
 			StaticText().minWidth_(100)
 			.minWidth_(100).string_(format("%(%-%)", name, spec.minval, spec.maxval)),
+			Button().maxWidth_(55).states_([["custom:"]])
+			.action_({ sensor.customize; }),
 			Button().maxWidth_(30) // sensor source type
 			.states_([["-"]])
 			.addNotifier(model, \gui, { | n |
 				n.listener.states = [[sensor.ctl.asString]];
 			})
 			.action_({ | me | Menu(
-				*['off', \x, \z].collect({ | f |
+				*['off', \x, \z, \cx, \cz, \c3].collect({ | f |
 					MenuAction(f.asString, {
 						me.states_([[f.asString]]);
 						sensor.ctl = f.asSymbol;

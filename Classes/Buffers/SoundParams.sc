@@ -154,14 +154,15 @@ SoundParams {
 					this.player = f.asSymbol.postln;
 				})})
 			).front }),
-			StaticText().maxWidth_(55).string_("amp ctl:"),
+			Button().maxWidth_(55).states_([["amp ctl:"]])
+			.action_({ ampctl.customize; }),
 			Button().maxWidth_(30)
 			.states_([["off"]])
 			.addNotifier(this, \gui, { | n |
 				n.listener.states_([[ampctl.ctl.asString]])
 			})
 			.action_({ | me | Menu(
-				*['off', \xyz, 'lx', 'lz', 'gx', 'gz'].collect({ | f |
+				*['off', 'xyz', 'lx', 'lz', 'cx', 'cz', 'c3'].collect({ | f |
 					MenuAction(f.asString, {
 						me.states_([[f.asString]]);
 						ampctl.ctl_(f);
