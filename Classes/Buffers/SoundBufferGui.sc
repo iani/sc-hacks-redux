@@ -13,6 +13,7 @@ SoundBufferGui {
 	// var <playfuncs; // TODO: transfer these from EditSoundPlayer. Use a different directory
 	var <playfunc = \phasebuf; // name of playfunc selected from menu
 	var <zoomfrac = 1, scrollpos = 0;
+	var <timestamp; //used as id for updating stats
 	// var <>player;
 	// to load them.
 	*initClass {
@@ -28,7 +29,7 @@ SoundBufferGui {
 	*default { ^this.new(\default) }
 
 	*fromFile { | path |
-		path.postln;
+		// path.postln;
 		^this.new(PathName(path).fileNameWithoutExtension);
 	}
 	*new { | name = \default |
@@ -37,12 +38,13 @@ SoundBufferGui {
 	}
 
 	init {
+		timestamp = Date.getDate.stamp;
 		selectionDict = ();
 		buffer = Buffer.all.first.buf;
 		Buffer.all do: { | b |
 			selectionDict[b] = SfSelections(this, b.buf);
 		};
-		selections = selectionDict[\default];
+		selections = selectionDict[buffer.name];
 		colors = (((1..9).normalize * (2/3) + (1/3)).collect({ | i |
 			[
 				Color(0, i, 0), Color(0, 0, i),
@@ -84,7 +86,7 @@ SoundBufferGui {
 			{   // "restoring again".postln;
 				selections.restoreSelectionsToSfv(sfv);
 				// sfv.setSelection(0, [ 1171670, 376275 ]);
-			}.defer(0.5);
+			}.defer(0.05);
 			// selections = SfSelections(this);
 			this.changed(\selection);
 		}
@@ -103,6 +105,12 @@ SoundBufferGui {
 			this.selectionEditedView
 		).name_(name)
 		.addNotifier(this, \closeGui, { | n | n.listener.close; });
+		{ selections.restoreSelectionsToSfv(sfv); }.defer(0.05);
+		// "SoundBufferGui buffer is:".postln;
+		// { buffer.name.postln; } ! 5;
+		// "SoundBufferGui's current selection buffer is:".postln;
+
+		// { selections.buffer.name.postln; } ! 5;
 	}
 
 	// basic selection actions to use throughout for selection management
@@ -253,6 +261,8 @@ SoundBufferGui {
 			.action_({ CmdPeriod.run }),
 			Button().maxWidth_(10).states_([["x", Color.yellow, Color.red]])
 			.action_({ "CmdPeriod.run".share }),
+			Button().maxWidth_(50).states_([["stats"]])
+			.action_({ this.stats }),
 			StaticText().string_("selection")
 			.addNotifier(this, \selection, { | n |
 				var index;
@@ -623,9 +633,10 @@ SoundBufferGui {
 	saveToFile { | basename, code |
 		var path;
 		path = this.defaultPath +/+ basename ++ ".scd";
-		postln("the path is" + path);
+		// postln("the path is" + path);
 		File.use(path, "w", { | f | code.flat do: { | c | f.write(c) }});
-		{ postln("opening" + path); Document.open(path); }.defer(0.1);
+		// { postln("opening" + path);
+		{ Document.open(path); }.defer(0.1);
 	}
 
 	defaultPath {
@@ -634,20 +645,16 @@ SoundBufferGui {
 
 	*loadFile { | p |
 		var snippets, interpreted, instance, test;
+		"READING SNIPPETS".postln;
 		snippets = p.readSnippets;
+		"CREATING INSTANCE".postln;
 		instance = this.fromFile(p);
 		snippets.postln;
 		snippets do: { | s | instance.addSelectionFromDict(s.interpret); };
-		// "Scanning all selections for frames set!".postln;
-		// instance.selectionDict do: { | s |
-		// 	postln("scanning selection for buffer" + s.buffer.name);
-		// 	postln("zero sum selections are:" + s.selections.select({|x|x.sum > 0}));
-		// };
 		instance.gui;
-		{   // "restoring again".postln;
-				instance.selectionDict[instance.buffer.name].restoreSelectionsToSfv(instance.sfv);
-				// sfv.setSelection(0, [ 1171670, 376275 ]);
-			}.defer(0.5);
+		// {   // "restoring again".postln;
+				// instance.selectionDict[instance.buffer.name].restoreSelectionsToSfv(instance.sfv);
+		// }.defer(0.5);
 
 	}
 
@@ -657,4 +664,22 @@ SoundBufferGui {
 
 	bufName { ^buffer.name }
 	envir { ^buffer.name.envir; }
+
+	stats {
+		var lv;
+		(name++timestamp).asSymbol.vlayout(
+			lv = ListView()
+		).bounds_(Rect(0, 0, 1000, 450))
+		.name_("stats" + name);
+		lv.postln;
+		lv.items = this.statList;
+		lv.addNotifier(this, \stats, { | n | n.listener.items = this.statList;});
+		this.changed(\stats);
+	}
+
+	statList {
+		^selectionDict.keys.asArray.sort collect: { | k |
+			selectionDict[k].buffer.name.asString + selectionDict[k].nonNullSelections;
+		};
+	}
 }

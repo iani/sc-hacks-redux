@@ -183,14 +183,14 @@ SfSelections {
 		if (nonEmpty.size == 0) {
 			^postln("There are no selections to save for buffer" + this.bufName);
 		};
-		postln("saving these selections:" + nonEmpty);
+		// postln("saving these selections:" + nonEmpty);
 		this.class.withFolder({ | path |
 			var thecode;
 			homefolder = path;
 			path = path +/+ format("%_%.scd",
 				this.bufName,
 				Date.getDate.stamp);
-			postln("Saving SfSelection to:" + path);
+			// postln("Saving SfSelection to:" + path);
 			thecode = this.selectionsAsCode(nonEmpty);
 			File.use(path, "w", { | f | f.write(thecode) });
 			Document.open(path);
@@ -222,7 +222,7 @@ SfSelections {
 		buffer.postln;
 		buffer.name.postln;
 		index = dict[\selectionNum];
-		postln("importing selection for buffer" + buffer.name + "and number" + index);
+		// postln("importing selection for buffer" + buffer.name + "and number" + index);
 		start = dict[\startframe];
 		end = dict[\endframe];
 		if (start.notNil and: { end.notNil }) {
@@ -232,10 +232,17 @@ SfSelections {
 			start = dur = 0;
 		};
 		selections[index] = [start, dur].postln;
-		postln("selection" + index + "will now import params");
-		postln("selection" + index + "of buffer" + buffer.name + "has now frames" + selections[index]);
-		postln("selections is" + this + "and my selections are\n" + selections);
+		// postln("selection" + index + "will now import params");
+		// postln("selection" + index + "of buffer" + buffer.name + "has now frames" + selections[index]);
+		// postln("selections is" + this + "and my selections are\n" + selections);
 		params[index].importDict(dict);
 	}
 
+	nonNullSelections {
+		var n;
+		selections do: { | s, i |
+			if (s.sum > 0) { n = n add: [i, s]; };
+		};
+		^n;
+	}
 }
