@@ -73,7 +73,7 @@ SoundParams {
 		// Experimental: merge parameters from new playfunc template!
 		this.makeParams;
 		this.mergeParams2Dict; // transfer previously set param values to new dict
-		{ this.gui; }.defer(0.5);
+		// { this.gui; }.defer(0.5);
 	}
 
 
@@ -134,6 +134,8 @@ SoundParams {
 
 	playView {
 		^HLayout(
+			StaticText().maxWidth_(80).string_("selection:" + selectionNum)
+			.background_(SoundBufferGui.colors[selectionNum]),
 			CheckBox().string_("play")
 			.action_({ | me |
 				if (me.value) { this.play }{ this.stop }

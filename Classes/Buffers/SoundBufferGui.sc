@@ -4,9 +4,10 @@
 
 SoundBufferGui {
 	// classvar <>players;
+	classvar <colors;
 	var <name;
 	var <path;
-	var <buffer, <sfv, colors;
+	var <buffer, <sfv;
 	// Restore selections when switching buffers:
 	var <selectionDict; // selections for all buffers.
 	var <>selections; // selections instance for current buffer

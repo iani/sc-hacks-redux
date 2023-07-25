@@ -30,7 +30,6 @@ Param {
 		sensor.player = player;
 	}
 	gui {
-		// { this.changed(\value) }.defer(0.1);
 		^HLayout(
 			StaticText().minWidth_(100)
 			.minWidth_(100).string_(format("%(%-%)", name, spec.minval, spec.maxval)),
@@ -82,7 +81,7 @@ Param {
 			.clipLo_(spec.clipLo)
 			.clipHi_(spec.clipHi)
 			.decimals_(5)
-			// .value_(model valueAt: name)
+			.value_(model valueAt: name)
 			.addNotifier(model, \dict, { | n |
 				n.listener.value = model valueAt: name;
 			})
@@ -90,12 +89,19 @@ Param {
 				n.listener.value = value;
 				this.updateModel;
 			})
-			.value_(spec.default)
+			.addNotifier(model, \gui, { | n |
+				"updating param num in in Param".postln;
+				n.listener.value = model.valueAt(name);
+			})
 			.action_({ | me |
 				value = me.value;
 				// model.changed(name);
 			}),
 			Slider().orientation_(\horizontal)
+			.addNotifier(model, \gui, { | n |
+				"updating param slider in in Param".postln;
+				n.listener.value = spec unmap: model.valueAt(name);
+			})
 			.addNotifier(model, \dict, { | n |
 				n.listener.value = spec.unmap (model valueAt: name);
 				// postln("set slider value to" + (spec.unmap (model valueAt: name)));
