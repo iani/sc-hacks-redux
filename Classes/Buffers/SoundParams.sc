@@ -134,9 +134,10 @@ SoundParams {
 
 	playView {
 		^HLayout(
-			StaticText().maxWidth_(80).string_("selection:" + selectionNum)
+			StaticText().maxWidth_(70).string_("selection:")
 			.background_(SoundBufferGui.colors[selectionNum]),
-			CheckBox().string_("play")
+			NumberBox().maxWidth_(40).value_(selectionNum).enabled_(false),
+			CheckBox().string_("play").maxWidth_(50)
 			.action_({ | me |
 				if (me.value) { this.play }{ this.stop }
 			})
@@ -144,19 +145,16 @@ SoundParams {
 				n.listener.value = false;
 				n.listener.focus(true);
 			}),
-			StaticText().maxWidth_(50).string_("sensor"),
-			Button().maxWidth_(20)
-			.states_([["1"]])
-			.addNotifier(this, \gui, { | n |
-				n.listener.states_([[ampctl.id.asString]])
-			})
+			StaticText().maxWidth_(40).string_("player:"),
+			Button().maxWidth_(70)
+			.states_([[player, Color.green(0.5)]])
 			.action_({ | me | Menu(
-				*(1..12).collect({ | f | MenuAction(f, {
-					me.states_([[f.asString]]);
-					ampctl.id_(f);
+				*players.collect({ | f | MenuAction(f.asString, {
+					me.states_([[f.asString, Color.green(0.5), Color.white]]);
+					this.player = f.asSymbol.postln;
 				})})
 			).front }),
-			StaticText().maxWidth_(70).string_("on-off ctl:"),
+			StaticText().maxWidth_(55).string_("amp ctl:"),
 			Button().maxWidth_(30)
 			.states_([["off"]])
 			.addNotifier(this, \gui, { | n |
@@ -169,15 +167,19 @@ SoundParams {
 						ampctl.ctl_(f);
 					})})
 			).front }),
-			StaticText().maxWidth_(40).string_("player:"),
-			Button().maxWidth_(70)
-			.states_([[player, Color.green(0.5)]])
+			Button().maxWidth_(20)
+			.states_([["1"]])
+			.addNotifier(this, \gui, { | n |
+				n.listener.states_([[ampctl.id.asString]])
+			})
 			.action_({ | me | Menu(
-				*players.collect({ | f | MenuAction(f.asString, {
-					me.states_([[f.asString, Color.green(0.5), Color.white]]);
-					this.player = f.asSymbol.postln;
+				*(1..12).collect({ | f | MenuAction(f, {
+					me.states_([[f.asString]]);
+					ampctl.id_(f);
 				})})
 			).front }),
+			StaticText().maxWidth_(80).string_("frame range:"),
+			RangeSlider().maxWidth_(120).orientation_(\horizontal),
 			Button().maxWidth_(10).states_([["x"]])
 			.action_({ CmdPeriod.run }),
 			Button().maxWidth_(10).states_([["x", Color.yellow, Color.red]])
@@ -224,6 +226,8 @@ SoundParams {
 		if (this.dur <= 0.0) {
 			"Cannot play settings with duration 0".postln;
 		}{
+			ampctl.start;
+			params do: _.start;
 			format("%.envir play: %", this.player.asCompileString, dict.asCompileString).share;
 			this.addNotifier(Mediator, \ended, { | n, playername, synthname |
 				if (playername == this.player and: { synthname == this.player }) {

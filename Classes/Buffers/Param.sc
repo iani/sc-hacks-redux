@@ -90,7 +90,6 @@ Param {
 				this.updateModel;
 			})
 			.addNotifier(model, \gui, { | n |
-				"updating param num in in Param".postln;
 				n.listener.value = model.valueAt(name);
 			})
 			.action_({ | me |
@@ -99,7 +98,6 @@ Param {
 			}),
 			Slider().orientation_(\horizontal)
 			.addNotifier(model, \gui, { | n |
-				"updating param slider in in Param".postln;
 				n.listener.value = spec unmap: model.valueAt(name);
 			})
 			.addNotifier(model, \dict, { | n |
@@ -130,7 +128,7 @@ Param {
 		sensor.hi = arghi;
 	}
 	// player { ^model.player }
-
+	start { sensor.start }
 	updateModel { model.setParam(name, value); }
 	bufName { ^model.bufName; }
 }
