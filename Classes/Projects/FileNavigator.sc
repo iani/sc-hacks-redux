@@ -172,7 +172,7 @@ FileNavigator {
 
 	bookmarkAction { ^{ this.save } }
 	bookmarksbutton {
-		^Button().states_([["save bookmark"]])
+		^Button().states_([["save"]]).maxWidth_(40)
 		.action_(this.bookmarkAction)
 	}
 
@@ -187,9 +187,9 @@ FileNavigator {
 				.action_({ this.zoomOut }),
 				Button().states_([[">"]]).maxWidth_(30)
 				.action_({ this.zoomIn }),
-				Button().states_([["info"]]).maxWidth_(50)
+				Button().states_([["info"]]).maxWidth_(40)
 				.action_({ this.info }),
-				Button().states_([["edit"]]).maxWidth_(50)
+				Button().states_([["edit"]]).maxWidth_(40)
 				.action_({
 					if (innerItem.isFolder) {
 						innerItem.folderName.post;
@@ -206,7 +206,9 @@ FileNavigator {
 					MenuAction("export code", { this.exportCode }),
 					MenuAction("export messages", { this.exportMessages }),
 					MenuAction("export all", { this.exportAll })
-				).front })
+				).front }),
+				Button().states_([["load"]]).maxWidth_(40)
+				.action_({ this.loadSfSelections })
 			),
 			HLayout(
 				this.outerListView,
@@ -225,6 +227,24 @@ FileNavigator {
 			n.listener.name = p;
 		});
 		{ this.load; }.defer(1.1); // load last saved path from preferences
+	}
+
+	loadSfSelections {
+		if (innerItem.isFolder) {
+			innerItem.folderName.post;
+			" is a folder".postln;
+			"Select a file to open instead".postln;
+		}{
+			innerItem.fullPath.doIfExists({ | p |
+				if ( p.isSfSelection ) {
+					SoundBufferGui.loadFile(p);
+				}{
+					postln("not a sound file selections file:" + p)
+				}
+			},{ | p |
+				postln("File not found:" + p);
+			})
+		}
 	}
 
 	bounds { ^Rect(0, 230, 350, 180) }

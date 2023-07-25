@@ -4,10 +4,12 @@
 
 SoundBufferGui {
 	// classvar <>players;
+	var <name;
+	var <path;
 	var <buffer, <sfv, colors;
 	// Restore selections when switching buffers:
 	var <selectionDict; // selections for all buffers.
-	var <>selections; // current selections instance
+	var <>selections; // selections instance for current buffer
 	// var <playfuncs; // TODO: transfer these from EditSoundPlayer. Use a different directory
 	var <playfunc = \phasebuf; // name of playfunc selected from menu
 	var <zoomfrac = 1, scrollpos = 0;
@@ -23,15 +25,20 @@ SoundBufferGui {
 		this.addNotifier(Project, \loadedBuffers, {this.new(\default).gui})
 	}
 
-	*default { ^this.new(Buffer.all.first) }
+	*default { ^this.new(\default) }
 
-	*new { | buffer |
-		buffer ?? { buffer = \default };
-		 ^Registry(this, buffer, { this.newCopyArgs(buffer.buf).init })
+	*fromFile { | path |
+		path.postln;
+		^this.new(PathName(path).fileNameWithoutExtension);
+	}
+	*new { | name = \default |
+		name = name.asSymbol;
+		 ^Registry(this, name.asSymbol, { this.newCopyArgs(name).init })
 	}
 
 	init {
 		selectionDict = ();
+		buffer = Buffer.all.first.buf;
 		Buffer.all do: { | b |
 			selectionDict[b] = SfSelections(this, b.buf);
 		};
@@ -67,9 +74,7 @@ SoundBufferGui {
 
 	*gui { ^this.default.gui }
 
-	name { ^buffer.name }
 	gui {
-		// var check;
 		this.bl_(1400, 400).hlayout(
 			VLayout(
 				sfv = this.sfView,
@@ -78,12 +83,8 @@ SoundBufferGui {
 			),
 			this.selectionListView,
 			this.selectionEditedView
-		).name_(PathName(buffer.path).fileNameWithoutExtension)
+		).name_(name)
 		.addNotifier(this, \closeGui, { | n | n.listener.close; });
-		// postln("checking window. it is" + check);
-		// check.addNotifier(this, \closeGui, { | n |
-		// 	postln("the window received close. it is:" + n.listener);
-		// });
 	}
 
 	// basic selection actions to use throughout for selection management
@@ -266,7 +267,10 @@ SoundBufferGui {
 			StaticText().string_("buffer:"),
 			Button()
 			.canFocus_(false)
-			.states_([[this.name, Color.blue, Color.white]])
+			.states_([[buffer.name, Color.blue, Color.white]])
+			.addNotifier(this, \selection, { | n |
+				n.listener.states_([[buffer.name, Color.blue, Color.white]]);
+			})
 			.action_({ | me | Menu(
 				*Buffer.all
 				.collect({ | f | MenuAction(f.asString, {
@@ -275,7 +279,6 @@ SoundBufferGui {
 					this.changed(\buffer);
 				})})
 			).front }),
-
 			StaticText().string_("playfunc:"),
 			Button()
 			.canFocus_(false)
@@ -616,7 +619,26 @@ SoundBufferGui {
 	}
 
 	defaultPath {
-		^PathName(Platform.userHomeDir +/+ "sc-projects/Soundfile_Selections/").fullPath;
+		^PathName(Platform.userHomeDir +/+ "sc-projects/local/").fullPath;
+	}
+
+	*loadFile { | p |
+		var snippets, interpreted, instance, test;
+		"SoundBufferGui loadFile is still unimplemented".postln;
+		snippets = p.readSnippets;
+		instance = this.fromFile(p);
+		snippets do: { | s | instance.updateParam(snippets.first); };
+		instance.gui;
+	}
+
+	updateParam { | snippet |
+		var index, dict;
+		index = snippet.selectionIndex;
+		dict = snippet.interpret;
+		postln("updating param from snippet no" + dict[\selectionNum] + "and buffer" + dict[\buf]);
+		selectionDict[dict[\buf]].params[index].dict.postln;
+		postln("will update using dict:" + dict);
+		selectionDict[dict[\buf]].params[index].importDict(dict);
 	}
 
 	bufName { ^buffer.name }

@@ -23,6 +23,22 @@
 		^isCode;
 	}
 
+	isSfSelection {
+		var isSfs;
+		File.use(this, "r", { | f |
+		var h;
+			h = f.getLine(1024); // .postln;
+			if (h[..15] == "/*selections for") {
+				isSfs = true;
+			}{
+				isSfs = false;
+			};
+		});
+		^isSfs;
+	}
+
+
+
 	hasCode { // true if the snippet contains "\n[ 'code'"
 		^this contains: "\n[ '/code'";
 	}

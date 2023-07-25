@@ -40,6 +40,4 @@ SensorCtl {
 	*fromParams { | params | // recreate from parameters saved as code
 		^this.newCopyArgs(*params)
 	}
-
-
 }

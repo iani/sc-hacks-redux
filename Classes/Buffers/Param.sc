@@ -8,42 +8,53 @@ Param {
 	var <sensor, <sensorlo, <sensorhi;
 	var <player;
 	// model: a SoundParams
-	*new { | model, spec |
-		^this.newCopyArgs(model, spec).init;
+	*new { | model, spec, dict |
+		^this.newCopyArgs(model, spec).init(dict);
 	}
 
-	init {
+	init { | dict |
 		name = spec.units.asSymbol;
 		// spec = spec.asSpec;
 		value = spec.default;
 		sensorlo = spec.minval;
 		sensorhi = spec.maxval;
 		player = model.player;
+		if (dict.isNil) {
 		sensor = SensorCtl(player, name, 1, \off, sensorlo, sensorhi, \lin);
+		}{
+			sensor = SensorCtl(*dict[name]);
+		}
 	}
 	player_ { | argPlayer |
 		player = argPlayer;
 		sensor.player = player;
 	}
 	gui {
+		// { this.changed(\value) }.defer(0.1);
 		^HLayout(
 			StaticText().minWidth_(100)
 			.minWidth_(100).string_(format("%(%-%)", name, spec.minval, spec.maxval)),
-			Button().maxWidth_(30)
+			Button().maxWidth_(30) // sensor source type
 			.states_([["-"]])
+			.addNotifier(model, \gui, { | n |
+				n.listener.states = [[sensor.ctl.asString]];
+			})
 			.action_({ | me | Menu(
 				*['off', \x, \z].collect({ | f |
 					MenuAction(f.asString, {
 						me.states_([[f.asString]]);
-						this.setSensor(f);
+						sensor.ctl = f.asSymbol;
 					})})
 			).front }),
-			Button().maxWidth_(20)
-			.states_([["0"]])
+			Button().maxWidth_(20) // sensor id
+			.states_([["1"]])
+			.addNotifier(model, \gui, { | n |
+				n.listener.states = [[sensor.id.asString]];
+			})
 			.action_({ | me | Menu(
-				*(0..12).collect({ | f | MenuAction(f.asString, { //c| me |
+				*(1..12).collect({ | f | MenuAction(f.asString, { //c| me |
 					me.states_([[f.asString]]);
-					// player = f.asSymbol;
+					sensor.id = f;
 				})})
 			).front }),
 			NumberBox().maxWidth_(55)
@@ -52,6 +63,9 @@ Param {
 			.clipHi_(spec.clipHi)
 			.decimals_(5)
 			.value_(spec.minval)
+			.addNotifier(this, \value, { | n |
+				n.listener.value = sensor.lo;
+			})
 			.action_({ | me | this.setSensorLo(me.value) }),
 			NumberBox().maxWidth_(55)
 			.background_(Color.gray(0.7))
@@ -59,6 +73,9 @@ Param {
 			.clipHi_(spec.clipHi)
 			.decimals_(5)
 			.value_(spec.maxval)
+			.addNotifier(this, \value, { | n |
+				n.listener.value = sensor.hi;
+			})
 			.action_({ | me | this.setSensorHi(me.value) }),
 			NumberBox().maxWidth_(80)
 			.normalColor_(Color.red(0.5))
@@ -68,8 +85,6 @@ Param {
 			// .value_(model valueAt: name)
 			.addNotifier(model, \dict, { | n |
 				n.listener.value = model valueAt: name;
-				// postln("set number value to" + (model valueAt: name));
-				// this.updateModel;
 			})
 			.addNotifier(this, \value, { | n |
 				n.listener.value = value;
@@ -99,10 +114,6 @@ Param {
 		)
 	}
 
-	setSensor { | argSensor |
-		postln("setting sensor" + sensor + "to" + argSensor);
-		sensor.ctl = argSensor;
-	}
 	setSensorLo { | arglo |
 		sensorlo = arglo;
 		sensor.lo = sensorlo;

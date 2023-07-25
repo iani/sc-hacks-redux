@@ -35,11 +35,11 @@ SoundParams {
 		this.initDict;
 	}
 
-	makeParams {
+	makeParams { | adict |
 		// postln("making sound params. playfunc is:" + playfunc);
 		paramSpecs = SynthTemplate.getTemplate(playfunc).specs;
 		// postln("sound params found specs is:" + specs);
-		params = paramSpecs.flat collect: { | p | Param(this, p) };
+		params = paramSpecs.flat collect: { | p | Param(this, p, adict) };
 	}
 
 	addParams { | argDict | // add parameters without sending to synth
@@ -54,16 +54,9 @@ SoundParams {
 		// transfer values from selections
 		dict[\buf] = model.bufName;
 		dict[\playfunc] = model.playfunc; // this may already be in template!!!
+		dict[\selectionNum] = selectionNum;
  		this.setFrame(model.currentSelection);
-		// set frame silently - do not zero all selections at init time:
-		// this.setFrameFromSelection(model.currentSelection);
 	}
-
-	// set frame silently at init time:
-	// setFrameFromSelection { | frame | // set startframe and endframe as received from selections
-	// 	this.dict['startframe'] = frame[0];
-	// 	this.dict['endframe'] = frame.sum;
-	// }
 
 	// Not using this????
 	setFrame { | frame | // set startframe and endframe as received from selections
@@ -123,20 +116,16 @@ SoundParams {
 		clumped = params.flat.clump(12);
 		height = clumped.collect(_.size).maxItem * 20 + 20;
 		prevpos = this.getBounds;
-		// prevpos.postln; "!!!!!!".postln;
 		if (prevpos.notNil) {
 			left = prevpos.left;
 			bottom = prevpos.bottom;
 		};
-		this.bounds_(Rect(left, bottom, 700, 10 /* height */))
-		.vlayout(
+		this.bounds_(Rect(left, bottom, 700, 10 /* height */));
+		this.vlayout(
 			this.playView,
 			this.paramView(clumped)
-		)
-		.addNotifier(this, \close, { | n | n.listener.close; })
-		.addNotifier(this, \player, { | n | n.listener.name = this.header; })
-		.name_(this.header);
-		{ this.changed(\dict) }.defer(0.1);
+		).name_(this.header);
+		{ this.changed(\gui) }.defer(0.1);
 	}
 	header { ^format("% -- % [%] : %", this.player, dict[\buf], selectionNum, dict[\playfunc]) }
 	pane { |  ps |
@@ -156,6 +145,9 @@ SoundParams {
 			StaticText().maxWidth_(50).string_("sensor"),
 			Button().maxWidth_(20)
 			.states_([["1"]])
+			.addNotifier(this, \gui, { | n |
+				n.listener.states_([[ampctl.id.asString]])
+			})
 			.action_({ | me | Menu(
 				*(1..12).collect({ | f | MenuAction(f, {
 					me.states_([[f.asString]]);
@@ -165,6 +157,9 @@ SoundParams {
 			StaticText().maxWidth_(70).string_("on-off ctl:"),
 			Button().maxWidth_(30)
 			.states_([["off"]])
+			.addNotifier(this, \gui, { | n |
+				n.listener.states_([[ampctl.ctl.asString]])
+			})
 			.action_({ | me | Menu(
 				*['off', \xyz, 'lx', 'lz', 'gx', 'gz'].collect({ | f |
 					MenuAction(f.asString, {
@@ -264,6 +259,7 @@ SoundParams {
 	asDict {
 		dict[\ampctl] = ampctl.saveParams;
 		dict[\paramctl] = this.paramCtl;
+		dict[\player] = player;
 		^dict;
 	}
 
@@ -276,7 +272,12 @@ SoundParams {
 		^paramctl;
 	}
 
-	*fromDict { | argDict |
-
+	importDict { | adict | // create all contents from dict
+		playfunc = adict[\playfunc];
+		selectionNum = adict[\selectionNum]; // possibly redundeant
+		this.makeParams(adict[\paramctl]);
+		dict = adict;
+		ampctl = SensorCtl(*dict[\ampctl]);
+		player = dict[\player];
 	}
 }
