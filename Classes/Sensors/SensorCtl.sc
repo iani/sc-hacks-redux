@@ -20,8 +20,10 @@ SensorCtl {
 	var <>c1 = "x.lag(1).exp(500, 1000)", <>c2 =  "(1 - z.lag(1)).exp(500, 1000)";
 	var <>c3 = "(x + y + z).lag(1).exp(500, 1000)";
 
-	*new { | player, param = \amp, id = 1, ctl = \xyz, lo = 0, hi = 1, map = \lin |
-		^this.newCopyArgs(player, param, id, ctl, lo, hi, map) // .init
+	*new { | player, param = \amp, id = 1, ctl = \xyz, lo = 0, hi = 1, map = \lin,
+		c1 = "x.lag(1).exp(500, 1000)", c2 =  "(1 - z.lag(1)).exp(500, 1000)",
+		c3 = "(x + y + z).lag(1).exp(500, 1000)" |
+		^this.newCopyArgs(player, param, id, ctl, lo, hi, map, c1, c2, c3);
 	}
 
 	player_ { | argPlayer | this.stop; player = argPlayer; this.start; }
