@@ -232,17 +232,97 @@ SfSelections {
 			start = dur = 0;
 		};
 		selections[index] = [start, dur].postln;
-		// postln("selection" + index + "will now import params");
-		// postln("selection" + index + "of buffer" + buffer.name + "has now frames" + selections[index]);
-		// postln("selections is" + this + "and my selections are\n" + selections);
 		params[index].importDict(dict);
+	}
+
+	paramCloneMenu { // prototype - not used.
+		var n;
+		selections do: { | s, i |
+			if (s.sum > 0) {
+				n = n add:
+				[
+					this.infostring[i],
+					{
+						postln("will handle this:" + this.infostring[i]);
+					}
+				]
+			};
+		};
+		^n;
+	}
+
+	firstFreeSelection {
+		var n = 0;
+		while { n < 65 and: { selections[n].sum > 0 } } { n = n + 1 };
+		if (n < 64) { ^n } { ^nil }
+	}
+
+	nonNullSelectionsInfo {
+		var n;
+		selections do: { | s, i |
+			if (s.sum > 0) {
+				n = n add: this.infostring(i);
+			};
+		};
+		^n;
+	}
+
+	nonNullSelectionsParams {
+		var n;
+		selections do: { | s, i |
+			if (s.sum > 0) {
+				n = n add: this.params[i];
+			};
+		};
+		^n;
 	}
 
 	nonNullSelections {
 		var n;
-		selections do: { | s, i |
-			if (s.sum > 0) { n = n add: [i, s]; };
-		};
+		selections do: { | s, i | if (s.sum > 0) { n = n add: [i, s]; }; };
 		^n;
+	}
+	nullSelections {
+		var n;
+		selections do: { | s, i | if (s.sum == 0) { n = n add: [i, s]; }; };
+		^n;
+	}
+
+	numFreeSelections {
+		var n = 63;
+		selections do: { | s, i | if (i < 64 and: { s.sum > 0}) { n = n - 1; }; };
+		^n;
+	}
+
+	cloneParam { | sourceParam, selectionSlot |
+		var cloneDict, theSelection, startFrame, endFrame, sourceNumFrames, targetNumFrames;
+		// create a clean deep copy (avoiding deepCopy to be sure...);
+		cloneDict = sourceParam.asDict.asCompileString.interpret;
+		theSelection = selections[selectionSlot];
+		postln("confirming that selection " + selectionSlot + "is empty" + theSelection);
+		buffer.postln;
+		startFrame = cloneDict[\startframe];
+		endFrame = cloneDict[\endframe];
+		sourceNumFrames = endFrame - startFrame;
+		targetNumFrames = buffer.numFrames;
+		postln("constraining endframe" + endFrame + "to numFrames" + targetNumFrames);
+		endFrame = endFrame min: targetNumFrames;
+		startFrame = endFrame - sourceNumFrames max: 0;
+		postln("the resulting startframe is" + startFrame + "and Endframe is" + endFrame);
+		theSelection[0] = startFrame;
+		theSelection[1] = endFrame - startFrame;
+		cloneDict[\startframe] = startFrame;
+		cloneDict[\endframe] = endFrame;
+		cloneDict[\buf] = buffer.name;
+		cloneDict[\selectionNum] = selectionSlot;
+		sbgui.changed(\selection);
+		params[selectionSlot] importDict: cloneDict;
+	}
+
+	infostring { | selIndex |
+		^buffer.name ++ ":" ++ params[selIndex].playfunc ++ selections[selIndex];
+	}
+	bufStats {
+		^format("% (%)", buffer.name, this.numFreeSelections)
 	}
 }

@@ -281,10 +281,26 @@ SoundParams {
 
 	importDict { | adict | // create all contents from dict
 		playfunc = adict[\playfunc];
-		selectionNum = adict[\selectionNum]; // possibly redundeant
+		selectionNum = adict[\selectionNum]; // possibly redundant
 		this.makeParams(adict[\paramctl]);
 		dict = adict;
 		ampctl = SensorCtl(*dict[\ampctl]);
 		player = dict[\player];
 	}
+
+	cloneMenuItem { //for SfSelections:paramCloneMenu
+		^[
+			this.info,
+			{ | me |
+				postln("will handle this:" + this.info);
+				me.states_([[]])
+			}
+		]
+	}
+
+	info {
+		^dict[\buf] ++ ":" ++ playfunc ++ [dict[\startframe], dict[\endframe]];
+	}
+
+
 }

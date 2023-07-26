@@ -319,9 +319,8 @@ SoundBufferGui {
 					this.setPlayfunc(f.asSymbol);
 				})})
 			).front }),
-			Button()
-			.states_([["save"]])
-			.action_({ this.save })
+			Button().states_([["clone"]]) .action_({ this.cloneSelections }),
+			Button().states_([["save"]]) .action_({ this.save })
 		)
 	}
 
@@ -659,6 +658,8 @@ SoundBufferGui {
 
 	}
 
+	bufSelection { | buf | ^selectionDict[buf] }
+
 	addSelectionFromDict { | argDict |
 		selectionDict[argDict[\buf]].addSelectionFromDict(argDict);
 	}
@@ -682,5 +683,154 @@ SoundBufferGui {
 		^selectionDict.keys.asArray.sort collect: { | k |
 			selectionDict[k].buffer.name.asString + selectionDict[k].nonNullSelections;
 		};
+	}
+
+	cloneSelection { | srcbuf, srcid, targetbuf, targetid |
+
+	}
+
+	cloneSelectionsEarlyPrototype {
+		this.sources do: { | p | p.first.dict[\buf].postln };
+	}
+
+	bufNames { ^selectionDict.keys.asArray.sort }
+	bufStats { | bufname |
+		bufname ?? {
+			^this.bufNames.collect({ | n | selectionDict[n].bufStats })
+		};
+		^selectionDict[bufname].bufStats;
+	}
+
+	cloneSelections { // TODO: Test this!
+		var allBuffers, sourceBuffers, sourceBuffer, selectedParams, selectedDict;
+		var sourceParam, targetBuffer;
+		var freeSelectionSlot;
+		allBuffers = selectionDict.keys.asArray.sort;
+		targetBuffer = allBuffers.first;
+		sourceBuffers = this.sources.collect({ | p | p.first.dict[\buf] });
+		\cloneSelections.vlayout(
+			HLayout(
+				StaticText().string_("Source:").maxWidth_(50),
+				Button().states_([["choose source buffer"]]).maxWidth_(140)
+				.menu(sourceBuffers.collect({ | k | [k, { | me, k |
+					k.postln;
+					me.states_([[k]]);
+					sourceBuffer = k;
+					// postln("you selected buffer" + sourceBuffer);
+					selectedParams = selectionDict[sourceBuffer].nonNullSelectionsParams;
+					// postln("the parameters selected are" + selectedParams);
+					this.changed(\sources);
+				}]}))
+				.addNotifier(this, \selection, { | n |
+					sourceBuffers = this.sources.collect({ | p | p.first.dict[\buf] });
+					n.listener.menu(sourceBuffers.collect({ | k | [k, { | me, k |
+						k.postln;
+						me.states_([[k]]);
+						sourceBuffer = k;
+						// postln("you selected buffer" + sourceBuffer);
+						selectedParams = selectionDict[sourceBuffer].nonNullSelectionsParams;
+						// postln("the parameters selected are" + selectedParams);
+						this.changed(\sources);
+					}]}))
+				}),
+				Button().states_([["choose a setting"]])
+				.addNotifier(this, \sources, { | n |
+					n.listener.menu(selectedParams.collect({ | p |
+						[p.info, { | me |
+							me.states_([[p.info]]);
+							sourceParam = p;
+						}]
+					}))
+				})
+			),
+			HLayout(
+				StaticText().string_("target:").maxWidth_(50),
+				StaticText().string_("-------")
+				.background_(Color(0.25, 0.47, 0.8))
+				.stringColor_(Color.yellow)
+				.addNotifier(this, \clonetarget, { | n, i |
+					n.listener.string = selectionDict[allBuffers[i]].bufStats;
+				}),
+				NumberBox() // TODO: clean up the multiple notifiers...
+				.string_("---")
+				.addNotifier(this, \selection, { | n |
+					postln("current target is" + targetBuffer);
+					freeSelectionSlot = this.bufSelection(targetBuffer).firstFreeSelection;
+					postln("the first free selection is" + freeSelectionSlot);
+					if (freeSelectionSlot.isNil) {
+						postln("there are no free slots in" + targetBuffer);
+						"Please choose a different target buffer".postln;
+						n.listener.string_("---")
+					}{ n.listener.value = freeSelectionSlot }
+				})
+				.addNotifier(this, \sources, { | n |
+					postln("current target is" + targetBuffer);
+					freeSelectionSlot = this.bufSelection(targetBuffer).firstFreeSelection;
+					postln("the first free selection is" + freeSelectionSlot);
+					if (freeSelectionSlot.isNil) {
+						postln("there are no free slots in" + targetBuffer);
+						"Please choose a different target buffer".postln;
+						n.listener.string_("---")
+					}{ n.listener.value = freeSelectionSlot }
+				})
+				.addNotifier(this, \clonetarget, { | n |
+					postln("current target is" + targetBuffer);
+					freeSelectionSlot = this.bufSelection(targetBuffer).firstFreeSelection;
+					postln("the first free selection is" + freeSelectionSlot);
+					if (freeSelectionSlot.isNil) {
+						postln("there are no free slots in" + targetBuffer);
+						"Please choose a different target buffer".postln;
+						n.listener.string_("---")
+					}{ n.listener.value = freeSelectionSlot }
+				}),
+				Button().maxWidth_(60).states_([["clone!", Color.white, Color.red]])
+				.action_({
+					if (sourceParam.isNil) {
+						"Please choose a source parameter first".postln;
+					}{
+						postln("the source param is" + sourceParam.info);
+						postln("the target buffer is" + targetBuffer);
+						freeSelectionSlot = this.bufSelection(targetBuffer).firstFreeSelection;
+						postln("the first free slot is:" + freeSelectionSlot);
+						if (freeSelectionSlot.isNil) {
+							postln("I cannot clone the selection to " + targetBuffer);
+							"because it has no free selections".postln;
+						}{
+							postln("I will clone selection" + sourceParam.info +
+								"to selection" + freeSelectionSlot + "of buffer" + targetBuffer;
+								this.bufSelection(targetBuffer)
+								.cloneParam(sourceParam, freeSelectionSlot);
+							);
+						}
+					}
+				})
+			),
+			ListView()
+			.palette_(QPalette.light
+				.highlight_(Color(0.7, 1.0, 0.9))
+				.highlightText_(Color(0.0, 0.0, 0.0))
+			)
+			.items_(this.bufStats)
+			.addNotifier(this, \sources, { | n |
+				n.listener.items_(this.bufStats);
+			})
+			.action_({ | me |
+				targetBuffer = allBuffers[me.value];
+				this.changed(\clonetarget, me.value);
+			})
+		).bounds_(Rect(400, 0, 500, 450));
+		{ this.changed(\clonetarget, 0) }.defer(0.1);
+	}
+
+	sources { // non-null selections
+		^selectionDict.keys.asArray.sort
+		.select({ | k | selectionDict[k].nonNullSelections.size > 0})
+		.collect({ | s | selectionDict[s].nonNullSelectionsParams })
+		// .flat;
+		// .collect({ | s | selectionDict[s].nonNullSelectionsInfo });
+	}
+
+	targets { // null selections
+
 	}
 }
