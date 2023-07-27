@@ -240,6 +240,9 @@ SoundParams {
 		}
 	}
 	stop { // stop all synths - both sound + controls
+		ampctl.stop; // add this because stopSynths does not work
+		params do: _.stop; // add this because stopSynths does not work
+		// TODO: this needs debugging: not all synths are stopped by stopSynths!
 		format("%%.stopSynths", "\\", this.player).share;
 		this.changed(\stopped); // notify even when player has changed!
 		// dict[\buf].stopSynths;
@@ -286,16 +289,6 @@ SoundParams {
 		dict = adict;
 		ampctl = SensorCtl(*dict[\ampctl]);
 		player = dict[\player];
-	}
-
-	cloneMenuItem { //for SfSelections:paramCloneMenu
-		^[
-			this.info,
-			{ | me |
-				postln("will handle this:" + this.info);
-				me.states_([[]])
-			}
-		]
 	}
 
 	info {

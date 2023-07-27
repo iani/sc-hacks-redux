@@ -43,17 +43,18 @@ Called by SensorCtl in Param, SoundParams.
 	x { | player, param, lo, hi, map |
 		format("{ %%.sr.%(%, %) } @>.% %",
 			\z.slash, this.sensorClip, map, lo, hi, player, param.slash
-		).share
+		).postln.share
 	}
 
 	z { | player, param, lo, hi, map |
 		format("{ %%.sr.%(%, %) } @>.% %",
 			\z.slash, this.sensorClip, map, lo, hi, player, param.slash
-		).share;
+		).postln.share;
 	}
 
 	// ===== using custom code templates: ===== STILL TESTING!
 	// SensorCtl allways passes all parameters.
+	// The template is passed at a different parameter position for cx, cz and c3!
 	cx { | player, param, lo, hi, map, template, c2, c3 |
 		format("{ var x; x = %%.sr; % } @>.% %",
 			\x.slash, this.sensorClip, template, player, param.slash

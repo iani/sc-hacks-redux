@@ -131,6 +131,7 @@ Param {
 	}
 	// player { ^model.player }
 	start { sensor.start }
+	stop { sensor.stop }
 	updateModel { model.setParam(name, value); }
 	bufName { ^model.bufName; }
 }

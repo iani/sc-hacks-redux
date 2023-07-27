@@ -35,7 +35,10 @@ SensorCtl {
 	map_ { | argMap | map = argMap; this.start; }
 
 	stop { format("nil @>. % %", player, param.slash).share; }
-	start { id.perform(ctl, player, param, lo, hi, map, c1, c2, c3); }
+	start {
+		postln("degging SensorCtl ranges. lo is:" + lo + "hi is:" + hi);
+		id.perform(ctl, player, param, lo, hi, map, c1, c2, c3);
+	}
 
 	saveParams { // of params for saving as code.
 		^[player, param, id, ctl, lo, hi, map, c1, c2, c3];
