@@ -313,7 +313,7 @@ SoundBufferGui {
 			.canFocus_(false)
 			.states_([["phasebuf", Color.red, Color.white]])
 			.action_({ | me | Menu(
-				*SynthTemplate.playfuncs.keys.asArray.sort
+				*BufferSynths.playfuncs.keys.asArray.sort
 				.collect({ | f | MenuAction(f.asString, {
 					me.states_([[f.asString, Color.red, Color.white]]);
 					this.setPlayfunc(f.asSymbol);

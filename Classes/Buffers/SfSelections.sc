@@ -38,7 +38,7 @@ SfSelections {
 	init {
 		currentSelection = selections[0];
 		// create params:
-		params = { | n | SoundParams(this, this.playfunc, n); } ! 64;
+		params = { | n | BufSoundParams(this, this.playfunc, n); } ! 64;
 		currentParam = params[0];
 		// Do NOT employ Notifications. DO NOT RE-ADD THESE!:
 		// (Instead, trigger actions explicitly trough messages from sbgui.)
@@ -150,6 +150,8 @@ SfSelections {
 	currentParams { ^params[currentSelectionIndex] }
 
 	setPlayfunc { | argPlayfunc |
+		// postln("Debugging SfSelections setPlayfunc. currentParam is:" + currentParam +
+		// "playfunc is" + argPlayfunc);
 		currentParam.setPlayfunc(argPlayfunc);
 	}
 

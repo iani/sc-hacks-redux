@@ -7,5 +7,6 @@ PlayBuf_, PV_Magabove_ etc.  See folder
 [PhaseBuf_];
 //:
 {   // provides PlayBuf.ar ugen with br controls
+	// "DEBUGGING: This is PhaseBuf_".postln;
 	PhaseBuf_.ar() * \amp.br(1)
 }

@@ -1,10 +1,12 @@
 /* 12 Jul 2023 07:08
 Reads templates from a directory.
 Constructs code for BufCode.
+
+SuperClass for BufferSynths, PlainSynths - which look for their templates inside their
+separate folders.
 */
 
 SynthTemplate {
-	classvar <playfuncs; // Dictionary of SynthTemplate instances
 	classvar <homefolder, <templatesfolder, <playfuncsfolder, <codefolder;
 
 	var <path, <name, <func, <specs, <code, <template;
@@ -15,8 +17,7 @@ SynthTemplate {
 
 	*init {
 		Spec.addSC_Hacks_Specs;
-		playfuncs = IdentityDictionary();
-		this.templatePaths do: { | p | this.new(p) };
+		this.allSubclasses do: _.init;
 	}
 
 	*templatePaths { // Load from same folder as your definition is
@@ -27,10 +28,11 @@ SynthTemplate {
 		^this.newCopyArgs(path).init;
 	}
 
-	init {
-		name = PathName(path).fileNameWithoutExtension.asSymbol;
-		playfuncs[name] = this;
-		this.load;
+	*getFunc { | funcname | ^this.getTemplate(funcname).func }
+
+	// TODO : Use Library instead of this. Optimize.
+	*getTemplate { | funcname |
+		^this.allSubclasses.collect(_.getTemplate(funcname)).detect(_.notNil);
 	}
 
 	load {
@@ -53,15 +55,4 @@ SynthTemplate {
 		// postln("Skipping template making for" + name);
 		^""
 	}
-
-	*getFunc { | argName = \playbuf |
-		^this.getTemplate(argName).func;
-	}
-
-	*getTemplate { | argName = \playbuf |
-		^(playfuncs[argName] ?? { playfuncs[\playbuf] });
-	}
-
-	*at {   | argName = \playbuf |  ^this.getTemplate(argName) }
-
 }

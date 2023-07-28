@@ -12,7 +12,7 @@ Save the resulting config in a file at folder ???? in sc-projects.
 */
 //:
 
-SoundParams {
+BufSoundParams {
 	classvar <>players;
 
 	var model; // SfSelections;
@@ -37,7 +37,7 @@ SoundParams {
 
 	makeParams { | adict |
 		// postln("making sound params. playfunc is:" + playfunc);
-		paramSpecs = SynthTemplate.getTemplate(playfunc).specs;
+		paramSpecs = BufferSynths.getTemplate(playfunc).specs;
 		// postln("sound params found specs is:" + specs);
 		params = paramSpecs.flat collect: { | p | Param(this, p, adict) };
 	}
