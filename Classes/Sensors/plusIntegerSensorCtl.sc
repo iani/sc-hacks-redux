@@ -11,13 +11,12 @@ Called by SensorCtl in Param, SoundParams.
 + Integer {
 	sensorClip { ^this.clip(1, 12) } // constrain to existing sensor ids in current systsm
 	off {  | player, param, lo, hi, map | // turn control synth off.
-		postln("Debugging off method for param" + param + "BEFORE");
-		player.envir.synthReport;
-		format("nil @>.% %", player, param.slash).postln.share;
-		{
-
-			postln("Debugging off method for param" + param + "AFTER");
-			"after the off!".postln; player.envir.synthReport }.defer(0.5);
+		// postln("Debugging off method for param" + param + "BEFORE");
+		// player.envir.synthReport;
+		format("nil @>.% %", player, param.slash).share;
+		// {
+			// postln("Debugging off method for param" + param + "AFTER");
+			// "after the off!".postln; player.envir.synthReport }.defer(0.5);
 	}
 
 	sensor { | prefix = \x |
@@ -48,25 +47,25 @@ Called by SensorCtl in Param, SoundParams.
 	}
 
 	x { | player, param, lo, hi, map |
-		this.off(player, param, lo, hi, map);
-		{
+		// this.off(player, param, lo, hi, map);
+		// {
 			format("{ %%.sr.%(\\lo.kr(%), \\hi.kr(%)) } @>.% %",
 			\x.slash, this.sensorClip, map, lo, hi, player, param.slash
-		).postln.share;
-			{ "synth report after x".postln;
-				player.envir.synthReport;
-			}.defer(0.1);
-		}.defer(0.1);
+		).share;
+			// { "synth report after x".postln;
+			// 	player.envir.synthReport;
+			// }.defer(0.1);
+		// }.defer(0.1);
 	}
 
 	z { | player, param, lo, hi, map |
-		"Performing interger z. Now I WILL TURN OFF@!!!!!!!!!!!!!!!!!!!!!".postln;
-		this.off(player, param, lo, hi, map);
-		{
+		// "Performing interger z. Now I WILL TURN OFF@!!!!!!!!!!!!!!!!!!!!!".postln;
+		// this.off(player, param, lo, hi, map);
+		// {
 		format("{ %%.sr.%(\\lo.kr(%), \\hi.kr(%)) } @>.% %",
 			\z.slash, this.sensorClip, map, lo, hi, player, param.slash
-		).postln.share;
-		}.defer(0.1);
+		).share;
+		// }.defer(0.1);
 	}
 
 	// ===== using custom code templates: ===== STILL TESTING!

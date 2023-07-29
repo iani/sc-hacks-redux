@@ -226,31 +226,18 @@ BufSoundParams {
 		if (this.dur <= 0.0) {
 			"Cannot play settings with duration 0".postln;
 		}{
-			"Debuging BufSoundParam:play. Command is:".postln;
-			this.player.envir.stopSynths;
-			{ format("%.envir play: %", this.player.asCompileString, dict.asCompileString).postln.share;
-			this.addNotifier(Mediator, \ended, { | n, playername, synthname |
-				if (playername == this.player and: { synthname == this.player }) {
-					this.changed(\stopped); // does this confuse control synths???????
-				}
-			});
 			{
-				"BufSoundParam play after starting main player:".postln;
-				this.player.envir.synthReport;
-				{
-
-					"now starting ampctl and params".postln;
-					ampctl.start;
-					params do: _.start;
-					{
-						"synth report after starting ampctl and params".postln;
-						this.player.envir.synthReport;
-					}.defer(0.1);
-				}.defer(0.2);
-			}.defer(0.1);
-			}.defer(0.1);
-			// Share the action locally and via oscgroups
-			// this.player.envir.play(dict); // this is the plain not-shared version
+				this.player.envir.stopSynths;
+				format("%.envir play: %", this.player.asCompileString, dict.asCompileString).postln.share;
+				this.addNotifier(Mediator, \ended, { | n, playername, synthname |
+					if (playername == this.player and: { synthname == this.player }) {
+						this.changed(\stopped); // does this confuse control synths???????
+					}
+				});
+				// 0.01.wait;  // must wait for synths to stop!!! ????????
+				ampctl.start;
+				params do: _.start;
+			}.fork; /// fork needed?
 		}
 	}
 	stop { // stop all synths - both sound + controls
@@ -263,10 +250,10 @@ BufSoundParams {
 		// postln("Debugging BufSoundParams stop. Player is:" + this.player);
 		// postln("The mediator for this synth is:" + this.player.envir);
 		// postln("Will now stop all synths in this mediator. The command is:");
-		postln("Debug BufSoundParams stop. Synth Report:");
-		this.envir.synthReport;
-		format("%.envir.stopSynths", this.player.slash).postln.share;
-		{ postln("Synth report after the stop"); this.envir.synthReport; } defer: 0.5;
+		// postln("Debug BufSoundParams stop. Synth Report:");
+		// this.envir.synthReport;
+		format("%.envir.stopSynths", this.player.slash).share;
+		// { postln("Synth report after the stop"); this.envir.synthReport; } defer: 0.5;
 		this.changed(\stopped); // notify even when player has changed!
 	}
 

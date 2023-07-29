@@ -34,23 +34,25 @@ SensorCtl {
 	lo_ { | argLo |
 		lo = argLo;
 		format("%.envir.set(%, %, %)", player.slash, param.slash, \lo.slash, lo).postln.share;
-		// id.perform(\lo, player, param, lo);
 	}
-	hi_ { | argHi | hi = argHi; id.perform(\hi, player, param, hi); }
+	hi_ { | argHi |
+		hi = argHi;
+		format("%.envir.set(%, %, %)", player.slash, param.slash, \hi.slash, hi).postln.share;
+	}
 	map_ { | argMap | map = argMap; this.start; }
 
 	stop {
 		// "Debugging SensorCtl.stop".postln;
 		format("nil @>. % %", player, param.slash).postln.share; }
 	start {
-		postln("!!!!!! debuggging start of Sensor for param" + param);
+		// postln("!!!!!! debuggging start of Sensor for param" + param);
 		// postln("debuggging SensorCtl ranges. lo is:" + lo + "hi is:" + hi);
-		"I will stop this param before starting, just for sure".postln;
-		postln("sending off to sensor" + id + "of player" + player + "and param" + param);
-		id.perform(\off, player, param, lo, hi, map, c1, c2, c3);
-		{
+		// "I will stop this param before starting, just for sure".postln;
+		// postln("sending off to sensor" + id + "of player" + player + "and param" + param);
+		// id.perform(\off, player, param, lo, hi, map, c1, c2, c3);
+		// {
 			id.perform(ctl, player, param, lo, hi, map, c1, c2, c3);
-		}.defer(0.1);
+		// }.defer(0.1);
 	}
 
 	saveParams { // of pa rams for saving as code.
