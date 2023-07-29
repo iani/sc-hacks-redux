@@ -44,7 +44,8 @@ Preset {
 			"Cannot play settings with duration 0".postln;
 		}{
 			{
-				this.player.envir.stopSynths;
+				// this.player.envir.stopSynths;
+				this.stop;
 				format("%.envir play: %", this.player.asCompileString, dict.asCompileString).postln.share;
 				this.addNotifier(Mediator, \ended, { | n, playername, synthname |
 					if (playername == this.player and: { synthname == this.player }) {
@@ -58,6 +59,9 @@ Preset {
 		}
 	}
 
+
+	stop { this.envir.stopSynths; }
+	envir { ^this.player.envir }
 	// may be different if not Buffer synth!
 	dur {^this.numFrames / this.sampleRate;}
 	valueAt { | param | ^dict[param.asSymbol] }
@@ -85,9 +89,12 @@ Preset {
 			.action_({ | me |
 				if (me.value) { this.play }{ this.stop }
 			})
-			.addNotifier(this, \stopped, { | n |
-				n.listener.value = false;
-				n.listener.focus(true);
+			.addNotifier(this.envir, this.player, { | n |
+				// "Received notification from envir".postln;
+				if (envir(this.player).isPlaying) {
+					n.listener.value = false;
+					n.listener.focus(true);
+				}
 			}),
 			StaticText().maxWidth_(40).string_("player:"),
 			Button().maxWidth_(70)

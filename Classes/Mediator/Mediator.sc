@@ -244,4 +244,9 @@ Mediator : EnvironmentRedirect {
 		};
 		^synth;
 	}
+
+	isPlaying { | argPlayer |
+		argPlayer ?? { argPlayer = this.name; };
+		^envir[argPlayer].isPlaying;
+	}
 }
