@@ -4,7 +4,7 @@
 
 SoundBufferGui {
 	// classvar <>players;
-	classvar <colors;
+	classvar colors;
 	var <name;
 	var <path;
 	var <buffer, <sfv;
@@ -38,7 +38,21 @@ SoundBufferGui {
 		 ^Registry(this, name.asSymbol, { this.newCopyArgs(name).init })
 	}
 
+	colors { ^this.class.colors }
+	*colors {
+		colors !? { ^colors };
+		colors = (((1..9).normalize * (2/3) + (1/3)).collect({ | i |
+			[
+				Color(0, i, 0), Color(0, 0, i),
+				Color(i, i, 0), Color(i, 0, i), Color(0, i, i), Color(i, 0, 0), Color(i, i, i)
+			] // last selection reserved for deactivation. Color = black.
+		}).flat.reverse add: (Color.black));
+		colors[0] = Color(0.95, 0.95, 0.5);
+		^colors;
+	}
+
 	init {
+		this.colors; // lazy init;
 		timestamp = Date.getDate.stamp;
 		selectionDict = ();
 		buffer = Buffer.all.first.buf;
@@ -46,14 +60,8 @@ SoundBufferGui {
 			selectionDict[b] = SfSelections(this, b.buf);
 		};
 		selections = selectionDict[buffer.name];
-		colors = (((1..9).normalize * (2/3) + (1/3)).collect({ | i |
-			[
-				Color(0, i, 0), Color(0, 0, i),
-				Color(i, i, 0), Color(i, 0, i), Color(0, i, i), Color(i, 0, 0), Color(i, i, i)
-			] // last selection reserved for deactivation. Color = black.
-		}).flat.reverse add: (Color.black));
+
 		// decorative detail:
-		colors[0] = Color(0.95, 0.95, 0.5);
 		ServerQuit add: {
 			this.save;
 			this.changed(\closeGui);

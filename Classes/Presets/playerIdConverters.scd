@@ -24,4 +24,4 @@ sets for consistency with the Mary rule.
 	[\mary, [[[1, 3, 5, 9, 11], 5], [[2, 4, 7, 8, 10, 12], 7]]],
 	[\yoshimitsu, [[[1, 3, 5, 9, 11], 9], [[2, 4, 7, 8, 10, 12], 10]]],
 	[\sanya, [[[1, 3, 5, 9, 11], 11], [[2, 4, 7, 8, 10, 12], 12]]]
-] collect: PlayerIdConverter(_);
+] collect: PlayerIdConverter(*_);

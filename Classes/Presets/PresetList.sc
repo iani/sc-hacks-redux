@@ -30,9 +30,9 @@ PresetList {
 	*loadPlayers {
 		var loaded;
 		loaded = (this.parentPath +/+ "playerIdConverters.scd").load.value;
-		players = loaded collect: _.player;
+		players = loaded collect: _.player; // collect the player's names
 		playerIdConverters = IdentityDictionary();
-		loaded do: { | l | playerIdConverters[l.name] = l };
+		loaded do: { | l | playerIdConverters[l.player] = l };
 	}
 
 	*loadPresets {
@@ -59,4 +59,14 @@ PresetList {
 		player = players.first; // gui's should not permit 2 players in same system?
 		// when a list opens, it checks available players by consulting activeLists.
 	}
+
+	name { ^PathName(path).fileNameWithoutExtension.asSymbol }
+
+	gui {
+		Registry(this, this.name, {
+			PresetListGui(this).gui;
+		})
+	}
+
+
 }
