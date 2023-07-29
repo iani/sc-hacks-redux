@@ -9,7 +9,7 @@ PlayBuf_ : UGenFunc {
 		var buf, env, trig;
 		buf = (~buf ?? { Buffer.first }).buf;
 		env = Env([0, 1, 1, 0], [0.02, 0.98, 0.02]);
-		"Debugging: Thisis PlayBuf_".postln;
+		// "Debugging: Thisis PlayBuf_".postln;
 		^PlayBuf.ar(
 			buf.numChannels,
 			buf,

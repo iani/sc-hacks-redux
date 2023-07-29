@@ -65,6 +65,7 @@
 	@@ { | event, playfunc = \playbuf |
 		event[\playfunc] = playfunc;
 		event[\buf] = this;
+		postln("debugging symbol Buffer @@. event is:" + event);
 		this.envir.play(event);
 	}
 	// for embedding as ar source in playfuncs:

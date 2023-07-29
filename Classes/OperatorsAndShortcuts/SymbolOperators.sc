@@ -324,4 +324,15 @@
 
 + Nil {
 	envir { ^currentEnvironment }
+	+> { | player, envir |
+		Mediator.wrap(
+			{
+				// currentEnvironment[player].playNext;
+				// postln("debugging Nil+>. player is:" + currentEnvironment[player]);
+				// currentEnvironment.postln;
+				currentEnvironment[player].free;
+			},
+			envir ? player
+		)
+	}
 }

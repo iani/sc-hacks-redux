@@ -394,6 +394,7 @@ SoundBufferGui {
 	start { this.play }
 	play { // TODO: rewrite this. SfSelections should play the current selection
 		// SfSelections.playCurrentSelection;
+		"SoundBufferGui:play should be changed! It should not use @@".postln;
 		if (this.selectionDur == 0) {
 			^postln("refusing to play selection" + selections.currentSelectionIndex
 				+ "because its duration is 0");

@@ -150,7 +150,8 @@ OscMonitor {
 						n.listener.value = false;
 					}
 				}),
-				Button().states_([["Minibee gui"]]).action_({ Minibee.gui })
+				Button().states_([["Minibee gui"]]).action_({ Minibee.gui }),
+				Button().states_([["BufferGui"]]).action_({ SoundBufferGui.gui })
 			),
 			ListView()
 			.palette_(QPalette.dark

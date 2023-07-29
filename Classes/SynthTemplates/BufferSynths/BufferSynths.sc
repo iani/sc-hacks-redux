@@ -4,7 +4,7 @@
 
 BufferSynths : SynthTemplate {
 	// TODO: Store this in Library and keep DRY for subclasses of SynthTemplate
-	classvar <playfuncs; // Dictionary of SynthTemplate instances
+	classvar <playfuncs; // Dictionary of BufferSynths instances
 
 	*init {
 		playfuncs = IdentityDictionary();

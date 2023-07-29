@@ -28,10 +28,27 @@ SynthTemplate {
 		^this.newCopyArgs(path).init;
 	}
 
-	*getFunc { | funcname | ^this.getTemplate(funcname).func }
+	*getFunc { | funcname |
+		var debug;
+		// debug = this.getTemplate(funcname);
+		// postln("Debugging SynthTemplate:getFunc. funcname:" + funcname
+		// 	+ "template" + debug +
+		// 	"name" + debug.name + "\npath" + debug.path
+		// 	+ "\n\ncode\n\n" + debug.code
+		// 	+ "\n\n\template:\n\n" + debug.template
+		// );
+		^this.getTemplate(funcname).func;
+	}
 
 	// TODO : Use Library instead of this. Optimize.
 	*getTemplate { | funcname |
+		var debug, instance;
+		// postln("Debugging SynthTemplate getTemplate. Funcname:" + funcname);
+		// debug = this.allSubclasses.collect(_.getTemplate(funcname));
+		// postln("all found were:" + debug);
+		// instance = debug.detect(_.notNil);
+		// postln("instance is" + instance);
+		// postln("func is" + instance.func);
 		^this.allSubclasses.collect(_.getTemplate(funcname)).detect(_.notNil);
 	}
 
@@ -47,6 +64,10 @@ SynthTemplate {
 			template = code[..delimiters[0]].interpret ?? { this.defaultSpecs };
 			specs = template collect: _.specs;
 		};
+		// postln("Debugging SynthTemplate Load. name" + name + "path" + path
+			// +
+			// "code" + code;
+		// );
 		// template = this.makeTemplate;
 	}
 

@@ -42,21 +42,36 @@ Mediator : EnvironmentRedirect {
 		// used by SoundFileEvents, SoundFileEvent for playing
 		// events + playfuncs loaded from scd file specs.
 		var playfunc;
+		// this.stopSynths;
 		argEvent !? {// TODO: stop synths when replacing keys
-			// fix for non-releasable control rate funcs:
 			argEvent keysValuesDo: { | key, val |
-				envir[key].free;
+				// envir[key].free;
 				envir[key] = val;
 			};
 		};
-		playfunc = SynthTemplate.getFunc(envir[\playfunc]);
+
+		// postln("\n\n\n======== Debugging Mediator play =======\n\n\n"
+		// 	+ "argEvent is:\n" + argEvent
+		// 	+ "events playfunc is:" + argEvent[\playfunc];
+		// );
+		// postln("This is the wrong playfunc - from envir:" + envir[\playfunc]);
+		// postln("This should be the WRIGHT(!!!) playfunc - from argEvent:" + argEvent[\playfunc]);
+		// postln("Now I am getting the template from the WRIGHT!!! playfunc");
+		playfunc = SynthTemplate.getFunc(argEvent[\playfunc]);
 		envir[\play] = { playfunc +> name };
 		envir[\mediator] = name;
-			this.push;
-		envir.play; // return self! to be able to stop or do other stuff
+		this.push;
+		envir.play;
 		this.class.changed(\started, name);
 	}
 
+	synthReport { // for debugging
+		postln("Synth report for" + envir[\mediator]);
+		envir keysValuesDo: { | key, x |
+			// [key, x].postln;
+			if (x isKindOf: Synth) { postln("key" + key + "synth" + x) }
+		};
+	}
 	clear {
 		this.free;
 		this.freeBusses;
@@ -70,7 +85,10 @@ Mediator : EnvironmentRedirect {
 	}
 	stopSynths { | fadeTime = 0.1 | // stop both ar and kr/br (/bus) synths
 		envir do: { | s |
-			if (s isKindOf: Synth) { s release: fadeTime };
+			if (s isKindOf: Synth) {
+				s.free;
+				// s release: fadeTime
+			};
 		}
 	}
 
@@ -126,6 +144,12 @@ Mediator : EnvironmentRedirect {
 		this.changed(key, obj);
 	}
 
+	set { | synthkey, param, value |
+		var synth;
+		synth = envir[synthkey];
+		if (synth isKindOf: Synth) { synth.set(param, value) }
+	}
+
 	*all { ^Library.at(this) }
 
 	*at { | envirName |
@@ -133,7 +157,7 @@ Mediator : EnvironmentRedirect {
 		if (envirName.isNil) { ^currentEnvironment; }{ ^this.fromLib(envirName); }
 	}
 
-	// UNDER REVIEW!!!!! this actually wraps
+	// UNDER REVIEW!!!!! does this push or just wrap without pushing?
 	*wrap { | func, envirName /*, push = true */ |
 		// eval aMediator use: func
 		// Where aMediator is obtained from envirName

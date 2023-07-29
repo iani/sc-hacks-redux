@@ -4,6 +4,7 @@
 
 + Symbol {
 
+	synthReport { this.envir.synthReport }
 	stopSynths { this.envir.stopSynths }
 
 	stop { | fadeTime = 1.0 |

@@ -14,6 +14,7 @@ PhaseBuf_ : UGenFunc {
 	*ar {
 		var buf, env, trig;
 		buf = (~buf ?? { Buffer.first }).buf;
+		// "Debugging. THis is PhaseBuf_".postln;
 		^BufRd.ar(
 			buf.numChannels,
 			buf.bufnum,
