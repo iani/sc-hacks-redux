@@ -3,6 +3,7 @@ Load an scd file located in the same folder as your class definition.
 */
 
 + Object {
+
 	loadFromLib { | filename |
 		var fullPath;
 		fullPath = PathName(this.class.filenameSymbol.asString).pathOnly ++ filename ++ ".scd";

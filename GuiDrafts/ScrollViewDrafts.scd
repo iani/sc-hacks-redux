@@ -4,8 +4,9 @@
 
 //:
 
-(
-var scroll = ScrollView(bounds:Rect(0,0,300,300).center_(Window.availableBounds.center));
+// (
+//:
+var scroll = ScrollView(bounds:Rect(0,0,700,700).center_(Window.availableBounds.center));
 var canvas = View();
 var layout;
 var i = 0;
@@ -35,6 +36,5 @@ canvas.layout.add(nil); // stretch remaining empty space
 
 scroll.canvas = canvas;
 scroll.front;
-)
 
 //:

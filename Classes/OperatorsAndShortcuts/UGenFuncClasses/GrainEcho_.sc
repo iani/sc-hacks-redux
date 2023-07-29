@@ -9,6 +9,8 @@ This must be mapped to duration points in seconds corresponding to
 ~startframe and ~endframe:
 pos = 0 -> ~startframe / buf.sampleRate
 pos = 1 -> ~endframe / buf.sampleRate
+
+!!!!!! TGrains only plays mono buffers. Do not use stereo buffrs with this function.
 */
 
 GrainEcho_ : UGenFunc {

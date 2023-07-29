@@ -303,6 +303,4 @@ BufSoundParams {
 	info {
 		^dict[\buf] ++ ":" ++ playfunc ++ [dict[\startframe], dict[\endframe]];
 	}
-
-
 }
