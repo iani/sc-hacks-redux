@@ -35,6 +35,17 @@
 		}).front;
 	}
 
+	vlayoutKey { | key ... widgets |
+		^this.window({ | w |
+			w.view.layout = VLayout(*widgets)
+		}, key)
+	}
+
+	hlayoutKey { | key ... widgets |
+		^this.window({ | w |
+			w.view.layout = HLayout(*widgets)
+		}, key);
+	}
 	vlayout { | ... widgets |
 		^this.window({ | w |
 			w.view.layout = VLayout(*widgets)

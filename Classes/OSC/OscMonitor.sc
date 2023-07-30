@@ -151,7 +151,8 @@ OscMonitor {
 					}
 				}),
 				Button().states_([["Minibee gui"]]).action_({ Minibee.gui }),
-				Button().states_([["BufferGui"]]).action_({ SoundBufferGui.gui })
+				Button().states_([["BufferGui"]]).action_({ SoundBufferGui.gui }),
+				Button().states_([["Presets"]]).action_({ PresetList.presetSelectionGui; })
 			),
 			ListView()
 			.palette_(QPalette.dark

@@ -23,6 +23,7 @@ PresetList {
 	}
 
 	*init {
+		activeLists = Set();
 		this.loadPlayers;
 		this.loadPresets;
 	}
@@ -44,29 +45,93 @@ PresetList {
 		}
 	}
 
-	*new { | path |
-		^this.newCopyArgs(path).init;
-	}
+	*new { | path, player | ^this.newCopyArgs(path).init(player ?? { players.first }); }
 
 	*allNames { ^dict.keys.asArray.sort}
 	*all { ^this.allNames collect: { | n | dict[n] } }
 	*first { ^this.all.first }
 
-	init {
+	init { | argPlayer |
 		code = File(path, "r").readAllString;
 		snippets = code.snippets;
 		presets = snippets collect: { | s, i | Preset(this, i, s) };
-		player = players.first; // gui's should not permit 2 players in same system?
+		player = argPlayer; // gui's should not permit 2 players in same system?
 		// when a list opens, it checks available players by consulting activeLists.
 	}
 
 	name { ^PathName(path).fileNameWithoutExtension.asSymbol }
 
 	gui {
+		this.addActive;
 		Registry(this, this.name, {
+			this.changed(\activeLists);
 			PresetListGui(this).gui;
 		})
 	}
 
+	*playerMenu {
+		this.availablePlayers.postln;
+		^this.availablePlayers collect: { | p | [p, { | me |
+			// postln("you selected player" + p ++". Now making gui!");
+			// TODO: customize path choice.
+			PresetList(this.first.path, p.asSymbol).gui;
+		}] }
+	}
 
+	*presetSelectionGui {
+		var presetnames, selectedPreset, selectedPlayer;
+		presetnames = dict.keys.asArray.sort;
+		selectedPreset = presetnames.first;
+		selectedPlayer = this.availablePlayers.first;
+		this.vlayoutKey(\presetSelection,
+			HLayout(
+				StaticText().string_("SelectPreset:"),
+				StaticText().string_("Select Player:")
+			),
+			HLayout(
+				ListView()
+				.items_(presetnames)
+				.action_({ | me | selectedPreset = me.item.postln; }),
+				ListView()
+				.items_(this.availablePlayers)
+				.action_({ | me | selectedPlayer = me.item.postln; })
+				.addNotifier(this, \activeLists, { | n |
+					n.listener.items = this.availablePlayers;
+					selectedPlayer = this.availablePlayers.first;
+				})
+			),
+			Button().states_([["open"]])
+			.action_({
+				postln("you selected preset list:" + selectedPreset + "and player:" + selectedPlayer);
+				postln("the preset list has player" + selectedPreset.player);
+				this.new(dict[selectedPreset].path, selectedPlayer).gui;
+			})
+		)
+		.bounds_(Rect(0, 0, 400, 300).center_(Window.availableBounds.center))
+	}
+
+	availablePlayers { ^this.class.availablePlayers }
+
+	*availablePlayers {
+		var available;
+		available = players.copy;
+		// postln("available players before test:" + available);
+		// postln("activeLists:" + activeLists);
+		activeLists do: available.remove(_);
+		// postln("available players after test:" + available);
+		^available;
+	}
+
+	addActive {
+		activeLists add: this.player;
+		this.class.changed(\activeLists);
+
+	}
+
+	removeActive {
+		// postln("before removeActive availablePlayers:" + this.availablePlayers);
+		activeLists remove: this.player;
+		this.class.changed(\activeLists);
+		// postln("after removeActive availablePlayers:" + this.availablePlayers);
+	}
 }

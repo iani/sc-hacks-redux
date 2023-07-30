@@ -46,10 +46,15 @@ Preset {
 			{
 				// this.player.envir.stopSynths;
 				this.stop;
+				postln("\n============== playing" + this.player +
+					"list" + presetList.name
+					+ "preset"
+					+ index  + "=========\n");
 				format("%.envir play: %", this.player.asCompileString, dict.asCompileString).postln.share;
 				this.addNotifier(Mediator, \ended, { | n, playername, synthname |
 					if (playername == this.player and: { synthname == this.player }) {
-						this.changed(\stopped); // does this confuse control synths???????
+						// TODO: Check this changed vs. presetlist stopped
+						this.changed(\stopped, this); // does this confuse control synths???????
 					}
 				});
 				// 0.01.wait;  // must wait for synths to stop!!! ????????
@@ -59,8 +64,15 @@ Preset {
 		}
 	}
 
+	// stop { this.envir.stopSynths; }
+	stop {
+		format("%.envir.stopSynths", this.player.slash).share;
+		// TODO: check this:
+		// checkboxes of all presets must update here.
+		// Only the checkbox of a preset that just stared stays on! How?????
+		presetList.changed(\stopped, this);
+	}
 
-	stop { this.envir.stopSynths; }
 	envir { ^this.player.envir }
 	// may be different if not Buffer synth!
 	dur {^this.numFrames / this.sampleRate;}
@@ -69,6 +81,18 @@ Preset {
 	endFrame { ^dict[\endframe] ? 0 }
 	numFrames { ^this.endFrame - this.startFrame }
 	sampleRate { ^dict[\buf].buf.sampleRate }
+	isPlaying { ^this.player.envir[this.player].notNil; }
+
+	setParam { | param, value |
+		dict[param] = value;
+		// postln("debug setParam. this.isPlaying? " + this.isPlaying);
+		if (this.isPlaying) { this.sendParam2Synth(param, value); };
+		// this.sendParam2Synth(param, value);
+	}
+
+	sendParam2Synth { | param, value |
+		format("% @>.% %%", value, this.player, "\\", param).share;
+	}
 
 	view {
 		^View().background_(Color.rand).layout_(
@@ -89,6 +113,13 @@ Preset {
 			.action_({ | me |
 				if (me.value) { this.play }{ this.stop }
 			})
+			.addNotifier(presetList, \stopped, { | n, who |
+				// postln("checking playView checkbox stopped. who?" + who +
+				// 	"is it me?"  ++ (who === this);
+				// );
+				if (who !== this) { n.listener.value = false };
+			})
+			// TODO: FIX THIS!!!!!:
 			.addNotifier(this.envir, this.player, { | n |
 				// "Received notification from envir".postln;
 				if (envir(this.player).isPlaying) {

@@ -9,8 +9,10 @@ PresetListGui {
 	}
 
 	gui {
+		postln("PresetListGui stats: player" + this.player
+			+ "numPresets" + presetList.presets.size
+			+ "first preset player in dict" + presetList.presets.first.dict[\player]);
 		this.window.front;
-
 	}
 
 	window {
@@ -30,9 +32,11 @@ PresetListGui {
 		canvas = View();
 		canvas.layout = layout;
 		scroll.canvas = canvas;
-		presetList.presets.reverse do: { | p | layout.insert(p.view)};
+		presetList.presets.reverse do: { | p | layout.insert(p.view) };
+		layout.insert(this.makeHeader);
 		scroll.onClose = { | me |
 			postln("closed:" + me);
+			presetList.removeActive;
 			this.objectClosed;
 		};
 		^scroll.front;
@@ -48,6 +52,23 @@ PresetListGui {
 		);
 		^view
 	}
+
+	makeHeader {
+		var view;
+		view = View().background_(Color.rand).layout_(
+			HLayout(
+				StaticText().string_( ("Presets for:" + this.player) ),
+				Button().states_([["Open other player"]])
+				.menu(PresetList.playerMenu)
+				.addNotifier(PresetList, \activeLists, { | n |
+					n.listener.menu(PresetList.playerMenu)
+				})
+			)
+		);
+		^view
+	}
+
+	player { ^presetList.player }
 	/*
 	makePresetLayout {
 		var view = View().background_(Color.rand).layout_(

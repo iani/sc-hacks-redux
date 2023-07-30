@@ -4,9 +4,9 @@
 
 
 + Button {
-	menu { | labelfuncs |
+	menu { | labelsfuncs |
 		this.action_({ | me |
-			Menu(*labelfuncs.collect({ | f | MenuAction(f[0], { f[1].(me, f[0]) }) })).front;
+			Menu(*labelsfuncs.collect({ | f | MenuAction(f[0], { f[1].(me, f[0]) }) })).front;
 		})
 	}
 }

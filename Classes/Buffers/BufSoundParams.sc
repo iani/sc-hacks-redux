@@ -97,9 +97,7 @@ BufSoundParams {
 		// this.sendParam2Synth(param, value);
 	}
 
-	isPlaying {
-		^this.player.envir[this.player].notNil;
- }
+	isPlaying { ^this.player.envir[this.player].notNil; }
 
 	sendParam2Synth { | param, value |
 		// new version: run locally + share over Osc
@@ -141,6 +139,7 @@ BufSoundParams {
 				if (me.value) { this.play }{ this.stop }
 			})
 			.addNotifier(this, \stopped, { | n |
+				// this.player; // REVIEW THIS??????
 				n.listener.value = false;
 				n.listener.focus(true);
 			}),
