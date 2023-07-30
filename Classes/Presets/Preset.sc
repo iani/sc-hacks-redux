@@ -95,6 +95,7 @@ Preset {
 	}
 
 	view {
+		{ this.changed(\gui) }.defer(0.1);
 		^View().background_(Color.rand).layout_(
 			VLayout(
 				this.playView,

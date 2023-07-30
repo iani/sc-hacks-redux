@@ -13,7 +13,7 @@ Called by SensorCtl in Param, SoundParams.
 	off {  | player, param, lo, hi, map | // turn control synth off.
 		// postln("Debugging off method for param" + param + "BEFORE");
 		// player.envir.synthReport;
-		format("nil @>.% %", player, param.slash).share;
+		format("nil @>.% %", player, param.slash).postln.share;
 		// {
 			// postln("Debugging off method for param" + param + "AFTER");
 			// "after the off!".postln; player.envir.synthReport }.defer(0.5);
@@ -25,25 +25,25 @@ Called by SensorCtl in Param, SoundParams.
 	lx { | player, param, lo, hi, map |
 		format("{ (%.sr < 0.5).lag(0.5) } @>.% %",
 			\x.slash, this.sensorClip, player, param.slash
-		).share;
+		).postln.share;
 	}
 	lz { | player, param, lo, hi, map |
 		format("{ (%.sr < 0.5).lag(0.5) } @>.% %",
 			\z.slash, this.sensorClip, player, param.slash
-		).share;
+		).postln.share;
 	}
 	gx { | player, param, lo, hi, map |
 		format("{ (%.sr > 0.5).lag(0.5) } @>.% %",
 			\x.slash, this.sensorClip, player, param.slash
-		).share;
+		).postln.share;
 	}
 	gz { | player, param, lo, hi, map |
 		format("{ (%.sr > 0.5).lag(0.5) } @>.% %",
 			\z.slash, this.sensorClip, player, param.slash
-		).share;
+		).postln.share;
 	}
 	xyz { | player, param, lo, hi, map | // this may be tweaked later...
-		format("XyzGt(%) @>.% %", this.sensorClip, player, param.slash).share;
+		format("XyzGt(%) @>.% %", this.sensorClip, player, param.slash).postln.share;
 	}
 
 	x { | player, param, lo, hi, map |
@@ -51,7 +51,7 @@ Called by SensorCtl in Param, SoundParams.
 		// {
 			format("{ %%.sr.%(\\lo.kr(%), \\hi.kr(%)) } @>.% %",
 			\x.slash, this.sensorClip, map, lo, hi, player, param.slash
-		).share;
+		).postln.share;
 			// { "synth report after x".postln;
 			// 	player.envir.synthReport;
 			// }.defer(0.1);
@@ -64,7 +64,7 @@ Called by SensorCtl in Param, SoundParams.
 		// {
 		format("{ %%.sr.%(\\lo.kr(%), \\hi.kr(%)) } @>.% %",
 			\z.slash, this.sensorClip, map, lo, hi, player, param.slash
-		).share;
+		).postln.share;
 		// }.defer(0.1);
 	}
 
@@ -87,7 +87,7 @@ Called by SensorCtl in Param, SoundParams.
 	c3 { | player, param, lo, hi, map, c1, c2, template |
 		format("{ var x, y, z; x = %; y = %; z = %; % } @>.% %",
 			this sensor: \x, this sensor: \y, this sensor: \z, template, player, param.slash
-		).postln;
+		).postln.share;
 	}
 	hi { "hi and lo methods are implemented in SensorCtl as hi_, lo_".postln }
 	lo { "hi and lo methods are implemented in SensorCtl as hi_, lo_".postln }
