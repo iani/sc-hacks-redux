@@ -2,5 +2,13 @@
 
 */
 
+PresetList.loadPresets;
+
+a = PresetList.parentPath;
+a
+
+
 a = PresetList.scriptsInLib;
-PathName(a.parentPath +/+ "PresetScripts" +/+ "*.scd").pathMatch;
+PathName(a +/+ "PresetScripts" +/+ "*.scd")
+
+.pathMatch;
