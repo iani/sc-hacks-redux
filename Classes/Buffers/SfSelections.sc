@@ -45,10 +45,10 @@ SfSelections {
 		// this.addNotifier(sbgui, \selection, { this.getSelectionFromGui });
 		// this.addNotifier(sbgui, \selectionIndex, { this.setCurrentSelection });
 		// find out where the home folder is.
-		this.class.withFolder({ | f |
-			homefolder = f;
+		// this.class.withFolder({ | f |
+			// homefolder = f;
 			// postln("SfSelections saves scripts in" + homefolder);
-		})
+		// })
 	}
 
 	// EXPERIMENTAL _ IMPORTANT _ CHECK!
