@@ -183,10 +183,15 @@ FileNavigator {
 		.action_(this.bookmarkAction)
 	}
 
+	openInFinder {
+		unixCmd("open" + outerItem.fullPath);
+	}
 	gui {
 		{ this.getOuterItems }.defer(0.1);
 		this.vlayout(
 			HLayout(
+				Button().states_([["*"]]).maxWidth_(10)
+				.action_({ this.openInFinder }),
 				this.bookmarksbutton,
 				Button().states_([["recall"]]).maxWidth_(50)
 				.action_({ this.load }),
@@ -402,11 +407,18 @@ FileNavigator {
 	}
 
 	openInnerItem { // experimental: open in oscdata type gui
+		var selectedPaths;
 		if (innerItem.isFolder) {
 			innerItem.folderName.post;
 			" is a folder".postln;
 			"Select a file to open instead".postln;
 		}{
+			// selection.postln;
+			selectedPaths = this.selectedPaths;
+			// selectedPaths do: _.postln;
+			// this.mergeablePaths.postln;
+			// /*
+			if (selectedPaths.size == 1) {
 			innerItem.fullPath.doIfExists({ | p |
 				case
 				{ p.isCode }{ OscDataScore([p]).gui }
@@ -416,6 +428,17 @@ FileNavigator {
 			},{ | p |
 				postln("File not found:" + p);
 			})
+			}{
+				OscData(this.mergeablePaths).gui;
+			}
+			//	*/
+		}
+	}
+
+	selectedPaths { ^innerList[selection]; }
+	mergeablePaths {
+		^this.selectedPaths.collect(_.fullPath) select: { | p |
+			 p.isCode.not and: { p.hasTimestamps }
 		}
 	}
 	saveBookmark { this.save }
