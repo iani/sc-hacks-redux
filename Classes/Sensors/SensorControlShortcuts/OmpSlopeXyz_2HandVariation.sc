@@ -7,10 +7,11 @@ AmpSlopeXyz {
 		var a, b;
 		a = [\x, \y, \z].collect({ | s | Amplitude.kr(Slope.kr(s.snum(1).sr), 0.001, 1).lag(lag)}).sum;
 		b = [\x, \y, \z].collect({ | s | Amplitude.kr(Slope.kr(s.snum(2).sr), 0.001, 1).lag(lag)}).sum;
-		a + b
+		^a + b
 	}
 }
 
 // Shortcut:
 
 Xyz : AmpSlopeXyz {}
+//:

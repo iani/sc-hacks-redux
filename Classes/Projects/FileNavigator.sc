@@ -111,7 +111,9 @@ FileNavigator {
 		// this.currentRoot.folders do: _.postln;
 		^this.currentRoot.folders;
 	}
-	getInnerItemsList { ^outerItem.entries; }
+	getInnerItemsList {
+		^this entries: outerItem;
+	}
 	// provide defaults for homeDir and currentRoot
 	currentRoot { ^currentRoot ?? { currentRoot = this.homeDir } }
 	homeDir { ^homeDir ?? { homeDir = (PathName(Platform.userHomeDir) +/+ "sc-projects").asDir; } }
@@ -157,7 +159,7 @@ FileNavigator {
 		innerIndex = outerIndex;
 		innerItem = outerItem;
 		currentRoot = currentRoot.up;
-		outerList = currentRoot.entries;
+		outerList = this entries: currentRoot;
 		newOuterItemPaths = outerList collect: _.fullPath;
 		newOuterItemPath = outerItem.up.fullPath;
 		outerIndex = newOuterItemPaths
@@ -168,6 +170,11 @@ FileNavigator {
 
 	*gui {
 		this.new.gui;
+	}
+
+	entries { | pathName |
+		^pathName.entries
+		.select({ |p| p.extension != "wav" and: { p.extension != "aiff" } });
 	}
 
 	bookmarkAction { ^{ this.save } }
@@ -269,7 +276,7 @@ FileNavigator {
 			n.listener.items = outerList collect: _.shortName;
 			n.listener.value = outerIndex;
 			outerItem = outerList[outerIndex];
-			innerList = outerItem.entries;
+			innerList = this entries: outerItem;
 			}
 			// NOTE: deferred selectionAction triggers update of inner list!!!
 		})
@@ -422,7 +429,7 @@ FileNavigator {
 
 	}
 	exportCode { this.export(this.selectCode(this.collectSnippets), "exports/code"); }
-	exportMessages { this.export(this.selectMessages(this.collectSnippets), "exports/messsages") }
+	exportMessages { this.export(this.selectMessages(this.collectSnippets), "exports/messages") }
 	exportAll { this.export(this.collectSnippets, "exports/all") }
 	collectSnippets {
 		var snippets;
@@ -444,7 +451,7 @@ FileNavigator {
 				}
 			})
 		};
-		^snippets.postln;
+		^snippets; //.postln;
 	}
 
 	selectCode { | snippets |
@@ -457,10 +464,11 @@ FileNavigator {
 
 	export { | snippets, folder |
 		var filename;
-		(this.homeDir +/+ folder).postln;
 		filename = (this.homeDir +/+ folder +/+ Date.getDate.stamp).fullPath ++ ".scd";
 		File.use(filename, "w", { | f |
 			snippets do: { | x | f write: x };
-		})
+			f write: "\n//the end\n\n";
+		});
+		"Export completed".postln;
 	}
 }
