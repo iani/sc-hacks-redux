@@ -18,7 +18,7 @@ GrainEcho_ : UGenFunc {
 		var trate, dur, clk, pos, pan;
 		var b;
 		b = (~buf ? \default).buf ?? { \default.buf };
-		trate = 12;
+		trate = \trate.br(~trate ? 0.5).lin(5, 20);
 		// dur = MouseY.kr(0.2,24,1) / trate;
 		dur = \dur.br(~dur ? 0.5).linexp(0.0, 1.0, 0.2, 24.0) / trate;
 		clk = Impulse.kr(trate);

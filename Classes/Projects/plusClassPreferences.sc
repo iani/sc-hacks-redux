@@ -55,4 +55,7 @@ Individual subclasses may implement instance-basis preference saving schemes sep
 		Preferences2.save(this.asSymbol, argP)
 	}
 
+	clearPreferences {
+		Preferences.put(this.asSymbol, \default, nil);
+	}
 }

@@ -12,7 +12,17 @@ Preferences {
 	}
 	*save {
 		preferences.put(this.name.asSymbol, this.myPreferences);
+		// preferences.writeArchive(this.savePath);
+		this.writeToArchive;
+	}
+
+	*writeToArchive {
 		preferences.writeArchive(this.savePath);
+	}
+
+	*clearAndSave {
+		this.initPreferences;
+		this.writeToArchive;
 	}
 
 	*myPreferences {

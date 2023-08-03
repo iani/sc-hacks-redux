@@ -15,6 +15,10 @@ FileNavigator {
 	var <selection; // currently selected indices of inner list (for export/browsing)
 	var bookmarks; // TODO: Impement methods to use this.
 
+	homeDir { ^homeDir ?? { homeDir = PathName(this.class.defaultPath); } }
+	// homeDir { ^homeDir ?? { homeDir = this.class.defaultHomeDir; } }
+	*defaultHomeDir { ^(PathName(Platform.userHomeDir) +/+ "sc-projects").asDir; }
+	*defaultPath { ^(PathName(Platform.userHomeDir) +/+ "sc-projects").asDir.fullPath; }
 	*new { | key = \default | ^this.newCopyArgs(key) /* .getOuterItems */ }
 
 	save {
@@ -116,7 +120,7 @@ FileNavigator {
 	}
 	// provide defaults for homeDir and currentRoot
 	currentRoot { ^currentRoot ?? { currentRoot = this.homeDir } }
-	homeDir { ^homeDir ?? { homeDir = (PathName(Platform.userHomeDir) +/+ "sc-projects").asDir; } }
+	// homeDir { ^homeDir ?? { homeDir = this.class.defaultHomeDir; } }
 
 	// make outerItem the currentRoot
 	zoomIn {
@@ -138,17 +142,6 @@ FileNavigator {
 		 this.changed(\setOuterListAndIndex, argList, argIndex)
 	}
 
-	setCurrentRoot { | argNewRoot |
-		if (argNewRoot.folders.size == 0) {
-			postln("Cannot zoom into this folder");
-			postln(argNewRoot);
-			"Because it has no subfolders".postln;
-			^nil;
-		};
-		currentRoot = argNewRoot;
-		this.getOuterItems;
-	}
-
 	// make currentRoot's superfolder the currentRoot;
 	zoomOut {
 		var newOuterItemPaths, newOuterItemPath;
@@ -168,8 +161,28 @@ FileNavigator {
 		this.changed(\everything);
 	}
 
+	// Single point of entry for users.
+	// Ensure that the user is working with an existing folder.
 	*gui {
-		this.new.gui;
+		this.withFolder({ | p |
+			this.new.setCurrentRoot(PathName(p)).gui;
+		})
+	}
+
+	setCurrentRoot2 { | p |
+		postln("the new root will become" + p);
+		currentRoot = PathName(p);
+	}
+
+	setCurrentRoot { | argNewRoot |
+		if (argNewRoot.folders.size == 0) {
+			postln("Cannot zoom into this folder");
+			postln(argNewRoot);
+			"Because it has no subfolders".postln;
+			^nil;
+		};
+		currentRoot = argNewRoot;
+		this.getOuterItems;
 	}
 
 	entries { | pathName |
@@ -234,7 +247,11 @@ FileNavigator {
 		).bounds_(this.bounds)
 		.addNotifier(this, \innerItems, { | n |
 			var p;
-			p = currentRoot.asRelativePath(homeDir);
+			// postln("debugging naming of window");
+			// postln("currentRoot is" + currentRoot);
+			// postln("homeDir is" + homeDir);
+			// postln("relative path is" + currentRoot.asRelativePath(homeDir));
+			p = currentRoot.asRelativePath(this.homeDir);
 			if (p.size == 0) { p = "./" };
 			n.listener.name = p;
 		});
