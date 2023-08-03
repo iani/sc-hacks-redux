@@ -9,9 +9,9 @@ PresetListGui {
 	}
 
 	gui {
-		postln("PresetListGui stats: player" + this.player
-			+ "numPresets" + presetList.presets.size
-			+ "first preset player in dict" + presetList.presets.first.dict[\player]);
+		postln("PresetListGui stats: player:" + this.player
+			+ "numPresets:" + presetList.presets.size
+			+ "first preset player in dict:" + presetList.presets.first.dict[\player]);
 		this.window.front;
 	}
 

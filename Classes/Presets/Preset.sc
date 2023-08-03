@@ -6,13 +6,21 @@ Prototype for saving and loading presets as dictionaries (events).
 */
 
 Preset {
-	var <presetList, <index, <code, <dict;
+	var <presetList, <index = 0, <>code, <dict;
 	var <playfunc;
 	var <selectionNum;
 	var <paramSpecs, <params;
 	var <ampctl;
 	//	var <player; // obtain from presetList! ???
 
+	// EXPERIMENTAL
+	*fromSnippet { | snippet |
+		^this.fromDict(snippet.interpret).code_(snippet);
+	}
+
+	*fromDict { | dict |
+		^this.newCopyArgs((player: dict[\player] ? \default), 0).importDict(dict);
+	}
 
 	*new { | list, index, source |
 		^this.newCopyArgs(list, index, source).init;
@@ -28,7 +36,6 @@ Preset {
 		this.makeParams(adict[\paramctl]);
 		dict = adict;
 		ampctl = SensorCtl(*dict[\ampctl]);
-		// player = dict[\player];
 	}
 	makeParams { | adict |
 		// TODO: use also PlainSynths!  Call SynthTemplate.getTemplate instead:

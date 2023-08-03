@@ -45,6 +45,8 @@ PresetList {
 		}
 	}
 
+	*fromPath { | path, player | ^this.newCopyArgs(path).init(player ?? { players.first }); }
+	// To be rewritten:
 	*new { | path, player | ^this.newCopyArgs(path).init(player ?? { players.first }); }
 
 	*allNames { ^dict.keys.asArray.sort}
@@ -104,7 +106,8 @@ PresetList {
 			.action_({
 				postln("you selected preset list:" + selectedPreset + "and player:" + selectedPlayer);
 				postln("the preset list has player" + selectedPreset.player);
-				this.new(dict[selectedPreset].path, selectedPlayer).gui;
+				postln("the path is" + dict[selectedPreset].path);
+				this.fromPath(dict[selectedPreset].path, selectedPlayer).gui;
 			})
 		)
 		.bounds_(Rect(0, 0, 400, 300).center_(Window.availableBounds.center))
