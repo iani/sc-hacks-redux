@@ -30,8 +30,9 @@ Param {
 		sensor.player = player;
 	}
 	gui {
-		postln("param name:" + name + "value" + value + "spec" + spec);
-		postln("param sensor:" + sensor + "sensorlo" + sensorlo + "sensorhi" + sensorhi);
+		// postln("param name:" + name + "value" + value + "spec" + spec);
+		// postln("param sensor:" + sensor + "sensorlo" + sensorlo + "sensorhi" + sensorhi);
+		// postln("spec minval:" + spec.minval);
 		^HLayout(
 			StaticText().minWidth_(100)
 			.minWidth_(100).string_(format("%(%-%)", name, spec.minval, spec.maxval)),
@@ -59,14 +60,16 @@ Param {
 					me.states_([[f.asString]]);
 					sensor.id = f;
 				})})
-			).front }),
+			).front }) ,
 			NumberBox().maxWidth_(55)
 			.background_(Color.gray(0.7))
 			.clipLo_(spec.clipLo)
 			.clipHi_(spec.clipHi)
 			.decimals_(5)
 			.value_(spec.minval)
+			// .value_(1)
 			.addNotifier(this, \value, { | n |
+				postln("debugging numbox 1. sensor lo" + sensor.lo);
 				n.listener.value = sensor.lo;
 			})
 			.action_({ | me | this.setSensorLo(me.value) }),
@@ -77,6 +80,7 @@ Param {
 			.decimals_(5)
 			.value_(spec.maxval)
 			.addNotifier(this, \value, { | n |
+				postln("debugging numbox 1. sensor hi" + sensor.hi);
 				n.listener.value = sensor.hi;
 			})
 			.action_({ | me | this.setSensorHi(me.value) }),
@@ -85,16 +89,16 @@ Param {
 			.clipLo_(spec.clipLo)
 			.clipHi_(spec.clipHi)
 			.decimals_(5)
-			.value_(model valueAt: name)
+			.value_((model valueAt: name) ? 0)
 			.addNotifier(model, \dict, { | n |
-				n.listener.value = model valueAt: name;
+				n.listener.value = (model valueAt: name) ? 0;
 			})
 			.addNotifier(this, \value, { | n |
 				n.listener.value = value;
 				this.updateModel;
 			})
 			.addNotifier(model, \gui, { | n |
-				n.listener.value = model.valueAt(name);
+				n.listener.value = model.valueAt(name) ? 0;
 			})
 			.action_({ | me |
 				value = me.value;
@@ -102,10 +106,10 @@ Param {
 			}),
 			Slider().orientation_(\horizontal)
 			.addNotifier(model, \gui, { | n |
-				n.listener.value = spec unmap: model.valueAt(name);
+				n.listener.value = spec unmap: model.valueAt(name) ? 0;
 			})
 			.addNotifier(model, \dict, { | n |
-				n.listener.value = spec.unmap (model valueAt: name);
+				n.listener.value = spec.unmap ((model valueAt: name) ? 0) ;
 				// postln("set slider value to" + (spec.unmap (model valueAt: name)));
 				// this.updateModel;
 			})
@@ -118,7 +122,7 @@ Param {
 			.action_{ | me |
 				value = spec.map(me.value);
 				this.changed(\value);
-			},
+			}
 		)
 	}
 

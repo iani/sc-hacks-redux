@@ -101,10 +101,10 @@ Preset {
 		format("% @>.% %%", value, this.player, "\\", param).share;
 	}
 
-	window {
-		^this.vlayout(
-			this.view;
-		)
+	gui {
+		^this.window({ | w |
+			w.view = this.view;
+		});
 	}
 
 	view {
