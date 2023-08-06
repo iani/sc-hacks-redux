@@ -76,12 +76,25 @@ PresetList {
 		^this.availablePlayers collect: { | p | [p, { | me |
 			// postln("you selected player" + p ++". Now making gui!");
 			// TODO: customize path choice.
-			PresetList(this.first.path, p.asSymbol).gui;
+			// PresetList(this.first.path, p.asSymbol).gui;
+			this.presetListChoiceGui(p)
 		}] }
+	}
+
+	*presetListChoiceGui { | p |
+		^this.vlayoutKey(\listChoice,
+			StaticText().string_("Choose preset list for player" + p),
+			ListView().items_(dict.keys.asArray.sort)
+			.action_({ | me |
+				postln("my item" + me.item);
+				postln("chosen preset" + dict[me.item]);
+			})
+		)
 	}
 
 	*presetSelectionGui {
 		var presetnames, selectedPreset, selectedPlayer;
+		this.loadPresets; // update every time
 		presetnames = dict.keys.asArray.sort;
 		selectedPreset = presetnames.first;
 		selectedPlayer = this.availablePlayers.first;

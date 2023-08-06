@@ -69,7 +69,7 @@ Param {
 			.value_(spec.minval)
 			// .value_(1)
 			.addNotifier(this, \value, { | n |
-				postln("debugging numbox 1. sensor lo" + sensor.lo);
+				// postln("debugging numbox 1. sensor lo" + sensor.lo);
 				n.listener.value = sensor.lo;
 			})
 			.action_({ | me | this.setSensorLo(me.value) }),
@@ -80,7 +80,7 @@ Param {
 			.decimals_(5)
 			.value_(spec.maxval)
 			.addNotifier(this, \value, { | n |
-				postln("debugging numbox 1. sensor hi" + sensor.hi);
+				// postln("debugging numbox 1. sensor hi" + sensor.hi);
 				n.listener.value = sensor.hi;
 			})
 			.action_({ | me | this.setSensorHi(me.value) }),
