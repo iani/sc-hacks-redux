@@ -89,6 +89,13 @@ PresetList {
 				postln("my item" + me.item);
 				postln("chosen preset" + dict[me.item]);
 			})
+			.enterKeyAction_({ | me |
+				postln("my item" + me.item);
+				postln("chosen preset" + dict[me.item]);
+				postln("chosen player" + p);
+				postln("chosen path" + dict[me.item].path);
+			this.fromPath(dict[me.item].path, p).gui;
+			})
 		)
 	}
 
