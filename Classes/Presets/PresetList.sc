@@ -72,7 +72,7 @@ PresetList {
 	}
 
 	*playerMenu {
-		this.availablePlayers.postln;
+		// this.availablePlayers.postln;
 		^this.availablePlayers collect: { | p | [p, { | me |
 			// postln("you selected player" + p ++". Now making gui!");
 			// TODO: customize path choice.
@@ -83,18 +83,20 @@ PresetList {
 
 	*presetListChoiceGui { | p |
 		^this.vlayoutKey(\listChoice,
-			StaticText().string_("Choose preset list for player" + p),
+			StaticText().string_("Choose preset list for player" + p + "(Press enter to open)"),
 			ListView().items_(dict.keys.asArray.sort)
 			.action_({ | me |
-				postln("my item" + me.item);
-				postln("chosen preset" + dict[me.item]);
+				postln("Selected preset:" + me.item);
+				// postln("chosen preset" + dict[me.item]);
 			})
 			.enterKeyAction_({ | me |
-				postln("my item" + me.item);
-				postln("chosen preset" + dict[me.item]);
+				// postln("my item" + me.item);
+				postln("Selected preset:" + me.item);
+				// postln("chosen preset" + dict[me.item]);
+				// postln("chosen preset" + dict[me.item]);
 				postln("chosen player" + p);
 				postln("chosen path" + dict[me.item].path);
-			this.fromPath(dict[me.item].path, p).gui;
+				this.fromPath(dict[me.item].path, p).gui;
 			})
 		)
 	}
@@ -125,7 +127,7 @@ PresetList {
 			Button().states_([["open"]])
 			.action_({
 				postln("you selected preset list:" + selectedPreset + "and player:" + selectedPlayer);
-				postln("the preset list has player" + selectedPreset.player);
+				// postln("the preset list has player" + selectedPreset.player);
 				postln("the path is" + dict[selectedPreset].path);
 				this.fromPath(dict[selectedPreset].path, selectedPlayer).gui;
 			})

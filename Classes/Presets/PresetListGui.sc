@@ -35,7 +35,7 @@ PresetListGui {
 		presetList.presets.reverse do: { | p | layout.insert(p.view) };
 		layout.insert(this.makeHeader);
 		scroll.onClose = { | me |
-			postln("closed:" + me);
+			// postln("closed:" + me);
 			presetList.removeActive;
 			this.objectClosed;
 		};
