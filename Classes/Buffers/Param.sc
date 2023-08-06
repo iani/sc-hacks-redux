@@ -30,6 +30,8 @@ Param {
 		sensor.player = player;
 	}
 	gui {
+		postln("param name:" + name + "value" + value + "spec" + spec);
+		postln("param sensor:" + sensor + "sensorlo" + sensorlo + "sensorhi" + sensorhi);
 		^HLayout(
 			StaticText().minWidth_(100)
 			.minWidth_(100).string_(format("%(%-%)", name, spec.minval, spec.maxval)),

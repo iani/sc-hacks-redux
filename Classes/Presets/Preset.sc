@@ -101,6 +101,12 @@ Preset {
 		format("% @>.% %%", value, this.player, "\\", param).share;
 	}
 
+	window {
+		^this.vlayout(
+			this.view;
+		)
+	}
+
 	view {
 		{ this.changed(\gui) }.defer(0.1);
 		^View().background_(Color.rand).layout_(
@@ -112,7 +118,7 @@ Preset {
 	}
 
 	playView {
-		selectionNum = dict[\selectionNum];
+		selectionNum = dict[\selectionNum] ? 0;
 		^HLayout(
 			StaticText().maxWidth_(70).string_("selection:")
 			.background_(SoundBufferGui.colors[selectionNum]),
