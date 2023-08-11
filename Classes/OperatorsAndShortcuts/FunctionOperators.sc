@@ -31,7 +31,7 @@
 		// TODO: add arguments setting, bus mapping
 		var synth;
 		envir = envir ? player; // play in own envir, holding own busses
-		postln("Function playInEnvir. envir:" + envir);
+		// postln("Function playInEnvir. envir:" + envir);
 		Mediator.wrap({
 			var fadeTime;
 			fadeTime = ~fadeTime ? 0.01; // allways make fade envelope: ensure the synth is releasable!
