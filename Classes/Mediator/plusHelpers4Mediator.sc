@@ -12,7 +12,16 @@
 	handleReplacement {
 		// requires synth state to be tracked with with onStart
 		// release 0.001 stops trigger kr synths fast to prevent overlaps
-		if (this.isPlaying) { this.release(~release ? 0.001); }
+		// TODO: kr synths should ignore fadeTime. HOW?
+		// TRYING HERE: TEMPORARY!
+		// postln("Synth handleReplacement defName:" + defName);
+		// postln("Rate is???" + Library.at(\sdefrates, defName));
+		if (this.isPlaying.not) { ^this }; // skip if already stopped
+		switch(Library.at(\sdefrates, defName),
+			\audio, { this.release(~release ?? { ~fadeTime ? 0.001 }); },
+			\control, { this.free },
+			{ this.free }
+		)
 	}
 	isPlayer { ^true }
 }

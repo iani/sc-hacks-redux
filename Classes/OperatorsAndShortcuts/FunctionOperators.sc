@@ -31,19 +31,22 @@
 		// TODO: add arguments setting, bus mapping
 		var synth;
 		envir = envir ? player; // play in own envir, holding own busses
+		postln("Function playInEnvir. envir:" + envir);
 		Mediator.wrap({
+			var fadeTime;
+			fadeTime = ~fadeTime ? 0.01; // allways make fade envelope: ensure the synth is releasable!
 			if (Server.default.serverRunning) {
 				// postln("playinEnvir envir:" + currentEnvironment);
-				// postln("playInenvir player:" + player);
+				// postln("playInEnvir fadeTime:" + ~fadeTime);
 				currentEnvironment.addSynth(player, synth = this.play(
-					target, outbus,
+					target, outbus, fadeTime,
 					player: player, envir: envir,
 					addAction: addAction
 				));
 			}{
 				Server.default.waitForBoot({
 					currentEnvironment.addSynth(player, synth = this.play(
-						target, outbus,
+						target, outbus, fadeTime,
 						player: player, envir: envir
 					));
 				})

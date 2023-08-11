@@ -26,6 +26,7 @@ For sc-hacks-redux: playInEnvir.  Create synth, providing arguments from current
 			^Synth.basicNew(def.name, server);
 			// ^nil
 		};
+		postln("Function play. fadeTime is: " + fadeTime);
 		def = this.asSynthDef(
 			fadeTime:fadeTime,
 			name: SystemSynthDefs.generateTempName
