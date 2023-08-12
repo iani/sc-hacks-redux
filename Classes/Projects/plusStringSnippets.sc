@@ -41,6 +41,29 @@ First: Reloading selections for SoundBufferGui.
 		^this[..this.find("\n")]
 	}
 
+	timeStampLocation {
+		^this.header.findRegexp(":--\\[\\d.*\\]")[0]
+	}
+	time {
+		^this.timeStampLocation[1][3..].interpret.first;
+	}
+
+	codeReplaceTimeStamp { | newTime = 0 |
+		var oldHeader, strippedHeader, location;
+		oldHeader = this.header;
+		location = this.timeStampLocation;
+		strippedHeader = oldHeader[location[0] + location[1].size..];
+		^format("//:--[%]%%", newTime, strippedHeader, this.code);
+	}
+
+	body { // return the rest of the snippet after the header
+		^this[this.find("\n")..]
+	}
+
+	code {
+		^this.body.interpret[1];
+	}
+
 	selectionIndex { // used by SfSelections for loading.
 		^this.header.findRegexp("\\(\\d*\\)").first.last.interpret;
 	}

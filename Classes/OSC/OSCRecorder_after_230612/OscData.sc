@@ -411,17 +411,21 @@ OscData {
 		if (restart) { this.start; }
 	}
 	makeStream {
-		stream = ( // convert times to dt
-			onsets: timeline.segmentOnsets.pseq,
-			dur: timeline.segmentDurations.pseq,
-			message: messages.copyRange(timeline.segmentMin, timeline.segmentMax).pseq(1),
-			play: this.makePlayFunc; // OscDataScore customizes this
-		).asEventStream;
+		stream = this.makeStreamEvent;
 		this.addNotifier(stream, \stopped, { this.changed(\playing, false) });
 		this.addNotifier(stream, \started, { this.changed(\playing, true) });
 		// track progress both from onsets and progress routine
 		// If onsets are too far apart, then progressRoutine is useful
 		this.makeProgressRoutine;
+	}
+
+	makeStreamEvent {
+		^( // convert times to dt
+			onsets: timeline.segmentOnsets.pseq,
+			dur: timeline.segmentDurations.pseq,
+			message: messages.copyRange(timeline.segmentMin, timeline.segmentMax).pseq(1),
+			play: this.makePlayFunc; // OscDataScore customizes this
+		).asEventStream
 	}
 
 	makePlayFunc { // OscDataScore customizes this
@@ -505,12 +509,7 @@ OscData {
 			^this;
 		};
 		exportPath = this.codeExportPath;
-
-		// ("exporting code to" + exportPath).ok;
 		postln("Exporting code to" + exportPath);
-		// postln("segmentOnsets" + timeline.segmentOnsets);
-		// postln("segmentDurations" + timeline.segmentDurations);
-		// postln("selectedMessages" + this.selectedMessages);
 		File.use(this.codeExportPath, "w", { | f |
 			f.write("//code\n");
 			[timeline.segmentOnsets.rotate(-1).differentiate.max(0),
