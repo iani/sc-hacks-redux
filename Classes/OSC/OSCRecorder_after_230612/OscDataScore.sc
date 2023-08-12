@@ -26,8 +26,8 @@ OscDataScore : OscData {
 		};
 	}
 
-	makeTimeline { | argTimes | timeline =
-		Timeline(this).setDurations(argTimes);
+	makeTimeline { | argTimes |
+		timeline = Timeline(this).setDurations(argTimes);
 	}
 
 	convertTimes {

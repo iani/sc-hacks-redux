@@ -229,7 +229,6 @@ FileNavigator {
 				Button().states_([["export"]]).maxWidth_(50)
 				.action_({ Menu(
 					MenuAction("export code", { this.exportCode }),
-					MenuAction("export code experimental", { this.exportCodeExperimental }),
 					MenuAction("export messages", { this.exportMessages }),
 					MenuAction("export all", { this.exportAll })
 				).front }),
@@ -476,50 +475,30 @@ FileNavigator {
 		ok("Selection contains" + all.size + "snippets\nand" + code.size + "code messages")
 
 	}
-	exportCode {
-		this.export(this.selectCode(this.collectSnippets), "exports/code");
+
+	// replaced by improved version below
+	// exportCode {
+	//	this.export(this.selectCode(this.collectSnippets), "exports/code");
 		// this.exportAsCode(this.selectCode(this.collectSnippets), "exports/code");
-	}
+	// }
 
+	codeFolder { ^"exports/code" }
 
-	exportCodeExperimental {
-		var snippets, headers, times, messages;
+	exportCode {
+		var snippets, headers, times, messages, filename, folder;
+		folder = this.codeFolder;
 		snippets = this.selectCode(this.collectSnippets);
 		times = snippets collect: _.time;
-		times = times.differentiate.put(0, 0).rotate(-1); // .postln;
-		snippets collect: { | x, i |
-			x.codeReplaceTimeStamp(times[i])
-		} do: _.postln;
-	}
-
-	exportCodeExperimentalOLD {
-		var ods, snippets;
-		"this is exportCodeExperimental.".postln;
-		"these are the snippets:".postln;
-		this.collectSnippets.postln;
-		"these are the code snippets".postln;
-		this.selectCode(this.collectSnippets).postln;
-		"Making OscDataScore".postln;
-		ods = OscDataScore.newCopyArgs(
-			this.selectedPaths, nil, this selectCode: this.collectSnippets
-		);
-		postln("OscDataScore is:" + ods);
-		"Next I will convertTimesMessages --- PREPARING".postln;
-		ods.convertTimesMessages;
-		postln("Now testing selectedMessages. segmentMin"
-			+ ods.timeline.segmentMin
-			+ "segmentMax" + ods.timeline.segmentMax);
-		postln("the export path is:" + ods.codeExportPath);
-		postln("timeline durations:" + ods.timeline.durations);
-		postln("timeline durations first:" + ods.timeline.durations.first);
-		postln("timeline durations first class:"
-			+ ods.timeline.durations.first.class
-		+ "size" + ods.timeline.durations.first.size);
-		postln("times" + ods.times + "messages" + ods.messages);
-		// postln("selectedMessages:" + ods.selectedMessages);
-		// postln("messages:" + ods.messages);
-		// "Next I will actually try to export".postln;
-		// ods.exportCode;
+		times = [0] ++ (times - times[0]).rotate(-1).butLast; // .postln;
+		filename = (this.homeDir +/+ folder +/+ Date.getDate.stamp).fullPath ++ ".scd";
+		File.use(filename, "w", { | f |
+			f.write("//Exporting" + snippets.size + "code snippets" + "on" + Date.getDate.stamp ++ "\n" );
+			snippets collect: { | x, i |
+				x.codeReplaceTimeStamp(times[i])
+			} do: { | x | f write: x };
+			f write: "\n//the end\n\n";
+		});
+		"Export completed".postln;
 	}
 
 	exportMessages { this.export(this.selectMessages(this.collectSnippets), "exports/messages") }
