@@ -4,7 +4,7 @@
 
 
 + Button {
-	menu { | labelsfuncs |
+	menuActions { | labelsfuncs |
 		this.action_({ | me |
 			Menu(*labelsfuncs.collect({ | f | MenuAction(f[0], { f[1].(me, f[0]) }) })).front;
 		})

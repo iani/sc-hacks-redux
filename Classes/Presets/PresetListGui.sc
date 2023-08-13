@@ -59,7 +59,7 @@ PresetListGui {
 			HLayout(
 				StaticText().string_( ("Presets for:" + this.player) ),
 				Button().states_([["Open other player"]])
-				.menu(PresetList.playerMenu)
+				.menuActions(PresetList.playerMenu)
 				.addNotifier(PresetList, \activeLists, { | n |
 					n.listener.menu(PresetList.playerMenu)
 				})
