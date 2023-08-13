@@ -328,7 +328,7 @@ OscData {
 				.action_({ this.resetStream }),
 				Button().states_([["Reread files"]])
 				.action_({ this.reread }),
-				Button().states_([["trigger"]])
+				Button().states_([["+trigger"]])
 				.action_({ this.addTriggerFromUser }),
 				StaticText().string_("Clone:").maxWidth_(50),
 				Button().states_([["code"]])
@@ -425,7 +425,7 @@ OscData {
 		{ | msg |
 			postln("Activating score stream trigger:" + msg.asCompileString);
 			this.addTrigger(msg);
-		}.inputText("test", "listen to this message:")
+		}.inputText("test", "This osc message plays next item in list:")
 	}
 
 	addTrigger { | message |
