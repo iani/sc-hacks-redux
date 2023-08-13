@@ -59,23 +59,4 @@ OscDataScore : OscData {
 		m = messages[timeline.segmentMin + i];
 		^(t.asString + m.copyRange(m.indexOf($]) + 1, m.indexOf(Char.nl) - 1))
 	}
-	/*
-	selectedTimesItems {
-		// "onset times are".postln;
-		// selectedTimes.postln;
-		// "Differentiated times are:".postln;
-		// selectedTimes.rotate(-1).differentiate.postln;
-		// "durations are".postln;
-		// durations.postln;
-		// postln("minIndex" + minIndex + "maxIndex" + maxIndex);
-		^[selectedTimes, durations.copyRange(minIndex, maxIndex)].flop collect:
-		{ | bd | format("beg: % | dur: %", bd[0], bd[1]) }
-	}
-	*/
-
-	/*
-	updateSelectedDuration {
-		// selectedDuration = durations.copyRange(minIndex, maxIndex).sum;
-	}
-	*/
 }

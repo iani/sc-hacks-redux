@@ -30,6 +30,13 @@ OscData {
 	// var selectedDuration; // 13 no longer used
 	// var totalOnsetsDuration; // 14 no longer used
 
+	*fromPath { | p | // choose class depending on file contents
+		case
+		{ p.isCode }{ ^OscDataScore([p]).gui }
+		{ p.hasTimestamps }{ ^OscData([p]).gui; }
+		{ true }{ ^SnippetScore([p]).gui };
+	}
+
 	*new { | paths |
 		^this.newCopyArgs(paths).init;
 	}
@@ -253,6 +260,7 @@ OscData {
 					}
 				})
 				.addNotifier(this, \item, { | n, index |
+					postln("OscData gui received item. index:" + index);
 					n.listener.value = index;
 				})
 				.addNotifier(this, \segment, { | n, who |
@@ -320,6 +328,8 @@ OscData {
 				.action_({ this.resetStream }),
 				Button().states_([["Reread files"]])
 				.action_({ this.reread }),
+				Button().states_([["trigger"]])
+				.action_({ this.addTriggerFromUser }),
 				StaticText().string_("Clone:").maxWidth_(50),
 				Button().states_([["code"]])
 				.action_({ | me |
@@ -410,22 +420,49 @@ OscData {
 		this.makeStream;
 		if (restart) { this.start; }
 	}
+
+	addTriggerFromUser {
+		{ | msg |
+			postln("Activating score stream trigger:" + msg.asCompileString);
+			this.addTrigger(msg);
+		}.inputText("test", "listen to this message:")
+	}
+
+	addTrigger { | message |
+		this.makeStreamEvent;
+		stream.oscTrigger(message.asSymbol);
+	}
+
 	makeStream {
-		stream = this.makeStreamEvent;
-		this.addNotifier(stream, \stopped, { this.changed(\playing, false) });
-		this.addNotifier(stream, \started, { this.changed(\playing, true) });
+		this.makeStreamEvent;
 		// track progress both from onsets and progress routine
 		// If onsets are too far apart, then progressRoutine is useful
 		this.makeProgressRoutine;
 	}
 
+	stream_ { | argStream |
+		stream !? {
+			this.removeNotifier(stream, \started);
+			this.removeNotifier(stream, \played);
+			this.removeNotifier(stream, \stopped);
+		};
+		stream = argStream;
+		this.addNotifier(stream, \started, { this.changed(\playing, true) });
+		this.addNotifier(stream, \played, { | n, e |
+			this.changed(\item, e[\index])
+		});
+		this.addNotifier(stream, \stopped, { this.changed(\playing, false) });
+
+	}
 	makeStreamEvent {
-		^( // convert times to dt
+		this.stream = ( // convert times to dt
+			index: timeline.indexPattern,
 			onsets: timeline.segmentOnsets.pseq,
 			dur: timeline.segmentDurations.pseq,
 			message: messages.copyRange(timeline.segmentMin, timeline.segmentMax).pseq(1),
 			play: this.makePlayFunc; // OscDataScore customizes this
-		).asEventStream
+		).asEventStream;
+		^stream;
 	}
 
 	makePlayFunc { // OscDataScore customizes this

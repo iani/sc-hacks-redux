@@ -63,10 +63,12 @@ EventStream {
 
 	free { this.stop }
 
-	stop {
+	stop { // stop routine, but keep stream for continuing!
 		routine.stop;
 		routine = nil;
 		this changed: \stopped;
+		// this.objectClosed;
+		// this.reset; // ?????
 	}
 
 	makeRoutine { | quant |
@@ -80,6 +82,7 @@ EventStream {
 				this.playAndNotify(nextEvent);
 				nextEvent[\dur].wait;
 			};
+			// this.stop; // this is not the same
 			this.changed(\stopped);
 			routine = nil;
 			this.reset;
@@ -94,8 +97,13 @@ EventStream {
 	}
 
 	playAndNotify { | inEvent |
+		// postln("debugging playAndNotify. inEvent" + inEvent);
 		inEvent.play;
-		this.changed(\played, inEvent, this);
+		if (inEvent.isNil) {
+			this.changed(\ended);
+		}{
+			this.changed(\played, inEvent, this);
+		}
 	}
 
 	getNextEvent {
@@ -144,4 +152,7 @@ EventStream {
 		this.mergeEvent(().put(param, value))
 	}
 
+	oscTrigger { | message |
+		message >>> { this.playNext }
+	}
 }

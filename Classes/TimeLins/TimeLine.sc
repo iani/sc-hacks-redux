@@ -130,4 +130,7 @@ Timeline {
 		^this.fromDurations(durations.copyRange(min, max)).minIndex_(min).maxIndex_(max);
 	}
 
+	indexPattern { // used by OscData to track progress in playing
+		^Pseries(minIndex, 1, maxIndex - minIndex);
+	}
 }

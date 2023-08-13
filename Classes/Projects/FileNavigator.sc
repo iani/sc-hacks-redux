@@ -436,9 +436,9 @@ FileNavigator {
 			// this.mergeablePaths.postln;
 			// /*
 			if (selectedPaths.size == 1) {
-				"debugging openInnerItem".postln;
-				postln("selectedPaths is:" + selectedPaths);
-				postln("innerItem is:" + innerItem);
+				// "debugging openInnerItem".postln;
+				// postln("selectedPaths is:" + selectedPaths);
+				// postln("innerItem is:" + innerItem);
 				innerItem.fullPath.doIfExists({ | p |
 					case
 					{ p.isCode }{ OscDataScore([p]).gui }
