@@ -14,6 +14,10 @@ Preset {
 	//	var <player; // obtain from presetList! ???
 
 	// EXPERIMENTAL
+	*newWithDict { | list, index, source, dict |
+		^this.newCopyArgs(list, index, source).importDict(dict)
+	}
+
 	*fromSnippet { | snippet |
 		^this.fromDict(snippet.interpret).code_(snippet);
 	}
