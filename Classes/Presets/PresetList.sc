@@ -56,7 +56,24 @@ PresetList {
 	init { | argPlayer |
 		code = File(path, "r").readAllString;
 		snippets = code.snippets;
-		presets = snippets collect: { | s, i | Preset(this, i, s) };
+		// presets = snippets collect: { | s, i | Preset(this, i, s) };
+		// New method - allowing scoreplayers in the future
+		// test stage. Next create ScorePlayers if the snippet is a string or symbol.
+		presets = snippets collect: { | s, i |
+			var seed;
+			seed = s.interpret;
+			switch (seed.class,
+				Event, {
+					Preset.newCopyArgs(this, i, s).importDict(seed)
+				},
+				Symbol, {
+					ScorePlayer(this, i, seed)
+				},
+				String, {
+					ScorePlayer(this, i, seed)
+				}
+			)
+		};
 		player = argPlayer; // gui's should not permit 2 players in same system?
 		// when a list opens, it checks available players by consulting activeLists.
 	}
