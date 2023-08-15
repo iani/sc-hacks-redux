@@ -64,6 +64,7 @@ PresetList {
 			seed = s.interpret;
 			switch (seed.class,
 				Event, {
+					// Choose subclass of Presets depending on playfunc?
 					Preset.newCopyArgs(this, i, s).importDict(seed)
 				},
 				Symbol, {

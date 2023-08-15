@@ -4,6 +4,14 @@ Constructs code for BufCode.
 
 SuperClass for BufferSynths, PlainSynths - which look for their templates inside their
 separate folders.
+
+A SynthTemplate can search and return 2 things with 2 methods:
+1. getFunc: The Function used to play in a Preset or ...
+2. getTemplate: the template - a SynthTemplate or subclass instance containing
+	some information needed:
+	- the name, function, specs, code used to make the template, and the template itself
+	which is an array of classes used to create the specs
+
 */
 
 SynthTemplate {
@@ -40,15 +48,8 @@ SynthTemplate {
 		^this.getTemplate(funcname).func;
 	}
 
-	// TODO : Use Library instead of this. Optimize.
 	*getTemplate { | funcname |
-		var debug, instance;
-		// postln("Debugging SynthTemplate getTemplate. Funcname:" + funcname);
-		// debug = this.allSubclasses.collect(_.getTemplate(funcname));
-		// postln("all found were:" + debug);
-		// instance = debug.detect(_.notNil);
-		// postln("instance is" + instance);
-		// postln("func is" + instance.func);
+		// look in all subclases and return the first match.
 		^this.allSubclasses.collect(_.getTemplate(funcname)).detect(_.notNil);
 	}
 

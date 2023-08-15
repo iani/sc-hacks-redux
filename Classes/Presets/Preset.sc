@@ -124,9 +124,11 @@ Preset {
 	playView {
 		selectionNum = dict[\selectionNum] ? 0;
 		^HLayout(
-			StaticText().maxWidth_(70).string_("selection:")
+			StaticText().maxWidth_(20).string_(index.asString),
+			StaticText().maxWidth_(80).string_(playfunc.asString),
+			StaticText().maxWidth_(60).string_("selection:")
 			.background_(SoundBufferGui.colors[selectionNum]),
-			NumberBox().maxWidth_(40).value_(selectionNum).enabled_(false),
+			NumberBox().maxWidth_(25).value_(selectionNum).enabled_(false),
 			CheckBox().string_("play").maxWidth_(50)
 			.action_({ | me |
 				if (me.value) { this.play }{ this.stop }
@@ -145,15 +147,14 @@ Preset {
 					n.listener.focus(true);
 				}
 			}),
-			StaticText().maxWidth_(40).string_("player:"),
-			Button().maxWidth_(70)
-			.states_([[this.player, Color.green(0.5)]])
-			.action_({ | me | Menu(
-				*PresetList.players.collect({ | f | MenuAction(f.asString, {
-					me.states_([[f.asString, Color.green(0.5), Color.white]]);
-					this.player = f.asSymbol.postln;
-				})})
-			).front }),
+			// Button().maxWidth_(70)
+			// .states_([[this.player, Color.green(0.5)]])
+			// .action_({ | me | Menu(
+			// 	*PresetList.players.collect({ | f | MenuAction(f.asString, {
+			// 		me.states_([[f.asString, Color.green(0.5), Color.white]]);
+			// 		this.player = f.asSymbol.postln;
+			// 	})})
+			// ).front }),
 			Button().maxWidth_(55).states_([["amp ctl:"]])
 			.action_({ ampctl.customize; }),
 			Button().maxWidth_(30)
@@ -179,8 +180,8 @@ Preset {
 					ampctl.id_(f);
 				})})
 			).front }),
-			StaticText().maxWidth_(80).string_("frame range:"),
-			RangeSlider().maxWidth_(120).orientation_(\horizontal),
+			StaticText().maxWidth_(60).string_("frames:"),
+			RangeSlider().maxWidth_(100).orientation_(\horizontal),
 			Button().maxWidth_(10).states_([["x"]])
 			.action_({ CmdPeriod.run }),
 			Button().maxWidth_(10).states_([["x", Color.yellow, Color.red]])
