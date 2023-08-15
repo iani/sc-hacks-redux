@@ -32,9 +32,9 @@ OscData {
 
 	*fromPath { | p | // choose class depending on file contents
 		case
-		{ p.isCode }{ ^OscDataScore([p]).gui }
-		{ p.hasTimestamps }{ ^OscData([p]).gui; }
-		{ true }{ ^SnippetScore([p]).gui };
+		{ p.isCode }{ ^OscDataScore([p]) /*.gui */ }
+		{ p.hasTimestamps }{ ^OscData([p]) /* .gui; */ }
+		{ true }{ ^SnippetScore([p]) /* .gui */ };
 	}
 
 	*new { | paths |
@@ -360,6 +360,8 @@ OscData {
 		LocalAddr().sendMsg(*themessage);
 		OscGroups.broadcast(themessage[0], *themessage[1..]);
 	}
+
+	name { ^this.windowName }
 	windowName { | argName |
 		//^argName ? this.class.name
 		^PathName(paths.first).fileNameWithoutExtension;
@@ -448,13 +450,14 @@ OscData {
 		};
 		stream = argStream;
 		this.addNotifier(stream, \started, { this.changed(\playing, true) });
-		this.addNotifier(stream, \played, { | n, e |
-			this.changed(\item, e[\index])
+		this.addNotifier(stream, \played, { | notifier, event |
+			this.changed(\item, event[\index])
 		});
 		this.addNotifier(stream, \stopped, { this.changed(\playing, false) });
 
 	}
 	makeStreamEvent {
+		postln("Making stream for" + this.name);
 		this.stream = ( // convert times to dt
 			index: timeline.indexPattern,
 			onsets: timeline.segmentOnsets.pseq,

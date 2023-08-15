@@ -131,6 +131,6 @@ Timeline {
 	}
 
 	indexPattern { // used by OscData to track progress in playing
-		^Pseries(minIndex, 1, maxIndex - minIndex);
+		^Pseries(minIndex, 1, maxIndex - minIndex + 1);
 	}
 }

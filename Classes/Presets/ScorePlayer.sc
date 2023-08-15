@@ -6,6 +6,7 @@ it either with a routine or by stepping through its snippets
 triggered by an osc message.
 
 a = ScorePlayer(nil, nil, "testscore");
+a.score.gui;
 
 ScorePlayer(nil, nil, "testscore-negative");
 */
@@ -44,5 +45,41 @@ ScorePlayer {
 	}
 
 	defaultPath { ^this.makePath("default") }
+	gui { score.gui }
+	view {
+		//	{ this.changed(\gui) }.defer(0.1);
+		^View().background_(Color.rand).layout_(
+			VLayout(
+				this.playView,
+				this.paramView
+			)
+		)
+	}
+
+	playView {
+		^HLayout(
+			StaticText().string_(
+			"Score:" + name ++ "."
+			+ score.unparsedEntries.size + "snippets. Duration:"
+			+ score.timeline.totalDuration + "sec."
+			),
+			CheckBox().maxWidth_(60).string_("trigger")
+			.action_({ | me |
+				if (me.value) {
+					postln("Activated triggering by" + list.player);
+				}{
+					"Trigger switched off!".postln;
+				}
+			}),
+			Button().maxWidth_(60).states_([["gui"]])
+			.action_({ score.gui }),
+			Button().maxWidth_(60).states_([["reset"]])
+			.action_({ score.makeStreamEvent })
+		);
+	}
+
+	paramView {
+		^StaticText().string_("this is another test");
+	}
 
 }

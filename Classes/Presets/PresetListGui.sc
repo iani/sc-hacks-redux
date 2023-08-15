@@ -42,6 +42,7 @@ PresetListGui {
 		^scroll.front;
 	}
 
+	/*
 	makeEntry {
 		var view;
 		view = View().background_(Color.rand).layout_(
@@ -52,6 +53,7 @@ PresetListGui {
 		);
 		^view
 	}
+	*/
 
 	makeHeader {
 		var view;
