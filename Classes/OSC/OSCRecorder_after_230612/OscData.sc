@@ -221,9 +221,13 @@ OscData {
 				.selectionAction_({ | me |
 					this.changed(\scrollItem, me.value);
 				})
-				.enterKeyAction_({ | me |
-					this.shareSnippet(messages[me.value]);
-				})
+				// .enterKeyAction_({ | me |
+				// 	"enterKeyAction for indexList".postln;
+				// 	postln("indexlist value is:" + me.value);
+				// 	postln("messages are" + messages[me.value]);
+				// 	postln("SKIPPING ACTION!");
+				// 	// this.shareSnippet(messages[me.value]);
+				// })
 				.keyDownAction_({ | me, key ... args |
 					case
 					{ key.ascii == 13 } {
@@ -434,6 +438,8 @@ OscData {
 		this.makeStreamEvent;
 		stream.oscTrigger(message.asSymbol);
 	}
+
+	removeTrigger { | message | stream.removeTrigger(message) }
 
 	makeStream {
 		this.makeStreamEvent;

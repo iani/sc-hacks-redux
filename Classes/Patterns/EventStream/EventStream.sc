@@ -152,7 +152,8 @@ EventStream {
 		this.mergeEvent(().put(param, value))
 	}
 
-	oscTrigger { | message |
-		message >>> { this.playNext }
-	}
+	oscTrigger { | message | message >>> { this.playNext } }
+	removeTrigger { | message |
+		postln("removing trigger for" + message);
+		message >>> nil }
 }

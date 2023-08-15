@@ -63,7 +63,7 @@ PresetListGui {
 				Button().states_([["Open other player"]])
 				.menuActions(PresetList.playerMenu)
 				.addNotifier(PresetList, \activeLists, { | n |
-					n.listener.menu(PresetList.playerMenu)
+					n.listener.menuActions(PresetList.playerMenu)
 				})
 			)
 		);

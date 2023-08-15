@@ -67,7 +67,9 @@ ScorePlayer {
 			.action_({ | me |
 				if (me.value) {
 					postln("Activated triggering by" + list.player);
+					score addTrigger: list.player;
 				}{
+					score removeTrigger:  list.player;
 					"Trigger switched off!".postln;
 				}
 			}),

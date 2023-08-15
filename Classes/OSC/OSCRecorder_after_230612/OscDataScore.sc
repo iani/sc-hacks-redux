@@ -26,6 +26,16 @@ OscDataScore : OscData {
 		};
 	}
 
+	// shareSnippet { | argSnippet |
+	// 	postln("Debugging OscDataScore shareSnippet. snippet:" + argSnippet);
+		/*
+		var themessage;
+		themessage = argSnippet.interpret;
+		LocalAddr().sendMsg(*themessage);
+		OscGroups.broadcast(themessage[0], *themessage[1..]);
+		*/
+	// }
+
 	makeTimeline { | argTimes |
 		timeline = Timeline(this).setDurations(argTimes);
 	}
