@@ -79,6 +79,7 @@ PresetList {
 		// when a list opens, it checks available players by consulting activeLists.
 	}
 
+	openSource { Document open: path }
 	name { ^PathName(path).fileNameWithoutExtension.asSymbol }
 
 	gui {

@@ -115,26 +115,25 @@ Preset {
 	}
 
 	view {
+		var view;
 		{ this.changed(\gui) }.defer(0.1);
-		^View().background_(Color.rand).layout_(
+		view = View().background_(Color.rand);
+		view.layout_(
 			VLayout(
-				this.playView2,
+				this.playView2(view),
 				this.paramView
 			)
-		)
+		);
+		^view;
 	}
-	// presetnum, playcheckbox playfuncmenu, bufferbutton, startframe,
+	// playcheckbox, presetnum, playfuncmenu, bufferbutton, startframe,
 	// endframe, dur, previewbutton,
 	//
 	//
-	playView2 { // new version: Wed 16 Aug 2023 09:33
+	playView2 { | view | // new version: Wed 16 Aug 2023 09:33
 		selectionNum = dict[\selectionNum] ? 0;
 		^HLayout(
-			StaticText().maxWidth_(20).string_(index.asString),
-			StaticText().maxWidth_(80).string_(playfunc.asString),
-			StaticText().maxWidth_(60).string_("selection:")
-			.background_(SoundBufferGui.colors[selectionNum]),
-			NumberBox().maxWidth_(25).value_(selectionNum).enabled_(false),
+			Button().states_([["remove (test)"]]).action_({ this confirmRemove: view }),
 			CheckBox().string_("play").maxWidth_(50)
 			.action_({ | me |
 				if (me.value) { this.play }{ this.stop }
@@ -153,47 +152,21 @@ Preset {
 					n.listener.focus(true);
 				}
 			}),
-			// Button().maxWidth_(70)
-			// .states_([[this.player, Color.green(0.5)]])
-			// .action_({ | me | Menu(
-			// 	*PresetList.players.collect({ | f | MenuAction(f.asString, {
-			// 		me.states_([[f.asString, Color.green(0.5), Color.white]]);
-			// 		this.player = f.asSymbol.postln;
-			// 	})})
-			// ).front }),
-			Button().maxWidth_(55).states_([["amp ctl:"]])
-			.action_({ ampctl.customize; }),
-			Button().maxWidth_(30)
-			.states_([["off"]])
-			.addNotifier(this, \gui, { | n |
-				n.listener.states_([[ampctl.ctl.asString]])
-			})
-			.action_({ | me | Menu(
-				*['off', 'xyz', 'lx', 'lz', 'cx', 'cz', 'c3'].collect({ | f |
-					MenuAction(f.asString, {
-						me.states_([[f.asString]]);
-						ampctl.ctl_(f);
-					})})
-			).front }),
-			Button().maxWidth_(20)
-			.states_([["1"]])
-			.addNotifier(this, \gui, { | n |
-				n.listener.states_([[ampctl.id.asString]])
-			})
-			.action_({ | me | Menu(
-				*(1..12).collect({ | f | MenuAction(f, {
-					me.states_([[f.asString]]);
-					ampctl.id_(f);
-				})})
-			).front }),
-			StaticText().maxWidth_(60).string_("frames:"),
-			RangeSlider().maxWidth_(100).orientation_(\horizontal),
-			Button().maxWidth_(10).states_([["x"]])
-			.action_({ CmdPeriod.run }),
-			Button().maxWidth_(10).states_([["x", Color.yellow, Color.red]])
-			.action_({ "CmdPeriod.run".share })
+			StaticText().maxWidth_(20).string_(index.asString),
+			StaticText().maxWidth_(80).string_(playfunc.asString),
+			StaticText().maxWidth_(60).string_("selection:")
+			.background_(SoundBufferGui.colors[selectionNum]),
+			NumberBox().maxWidth_(25).value_(selectionNum).enabled_(false),
 		)
 	}
+
+	confirmRemove { | argView |  // TODO: also remove self from list!
+		{
+			postln("will now remove preset" + index + "from the preset list");
+			argView !? { argView.remove }
+		}.confirm("Do you really want to remove preset no." + index + "?");
+	}
+
 	playView {
 		selectionNum = dict[\selectionNum] ? 0;
 		^HLayout(
@@ -274,5 +247,36 @@ Preset {
 				Button().states_([["Delete"]]).action_({ this.remove; })
 			)
 		)
+	}
+
+	ampCtlView { // to be replaced!
+		var ampctl;
+		^[
+		Button().maxWidth_(55).states_([["amp ctl:"]])
+		.action_({ ampctl.customize; }),
+		Button().maxWidth_(30)
+		.states_([["off"]])
+		.addNotifier(this, \gui, { | n |
+			n.listener.states_([[ampctl.ctl.asString]])
+		})
+		.action_({ | me | Menu(
+			*['off', 'xyz', 'lx', 'lz', 'cx', 'cz', 'c3'].collect({ | f |
+				MenuAction(f.asString, {
+					me.states_([[f.asString]]);
+					ampctl.ctl_(f);
+				})})
+		).front }),
+		Button().maxWidth_(20)
+		.states_([["1"]])
+		.addNotifier(this, \gui, { | n |
+			n.listener.states_([[ampctl.id.asString]])
+		})
+		.action_({ | me | Menu(
+			*(1..12).collect({ | f | MenuAction(f, {
+				me.states_([[f.asString]]);
+				ampctl.id_(f);
+			})})
+		).front })
+		]
 	}
 }

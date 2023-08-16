@@ -3,8 +3,20 @@
 */
 
 + Event {
-	// obsolete?!
-	splay { ^EventStream(this).start; }
+
+	pp { // prettyprint
+		^String.streamContents({ arg s;
+			s << "(\n";
+			this.keys.asArray.sort do: { | k |
+				s << "'" << k << "': ";
+				s << this[k].asCompileString;
+				s << ",\n"
+			};
+			s << ")";
+		})
+	}
+
+	splay { ^EventStream(this).start; } // obsolete?!
 
 	getParent { if (this.parent.isNil) { ^defaultParentEvent } { ^this.parent }  }
 
