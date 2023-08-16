@@ -20,15 +20,15 @@ PresetListGui {
 		scroll = ScrollView(bounds:Rect(0,0,700,700).center_(Window.availableBounds.center));
 		scroll.name = presetList.name;
 		layout = VLayout();
-		layout.add(
-			View().background_(Color.black).layout_(
-				HLayout(
-					Button().states_([["Add"]])
-					.action_({ layout.insert(this.makeEntry) }),
-					nil // stretch remaining empty space
-				)
-			)
-		);
+		// layout.add(
+		// 	View().background_(Color.black).layout_(
+		// 		HLayout(
+		// 			Button().states_([["Add"]])
+		// 			.action_({ layout.insert(this.makeEntry) }),
+		// 			nil // stretch remaining empty space
+		// 		)
+		// 	)
+		// );
 		canvas = View();
 		canvas.layout = layout;
 		scroll.canvas = canvas;
@@ -64,7 +64,9 @@ PresetListGui {
 				.menuActions(PresetList.playerMenu)
 				.addNotifier(PresetList, \activeLists, { | n |
 					n.listener.menuActions(PresetList.playerMenu)
-				})
+				}),
+				Button().states_([["Stop All Local", Color.red, Color.white]]),
+				Button().states_([["Stop All Global", Color.yellow, Color.red]]),
 			)
 		);
 		^view

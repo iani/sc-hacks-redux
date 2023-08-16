@@ -11,6 +11,7 @@ Preset {
 	var <selectionNum;
 	var <paramSpecs, <params;
 	var <ampctl;
+	var <template; // subclass of SynthTemplate. creates the specs
 	//	var <player; // obtain from presetList! ???
 
 	// EXPERIMENTAL
@@ -43,7 +44,9 @@ Preset {
 	}
 	makeParams { | adict |
 		// TODO: use also PlainSynths!  Call SynthTemplate.getTemplate instead:
-		paramSpecs = BufferSynths.getTemplate(playfunc).specs;
+		// paramSpecs = BufferSynths.getTemplate(playfunc).specs;
+		template = BufferSynths.getTemplate(playfunc);
+		paramSpecs = template.specs;
 		// postln("sound params found specs is:" + specs);
 		params = paramSpecs.flat collect: { | p | Param(this, p, adict) };
 	}
@@ -115,12 +118,82 @@ Preset {
 		{ this.changed(\gui) }.defer(0.1);
 		^View().background_(Color.rand).layout_(
 			VLayout(
-				this.playView,
+				this.playView2,
 				this.paramView
 			)
 		)
 	}
-
+	// presetnum, playcheckbox playfuncmenu, bufferbutton, startframe,
+	// endframe, dur, previewbutton,
+	//
+	//
+	playView2 { // new version: Wed 16 Aug 2023 09:33
+		selectionNum = dict[\selectionNum] ? 0;
+		^HLayout(
+			StaticText().maxWidth_(20).string_(index.asString),
+			StaticText().maxWidth_(80).string_(playfunc.asString),
+			StaticText().maxWidth_(60).string_("selection:")
+			.background_(SoundBufferGui.colors[selectionNum]),
+			NumberBox().maxWidth_(25).value_(selectionNum).enabled_(false),
+			CheckBox().string_("play").maxWidth_(50)
+			.action_({ | me |
+				if (me.value) { this.play }{ this.stop }
+			})
+			.addNotifier(presetList, \stopped, { | n, who |
+				// postln("checking playView checkbox stopped. who?" + who +
+				// 	"is it me?"  ++ (who === this);
+				// );
+				if (who !== this) { n.listener.value = false };
+			})
+			// TODO: FIX THIS!!!!!:
+			.addNotifier(this.envir, this.player, { | n |
+				// "Received notification from envir".postln;
+				if (envir(this.player).isPlaying) {
+					n.listener.value = false;
+					n.listener.focus(true);
+				}
+			}),
+			// Button().maxWidth_(70)
+			// .states_([[this.player, Color.green(0.5)]])
+			// .action_({ | me | Menu(
+			// 	*PresetList.players.collect({ | f | MenuAction(f.asString, {
+			// 		me.states_([[f.asString, Color.green(0.5), Color.white]]);
+			// 		this.player = f.asSymbol.postln;
+			// 	})})
+			// ).front }),
+			Button().maxWidth_(55).states_([["amp ctl:"]])
+			.action_({ ampctl.customize; }),
+			Button().maxWidth_(30)
+			.states_([["off"]])
+			.addNotifier(this, \gui, { | n |
+				n.listener.states_([[ampctl.ctl.asString]])
+			})
+			.action_({ | me | Menu(
+				*['off', 'xyz', 'lx', 'lz', 'cx', 'cz', 'c3'].collect({ | f |
+					MenuAction(f.asString, {
+						me.states_([[f.asString]]);
+						ampctl.ctl_(f);
+					})})
+			).front }),
+			Button().maxWidth_(20)
+			.states_([["1"]])
+			.addNotifier(this, \gui, { | n |
+				n.listener.states_([[ampctl.id.asString]])
+			})
+			.action_({ | me | Menu(
+				*(1..12).collect({ | f | MenuAction(f, {
+					me.states_([[f.asString]]);
+					ampctl.id_(f);
+				})})
+			).front }),
+			StaticText().maxWidth_(60).string_("frames:"),
+			RangeSlider().maxWidth_(100).orientation_(\horizontal),
+			Button().maxWidth_(10).states_([["x"]])
+			.action_({ CmdPeriod.run }),
+			Button().maxWidth_(10).states_([["x", Color.yellow, Color.red]])
+			.action_({ "CmdPeriod.run".share })
+		)
+	}
 	playView {
 		selectionNum = dict[\selectionNum] ? 0;
 		^HLayout(
