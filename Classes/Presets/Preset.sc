@@ -131,9 +131,13 @@ Preset {
 	//
 	//
 	playView2 { | view | // new version: Wed 16 Aug 2023 09:33
+		var pfuncmenu;
+		pfuncmenu = [\a, \b] collect: { | p | [p, { this.addPreset(p) }] };
 		selectionNum = dict[\selectionNum] ? 0;
 		^HLayout(
-			Button().states_([["remove (test)"]]).action_({ this confirmRemove: view }),
+			Button().states_([["+"]]).maxWidth_(15)
+			.menuActions(pfuncmenu),
+			Button().states_([["-"]]).maxWidth_(15).action_({ this confirmRemove: view }),
 			CheckBox().string_("play").maxWidth_(50)
 			.action_({ | me |
 				if (me.value) { this.play }{ this.stop }
@@ -160,6 +164,9 @@ Preset {
 		)
 	}
 
+	addPreset { | p |
+		p.postln;
+	}
 	confirmRemove { | argView |  // TODO: also remove self from list!
 		{
 			postln("will now remove preset" + index + "from the preset list");

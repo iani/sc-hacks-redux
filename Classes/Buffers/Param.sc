@@ -36,54 +36,55 @@ Param {
 		^HLayout(
 			StaticText().minWidth_(100)
 			.minWidth_(100).string_(format("%(%-%)", name, spec.minval, spec.maxval)),
-			Button().maxWidth_(55).states_([["custom:"]])
-			.action_({ sensor.customize; }),
-			Button().maxWidth_(30) // sensor source type
-			.states_([["-"]])
-			.addNotifier(model, \gui, { | n |
-				n.listener.states = [[sensor.ctl.asString]];
-			})
-			.action_({ | me | Menu(
-				*['off', \x, \z, \cx, \cz, \c3].collect({ | f |
-					MenuAction(f.asString, {
-						me.states_([[f.asString]]);
-						sensor.ctl = f.asSymbol;
-					})})
-			).front }),
-			Button().maxWidth_(20) // sensor id
-			.states_([["1"]])
-			.addNotifier(model, \gui, { | n |
-				n.listener.states = [[sensor.id.asString]];
-			})
-			.action_({ | me | Menu(
-				*(1..12).collect({ | f | MenuAction(f.asString, { //c| me |
-					me.states_([[f.asString]]);
-					sensor.id = f;
-				})})
-			).front }) ,
-			NumberBox().maxWidth_(55)
-			.background_(Color.gray(0.7))
-			.clipLo_(spec.clipLo)
-			.clipHi_(spec.clipHi)
-			.decimals_(5)
-			.value_(spec.minval)
-			// .value_(1)
-			.addNotifier(this, \value, { | n |
-				// postln("debugging numbox 1. sensor lo" + sensor.lo);
-				n.listener.value = sensor.lo;
-			})
-			.action_({ | me | this.setSensorLo(me.value) }),
-			NumberBox().maxWidth_(55)
-			.background_(Color.gray(0.7))
-			.clipLo_(spec.clipLo)
-			.clipHi_(spec.clipHi)
-			.decimals_(5)
-			.value_(spec.maxval)
-			.addNotifier(this, \value, { | n |
-				// postln("debugging numbox 1. sensor hi" + sensor.hi);
-				n.listener.value = sensor.hi;
-			})
-			.action_({ | me | this.setSensorHi(me.value) }),
+			// Button().maxWidth_(55).states_([["custom:"]])
+			// .action_({ sensor.customize; }),
+			// Button().maxWidth_(30) // sensor source type
+			// .states_([["-"]])
+			// .addNotifier(model, \gui, { | n |
+			// 	n.listener.states = [[sensor.ctl.asString]];
+			// })
+			// .action_({ | me | Menu(
+			// 	*['off', \x, \z, \cx, \cz, \c3].collect({ | f |
+			// 		MenuAction(f.asString, {
+			// 			me.states_([[f.asString]]);
+			// 			sensor.ctl = f.asSymbol;
+			// 		})})
+			// ).front }),
+			// Button().maxWidth_(20) // sensor id
+			// .states_([["1"]])
+			// .addNotifier(model, \gui, { | n |
+			// 	n.listener.states = [[sensor.id.asString]];
+			// })
+			// .action_({ | me | Menu(
+			// 	*(1..12).collect({ | f | MenuAction(f.asString, { //c| me |
+			// 		me.states_([[f.asString]]);
+			// 		sensor.id = f;
+			// 	})})
+			// ).front }) ,
+			// NumberBox().maxWidth_(55)
+			// .background_(Color.gray(0.7))
+			// .clipLo_(spec.clipLo)
+			// .clipHi_(spec.clipHi)
+			// .decimals_(5)
+			// .value_(spec.minval)
+			// // .value_(1)
+			// .addNotifier(this, \value, { | n |
+			// 	// postln("debugging numbox 1. sensor lo" + sensor.lo);
+			// 	n.listener.value = sensor.lo;
+			// })
+			// .action_({ | me | this.setSensorLo(me.value) }),
+			// NumberBox().maxWidth_(55)
+			// .background_(Color.gray(0.7))
+			// .clipLo_(spec.clipLo)
+			// .clipHi_(spec.clipHi)
+			// .decimals_(5)
+			// .value_(spec.maxval)
+			// .addNotifier(this, \value, { | n |
+			// 	// postln("debugging numbox 1. sensor hi" + sensor.hi);
+			// 	n.listener.value = sensor.hi;
+			// })
+			// .action_({ | me | this.setSensorHi(me.value) }),
+			TextField().maxWidth_(300),
 			NumberBox().maxWidth_(80)
 			.normalColor_(Color.red(0.5))
 			.clipLo_(spec.clipLo)
@@ -104,7 +105,7 @@ Param {
 				value = me.value;
 				// model.changed(name);
 			}),
-			Slider().orientation_(\horizontal)
+			Slider().maxWidth_(300).orientation_(\horizontal)
 			.addNotifier(model, \gui, { | n |
 				n.listener.value = spec unmap: model.valueAt(name) ? 0;
 			})

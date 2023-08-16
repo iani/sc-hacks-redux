@@ -4,7 +4,7 @@ Redoing this to make it possible to remove Preset views.
 
 PresetListGui {
 	var <presetList;
-	var <i;
+	// var <i;
 	*new { | presetList |
 		^this.newCopyArgs(presetList);
 	}
@@ -18,7 +18,7 @@ PresetListGui {
 
 	window {
 		var window, canvas, layout;
-		i = 0;
+		// i = 0;
 		window = ScrollView(bounds:Rect(0,0,700,700).center_(Window.availableBounds.center));
 		canvas = View();		​
 		layout = VLayout();
@@ -29,19 +29,6 @@ PresetListGui {
 		layout.add(nil); // stretch remaining empty space
 		^window.front;
 	}
-
-	makeEntry {
-		var view;
-		view = View().background_(Color.rand).layout_(
-        HLayout(
-            TextField().string_( ("This is entry number " + i.asString) ),
-            Button().states_([["Delete"]]).action_({view.remove; i = i - 1;})
-        )
-    );
-    i = i + 1;
-    ^view;
-	}
-
 
 	windowOLD {
 		var scroll, canvas, layout;

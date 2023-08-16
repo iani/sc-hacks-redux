@@ -43,7 +43,9 @@ SensorCtl {
 
 	stop {
 		// "Debugging SensorCtl.stop".postln;
-		format("nil @>. % %", player, param.slash).postln.share; }
+		format("nil @>. % %", player, param.slash).postln.share;
+	}
+
 	start {
 		// postln("!!!!!! debuggging start of Sensor for param" + param);
 		// postln("debuggging SensorCtl ranges. lo is:" + lo + "hi is:" + hi);
