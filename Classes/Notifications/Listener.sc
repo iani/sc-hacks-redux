@@ -1,5 +1,5 @@
 /* 23 Feb 2022 07:45
-Add an action that runs at when the model runs \changed, indebpendently of
+Add an action that runs at when the model runs \changed, independently of
 the message appended to change.
 
 You can add many Listeners to one model.

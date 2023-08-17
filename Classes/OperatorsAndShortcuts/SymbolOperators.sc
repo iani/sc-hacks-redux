@@ -15,7 +15,8 @@
 	}
 	play { | playFunc, event |
 		// play playfunc in event envir of Mediator named by me
-		^Mediator.at(this).play(playFunc, event);
+		// amplify: add an \amp control to the function played.
+		^Mediator.at(this).play(playFunc.amplify, event);
 	}
 	putGlobal { | object | Mediator.putGlobal(this, object) }
 

@@ -63,16 +63,9 @@ PresetList {
 			var seed;
 			seed = s.interpret;
 			switch (seed.class,
-				Event, {
-					// Choose subclass of Presets depending on playfunc?
-					Preset.newCopyArgs(this, i, s).importDict(seed)
-				},
-				Symbol, {
-					ScorePlayer(this, i, seed)
-				},
-				String, {
-					ScorePlayer(this, i, seed)
-				}
+				Event, { Preset.newCopyArgs(this, i, s).importDict(seed) },
+				Symbol, { ScorePlayer(this, i, seed);},
+				String, { ScorePlayer(this, i, seed); }
 			)
 		};
 		player = argPlayer; // gui's should not permit 2 players in same system?
@@ -177,5 +170,13 @@ PresetList {
 		activeLists remove: this.player;
 		this.class.changed(\activeLists);
 		// postln("after removeActive availablePlayers:" + this.availablePlayers);
+	}
+
+	save {
+		File.use(path, "w", { | f |
+			f write: format ("/*presets for % saved at %*/\n", player, Date.getDate.stamp);
+			presets do: { | p | f write: p.asString; };
+			f write: "\n/* THE END */";
+		})
 	}
 }

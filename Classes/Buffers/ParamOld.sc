@@ -1,9 +1,10 @@
 /* 13 Jul 2023 10:20
 
-Model will be an instance of SoundParams
+Version below was replaced on Thu 17 Aug 2023 15:26
+
 */
 
-Param {
+ParamOld {
 	var <model, <spec, <name, <value;
 	var <sensor, <sensorlo, <sensorhi;
 	var <player;

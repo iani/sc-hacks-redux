@@ -3,7 +3,7 @@
 */
 
 + Function {
-	amplify { | amp = 0.1 | // Thu 17 Aug 2023 11:47 experimental: provide amp bus control.
+	amplify { | amp = 1 | // Thu 17 Aug 2023 11:47 experimental: provide amp bus control.
 		^{ this.value * \amp.br(amp) }
 	}
 	+> { | player, envir |

@@ -37,15 +37,8 @@ SynthTemplate {
 	}
 
 	*getFunc { | funcname |
-		var debug;
-		// debug = this.getTemplate(funcname);
-		// postln("Debugging SynthTemplate:getFunc. funcname:" + funcname
-		// 	+ "template" + debug +
-		// 	"name" + debug.name + "\npath" + debug.path
-		// 	+ "\n\ncode\n\n" + debug.code
-		// 	+ "\n\n\template:\n\n" + debug.template
-		// );
-		^this.getTemplate(funcname).func;
+		var debug; // amplify: add amp control!
+		^this.getTemplate(funcname).func.amplify;
 	}
 
 	*getTemplate { | funcname |
@@ -63,13 +56,8 @@ SynthTemplate {
 		}{
 			func = code[delimiters[0]..].interpret;
 			template = code[..delimiters[0]].interpret ?? { this.defaultSpecs };
-			specs = template collect: _.specs;
+			specs = [\amp.asSpec.units_(\amp)] ++ (template collect: _.specs).flat;
 		};
-		// postln("Debugging SynthTemplate Load. name" + name + "path" + path
-			// +
-			// "code" + code;
-		// );
-		// template = this.makeTemplate;
 	}
 
 	defaultSpecs { ^[PlayBuf_] }
@@ -79,20 +67,13 @@ SynthTemplate {
 	}
 	dict { // dictionary for creating presets
 		// merge default basicDict with entries from the individual template.
-		var dict;
-		dict = this.customDict;
-		this.basicDict keysValuesDo: { | key, value | dict[key] = value; };
-		^dict;
+		^this.basicDict addEvent: this.customDict;
 	}
 
-	basicDict { // basic dictionary for all BufferSynths
-		var buf = \default;
-		^(
-			amp: [1, ""],
-			buf: [buf, ""],
-			startframe: [0, ""],
-			endframe: [buf.buf.numFrames, ""],
-		)
+	basicDict { // basic dictionary for all SynthTemplates.
+		// subclasses may add more keys to this.  See BufferSynths
+		// amp is provided to all template funcs using "amplify!" in method getFunc
+		^(amp: [1, ""], playfunc: name, selectionNum: 0);
 	}
 
 	customDict { // dict from template specs

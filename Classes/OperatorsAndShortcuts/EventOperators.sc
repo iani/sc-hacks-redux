@@ -4,6 +4,10 @@
 
 + Event {
 
+	addEvent { | argEvent | // add all key-value pairs from argEvent to myself
+		argEvent keysValuesDo: { | key, value | this[key] = value }
+	}
+
 	pp { // prettyprint
 		^String.streamContents({ arg s;
 			s << "(\n";

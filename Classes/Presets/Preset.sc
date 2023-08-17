@@ -10,7 +10,7 @@ Preset {
 	var <playfunc;
 	var <selectionNum;
 	var <paramSpecs, <params;
-	var <ampctl;
+	// var <ampctl;
 	var <template; // subclass of SynthTemplate. creates the specs - and other customized stuff?
 	//	var <player; // obtain from presetList! ???
 
@@ -23,12 +23,13 @@ Preset {
 		^this.fromDict(snippet.interpret).code_(snippet);
 	}
 
-	*fromDict { | dict | // import from dict from PresetList script
-		^this.newCopyArgs((player: dict[\player] ? \default), 0).importDict(dict);
+	*fromPlayfunc { | playfunc |
+		^this.fromDict(SynthTemplate.getTemplate(playfunc).dict);
 	}
 
-	*asDict { // create dict for export to PresetList script
-		// TBD
+	*fromDict { | dict | // import from dict from PresetList script
+		^this.newCopyArgs((player: dict[\player] ? \default), 0).importDict(dict)
+		.code_(dict.pp);
 	}
 
 	*new { | list, index, source |
@@ -41,10 +42,9 @@ Preset {
 
 	importDict { | adict | // create all contents from dict
 		playfunc = adict[\playfunc];
-		selectionNum = adict[\selectionNum]; // possibly redundant
-		this.makeParams(adict[\paramctl]);
+		selectionNum = adict[\selectionNum] ? 0; // possibly redundant
 		dict = adict;
-		ampctl = SensorCtl(*dict[\ampctl]);
+		this.makeParams(dict);
 	}
 	makeParams { | adict |
 		// TODO: use also PlainSynths!  Call SynthTemplate.getTemplate instead:
@@ -52,7 +52,7 @@ Preset {
 		template = BufferSynths.getTemplate(playfunc);
 		paramSpecs = template.specs;
 		// postln("sound params found specs is:" + specs);
-		params = paramSpecs.flat collect: { | p | Param(this, p, adict) };
+		params = paramSpecs collect: { | p | Param(this, p, adict) };
 	}
 
 	player { ^presetList.player }
@@ -76,7 +76,6 @@ Preset {
 					}
 				});
 				// 0.01.wait;  // must wait for synths to stop!!! ????????
-				ampctl.start;
 				params do: _.start;
 			}.fork; /// fork needed?
 		}
@@ -124,7 +123,7 @@ Preset {
 		view = View().background_(Color.rand);
 		view.layout_(
 			VLayout(
-				this.playView2(view),
+				this.playView(view),
 				this.paramView
 			)
 		);
@@ -134,22 +133,17 @@ Preset {
 	// endframe, dur, previewbutton,
 	//
 	//
-	playView2 { | view | // new version: Wed 16 Aug 2023 09:33
+	playView { | view | // new version: Wed 16 Aug 2023 09:33
 		var pfuncmenu;
 		pfuncmenu = [\a, \b] collect: { | p | [p, { this.addPreset(p) }] };
-		selectionNum = dict[\selectionNum] ? 0;
 		^HLayout(
-			Button().states_([["+"]]).maxWidth_(15)
-			.menuActions(pfuncmenu),
-			Button().states_([["-"]]).maxWidth_(15).action_({ this confirmRemove: view }),
+			StaticText().maxWidth_(20).string_(index.asString),
+			StaticText().maxWidth_(80).string_(playfunc.asString),
 			CheckBox().string_("play").maxWidth_(50)
 			.action_({ | me |
 				if (me.value) { this.play }{ this.stop }
 			})
 			.addNotifier(presetList, \stopped, { | n, who |
-				// postln("checking playView checkbox stopped. who?" + who +
-				// 	"is it me?"  ++ (who === this);
-				// );
 				if (who !== this) { n.listener.value = false };
 			})
 			// TODO: FIX THIS!!!!!:
@@ -160,15 +154,13 @@ Preset {
 					n.listener.focus(true);
 				}
 			}),
-			StaticText().maxWidth_(20).string_(index.asString),
-			StaticText().maxWidth_(80).string_(playfunc.asString),
-			StaticText().maxWidth_(60).string_("selection:")
-			.background_(SoundBufferGui.colors[selectionNum]),
-			NumberBox().maxWidth_(25).value_(selectionNum).enabled_(false),
+			Button().states_([["+"]]).maxWidth_(15).menuActions(pfuncmenu),
+			Button().states_([["-"]]).maxWidth_(15).action_({ this confirmRemove: view })
+
 		)
 	}
 
-	addPreset { | p |
+	addPreset { | p | // TODO: create a new preset and add it to the list???
 		p.postln;
 	}
 	confirmRemove { | argView |  // TODO: also remove self from list!
@@ -178,78 +170,41 @@ Preset {
 		}.confirm("Do you really want to remove preset no." + index + "?");
 	}
 
-	playView {
-		selectionNum = dict[\selectionNum] ? 0;
-		^HLayout(
-			StaticText().maxWidth_(20).string_(index.asString),
-			StaticText().maxWidth_(80).string_(playfunc.asString),
-			StaticText().maxWidth_(60).string_("selection:")
-			.background_(SoundBufferGui.colors[selectionNum]),
-			NumberBox().maxWidth_(25).value_(selectionNum).enabled_(false),
-			CheckBox().string_("play").maxWidth_(50)
-			.action_({ | me |
-				if (me.value) { this.play }{ this.stop }
-			})
-			.addNotifier(presetList, \stopped, { | n, who |
-				// postln("checking playView checkbox stopped. who?" + who +
-				// 	"is it me?"  ++ (who === this);
-				// );
-				if (who !== this) { n.listener.value = false };
-			})
-			// TODO: FIX THIS!!!!!:
-			.addNotifier(this.envir, this.player, { | n |
-				// "Received notification from envir".postln;
-				if (envir(this.player).isPlaying) {
-					n.listener.value = false;
-					n.listener.focus(true);
-				}
-			}),
-			// Button().maxWidth_(70)
-			// .states_([[this.player, Color.green(0.5)]])
-			// .action_({ | me | Menu(
-			// 	*PresetList.players.collect({ | f | MenuAction(f.asString, {
-			// 		me.states_([[f.asString, Color.green(0.5), Color.white]]);
-			// 		this.player = f.asSymbol.postln;
-			// 	})})
-			// ).front }),
-			Button().maxWidth_(55).states_([["amp ctl:"]])
-			.action_({ ampctl.customize; }),
-			Button().maxWidth_(30)
-			.states_([["off"]])
-			.addNotifier(this, \gui, { | n |
-				n.listener.states_([[ampctl.ctl.asString]])
-			})
-			.action_({ | me | Menu(
-				*['off', 'xyz', 'lx', 'lz', 'cx', 'cz', 'c3'].collect({ | f |
-					MenuAction(f.asString, {
-						me.states_([[f.asString]]);
-						ampctl.ctl_(f);
-					})})
-			).front }),
-			Button().maxWidth_(20)
-			.states_([["1"]])
-			.addNotifier(this, \gui, { | n |
-				n.listener.states_([[ampctl.id.asString]])
-			})
-			.action_({ | me | Menu(
-				*(1..12).collect({ | f | MenuAction(f, {
-					me.states_([[f.asString]]);
-					ampctl.id_(f);
-				})})
-			).front }),
-			StaticText().maxWidth_(60).string_("frames:"),
-			RangeSlider().maxWidth_(100).orientation_(\horizontal),
-			Button().maxWidth_(10).states_([["x"]])
-			.action_({ CmdPeriod.run }),
-			Button().maxWidth_(10).states_([["x", Color.yellow, Color.red]])
-			.action_({ "CmdPeriod.run".share })
-		)
-	}
+	// playView {
+	// 	selectionNum = dict[\selectionNum] ? 0;
+	// 	^HLayout(
+	// 		StaticText().maxWidth_(20).string_(index.asString),
+	// 		StaticText().maxWidth_(80).string_(playfunc.asString),
+	// 		// StaticText().maxWidth_(60).string_("selection:")
+	// 		// .background_(SoundBufferGui.colors[selectionNum]),
+	// 		// NumberBox().maxWidth_(25).value_(selectionNum).enabled_(false),
+	// 		CheckBox().string_("play").maxWidth_(50)
+	// 		.action_({ | me |
+	// 			if (me.value) { this.play }{ this.stop }
+	// 		})
+	// 		.addNotifier(presetList, \stopped, { | n, who |
+	// 			if (who !== this) { n.listener.value = false };
+	// 		})
+	// 		// TODO: FIX THIS!!!!!:
+	// 		.addNotifier(this.envir, this.player, { | n |
+	// 			// "Received notification from envir".postln;
+	// 			if (envir(this.player).isPlaying) {
+	// 				n.listener.value = false;
+	// 				n.listener.focus(true);
+	// 			}
+	// 		}),
+	// 		StaticText().maxWidth_(60).string_("frames:"),
+	// 		RangeSlider().maxWidth_(100).orientation_(\horizontal),
+	// 		Button().maxWidth_(10).states_([["x"]])
+	// 		.action_({ CmdPeriod.run }),
+	// 		Button().maxWidth_(10).states_([["x", Color.yellow, Color.red]])
+	// 		.action_({ "CmdPeriod.run".share })
+	// 	)
+	// }
 
 	paramView {
 		^VLayout(*params.collect({ | p | p.gui }))
 	}
-
 
 	viewSimplePrototype {
 		^View().background_(Color.rand).layout_(

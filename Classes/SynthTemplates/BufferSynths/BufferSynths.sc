@@ -20,4 +20,13 @@ BufferSynths : SynthTemplate {
 	}
 
 	*at {   | argName = \playbuf |  ^this.getTemplate(argName) }
+
+	basicDict { // basic dictionary for all BufferSynths
+		var buf = \default;
+		^(
+			buf: [buf, ""],
+			startframe: [0, ""],
+			endframe: [buf.buf.numFrames, ""],
+		) addEvent: super.basicDict;
+	}
 }
