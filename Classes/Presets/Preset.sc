@@ -177,41 +177,7 @@ Preset {
 		}.confirm("Do you really want to remove preset no." + index + "?");
 	}
 
-	// playView {
-	// 	selectionNum = dict[\selectionNum] ? 0;
-	// 	^HLayout(
-	// 		StaticText().maxWidth_(20).string_(index.asString),
-	// 		StaticText().maxWidth_(80).string_(playfunc.asString),
-	// 		// StaticText().maxWidth_(60).string_("selection:")
-	// 		// .background_(SoundBufferGui.colors[selectionNum]),
-	// 		// NumberBox().maxWidth_(25).value_(selectionNum).enabled_(false),
-	// 		CheckBox().string_("play").maxWidth_(50)
-	// 		.action_({ | me |
-	// 			if (me.value) { this.play }{ this.stop }
-	// 		})
-	// 		.addNotifier(presetList, \stopped, { | n, who |
-	// 			if (who !== this) { n.listener.value = false };
-	// 		})
-	// 		// TODO: FIX THIS!!!!!:
-	// 		.addNotifier(this.envir, this.player, { | n |
-	// 			// "Received notification from envir".postln;
-	// 			if (envir(this.player).isPlaying) {
-	// 				n.listener.value = false;
-	// 				n.listener.focus(true);
-	// 			}
-	// 		}),
-	// 		StaticText().maxWidth_(60).string_("frames:"),
-	// 		RangeSlider().maxWidth_(100).orientation_(\horizontal),
-	// 		Button().maxWidth_(10).states_([["x"]])
-	// 		.action_({ CmdPeriod.run }),
-	// 		Button().maxWidth_(10).states_([["x", Color.yellow, Color.red]])
-	// 		.action_({ "CmdPeriod.run".share })
-	// 	)
-	// }
-
-	paramView {
-		^VLayout(*params.collect({ | p | p.gui }))
-	}
+	paramView { ^VLayout(*params.collect({ | p | p.gui })) }
 
 	viewSimplePrototype {
 		^View().background_(Color.rand).layout_(
@@ -223,8 +189,11 @@ Preset {
 	}
 
 	asScript {
+		this.updateDictFromParams;
 		^"\n//:" + format("(%)", index) + this.player + playfunc + dict[\buf] ++ "\n" ++ dict.pp;
 	}
+
+	updateDictFromParams { params do: { | p | dict[p.name] = [p.value, p.code]; } }
 
 	clean {
 		dict[\ampctl] = nil;
