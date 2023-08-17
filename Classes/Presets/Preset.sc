@@ -132,8 +132,9 @@ Preset {
 	// playcheckbox, presetnum, playfuncmenu, bufferbutton, startframe,
 	// endframe, dur, previewbutton,
 	playView { | view | // new version: Wed 16 Aug 2023 09:33
-		var pfuncmenu;
+		var pfuncmenu, buffermenu;
 		pfuncmenu = SynthTemplate.templateNames collect: { | p | [p, { this.addPreset(p) }] };
+		buffermenu = Buffer.all collect: { | p | [p, { this.switchBuffer(p) }] };
 		^HLayout(
 			StaticText().maxWidth_(20).string_(index.asString),
 			StaticText().maxWidth_(80).string_(playfunc.asString),
@@ -152,7 +153,7 @@ Preset {
 					n.listener.focus(true);
 				}
 			}),
-			Button().maxWidth_(150).states_([[this.bufname]]),
+			Button().maxWidth_(150).states_([[this.bufname]]).menuActions(buffermenu),
 			StaticText().maxWidth_(70).string_("startframe"),
 			NumberBox().maxWidth_(80),
 			StaticText().maxWidth_(60).string_("endframe"),
