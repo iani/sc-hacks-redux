@@ -2,15 +2,10 @@
 
 */
 
-+ Object {
-	pushPlayInEnvir { | player, envir, target, outbus = 0 |
-		// "this is object pushPlayInEnvir".postln;
-		(envir ? player).push;
-		this.playInEnvir(player, envir, target, outbus);
-	}
-}
-
 + Function {
+	amplify { | amp = 0.1 | // Thu 17 Aug 2023 11:47 experimental: provide amp bus control.
+		^{ this.value * \amp.br(amp) }
+	}
 	+> { | player, envir |
 		^this.pushPlayInEnvir(player, envir);
 	}

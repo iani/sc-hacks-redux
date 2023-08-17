@@ -40,14 +40,14 @@
 
 + Symbol {
 	trace {
-		this >>> { | ... args | args.postln; };
+		this >>>.trace { | ... args | args.postln; };
 	}
 
 	traceChanges {
 		this addDependant: Trace;
 	}
 
-	untrace { this <<< this }
+	untrace { this >>>.trace nil }
 
 	|>|  { | action, key |
 		// run an action when receiving osc message

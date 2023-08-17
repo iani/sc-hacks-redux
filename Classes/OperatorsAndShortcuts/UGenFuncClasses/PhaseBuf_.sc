@@ -19,7 +19,7 @@ PhaseBuf_ : UGenFunc {
 			buf.numChannels,
 			buf.bufnum,
 			Phasor.ar(
-				\trig.br(0),
+				\trig.br(0), // triggered by external functions. Preset value not applicable
 				BufRateScale.kr(buf.bufnum) * \rate.br(~rate ? 1),
 				\startframe.br(~startframe ? 0),
 				\endframe.br(~endframe ?? { buf.numFrames })

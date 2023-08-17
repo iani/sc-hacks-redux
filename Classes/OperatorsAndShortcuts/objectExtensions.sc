@@ -4,6 +4,12 @@ Load an scd file located in the same folder as your class definition.
 
 + Object {
 
+	pushPlayInEnvir { | player, envir, target, outbus = 0 |
+		// "this is object pushPlayInEnvir".postln;
+		(envir ? player).push;
+		this.playInEnvir(player, envir, target, outbus);
+	}
+
 	loadFromLib { | filename |
 		var fullPath;
 		fullPath = PathName(this.class.filenameSymbol.asString).pathOnly ++ filename ++ ".scd";

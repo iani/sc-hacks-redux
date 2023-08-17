@@ -3,7 +3,7 @@
 */
 
 BufferSynths : SynthTemplate {
-	// TODO: Store this in Library and keep DRY for subclasses of SynthTemplate
+	// TODO: Store playfuncs in Library and keep DRY for subclasses of SynthTemplate
 	classvar <playfuncs; // Dictionary of BufferSynths instances
 
 	*init {
@@ -20,5 +20,4 @@ BufferSynths : SynthTemplate {
 	}
 
 	*at {   | argName = \playbuf |  ^this.getTemplate(argName) }
-
 }

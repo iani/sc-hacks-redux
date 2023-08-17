@@ -1,5 +1,5 @@
 /* Fri  7 Jul 2023 21:18
-Experimental.
+Experimental. for testing non-buffersynth ugenfuncs
 */
 [PhaseBuf_, MagShift_];
 //:

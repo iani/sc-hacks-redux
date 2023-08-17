@@ -11,7 +11,7 @@ Preset {
 	var <selectionNum;
 	var <paramSpecs, <params;
 	var <ampctl;
-	var <template; // subclass of SynthTemplate. creates the specs
+	var <template; // subclass of SynthTemplate. creates the specs - and other customized stuff?
 	//	var <player; // obtain from presetList! ???
 
 	// EXPERIMENTAL
@@ -23,8 +23,12 @@ Preset {
 		^this.fromDict(snippet.interpret).code_(snippet);
 	}
 
-	*fromDict { | dict |
+	*fromDict { | dict | // import from dict from PresetList script
 		^this.newCopyArgs((player: dict[\player] ? \default), 0).importDict(dict);
+	}
+
+	*asDict { // create dict for export to PresetList script
+		// TBD
 	}
 
 	*new { | list, index, source |

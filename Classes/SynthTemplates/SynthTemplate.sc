@@ -77,4 +77,33 @@ SynthTemplate {
 		// postln("Skipping template making for" + name);
 		^""
 	}
+	dict { // dictionary for creating presets
+		// merge default basicDict with entries from the individual template.
+		var dict;
+		dict = this.customDict;
+		this.basicDict keysValuesDo: { | key, value | dict[key] = value; };
+		^dict;
+	}
+
+	basicDict { // basic dictionary for all BufferSynths
+		var buf = \default;
+		^(
+			amp: [1, ""],
+			buf: [buf, ""],
+			startframe: [0, ""],
+			endframe: [buf.buf.numFrames, ""],
+		)
+	}
+
+	customDict { // dict from template specs
+		var dict;
+		dict = ();
+		this.specs.flat do: { | s |
+			dict[s.units] = [s.default, ""];
+		};
+		^dict;
+	}
+
+
+	edit { Document open: path; }
 }

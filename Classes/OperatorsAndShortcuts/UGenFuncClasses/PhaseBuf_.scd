@@ -1,5 +1,5 @@
 [
-	\rate.asSpec2,
+	\rate.asSpec,
 	// \trigger.ps(0, 1, 0, \linear, 1),
 	// trigger should not create gui controls.
 	// \startpos.ps(0, 10000000),

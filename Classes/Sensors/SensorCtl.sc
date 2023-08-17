@@ -1,4 +1,9 @@
 /* 22 Jul 2023 11:17
+ !!!!!!!!!!!!!
+	Wed 16 Aug 2023 22:31: Abandoning this in favor of directly coding the control functions.
+ !!!!!!!!!!!!!
+
+
 Encapsulate on-off and muting as well as parameter bus setting control from sensor input.
 
 Uses Integer methods: off, lx, lz, gx, gz, xyz, x, z as shortcuts to evaluate/share code with 'share'.
