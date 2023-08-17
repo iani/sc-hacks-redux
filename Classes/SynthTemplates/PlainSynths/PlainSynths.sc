@@ -19,4 +19,5 @@ PlainSynths : SynthTemplate {
 		^(playfuncs[argName] ?? { playfuncs[\playbuf] });
 	}
 	*at {   | argName = \playbuf |  ^this.getTemplate(argName) }
+	*funcnames { ^playfuncs.keys.asArray.sort }
 }

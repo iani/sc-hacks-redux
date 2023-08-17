@@ -29,4 +29,6 @@ BufferSynths : SynthTemplate {
 			endframe: [buf.buf.numFrames, ""],
 		) addEvent: super.basicDict;
 	}
+
+	*funcnames { ^playfuncs.keys.asArray.sort }
 }

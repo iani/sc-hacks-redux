@@ -11,7 +11,6 @@ A SynthTemplate can search and return 2 things with 2 methods:
 	some information needed:
 	- the name, function, specs, code used to make the template, and the template itself
 	which is an array of classes used to create the specs
-
 */
 
 SynthTemplate {
@@ -41,6 +40,9 @@ SynthTemplate {
 		^this.getTemplate(funcname).func.amplify;
 	}
 
+	*templateNames {
+		^this.allSubclasses.collect(_.funcnames).flat;
+	}
 	*getTemplate { | funcname |
 		// look in all subclases and return the first match.
 		^this.allSubclasses.collect(_.getTemplate(funcname)).detect(_.notNil);
@@ -84,7 +86,6 @@ SynthTemplate {
 		};
 		^dict;
 	}
-
 
 	edit { Document open: path; }
 }

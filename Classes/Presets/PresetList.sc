@@ -173,10 +173,16 @@ PresetList {
 	}
 
 	save {
+		postln("Saving" + presets.size + "presets to");
+		postln(path);
+		post("...");
 		File.use(path, "w", { | f |
 			f write: format ("/*presets for % saved at %*/\n", player, Date.getDate.stamp);
-			presets do: { | p | f write: p.asString; };
+			presets do: { | p | f write: p.asScript; };
 			f write: "\n/* THE END */";
-		})
+		});
+		"done.".postln;
 	}
+
+	clean { presets do: _.clean; }
 }

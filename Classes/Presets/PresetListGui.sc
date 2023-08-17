@@ -36,7 +36,6 @@ PresetListGui {
 		view.layout_(
 			HLayout(
 				StaticText().string_( ("Presets for:" + this.player) ),
-				Button().states_([["Edit"]]).action_({ this.openSource }),
 				Button().states_([["Open other player"]])
 				.menuActions(PresetList.playerMenu)
 				.addNotifier(PresetList, \activeLists, { | n |
@@ -46,6 +45,9 @@ PresetListGui {
 				.action_({ CmdPeriod.run }),
 				Button().states_([["Stop All Global", Color.yellow, Color.red]])
 				.action_({ "CmdPeriod.run".share }),
+				Button().states_([["Edit"]]).action_({ this.openSource }),
+				Button().states_([["Clean"]]).action_({ presetList.clean }),
+				Button().states_([["Save"]]).action_({ presetList.save })
 			)
 		);
 		^view
@@ -54,16 +56,5 @@ PresetListGui {
 	player { ^presetList.player }
 
 	openSource { presetList.openSource }
-	/*
-	makePresetLayout {
-		var view = View().background_(Color.rand).layout_(
-			HLayout(
-				TextField().string_( ("This is entry number " + i.asString) ),
-				Button().states_([["Delete"]]).action_({view.remove; i = i - 1;})
-			)
-		);
-		i = i + 1;
-		^view
-	}
-	*/
+
 }

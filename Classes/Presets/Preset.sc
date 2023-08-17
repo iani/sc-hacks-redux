@@ -131,11 +131,9 @@ Preset {
 	}
 	// playcheckbox, presetnum, playfuncmenu, bufferbutton, startframe,
 	// endframe, dur, previewbutton,
-	//
-	//
 	playView { | view | // new version: Wed 16 Aug 2023 09:33
 		var pfuncmenu;
-		pfuncmenu = [\a, \b] collect: { | p | [p, { this.addPreset(p) }] };
+		pfuncmenu = SynthTemplate.templateNames collect: { | p | [p, { this.addPreset(p) }] };
 		^HLayout(
 			StaticText().maxWidth_(20).string_(index.asString),
 			StaticText().maxWidth_(80).string_(playfunc.asString),
@@ -154,11 +152,19 @@ Preset {
 					n.listener.focus(true);
 				}
 			}),
+			Button().maxWidth_(150).states_([[this.bufname]]),
+			StaticText().maxWidth_(70).string_("startframe"),
+			NumberBox().maxWidth_(80),
+			StaticText().maxWidth_(60).string_("endframe"),
+			NumberBox().maxWidth_(80),
+			StaticText().maxWidth_(30).string_("dur"),
+			NumberBox().maxWidth_(50),
 			Button().states_([["+"]]).maxWidth_(15).menuActions(pfuncmenu),
 			Button().states_([["-"]]).maxWidth_(15).action_({ this confirmRemove: view })
-
 		)
 	}
+
+	bufname { ^dict[\buf] ? '----' }
 
 	addPreset { | p | // TODO: create a new preset and add it to the list???
 		p.postln;
@@ -215,34 +221,15 @@ Preset {
 		)
 	}
 
-	ampCtlView { // to be replaced!
-		var ampctl;
-		^[
-		Button().maxWidth_(55).states_([["amp ctl:"]])
-		.action_({ ampctl.customize; }),
-		Button().maxWidth_(30)
-		.states_([["off"]])
-		.addNotifier(this, \gui, { | n |
-			n.listener.states_([[ampctl.ctl.asString]])
-		})
-		.action_({ | me | Menu(
-			*['off', 'xyz', 'lx', 'lz', 'cx', 'cz', 'c3'].collect({ | f |
-				MenuAction(f.asString, {
-					me.states_([[f.asString]]);
-					ampctl.ctl_(f);
-				})})
-		).front }),
-		Button().maxWidth_(20)
-		.states_([["1"]])
-		.addNotifier(this, \gui, { | n |
-			n.listener.states_([[ampctl.id.asString]])
-		})
-		.action_({ | me | Menu(
-			*(1..12).collect({ | f | MenuAction(f, {
-				me.states_([[f.asString]]);
-				ampctl.id_(f);
-			})})
-		).front })
-		]
+	asScript {
+		^"\n//:" + format("(%)", index) + this.player + playfunc + dict[\buf] ++ "\n" ++ dict.pp;
+	}
+
+	clean {
+		dict[\ampctl] = nil;
+		dict[\player] = nil;
+		dict[\dur] = nil;
+		dict[\selectionNum] = nil;
+		dict[\paramctl] = nil;
 	}
 }
