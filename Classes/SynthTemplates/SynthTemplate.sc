@@ -15,8 +15,15 @@ A SynthTemplate can search and return 2 things with 2 methods:
 
 SynthTemplate {
 	classvar <homefolder, <templatesfolder, <playfuncsfolder, <codefolder;
+	classvar alltemplates; // dict with all templates from all subclasses
 
 	var <path, <name, <func, <specs, <code, <template;
+
+	*alltemplates { // (lazily???) collect all templates in one dict.
+		^alltemplates ?? { alltemplates = IdentityDictionary() };
+	}
+
+	alltemplates { ^this.class.alltemplates }
 
 	*initClass {
 		StartUp add: { this.init }
@@ -24,28 +31,32 @@ SynthTemplate {
 
 	*init {
 		Spec.addSC_Hacks_Specs;
-		this.allSubclasses do: _.init;
+		this.allSubclasses do: _.getAll;
 	}
 
-	*templatePaths { // Load from same folder as your definition is
-		^(PathName(this.filenameSymbol.asString).pathOnly ++ "*.scd").pathMatch;
+	*getAll {
+		this.templatePaths do: { | p | this.new(p) };
+	}
+
+	*templatePaths { // Load from subfolder "templates" from your definition folder.
+		^(PathName(this.filenameSymbol.asString).pathOnly +/+ "templates" +/+ "*.scd").pathMatch;
 	}
 
 	*new { | path |
 		^this.newCopyArgs(path).init;
 	}
 
-	*getFunc { | funcname |
-		^this.getTemplate(funcname).func.amplify; // amplify: add amp control!
+	init {
+		name = PathName(path).fileNameWithoutExtension.asSymbol;
+		this.load;
+		this.alltemplates[name] = this;
 	}
 
-	*templateNames {
-		^this.allSubclasses.collect(_.funcnames).flat;
+	*getFunc { | funcname |
+		^this.getTemplate.func.amplify; // amplify: add amp control!
 	}
-	*getTemplate { | funcname |
-		// look in all subclases and return the first match.
-		^this.allSubclasses.collect(_.getTemplate(funcname)).detect(_.notNil);
-	}
+
+	*getTemplate { | funcname | ^this.alltemplates(funcname); }
 
 	load {
 		var delimiters;
@@ -62,10 +73,7 @@ SynthTemplate {
 	}
 
 	defaultSpecs { ^[PlayBuf_] }
-	makeTemplate {
-		// postln("Skipping template making for" + name);
-		^""
-	}
+
 	dict { // dictionary for creating presets
 		// merge default basicDict with entries from the individual template.
 		^this.basicDict addEvent: this.customDict;
@@ -74,7 +82,7 @@ SynthTemplate {
 	basicDict { // basic dictionary for all SynthTemplates.
 		// subclasses may add more keys to this.  See BufferSynths
 		// amp is provided to all template funcs using "amplify!" in method getFunc
-		^(amp: [1, ""], playfunc: name, selectionNum: 0);
+		^(amp: [1, "", \off], playfunc: name);
 	}
 
 	customDict { // dict from template specs

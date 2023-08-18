@@ -47,11 +47,8 @@ Preset {
 		this.makeParams(dict);
 	}
 	makeParams { | adict |
-		// TODO: use also PlainSynths!  Call SynthTemplate.getTemplate instead:
-		// paramSpecs = BufferSynths.getTemplate(playfunc).specs;
-		template = BufferSynths.getTemplate(playfunc);
+		template = this.getTemplate(playfunc);
 		paramSpecs = template.specs;
-		// postln("sound params found specs is:" + specs);
 		params = paramSpecs collect: { | p | Param(this, p, adict) };
 	}
 
