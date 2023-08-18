@@ -36,8 +36,7 @@ SynthTemplate {
 	}
 
 	*getFunc { | funcname |
-		var debug; // amplify: add amp control!
-		^this.getTemplate(funcname).func.amplify;
+		^this.getTemplate(funcname).func.amplify; // amplify: add amp control!
 	}
 
 	*templateNames {

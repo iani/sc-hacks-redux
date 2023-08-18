@@ -46,22 +46,14 @@ Mediator : EnvironmentRedirect {
 		argEvent !? {// TODO: stop synths when replacing keys
 			argEvent keysValuesDo: { | key, val |
 				// envir[key].free;
-				envir[key] = val;
+				envir[key] = val.asArray.first; // get value from Preset dict
 			};
 		};
-
-		// postln("\n\n\n======== Debugging Mediator play =======\n\n\n"
-		// 	+ "argEvent is:\n" + argEvent
-		// 	+ "events playfunc is:" + argEvent[\playfunc];
-		// );
-		// postln("This is the wrong playfunc - from envir:" + envir[\playfunc]);
-		// postln("This should be the WRIGHT(!!!) playfunc - from argEvent:" + argEvent[\playfunc]);
-		// postln("Now I am getting the template from the WRIGHT!!! playfunc");
 		playfunc = SynthTemplate.getFunc(argEvent[\playfunc]);
-		envir[\play] = { playfunc +> name };
+		envir[\play] = { playfunc +> name }; // prepare event for playing
 		envir[\mediator] = name;
-		this.push;
-		envir.play;
+		this.push;  // make self available to event during playing
+		envir.play; // play as event
 		this.class.changed(\started, name);
 	}
 

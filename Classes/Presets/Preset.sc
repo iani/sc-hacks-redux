@@ -93,15 +93,15 @@ Preset {
 	envir { ^this.player.envir }
 	// may be different if not Buffer synth!
 	dur {^this.numFrames / this.sampleRate;}
-	valueAt { | param | ^dict[param.asSymbol] }
+	valueAt { | param | ^(dict[param.asSymbol] ? 0).asArray.first }
 	startFrame { ^dict[\startframe] ? 0 }
 	endFrame { ^dict[\endframe] ? 0 }
 	numFrames { ^this.endFrame - this.startFrame }
 	sampleRate { ^dict[\buf].buf.sampleRate }
 	isPlaying { ^this.player.envir[this.player].notNil; }
 
-	setParam { | param, value |
-		dict[param] = value;
+	setParam { | param, value, code, ctl |
+		dict[param] = [value, code, ctl];
 		// postln("debug setParam. this.isPlaying? " + this.isPlaying);
 		if (this.isPlaying) { this.sendParam2Synth(param, value); };
 		// this.sendParam2Synth(param, value);
@@ -137,7 +137,7 @@ Preset {
 		buffermenu = Buffer.all collect: { | p | [p, { this.switchBuffer(p) }] };
 		^HLayout(
 			StaticText().maxWidth_(20).string_(index.asString),
-			StaticText().maxWidth_(80).string_(playfunc.asString),
+			StaticText().maxWidth_(100).string_(playfunc.asString),
 			CheckBox().string_("play").maxWidth_(50)
 			.action_({ | me |
 				if (me.value) { this.play }{ this.stop }
@@ -154,9 +154,9 @@ Preset {
 				}
 			}),
 			Button().maxWidth_(150).states_([[this.bufname]]).menuActions(buffermenu),
-			StaticText().maxWidth_(70).string_("startframe"),
+			StaticText().maxWidth_(35).string_("startf"),
 			NumberBox().maxWidth_(80),
-			StaticText().maxWidth_(60).string_("endframe"),
+			StaticText().maxWidth_(30).string_("endf"),
 			NumberBox().maxWidth_(80),
 			StaticText().maxWidth_(30).string_("dur"),
 			NumberBox().maxWidth_(50),
@@ -193,7 +193,7 @@ Preset {
 		^"\n//:" + format("(%)", index) + this.player + playfunc + dict[\buf] ++ "\n" ++ dict.pp;
 	}
 
-	updateDictFromParams { params do: { | p | dict[p.name] = [p.value, p.code]; } }
+	updateDictFromParams { params do: { | p | dict[p.name] = [p.value, p.code, p.ctl]; } }
 
 	clean {
 		dict[\ampctl] = nil;
