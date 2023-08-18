@@ -3,5 +3,10 @@ For compatibility with simple specs in PlainSynth templates.
 */
 
 + Object {
-	specs { ^this.asSpec }
+	specs { ^this.asSpec2 } // used by SynthTemplate, UGenFunc and their subclasses
+	asSpec2 { ^this.asSpec } // symbol overwrites this to name the unit
+}
+
++ Symbol { // convert nil specs to a spec + store self to units
+	asSpec2 { ^this.asSpec.asSpec.units_(this) }
 }

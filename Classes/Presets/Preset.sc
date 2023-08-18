@@ -6,6 +6,7 @@ Prototype for saving and loading presets as dictionaries (events).
 */
 
 Preset {
+	classvar templatenames; // cache
 	var <presetList, <index = 0, <>code, <dict;
 	var <playfunc;
 	var <selectionNum;
@@ -14,6 +15,9 @@ Preset {
 	var <template; // subclass of SynthTemplate. creates the specs - and other customized stuff?
 	//	var <player; // obtain from presetList! ???
 
+	*templatenames {
+		^templatenames ?? { templatenames = SynthTemplate.templateNames };
+	}
 	// EXPERIMENTAL
 	*newWithDict { | list, index, source, dict |
 		^this.newCopyArgs(list, index, source).importDict(dict)
@@ -47,7 +51,7 @@ Preset {
 		this.makeParams(dict);
 	}
 	makeParams { | adict |
-		template = this.getTemplate(playfunc);
+		template = SynthTemplate.getTemplate(playfunc);
 		paramSpecs = template.specs;
 		params = paramSpecs collect: { | p | Param(this, p, adict) };
 	}

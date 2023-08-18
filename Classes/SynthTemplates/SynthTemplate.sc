@@ -19,6 +19,7 @@ SynthTemplate {
 
 	var <path, <name, <func, <specs, <code, <template;
 
+	*templateNames { ^this.alltemplates.keys.asArray.sort }
 	*alltemplates { // (lazily???) collect all templates in one dict.
 		^alltemplates ?? { alltemplates = IdentityDictionary() };
 	}
@@ -53,10 +54,10 @@ SynthTemplate {
 	}
 
 	*getFunc { | funcname |
-		^this.getTemplate.func.amplify; // amplify: add amp control!
+		^this.getTemplate(funcname).func.amplify; // amplify: add amp control!
 	}
 
-	*getTemplate { | funcname | ^this.alltemplates(funcname); }
+	*getTemplate { | funcname | ^this.alltemplates[funcname]; }
 
 	load {
 		var delimiters;
