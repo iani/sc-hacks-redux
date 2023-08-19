@@ -129,6 +129,7 @@ Preset {
 				this.paramView
 			)
 		);
+		view.addNotifier(presetList, \reload, { view.remove });
 		^view;
 	}
 	// playcheckbox, presetnum, playfuncmenu, bufferbutton, startframe,

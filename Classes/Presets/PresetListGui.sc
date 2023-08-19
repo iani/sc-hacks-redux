@@ -26,18 +26,22 @@ PresetListGui {
 		window.canvas = canvas; // window < (canvas = view) < layout.
 		canvas.layout = layout;
 		layout add: this.makeHeader;
-		presetList.presets do: { | p | layout add: p.view };
-		layout.add(nil); // stretch remaining empty space
+		this.addPresetViews;
+		// layout.add(nil); // stretch remaining empty space
 		layout.addNotifier(presetList, \insert, { | n, view, index |
-			[n.listener, view, index].postln;
-			postln("will insert" + view + "into" + n.listener + "at" + index);
+			// [n.listener, view, index].postln;
+			// postln("will insert" + view + "into" + n.listener + "at" + index);
 			this.insert(view, index);
 		});
+		layout.addNotifier(presetList, \remakeViews, { this.addPresetViews });
 		^window.front;
 	}
 
-	insert { | view, index | layout.insert(view, index + 1);} // skip initial non-preset element
+	addPresetViews {
+		presetList.presets do: { | p | layout add: p.view };
+	}
 
+	insert { | view, index | layout.insert(view, index + 1);} // skip initial non-preset element
 
 	makeHeader {
 		var view;
@@ -55,7 +59,7 @@ PresetListGui {
 				Button().states_([["Stop All Global", Color.yellow, Color.red]])
 				.action_({ "CmdPeriod.run".share }),
 				Button().states_([["Edit"]]).action_({ this.openSource }),
-				Button().states_([["Clean"]]).action_({ presetList.clean }),
+				Button().states_([["Reload"]]).action_({ presetList.reload }),
 				Button().states_([["Save"]]).action_({ presetList.save })
 			)
 		);

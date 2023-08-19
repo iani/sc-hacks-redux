@@ -57,12 +57,23 @@ PresetList {
 	*all { ^this.allNames collect: { | n | dict[n] } }
 	*first { ^this.all.first }
 
+	reload {
+		this.readCode;
+		this.makeSnippets;
+		this.makePresets;
+		this.changed(\reload); // remove preset views
+		this.changed(\remakeViews); // remake preset views
+	}
+
 	init { | argPlayer |
-		code = File(path, "r").readAllString;
-		snippets = code.snippets;
-		// presets = snippets collect: { | s, i | Preset(this, i, s) };
-		// New method - allowing scoreplayers in the future
-		// test stage. Next create ScorePlayers if the snippet is a string or symbol.
+		this.reload;
+		player = argPlayer; // gui's should not permit 2 players in same system?
+		// when a list opens, it checks available players by consulting activeLists.
+	}
+
+	readCode { code = File(path, "r").readAllString }
+	makeSnippets { snippets = code.snippets;  }
+	makePresets {
 		presets = snippets collect: { | s, i |
 			var seed;
 			seed = s.interpret;
@@ -72,8 +83,6 @@ PresetList {
 				String, { ScorePlayer(this, i, seed); }
 			)
 		};
-		player = argPlayer; // gui's should not permit 2 players in same system?
-		// when a list opens, it checks available players by consulting activeLists.
 	}
 
 	openSource { Document open: path }
