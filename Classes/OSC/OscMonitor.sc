@@ -105,8 +105,8 @@ OscMonitor {
 					// postln("OscGroups enabled status is now:" + OscGroups.isEnabled)
 					n.listener.value = OscGroups.isEnabled;
 				}),
-				Button().states_([["Osc File Lists"]])
-				.action_({ OscDataGui.gui }),
+				// Button().states_([["Osc File Lists"]])
+				// .action_({ OscDataGui.gui }),
 
 				// Button().states_([["Load OscFiles"]])
 				// .action_({ OscDataReader.openDialog }),

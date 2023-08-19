@@ -221,4 +221,14 @@ PresetList {
 	}
 
 	clean { presets do: _.clean; } // remove legacy keys
+
+	bufferWindow { | buf = \default |
+		var gui;
+		postln("Debugging PresetList:bufferWindow. BEFORE THE REGISTRY" + gui);
+		gui = Registry(this, \bufferWindow, { SoundBufferGui().gui });
+		Library.put(\debug, gui);
+		postln("Debugging PresetList:bufferWindow. gui:" + gui);
+		postln("setting buf to:" + buf + "NOW!");
+		gui.buffer = buf;
+	}
 }

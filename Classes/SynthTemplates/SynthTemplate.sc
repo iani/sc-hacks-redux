@@ -108,7 +108,12 @@ SynthTemplate {
 	playView { | view, preset | // new version: Wed 16 Aug 2023 09:33
 		var buffermenu;
 		// postln("this is SynthTemplate.playView");
-		buffermenu = Buffer.all collect: { | p | [p, { preset.switchBuffer(p) }] };
+		buffermenu = Buffer.all collect: { | p |
+			[p, { | me |
+				preset.switchBuffer(p);
+				me.states_([[p]])
+			}]
+		};
 		^HLayout(
 			CheckBox().string_("play").maxWidth_(50)
 			.action_({ | me |

@@ -188,4 +188,9 @@ Preset {
 		.menuActions(presetList.scoremenu)
 	}
 
+	switchBuffer { | b |
+		postln("Preset switchbuffer:" + b);
+		presetList.bufferWindow(b);
+	}
+
 }

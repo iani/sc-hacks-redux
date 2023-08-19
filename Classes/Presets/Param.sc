@@ -5,10 +5,14 @@
 */
 
 Param {
-	var <model, <spec, <name, <value, <code;
-	var <player;
-	var <ctl = \off;
 	// model: a SoundParams
+	var <model, <spec, <name, <value, <code;
+	// var <player;
+	var <ctl = \off;
+
+	saveParams {
+		^[name, value, code, ctl];
+	}
 	*new { | model, spec, dict |
 		^this.newCopyArgs(model, spec).init(dict);
 	}
@@ -19,11 +23,11 @@ Param {
 		value = 0;
 		code = "";
 		ctl = \off;
-		player = model.player;
+		// player = model.player;
 	}
-	player_ { | argPlayer |
-		player = argPlayer;
-	}
+
+	player { ^model.player }
+	// player_ { | argPlayer | player = argPlayer;}
 	gui {
 		// postln("Param gui. model:" + model + "value" + value);
 		^HLayout(
@@ -41,6 +45,9 @@ Param {
 				n.listener.value = value;
 				this.updateModel; // TODO: Check this!
 			})
+			// .enterKeyAction_({ | me |
+			// 	this.updateModel;
+			// })
 			.addNotifier(model, \gui, { | n |
 					n.listener.value = model.valueAt(name) ? 0;
 			})
@@ -82,12 +89,14 @@ Param {
 	start {
 		if (this.isOn) { // check when starting from Preset
 			postln("Starting param ctl for" + this.name);
-			// TODO: share code ...
+			postln("model:" + model + "model player" + model.player);
+			format("{%}@>.% %", code, this.player, name.slash).postln.share; // TODO: share code ...
 		}
 	}
 	stop {
 		postln("Stopping param ctl for" + this.name);
 		// TODO: share code ...
+		format("nil @>.% %", this.player, name.slash).postln.share;
 	}
 	updateModel { model.setParam(name, value, code, ctl); }
 	bufName { ^model.bufName; }

@@ -321,7 +321,7 @@ SoundBufferGui {
 			.canFocus_(false)
 			.states_([["phasebuf", Color.red, Color.white]])
 			.action_({ | me | Menu(
-				*BufferSynths.playfuncs.keys.asArray.sort
+				*BufferSynth.playfuncs.keys.asArray.sort
 				.collect({ | f | MenuAction(f.asString, {
 					me.states_([[f.asString, Color.red, Color.white]]);
 					this.setPlayfunc(f.asSymbol);
@@ -402,7 +402,7 @@ SoundBufferGui {
 	start { this.play }
 	play { // TODO: rewrite this. SfSelections should play the current selection
 		// SfSelections.playCurrentSelection;
-		"SoundBufferGui:play should be changed! It should not use @@".postln;
+		// "SoundBufferGui:play should be changed! It should not use @@".postln;
 		if (this.selectionDur == 0) {
 			^postln("refusing to play selection" + selections.currentSelectionIndex
 				+ "because its duration is 0");
