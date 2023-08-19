@@ -53,6 +53,14 @@ SynthTemplate {
 		this.alltemplates[name] = this;
 	}
 
+	*makePreset { | playfunc, presetList, index |
+		^this.getTemplate(playfunc).makePreset(presetList, index);
+	}
+
+	makePreset { | presetList, index |
+		^Preset.newCopyArgs(presetList, index).importDict(this.dict)
+	}
+
 	*getFunc { | funcname |
 		^this.getTemplate(funcname).func.amplify; // amplify: add amp control!
 	}
@@ -96,4 +104,40 @@ SynthTemplate {
 	}
 
 	edit { Document open: path; }
+
+	playView { | view, preset | // new version: Wed 16 Aug 2023 09:33
+		var buffermenu;
+		// postln("this is SynthTemplate.playView");
+		buffermenu = Buffer.all collect: { | p | [p, { preset.switchBuffer(p) }] };
+		^HLayout(
+			CheckBox().string_("play").maxWidth_(50)
+			.action_({ | me |
+				if (me.value) { preset.play }{ preset.stop }
+			})
+			.addNotifier(preset.presetList, \stopped, { | n, who |
+				if (who !== preset) { n.listener.value = false };
+			})
+			// TODO: FIX PRESET!!!!!:
+			.addNotifier(preset.envir, preset.player, { | n |
+				// "Received notification from envir".postln;
+				if (envir(preset.player).isPlaying) {
+					n.listener.value = false;
+					n.listener.focus(true);
+				}
+			}),
+			StaticText().maxWidth_(20).string_(preset.index.asString)
+			.addNotifier(preset, \index, { | n | n.listener.string = preset.index.asString }),
+			StaticText().maxWidth_(100).string_(preset.playfunc.asString),
+			Button().maxWidth_(150).states_([[preset.bufname]])
+			.menuActions(buffermenu),
+			StaticText().maxWidth_(35).string_("startf"),
+			NumberBox().maxWidth_(80),
+			StaticText().maxWidth_(30).string_("endf"),
+			NumberBox().maxWidth_(80),
+			StaticText().maxWidth_(30).string_("dur"),
+			NumberBox().maxWidth_(50),
+			preset.templateMenu,
+			Button().states_([["-"]]).maxWidth_(15).action_({ preset confirmRemove: view })
+		)
+	}
 }

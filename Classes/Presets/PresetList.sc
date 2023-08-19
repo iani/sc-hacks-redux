@@ -14,6 +14,10 @@ PresetList {
 	var <player; // setting the player stops the previous one
 	var <currentPreset;
 
+	currentPreset_ { | p |
+		currentPreset = p;
+		postln("PresetList:currentPreset_ new index is:" + p.index);
+	}
 	*initClass {
 		StartUp add: { this.init }
 	}
@@ -184,5 +188,15 @@ PresetList {
 		"done.".postln;
 	}
 
-	clean { presets do: _.clean; }
+	// NOTE: remove/add view outside of these methods!
+	remove { | preset | presets remove: preset; this.renumber; }
+	renumber { presets do: { | p, i | p.index = i; } }
+	insert { | preset, index |
+		preset.presetList = this;
+		presets = presets.insert(index, preset);
+		this.changed(\insert, preset.view, index);
+		this.renumber;
+	}
+
+	clean { presets do: _.clean; } // remove legacy keys
 }

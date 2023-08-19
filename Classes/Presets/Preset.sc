@@ -1,13 +1,11 @@
 /* 29 Jul 2023 15:24
-Prototype for saving and loading presets as dictionaries (events).
-
-
+Saving and loading presets as dictionaries (events), and in lists - with guis.
 
 */
 
 Preset {
-	classvar templatenames; // cache
-	var <presetList, <index = 0, <>code, <dict;
+	classvar pfuncmenu; // cache for use by all preset guis!
+	var <>presetList, <index = 0, <>code, <dict;
 	var <playfunc;
 	var <selectionNum;
 	var <paramSpecs, <params;
@@ -15,8 +13,11 @@ Preset {
 	var <template; // subclass of SynthTemplate. creates the specs - and other customized stuff?
 	//	var <player; // obtain from presetList! ???
 
-	*templatenames {
-		^templatenames ?? { templatenames = SynthTemplate.templateNames };
+	index_ { | i | index = i; this.changed(\index)	}
+	pfuncmenu {
+		^pfuncmenu ?? {
+			pfuncmenu = SynthTemplate.templateNames collect: { | p | [p, { this.addPreset(p) }] };
+		}
 	}
 	// EXPERIMENTAL
 	*newWithDict { | list, index, source, dict |
@@ -59,27 +60,23 @@ Preset {
 	player { ^presetList.player }
 
 	play {
-		if (this.dur <= 0.0) { // this may be different depending on type of preset
-			"Cannot play settings with duration 0".postln;
-		}{
-			{
-				// this.player.envir.stopSynths;
-				this.stop;
-				postln("\n============== playing" + this.player +
-					"list" + presetList.name
-					+ "preset"
-					+ index  + "=========\n");
-				format("%.envir play: %", this.player.asCompileString, dict.asCompileString).postln.share;
-				this.addNotifier(Mediator, \ended, { | n, playername, synthname |
-					if (playername == this.player and: { synthname == this.player }) {
-						// TODO: Check this changed vs. presetlist stopped
-						this.changed(\stopped, this); // does this confuse control synths???????
-					}
-				});
-				// 0.01.wait;  // must wait for synths to stop!!! ????????
-				params do: _.start;
-			}.fork; /// fork needed?
-		}
+		{
+			// this.player.envir.stopSynths;
+			this.stop;
+			postln("\n============== playing" + this.player +
+				"list" + presetList.name
+				+ "preset"
+				+ index  + "=========\n");
+			format("%.envir play: %", this.player.asCompileString, dict.asCompileString).postln.share;
+			this.addNotifier(Mediator, \ended, { | n, playername, synthname |
+				if (playername == this.player and: { synthname == this.player }) {
+					// TODO: Check this changed vs. presetlist stopped
+					this.changed(\stopped, this); // does this confuse control synths???????
+				}
+			});
+			// 0.01.wait;  // must wait for synths to stop!!! ????????
+			params do: _.start;
+		}.fork; /// fork needed?
 	}
 
 	// stop { this.envir.stopSynths; }
@@ -112,9 +109,13 @@ Preset {
 		format("% @>.% %%", value, this.player, "\\", param).share;
 	}
 
+	// insertTest {
+	// 	presetList.changed(\insert, this.view, index);
+	// }
+
 	gui {
 		^this.window({ | w |
-			w.view = this.view;
+			w.view.layout = VLayout(this.view);
 		});
 	}
 
@@ -124,7 +125,7 @@ Preset {
 		view = View().background_(Color.rand);
 		view.layout_(
 			VLayout(
-				this.playView(view),
+				template.playView(view, this),
 				this.paramView
 			)
 		);
@@ -132,9 +133,9 @@ Preset {
 	}
 	// playcheckbox, presetnum, playfuncmenu, bufferbutton, startframe,
 	// endframe, dur, previewbutton,
+	// Sat 19 Aug 2023 08:51: replaced by template:playView
 	playView { | view | // new version: Wed 16 Aug 2023 09:33
-		var pfuncmenu, buffermenu;
-		pfuncmenu = SynthTemplate.templateNames collect: { | p | [p, { this.addPreset(p) }] };
+		var buffermenu;
 		buffermenu = Buffer.all collect: { | p | [p, { this.switchBuffer(p) }] };
 		^HLayout(
 			StaticText().maxWidth_(20).string_(index.asString),
@@ -154,14 +155,18 @@ Preset {
 					n.listener.focus(true);
 				}
 			}),
-			Button().maxWidth_(150).states_([[this.bufname]]).menuActions(buffermenu),
+			Button().maxWidth_(150).states_([[this.bufname]])
+			.menuActions(buffermenu),
 			StaticText().maxWidth_(35).string_("startf"),
 			NumberBox().maxWidth_(80),
 			StaticText().maxWidth_(30).string_("endf"),
 			NumberBox().maxWidth_(80),
 			StaticText().maxWidth_(30).string_("dur"),
 			NumberBox().maxWidth_(50),
-			Button().states_([["+"]]).maxWidth_(15).menuActions(pfuncmenu),
+			Button().states_([["+"]]).maxWidth_(15)
+			// TODO: inform list of current preset to enable insertion after preset index through list:
+			// .mouseDownAction_({ | me | postln("+ menu item:" + me + "preset" + index); })
+			.menuActions(this.pfuncmenu),
 			Button().states_([["-"]]).maxWidth_(15).action_({ this confirmRemove: view })
 		)
 	}
@@ -169,12 +174,23 @@ Preset {
 	bufname { ^dict[\buf] ? '----' }
 
 	addPreset { | p | // TODO: create a new preset and add it to the list???
-		p.postln;
+		this.testAddPreset(p);
 	}
+
+	testAddPreset { | p |
+		var newPreset;
+		postln("Preset:testAddPreset" + p + "current index" + presetList.currentPreset.index);
+		newPreset = SynthTemplate.makePreset(p.asSymbol, presetList, presetList.currentPreset.index);
+		// newPreset.gui;
+		presetList.insert(newPreset, presetList.currentPreset.index);
+		// presetList.changed(\insert, this.view, presetList.currentPreset.index);
+	}
+
 	confirmRemove { | argView |  // TODO: also remove self from list!
 		{
 			postln("will now remove preset" + index + "from the preset list");
-			argView !? { argView.remove }
+			argView !? { argView.remove };
+			presetList remove: this;
 		}.confirm("Do you really want to remove preset no." + index + "?");
 	}
 
@@ -196,11 +212,23 @@ Preset {
 
 	updateDictFromParams { params do: { | p | dict[p.name] = [p.value, p.code, p.ctl]; } }
 
-	clean {
+	clean { // remove legacy keys
 		dict[\ampctl] = nil;
 		dict[\player] = nil;
 		dict[\dur] = nil;
 		dict[\selectionNum] = nil;
 		dict[\paramctl] = nil;
 	}
+
+	makeCurrent {
+		postln("Preset makeCurrent index:" + index);
+		presetList.currentPreset = this;
+	}
+
+	templateMenu {
+		^Button().states_([["+"]]).maxWidth_(15)
+		.mouseDownAction_({ this.makeCurrent; })
+		.menuActions(this.pfuncmenu)
+	}
+
 }

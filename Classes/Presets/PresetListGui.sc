@@ -4,6 +4,7 @@ Redoing this to make it possible to remove Preset views.
 
 PresetListGui {
 	var <presetList;
+	var <layout; // add/remove items here
 	// var <i;
 	*new { | presetList |
 		^this.newCopyArgs(presetList);
@@ -17,7 +18,7 @@ PresetListGui {
 	}
 
 	window {
-		var window, canvas, layout;
+		var window, canvas;
 		// i = 0;
 		window = ScrollView(bounds:Rect(0,0,800,700).center_(Window.availableBounds.center));
 		canvas = View();		​
@@ -27,8 +28,16 @@ PresetListGui {
 		layout add: this.makeHeader;
 		presetList.presets do: { | p | layout add: p.view };
 		layout.add(nil); // stretch remaining empty space
+		layout.addNotifier(presetList, \insert, { | n, view, index |
+			[n.listener, view, index].postln;
+			postln("will insert" + view + "into" + n.listener + "at" + index);
+			this.insert(view, index);
+		});
 		^window.front;
 	}
+
+	insert { | view, index | layout.insert(view, index + 1);} // skip initial non-preset element
+
 
 	makeHeader {
 		var view;
