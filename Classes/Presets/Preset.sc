@@ -109,10 +109,6 @@ Preset {
 		format("% @>.% %%", value, this.player, "\\", param).share;
 	}
 
-	// insertTest {
-	// 	presetList.changed(\insert, this.view, index);
-	// }
-
 	gui {
 		^this.window({ | w |
 			w.view.layout = VLayout(this.view);
@@ -132,59 +128,13 @@ Preset {
 		view.addNotifier(presetList, \reload, { view.remove });
 		^view;
 	}
-	// playcheckbox, presetnum, playfuncmenu, bufferbutton, startframe,
-	// endframe, dur, previewbutton,
-	// Sat 19 Aug 2023 08:51: replaced by template:playView
-	playView { | view | // new version: Wed 16 Aug 2023 09:33
-		var buffermenu;
-		buffermenu = Buffer.all collect: { | p | [p, { this.switchBuffer(p) }] };
-		^HLayout(
-			StaticText().maxWidth_(20).string_(index.asString),
-			StaticText().maxWidth_(100).string_(playfunc.asString),
-			CheckBox().string_("play").maxWidth_(50)
-			.action_({ | me |
-				if (me.value) { this.play }{ this.stop }
-			})
-			.addNotifier(presetList, \stopped, { | n, who |
-				if (who !== this) { n.listener.value = false };
-			})
-			// TODO: FIX THIS!!!!!:
-			.addNotifier(this.envir, this.player, { | n |
-				// "Received notification from envir".postln;
-				if (envir(this.player).isPlaying) {
-					n.listener.value = false;
-					n.listener.focus(true);
-				}
-			}),
-			Button().maxWidth_(150).states_([[this.bufname]])
-			.menuActions(buffermenu),
-			StaticText().maxWidth_(35).string_("startf"),
-			NumberBox().maxWidth_(80),
-			StaticText().maxWidth_(30).string_("endf"),
-			NumberBox().maxWidth_(80),
-			StaticText().maxWidth_(30).string_("dur"),
-			NumberBox().maxWidth_(50),
-			Button().states_([["+"]]).maxWidth_(15)
-			// TODO: inform list of current preset to enable insertion after preset index through list:
-			// .mouseDownAction_({ | me | postln("+ menu item:" + me + "preset" + index); })
-			.menuActions(this.pfuncmenu),
-			Button().states_([["-"]]).maxWidth_(15).action_({ this confirmRemove: view })
-		)
-	}
 
 	bufname { ^dict[\buf] ? '----' }
 
-	addPreset { | p | // TODO: create a new preset and add it to the list???
-		this.testAddPreset(p);
-	}
-
-	testAddPreset { | p |
+	addPreset { | p | //  create a new preset and add it to the list
 		var newPreset;
-		postln("Preset:testAddPreset" + p + "current index" + presetList.currentPreset.index);
 		newPreset = SynthTemplate.makePreset(p.asSymbol, presetList, presetList.currentPreset.index);
-		// newPreset.gui;
 		presetList.insert(newPreset, presetList.currentPreset.index);
-		// presetList.changed(\insert, this.view, presetList.currentPreset.index);
 	}
 
 	confirmRemove { | argView |  // TODO: also remove self from list!
@@ -230,6 +180,12 @@ Preset {
 		^Button().states_([["+"]]).maxWidth_(15)
 		.mouseDownAction_({ this.makeCurrent; })
 		.menuActions(this.pfuncmenu)
+	}
+
+	scoreMenu {
+		^Button().states_([["*"]]).maxWidth_(15)
+		.mouseDownAction_({ this.makeCurrent; })
+		.menuActions(presetList.scoremenu)
 	}
 
 }

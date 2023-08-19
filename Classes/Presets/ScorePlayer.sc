@@ -76,8 +76,15 @@ ScorePlayer {
 			Button().maxWidth_(60).states_([["gui"]])
 			.action_({ score.gui }),
 			Button().maxWidth_(60).states_([["reset"]])
-			.action_({ score.makeStreamEvent })
+			.action_({ score.makeStreamEvent }),
+
 		);
+	}
+
+	scoreMenu {
+		^Button().states_([["*"]]).maxWidth_(15)
+		.mouseDownAction_({ this.makeCurrent; })
+		.menuActions(list.scoremenu)
 	}
 
 	paramView {

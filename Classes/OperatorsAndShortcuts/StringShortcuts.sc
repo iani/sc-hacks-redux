@@ -40,6 +40,8 @@
 		);
 		window.bounds = Rect(400, 300, 500, 500);
 	}
+
+	name { ^PathName(this).fileNameWithoutExtension.asSymbol }
 }
 
 /*

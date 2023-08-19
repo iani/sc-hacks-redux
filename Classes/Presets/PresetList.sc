@@ -13,6 +13,15 @@ PresetList {
 	var <path, <code, <snippets, <presets;
 	var <player; // setting the player stops the previous one
 	var <currentPreset;
+	var scoremenu; // cache
+
+	scoremenu {
+		^scoremenu ??
+		{
+			scoremenu = this.class.scoreNamesInLib
+			collect: { | p | [p.name, { this.addScore(p) }] };
+		}
+	}
 
 	currentPreset_ { | p |
 		currentPreset = p;
@@ -22,8 +31,13 @@ PresetList {
 		StartUp add: { this.init }
 	}
 	*parentPath { ^PathName(this.filenameSymbol.asString).parentPath }
-	*scriptsInLib {
-		^PathName(this.parentPath +/+ "PresetScripts" +/+ "*.scd").pathMatch;
+	*scriptsInLib {^PathName(this.parentPath +/+ "PresetScripts" +/+ "*.scd").pathMatch; }
+	*scoresInLib { ^PathName(this.parentPath +/+ "Scores" +/+ "*.scd").pathMatch;}
+	*scoreNamesInLib { ^this.scoresInLib collect: _.name; }
+
+	addScore { | name |
+		var i = currentPreset.index;
+		this.insert(ScorePlayer(this, i, name), i);
 	}
 
 	*init {
@@ -57,18 +71,18 @@ PresetList {
 	*all { ^this.allNames collect: { | n | dict[n] } }
 	*first { ^this.all.first }
 
+	init { | argPlayer |
+		this.reload;
+		player = argPlayer; // gui's should not permit 2 players in same system?
+		// when a list opens, it checks available players by consulting activeLists.
+	}
+
 	reload {
 		this.readCode;
 		this.makeSnippets;
 		this.makePresets;
 		this.changed(\reload); // remove preset views
 		this.changed(\remakeViews); // remake preset views
-	}
-
-	init { | argPlayer |
-		this.reload;
-		player = argPlayer; // gui's should not permit 2 players in same system?
-		// when a list opens, it checks available players by consulting activeLists.
 	}
 
 	readCode { code = File(path, "r").readAllString }
@@ -175,7 +189,6 @@ PresetList {
 	addActive {
 		activeLists add: this.player;
 		this.class.changed(\activeLists);
-
 	}
 
 	removeActive {
@@ -200,10 +213,10 @@ PresetList {
 	// NOTE: remove/add view outside of these methods!
 	remove { | preset | presets remove: preset; this.renumber; }
 	renumber { presets do: { | p, i | p.index = i; } }
-	insert { | preset, index |
-		preset.presetList = this;
-		presets = presets.insert(index, preset);
-		this.changed(\insert, preset.view, index);
+	insert { | item, index |
+		item.presetList = this;
+		presets = presets.insert(index, item);
+		this.changed(\insert, item.view, index);
 		this.renumber;
 	}
 
