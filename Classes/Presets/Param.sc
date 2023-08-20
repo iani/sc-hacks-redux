@@ -45,13 +45,17 @@ Param {
 				n.listener.value = value;
 				this.updateModel; // TODO: Check this!
 			})
-			// .enterKeyAction_({ | me |
-			// 	this.updateModel;
-			// })
+			.keyDownAction_({ | me, char, mod, key ... args | // enter key ...
+				me.defaultKeyDownAction(me, char, mod, key, *args);
+				if (key == 13) {
+					value = me.value;
+					this.changed(\value);
+				};
+			})
 			.addNotifier(model, \gui, { | n |
 					n.listener.value = model.valueAt(name) ? 0;
 			})
-			.action_({ | me | value = me.value; }),
+			.action_({ | me | value = me.value; this.changed(\value); }),
 			Slider().maxWidth_(300).orientation_(\horizontal)
 			.addNotifier(model, \gui, { | n |
 					n.listener.value = spec unmap: (model.valueAt(name) ? 0);
@@ -80,7 +84,7 @@ Param {
 	textfield {
 		^TextField().maxWidth_(300).string_(code ? "").action_({ | me |
 			code = me.value;
-			postln("The Ctl for" + this.name + "now contains this code:\n" ++ code);
+			postln("player: " + model.player + "param" + name + "control:" ++ code);
 			if (this.isOn) { this.start; }
 		})
 	}
@@ -88,8 +92,6 @@ Param {
 	isOn { ^ctl == \on and: { code.size > 0 } }
 	start {
 		if (this.isOn) { // check when starting from Preset
-			postln("Starting param ctl for" + this.name);
-			postln("model:" + model + "model player" + model.player);
 			format("{%}@>.% %", code, this.player, name.slash).postln.share; // TODO: share code ...
 		}
 	}
