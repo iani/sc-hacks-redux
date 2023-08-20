@@ -59,6 +59,8 @@ PresetList {
 		this.scriptsInLib do: { | p |
 			var n;
 			n = PathName(p).fileNameWithoutExtension.asSymbol;
+			n.postln;
+			p.postln;
 			dict[n] = this.new(p);
 		}
 	}
@@ -224,11 +226,11 @@ PresetList {
 
 	bufferWindow { | buf = \default |
 		var gui;
-		postln("Debugging PresetList:bufferWindow. BEFORE THE REGISTRY" + gui);
+		// postln("Debugging PresetList:bufferWindow. BEFORE THE REGISTRY" + gui);
 		gui = Registry(this, \bufferWindow, { SoundBufferGui().gui });
 		Library.put(\debug, gui);
-		postln("Debugging PresetList:bufferWindow. gui:" + gui);
-		postln("setting buf to:" + buf + "NOW!");
+		// postln("Debugging PresetList:bufferWindow. gui:" + gui);
+		// postln("setting buf to:" + buf + "NOW!");
 		gui.buffer = buf;
 	}
 }
