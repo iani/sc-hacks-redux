@@ -136,6 +136,8 @@ Preset {
 		});
 	}
 
+	view { ^PresetView(this).view }
+	/*
 	view {
 		var view;
 		{ this.changed(\gui) }.defer(0.1);
@@ -149,10 +151,11 @@ Preset {
 		view.addNotifier(presetList, \reload, { view.remove });
 		^view;
 	}
+	*/
 
 	bufname { ^dict[\buf].asArray.first ? '----' }
 
-	paramView { ^VLayout(*params.collect({ | p | p.gui })) }
+	// paramView { ^VLayout(*params.collect({ | p | p.gui })) }
 
 	viewSimplePrototype {
 		^View().background_(Color.rand).layout_(
