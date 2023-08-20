@@ -284,40 +284,6 @@ SoundBufferGui {
 			NumberBox()
 			.maxDecimals_(6)
 			.addNotifier(this, \selection, { | n | n.listener.value = this.selectionDur;})
-			// removed Sun 20 Aug 2023 11:54 - use BufferListGui instead
-			/* ,
-			Button()
-			.states_([["controls", Color.white, Color.red]])
-			.action_({ this.openParameterGui }),
-			StaticText().string_("buffer:"),
-			Button()
-			.canFocus_(false)
-			.states_([[buffer.name, Color.blue, Color.white]])
-			.addNotifier(this, \selection, { | n |
-				n.listener.states_([[buffer.name, Color.blue, Color.white]]);
-			})
-			.action_({ | me | Menu(
-				*Buffer.all
-				.collect({ | f | MenuAction(f.asString, {
-					me.states_([[f.asString, Color.blue, Color.white]]);
-					this.buffer = f.asSymbol;
-					this.changed(\buffer);
-				})})
-			).front }),
-			StaticText().string_("playfunc:"),
-			Button()
-			.canFocus_(false)
-			.states_([["phasebuf", Color.red, Color.white]])
-			.action_({ | me | Menu(
-				*BufferSynth.playfuncs.keys.asArray.sort
-				.collect({ | f | MenuAction(f.asString, {
-					me.states_([[f.asString, Color.red, Color.white]]);
-					this.setPlayfunc(f.asSymbol);
-				})})
-			).front }),
-			Button().states_([["clone"]]) .action_({ this.cloneSelections }),
-			Button().states_([["save"]]) .action_({ this.save })
-			*/
 		)
 	}
 

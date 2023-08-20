@@ -15,6 +15,7 @@ PresetList {
 	var <currentPreset;
 	var scoremenu; // cache
 
+	windowClosed { this.removeActive }
 	scoremenu {
 		^scoremenu ??
 		{
@@ -77,11 +78,6 @@ PresetList {
 		newPreset = SynthTemplate.makePreset(p.asSymbol, this, currentPreset.index);
 		this.insert(newPreset);
 	}
-
-	// addScore { | name |
-	// 	var i = currentPreset.index;
-	// 	this.insert(ScorePlayer(this, i, name), i);
-	// }
 
 	addScore { | name | // add a score - preset from name indicating path
 		var newScore;
@@ -156,7 +152,7 @@ PresetList {
 				postln("chosen path" + dict[me.item].path);
 				this.fromPath(dict[me.item].path, p).gui;
 			})
-		)
+		).name_("Preset Lists Menu")
 	}
 
 	*presetSelectionGui {

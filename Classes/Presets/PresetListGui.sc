@@ -30,6 +30,10 @@ PresetListGui {
 			this.insert(view, index);
 		});
 		layout.addNotifier(presetList, \remakeViews, { this.addPresetViews });
+		window.onClose_({
+			"My window closed. Player should return".postln;
+			presetList.windowClosed;
+		});
 		^window.front;
 	}
 
