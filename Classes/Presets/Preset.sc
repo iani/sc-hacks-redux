@@ -93,7 +93,8 @@ Preset {
 	startFrame { ^dict[\startframe].asArray.first ? 0 }
 	endFrame { ^dict[\endframe].asArray.first ? 0 }
 	numFrames { ^this.endFrame.asArray.first - this.startFrame.asArray.first }
-	sampleRate { ^(dict[\buf] ? \default).buf.sampleRate }
+	sampleRate { ^this.buffer.sampleRate }
+	buffer { ^(dict[\buf] ? \default).asArray.first.buf }
 	isPlaying { ^this.player.envir[this.player].notNil; }
 
 	switchBuffer { | b |
@@ -138,7 +139,7 @@ Preset {
 	view {
 		var view;
 		{ this.changed(\gui) }.defer(0.1);
-		view = View().background_(Color.rand);
+		view = View().background_(Color(*Array.rand(3, 0.8, 1.0)));
 		view.layout_(
 			VLayout(
 				template.playView(view, this),
@@ -149,20 +150,12 @@ Preset {
 		^view;
 	}
 
-	bufname { ^dict[\buf] ? '----' }
+	bufname { ^dict[\buf].asArray.first ? '----' }
 
 	addPreset { | p | //  create a new preset and add it to the list
 		var newPreset;
 		newPreset = SynthTemplate.makePreset(p.asSymbol, presetList, presetList.currentPreset.index);
 		presetList.insert(newPreset, presetList.currentPreset.index);
-	}
-
-	confirmRemove { | argView |  // TODO: also remove self from list!
-		{
-			postln("will now remove preset" + index + "from the preset list");
-			argView !? { argView.remove };
-			presetList remove: this;
-		}.confirm("Do you really want to remove preset no." + index + "?");
 	}
 
 	paramView { ^VLayout(*params.collect({ | p | p.gui })) }

@@ -1,28 +1,40 @@
-/*presets for jun saved at 230820_185008*/
+/*presets for jun saved at 230820_211614*/
 
 //: (0) jun plainsynthtest nil
 (
-'amp': [ 0.51020408163265, "", 'off' ],
-'endframe': [ 534575, nil, nil ],
-'freq': [ 160.61714442783, "", 'off' ],
+'amp': [ 0.044233434114386, "LFNoise2.kr(5).range(100, 10000) / 50000.0", 'on' ],
+'freq': [ 396.87070557371, "LFNoise2.kr(5).range(100, 10000)", 'on' ],
 'playfunc': 'plainsynthtest',
-'startframe': [ 3404, nil, nil ],
 )
-//: (1) jun phasebuf weddellpock
+//: (1) jun grainmagshift hanbaiki
+(
+'amp': [ 0.47129314688838, "", 'on' ],
+'buf': 'hanbaiki',
+'endframe': [ 289880, nil, nil ],
+'playfunc': 'grainmagshift',
+'pos': [ 0.12301587301587, "", 'on' ],
+'rate': [ 1, "Impulse.kr(1)", 'on' ],
+'shift': [ -200.0, "", 'off' ],
+'startframe': [ 2726, nil, nil ],
+'stretch': [ 0.60464285714286, "", 'off' ],
+'trate': [ 50, "" ],
+'vol': [ 6.6824137062232, "", 'off' ],
+)
+//: (2) jun phasebuf weddellpock
 (
 'amp': [ 0.77607709750567, "", 'off' ],
 'buf': 'weddellpock',
 'dur': [ 0.69047619047619, "", 'off' ],
-'endframe': [ 162950, nil, nil ],
+'endframe': [ 512199, nil, nil ],
 'playfunc': 'phasebuf',
 'pos': [ 0.51190476190476, "", 'off' ],
-'rate': [ 1.0277908852238, "LFNoise2.kr(1).range(0.5, 1.2)", 'off' ],
-'startframe': [ 134251, nil, nil ],
+'rate': [ 1.0, "LFNoise2.kr(5).range(0.15, 5.2)", 'on' ],
+'startframe': [ 40859, nil, nil ],
 'trate': [ 0.3531746031746, "", 'off' ],
 'trig': [ 62.0, "", 'off' ],
 'vol': [ 7.0107394809776, "", 'off' ],
 )
-//: (2) jun grainecho wind_strong
+//: (3) jun grainecho wind_strong
 (
 'amp': [ 0.0, "", 'off' ],
 'buf': 'wind_strong',
@@ -35,7 +47,7 @@
 'trate': [ 0, "", 'off' ],
 'vol': [ 0, "", 'off' ],
 )
-//: (3) jun grainecho2 wind_strong
+//: (4) jun grainecho2 wind_strong
 (
 'amp': [ 0, "", 'off' ],
 'buf': 'wind_strong',

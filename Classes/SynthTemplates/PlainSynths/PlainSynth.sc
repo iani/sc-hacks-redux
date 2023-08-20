@@ -26,8 +26,9 @@ PlainSynth : SynthTemplate {
 			StaticText().maxWidth_(20).string_(preset.index.asString),
 			StaticText().maxWidth_(100).string_(preset.playfunc.asString),
 			StaticText().maxWidth_(500).string_("          "),
-			preset.templateMenu,
-			Button().states_([["-"]]).maxWidth_(15).action_({ preset confirmRemove: view })
+			PfuncMenu(preset).view,
+			PscoreMenu(preset).view,
+			PdeleteButton(preset, view).view
 		).spacing_(0)
 	}
 }

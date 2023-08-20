@@ -157,8 +157,10 @@ SynthTemplate {
 			.addNotifier(preset, \frames, { | n, start, end, dur |
 				n.listener.value = dur;
 			}),
-			preset.templateMenu,
-			Button().states_([["-"]]).maxWidth_(15).action_({ preset confirmRemove: view })
+			// preset.templateMenu,
+			PfuncMenu(preset).view,
+			PscoreMenu(preset).view,
+			PdeleteButton(preset, view).view
 		)
 	}
 }

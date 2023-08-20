@@ -32,8 +32,6 @@ PresetList {
 	}
 	*parentPath { ^PathName(this.filenameSymbol.asString).parentPath }
 	*scriptsInLib {^PathName(this.parentPath +/+ "PresetScripts" +/+ "*.scd").pathMatch; }
-	*scoresInLib { ^PathName(this.parentPath +/+ "Scores" +/+ "*.scd").pathMatch;}
-	*scoreNamesInLib { ^this.scoresInLib collect: _.name; }
 
 	addScore { | name |
 		var i = currentPreset.index;
