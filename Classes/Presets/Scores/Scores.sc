@@ -9,4 +9,5 @@ Scores {
 	*scores { ^PathName(this.parentPath +/+  "*.scd").pathMatch;}
 	*scoreNames { ^this.scores collect: _.name; }
 
+	*scorePath { | name | ^this.parentPath +/+ name ++ ".scd" }
 }

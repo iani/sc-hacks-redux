@@ -158,6 +158,10 @@ Preset {
 		presetList.insert(newPreset, presetList.currentPreset.index);
 	}
 
+	addScore { | path | // add a score - preset from path
+
+	}
+
 	paramView { ^VLayout(*params.collect({ | p | p.gui })) }
 
 	viewSimplePrototype {

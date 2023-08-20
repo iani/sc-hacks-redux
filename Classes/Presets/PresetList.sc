@@ -89,15 +89,21 @@ PresetList {
 	readCode { code = File(path, "r").readAllString }
 	makeSnippets { snippets = code.snippets;  }
 	makePresets {
-		presets = snippets collect: { | s, i |
-			var seed;
-			seed = s.interpret;
-			switch (seed.class,
-				Event, { Preset.newCopyArgs(this, i, s).importDict(seed) },
-				Symbol, { ScorePlayer(this, i, seed);},
-				String, { ScorePlayer(this, i, seed); }
-			)
-		};
+		presets = snippets collect: { | s, i | this.makePreset(s, i) };
+	}
+
+	makePreset { | s, i |
+		var seed;
+		seed = s.interpret;
+		^switch (seed.class,
+			Event, { Preset.newCopyArgs(this, i, s).importDict(seed) },
+			Symbol, { ScorePlayer(this, i, seed);},
+			String, { ScorePlayer(this, i, seed); }
+		)
+	}
+
+	makeScore { | s, i |
+		^ScorePlayer(this, i, s)
 	}
 
 	openSource { Document open: path }

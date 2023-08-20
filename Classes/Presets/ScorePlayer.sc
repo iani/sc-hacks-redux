@@ -38,10 +38,8 @@ ScorePlayer {
 	}
 
 	makePath { | argName |
-		^PathName(
-			PathName(this.class.filenameSymbol.asString).parentPath
-			+/+ "Scores" +/+ (argName ? name).asString ++ ".scd"
-		).fullPath;
+		// postln("Testing ScorePlayer:makePath");
+		^Scores.scorePath(argName ? name).postln;
 	}
 
 	defaultPath { ^this.makePath("default") }

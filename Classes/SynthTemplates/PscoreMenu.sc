@@ -15,8 +15,7 @@ PscoreMenu : PresetView {
 
 	pscoremenu {
 		^pscoremenu ?? {
-			pscoremenu = Scripts.scripts collect: { | p | [p.name, { preset.addPreset(p) }] };
+			pscoremenu = Scores.scoreNames collect: { | p | [p, { preset.addScore(p) }] };
 		}
 	}
-
 }

@@ -69,7 +69,6 @@ Param {
 	}
 	// checkbox { ^checkbox ?? { this.makeCheckbox } }
 	checkbox {
-		postln("checkbox:" + name + "value" + value + "code" + code + "ctl" + ctl);
 		^CheckBox().maxWidth_(10).action_({ | me |
 			if (me.value) { ctl = \on; this.start; } { ctl = \off; this.stop; };
 			this.updateModel;
