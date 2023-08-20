@@ -15,7 +15,7 @@ SoundBufferGui {
 	var <playfunc = \phasebuf; // name of playfunc selected from menu
 	var <zoomfrac = 1, scrollpos = 0;
 	var <timestamp; //used as id for updating stats
-	// var <>player;
+	// var bufname; // cache
 	// to load them.
 	*initClass {
 		// TODO: Rewrite this to use own playfuncs from sc-hacks repository,
@@ -97,6 +97,7 @@ SoundBufferGui {
 				// sfv.setSelection(0, [ 1171670, 376275 ]);
 			}.defer(0.05);
 			// selections = SfSelections(this);
+			{ this.changed(\bufname, bufname) }.defer(0.1);
 			this.changed(\selection);
 		}
 	}
@@ -205,47 +206,23 @@ SoundBufferGui {
 			);
 		})
 		.mouseUpAction_({ |view, x, y, mod| //
-			// "MOUSEUP ACTION ".post;
-			// sfv.currentSelection.post; " -- ".post;
-			// sfv.selection(sfv.currentSelection).postln;
-			// store selection range in selections, and send to sound (if playing);
-			// "mouseUpAction skipped the next line. restore it".postln;
-			// // selections.setSelectionFromGui(
-			// 	sfv.currentSelection,
-			// 	sfv.selection(sfv.currentSelection));
-			// this.sendSelectionToServer; // OBSOLETE. selections does this.
-			// Prevent zeroing of current selection by next click:
-			// "mouseUpAction skipped the next line. restore it".postln;
 			this.divertSelection; // this does not send data to selections!
 		})
 		.action_({ | me | // Runs both on mouseclick amd on mousedrag.
-			// Mouseclick immediately changes the current selection.
-			// To avoid zeroing the current selection inadvertedly,
-			// Change the current selection to 63 as whenever the size is < 100.
 			if (sfv.selectionSize(sfv.currentSelection) < 100) {
-				// Mouse will modify the selection which is not used in this app.
-					// "sfv action skipped the next line. restore it".postln;
 				this.divertSelection;
-				// Method above is equivalent to:
-				// sfv.currentSelection = 63; // divert to last selection
-			}{  // when range dragged is > 100, set currentSelection index to the last
-				// selection chosen by the user.
-					// "sfv action skipped the next line. restore it".postln;
-				// postln("selection index" + sfv.currentSelection
-				// 	+ "selection size:" + sfv.selectionSize(sfv.currentSelection));
-				// Note: the first time >= 100 there will be a glitch/inaccurate
-				// frames left from null selection. But the effect
-				// when changing the loop dimensions live is negligible.
-
-				sfv.currentSelection = selections.currentSelectionIndex;
-				// postln("frames after changing to current selection" +
-				// 	sfv.selection(sfv.currentSelection)
+			}{
+				// postln("selection:" + sfv.currentSelection
+				// 	+ "values" + sfv.selection(sfv.currentSelection)
 				// );
+				sfv.currentSelection = selections.currentSelectionIndex;
 				selections.setSelectionFromGui(
 					sfv.currentSelection,
 					sfv.selection(sfv.currentSelection)
 				);
-				this.changed(\selection);
+				// postln("sfv changed name:" + name + "buffer" + this.bufname);
+				this.changed(\selection,
+					sfv.currentSelection, *sfv.selection(sfv.currentSelection));
 			};
 		})
 		.addNotifier(this, \selection, { | n |
@@ -264,12 +241,18 @@ SoundBufferGui {
 		^sfv;
 	}
 
+	// bufname { ^bufname ?? { bufname = buffer.name } }
+
 	posDisplay { // | sfv |
 		^HLayout(
 			Button().maxWidth_(10).states_([["x"]])
 			.action_({ CmdPeriod.run }),
 			Button().maxWidth_(10).states_([["x", Color.yellow, Color.red]])
 			.action_({ "CmdPeriod.run".share }),
+			StaticText().string_("------")
+			.addNotifier(this, \bufname, { | n, bufname |
+				n.listener.string = bufname
+			}),
 			Button().maxWidth_(50).states_([["stats"]])
 			.action_({ this.stats }),
 			StaticText().string_("selection")
@@ -297,7 +280,9 @@ SoundBufferGui {
 			StaticText().string_("dur"),
 			NumberBox()
 			.maxDecimals_(6)
-			.addNotifier(this, \selection, { | n | n.listener.value = this.selectionDur;}),
+			.addNotifier(this, \selection, { | n | n.listener.value = this.selectionDur;})
+			// removed Sun 20 Aug 2023 11:54 - use BufferListGui instead
+			/* ,
 			Button()
 			.states_([["controls", Color.white, Color.red]])
 			.action_({ this.openParameterGui }),
@@ -329,6 +314,7 @@ SoundBufferGui {
 			).front }),
 			Button().states_([["clone"]]) .action_({ this.cloneSelections }),
 			Button().states_([["save"]]) .action_({ this.save })
+			*/
 		)
 	}
 

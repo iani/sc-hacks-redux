@@ -85,6 +85,7 @@ PresetList {
 		this.makePresets;
 		this.changed(\reload); // remove preset views
 		this.changed(\remakeViews); // remake preset views
+		currentPreset = presets.first;
 	}
 
 	readCode { code = File(path, "r").readAllString }
@@ -228,9 +229,14 @@ PresetList {
 		var gui;
 		// postln("Debugging PresetList:bufferWindow. BEFORE THE REGISTRY" + gui);
 		gui = Registry(this, \bufferWindow, { SoundBufferGui().gui });
-		Library.put(\debug, gui);
-		// postln("Debugging PresetList:bufferWindow. gui:" + gui);
-		// postln("setting buf to:" + buf + "NOW!");
 		gui.buffer = buf;
+		this.addNotifier(gui, \selection, { | n, sel, start, end |
+			if (sel != 63) { // skip diverted selection from SoundFileGui
+				// [buf, start, end].postln;
+				// postln("current preset" + currentPreset + "dict" + dict);
+				currentPreset.setBufparams(buf, start, end);
+			};
+			// postln("PresetList bufferWindow" + buf + args);
+		})
 	}
 }

@@ -15,16 +15,17 @@ pos = 1 -> ~endframe / buf.sampleRate
 
 GrainEcho_ : UGenFunc {
 	*ar {
-		var trate, dur, clk, pos, pan;
-		var b;
-		b = (~buf ? \default).buf ?? { \default.buf };
+		var trate, dur, clk, pos, pan, buf; // , buf;
+		buf = \buf kr: ((~buf ? \default).buf ?? { \default.buf }).bufnum;
 		trate = \trate.br(~trate ? 0.5).lin(5, 20);
 		// dur = MouseY.kr(0.2,24,1) / trate;
 		dur = \dur.br(~dur ? 0.5).linexp(0.0, 1.0, 0.2, 24.0) / trate;
 		clk = Impulse.kr(trate);
 		// pos = MouseX.kr(0,BufDur.kr(b)) + TRand.kr(0, 0.01, clk);
-		pos = Pos(b) + TRand.kr(0, 0.01, clk);
+		pos = Pos(buf) + TRand.kr(0, 0.01, clk);
 		pan = WhiteNoise.kr(0.6);
-		^TGrains.ar(2, clk, b, \rate.br(~rate ? 1), pos, dur, pan, 0.1) * \vol.br(~vol ? 1);
+		^TGrains.ar(2, clk, buf,
+			\rate.br(~rate ? 1) * BufRateScale.kr(buf),
+			pos, dur, pan, 0.1) * \vol.br(~vol ? 1);
 	}
 }

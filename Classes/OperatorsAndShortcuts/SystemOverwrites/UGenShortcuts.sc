@@ -5,8 +5,8 @@
 + UGen {
 	mapdur { | buf | // map from 0-1 to scale matching duration of buffer selection
 		^this.linlin(0, 1,
-				\startframe.br(~startframe ? 0) / buf.sampleRate,
-				\endframe.br(~endframe ?? { buf.numFrames }) / buf.sampleRate)
+				\startframe.br(~startframe ? 0) / BufSampleRate.kr(buf),
+				\endframe.br(~endframe ?? { BufFrames.kr(buf) }) / BufSampleRate.kr(buf))
 	}
 	+> { | ugenfunc | ^ugenfunc.ar(this) } // play as input to other ugen
 	br {} // return self. enable ugen args in synth func shortcuts

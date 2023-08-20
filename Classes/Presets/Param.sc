@@ -84,7 +84,7 @@ Param {
 	textfield {
 		^TextField().maxWidth_(300).string_(code ? "").action_({ | me |
 			code = me.value;
-			postln("player: " + model.player + "param" + name + "control:" ++ code);
+			postln("player: " + model.player + "param:" + name + "code:" + code);
 			if (this.isOn) { this.start; }
 		})
 	}

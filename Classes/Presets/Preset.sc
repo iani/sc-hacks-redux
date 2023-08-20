@@ -190,7 +190,14 @@ Preset {
 
 	switchBuffer { | b |
 		postln("Preset switchbuffer:" + b);
+		this.makeCurrent;
 		presetList.bufferWindow(b);
+	}
+
+	setBufparams { | buf, start, end |
+		dict[\buf] = buf;
+		dict[\startframe] = start;
+		dict[\endframe] = end;
 	}
 
 }

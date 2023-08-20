@@ -142,6 +142,10 @@ Mediator : EnvironmentRedirect {
 		if (synth isKindOf: Synth) { synth.set(param, value) }
 	}
 
+	setParams { | keysvalues |
+		keysvalues keysValuesDo: { | key, value | envir[key] = value; };
+	}
+
 	*all { ^Library.at(this) }
 
 	*at { | envirName |
