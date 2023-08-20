@@ -99,6 +99,7 @@ Preset {
 	isPlaying { ^this.player.envir[this.player].notNil; }
 
 	switchBuffer { | b |
+		b ?? { b = dict[\buf] };
 		postln("Preset switchbuffer:" + b);
 		this.makeCurrent;
 		this.setBuf(b);

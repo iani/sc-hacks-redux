@@ -85,13 +85,15 @@ SoundBufferGui {
 			// "CHECKING AFTER updating selections from sfv!!!!!!!".postln;
 			// postln("the selections for buffer" + bufname + "are\n" + selectionDict[bufname].selections);
 			// postln("the LOCAL selections for buffer" + buffer.name + "are\n" + selections.selections);
-			sfv.soundfile_(SoundFile(buffer.path))
-			.readWithTask(0, buffer.numFrames, {
+			postln("SoundBufferGui soundfileview read buffer:\n'" + buffer.path);
+			sfv.soundfile_(SoundFile(buffer.path));
+			sfv.read.refresh;
+			// .readWithTask(0, buffer.numFrames, {
 				// "RESTORING SELEXTIONS after read with task".postln;
 				// selections.selections.postln;
 				// selections.restoreSelectionsToSfv(sfv);
 				// this.setSelection(0)
-			});
+			// });
 			{   // "restoring again".postln;
 				selections.restoreSelectionsToSfv(sfv);
 				// sfv.setSelection(0, [ 1171670, 376275 ]);
@@ -105,7 +107,8 @@ SoundBufferGui {
 	*gui { ^this.default.gui }
 
 	gui {
-		this.bl_(1400, 400).hlayout(
+		var window;
+		window = this.bl_(1400, 400).hlayout(
 			VLayout(
 				sfv = this.sfView,
 				this.rangeSlider,
@@ -115,12 +118,12 @@ SoundBufferGui {
 			this.selectionEditedView
 		).name_(name)
 		.addNotifier(this, \closeGui, { | n | n.listener.close; });
+		// Registry is broken with closing windows - fixing so that windiw will be made again.
+		// TODO: Fix/debug this!
+		this.addNotifier(window, \objectClosed, {
+			this.changed(\closed);
+		});
 		{ selections.restoreSelectionsToSfv(sfv); }.defer(0.05);
-		// "SoundBufferGui buffer is:".postln;
-		// { buffer.name.postln; } ! 5;
-		// "SoundBufferGui's current selection buffer is:".postln;
-
-		// { selections.buffer.name.postln; } ! 5;
 	}
 
 	// basic selection actions to use throughout for selection management

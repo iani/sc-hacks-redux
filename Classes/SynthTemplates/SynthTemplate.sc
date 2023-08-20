@@ -134,13 +134,17 @@ SynthTemplate {
 			.addNotifier(preset, \index, { | n | n.listener.string = preset.index.asString }),
 			StaticText().maxWidth_(100).string_(preset.playfunc.asString),
 			Button().maxWidth_(150).states_([[preset.bufname]])
+			.keyDownAction_({ | me, key, mod, asci |
+				if (asci == 13) { preset.switchBuffer }
+			})
+			.focusColor_(Color.red)
 			.menuActions(buffermenu),
-			StaticText().maxWidth_(35).string_("startf"),
-			NumberBox().maxWidth_(80),
+			StaticText().maxWidth_(35).string_("startf").focusColor_(Color.red),
+			NumberBox().maxWidth_(80).focusColor_(Color.red),
 			StaticText().maxWidth_(30).string_("endf"),
-			NumberBox().maxWidth_(80),
+			NumberBox().maxWidth_(80).focusColor_(Color.red),
 			StaticText().maxWidth_(30).string_("dur"),
-			NumberBox().maxWidth_(50),
+			NumberBox().maxWidth_(50).focusColor_(Color.red),
 			preset.templateMenu,
 			Button().states_([["-"]]).maxWidth_(15).action_({ preset confirmRemove: view })
 		)

@@ -228,8 +228,14 @@ PresetList {
 	bufferWindow { | buf = \default |
 		var gui;
 		// postln("Debugging PresetList:bufferWindow. BEFORE THE REGISTRY" + gui);
+		Registry.at(this, \bufferWindow).postln;
 		gui = Registry(this, \bufferWindow, { SoundBufferGui().gui });
 		gui.buffer = buf;
+		// Registry is broken with closing windows - fixing so that windiw will be made again.
+		// TODO: Fix/debug this!
+		this.addNotifier(gui, \closed, {
+			Registry.remove(this, \bufferWindow);
+		});
 		this.addNotifier(gui, \selection, { | n, sel, start, end |
 			if (sel != 63) { // skip diverted selection from SoundFileGui
 				// [buf, start, end].postln;
