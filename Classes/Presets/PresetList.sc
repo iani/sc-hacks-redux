@@ -240,6 +240,7 @@ PresetList {
 			if (sel != 63) { // skip diverted selection from SoundFileGui
 				// [buf, start, end].postln;
 				// postln("current preset" + currentPreset + "dict" + dict);
+				#start, end = [start, end].sort;
 				currentPreset.setBufSelection(start, end);
 			};
 			// postln("PresetList bufferWindow" + buf + args);

@@ -31,6 +31,9 @@
 				Registry.put(\windowRects, this, key, topview.findWindow.bounds);
 			});
 			initFunc.(window, this);
+			// fix for making sure that we know when the window closes
+			// TODO: debug this: Why cannot we have a more direct way than listen to \objectClosed?
+			this.addNotifier(window, \objectClosed, { this.changed(\closed) });
 			window;
 		}).front;
 	}

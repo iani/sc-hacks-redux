@@ -225,7 +225,7 @@ SoundBufferGui {
 				);
 				// postln("sfv changed name:" + name + "buffer" + this.bufname);
 				this.changed(\selection,
-					sfv.currentSelection, *sfv.selection(sfv.currentSelection));
+					sfv.currentSelection, this.startFrame, this.endFrame);
 			};
 		})
 		.addNotifier(this, \selection, { | n |
@@ -329,7 +329,7 @@ SoundBufferGui {
 	selectionIndex { ^selections.currentSelectionIndex }
 	selectionStart { ^this.startFrame / buffer.sampleRate; }
 	selectionEnd { ^this.endFrame / this.sampleRate;}
-	selectionDur { ^this.numFrames / this.sampleRate; }
+	selectionDur { ^selections.dur; }
 	startFrame { ^selections.startFrame; }
 	endFrame { ^selections.endFrame; }
 	numFrames { ^selections.numFrames }
@@ -398,6 +398,7 @@ SoundBufferGui {
 		};
 		postln("playing selection" + selections.currentSelectionIndex + "of duration"
 		+ this.selectionDur + "with" + playfunc);
+		// this should be changed. use another operato instead of @@
 		buffer.name.perform(
 			'@@',
 			(

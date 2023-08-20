@@ -114,6 +114,9 @@ SynthTemplate {
 				me.states_([[p]])
 			}]
 		};
+		{
+			preset.changed(\frames, preset.startFrame, preset.endFrame, preset.dur);
+		}.defer(0.1);
 		^HLayout(
 			CheckBox().string_("play").maxWidth_(50)
 			.action_({ | me |
@@ -139,12 +142,21 @@ SynthTemplate {
 			})
 			.focusColor_(Color.red)
 			.menuActions(buffermenu),
-			StaticText().maxWidth_(35).string_("startf").focusColor_(Color.red),
-			NumberBox().maxWidth_(80).focusColor_(Color.red),
+			StaticText().maxWidth_(35).string_("startf"),
+			NumberBox().maxWidth_(80).focusColor_(Color.red)
+			.addNotifier(preset, \frames, { | n, start |
+				n.listener.value = start;
+			}),
 			StaticText().maxWidth_(30).string_("endf"),
-			NumberBox().maxWidth_(80).focusColor_(Color.red),
+			NumberBox().maxWidth_(80).focusColor_(Color.red)
+			.addNotifier(preset, \frames, { | n, start, end |
+				n.listener.value = end;
+			}),
 			StaticText().maxWidth_(30).string_("dur"),
-			NumberBox().maxWidth_(50).focusColor_(Color.red),
+			NumberBox().maxWidth_(50).focusColor_(Color.red)
+			.addNotifier(preset, \frames, { | n, start, end, dur |
+				n.listener.value = dur;
+			}),
 			preset.templateMenu,
 			Button().states_([["-"]]).maxWidth_(15).action_({ preset confirmRemove: view })
 		)

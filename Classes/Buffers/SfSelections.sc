@@ -93,6 +93,9 @@ SfSelections {
 		^selections[currentSelectionIndex][0]; }
 	endFrame { ^selections[currentSelectionIndex].sum }
 	numFrames { ^selections[currentSelectionIndex][1] }
+	dur {
+		^this.numFrames / buffer.sampleRate;
+	}
 	currentSelectionValues { ^selections[currentSelectionIndex]; }
 
 	setCurrentSelectionValues { | lo, hi |
@@ -172,7 +175,7 @@ SfSelections {
 
 	selectionCode { | index, bufname |
 		var code, theselection;
-		theselection = params[index].asDict;
+		theselection = params[index].asScript;
 		code = format("//: % % (%)\n", bufname, theselection[\playfunc], index);
 		code = code ++ theselection.asCompileString ++ "\n";
 		^code;

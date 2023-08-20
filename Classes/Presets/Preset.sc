@@ -9,9 +9,7 @@ Preset {
 	var <playfunc;
 	var <selectionNum;
 	var <paramSpecs, <params;
-	// var <ampctl;
 	var <template; // subclass of SynthTemplate. creates the specs - and other customized stuff?
-	//	var <player; // obtain from presetList! ???
 
 	index_ { | i | index = i; this.changed(\index)	}
 	pfuncmenu {
@@ -92,10 +90,10 @@ Preset {
 	// may be different if not Buffer synth!
 	dur {^this.numFrames / this.sampleRate;}
 	valueAt { | param | ^(dict[param.asSymbol] ? 0).asArray.first }
-	startFrame { ^dict[\startframe] ? 0 }
-	endFrame { ^dict[\endframe] ? 0 }
-	numFrames { ^this.endFrame - this.startFrame }
-	sampleRate { ^dict[\buf].buf.sampleRate }
+	startFrame { ^dict[\startframe].asArray.first ? 0 }
+	endFrame { ^dict[\endframe].asArray.first ? 0 }
+	numFrames { ^this.endFrame.asArray.first - this.startFrame.asArray.first }
+	sampleRate { ^(dict[\buf] ? \default).buf.sampleRate }
 	isPlaying { ^this.player.envir[this.player].notNil; }
 
 	switchBuffer { | b |
@@ -114,6 +112,7 @@ Preset {
 	setBufSelection { | start, end |
 		this.setParam(\startframe, start);
 		this.setParam(\endframe, end);
+		this.changed(\frames, start, end, this.dur);
 	}
 
 	setParam { | param, value, code, ctl |

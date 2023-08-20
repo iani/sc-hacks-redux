@@ -1,24 +1,26 @@
-/*presets for jun saved at 230820_174859*/
+/*presets for jun saved at 230820_185008*/
 
 //: (0) jun plainsynthtest nil
 (
 'amp': [ 0.51020408163265, "", 'off' ],
+'endframe': [ 534575, nil, nil ],
 'freq': [ 160.61714442783, "", 'off' ],
 'playfunc': 'plainsynthtest',
+'startframe': [ 3404, nil, nil ],
 )
-//: (1) jun phasebuf weddell
+//: (1) jun phasebuf weddellpock
 (
-'amp': [ 0.48225308641975, "", 'off' ],
-'buf': 'weddell',
+'amp': [ 0.77607709750567, "", 'off' ],
+'buf': 'weddellpock',
 'dur': [ 0.69047619047619, "", 'off' ],
-'endframe': [ nil, nil, nil ],
+'endframe': [ 162950, nil, nil ],
 'playfunc': 'phasebuf',
 'pos': [ 0.51190476190476, "", 'off' ],
-'rate': [ 1.0, "LFNoise2.kr(1).range(0.5, 1.2)", 'off' ],
-'startframe': [ nil, nil, nil ],
+'rate': [ 1.0277908852238, "LFNoise2.kr(1).range(0.5, 1.2)", 'off' ],
+'startframe': [ 134251, nil, nil ],
 'trate': [ 0.3531746031746, "", 'off' ],
 'trig': [ 62.0, "", 'off' ],
-'vol': [ 3.1306689342404, "", 'off' ],
+'vol': [ 7.0107394809776, "", 'off' ],
 )
 //: (2) jun grainecho wind_strong
 (
