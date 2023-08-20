@@ -6,6 +6,19 @@
 'freq': [ 420, "", 'off' ],
 'playfunc': 'plainsynthtest',
 )
+//: (1) jun phasebuf default
+(
+'amp': [ 0.15123456790123, "", 'off' ],
+'buf': 'default',
+'dur': [ 0.69047619047619, "", 'off' ],
+'startframe': 0,
+'endframe': 44100,
+'playfunc': 'phasebuf',
+'pos': [ 0.51190476190476, "", 'off' ],
+'rate': [ 0.27572502862168, "", 'off' ],
+'trate': [ 0.3531746031746, "", 'off' ],
+'vol': [ 3.265306122449, "", 'off' ],
+)
 //: (1) jun grainecho wind_strong
 (
 'amp': [ 0.15123456790123, "", 'off' ],

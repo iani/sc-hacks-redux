@@ -55,6 +55,12 @@ Simplenumber @> \symbol // set bus to number
 
 	sr { ^In.kr(this.sensorbus.index) }
 	sensorbus { ^this.bus(nil, \sensors) }
+	//  kr: ((~buf ? \default).buf ?? { \default.buf }).bufnum;
+	brbuf {
+		var bufnum;
+		bufnum = ((~buf ? \default).buf ?? { \default.buf }).bufnum;
+		^this.br(bufnum);
+	}
 	br { | val | ^this.bin(val) } // alias similar to ar, kr
 	bin { | val | ^this.busIn(val) } // input from a named kr bus.
 	//synonym. (sic!)

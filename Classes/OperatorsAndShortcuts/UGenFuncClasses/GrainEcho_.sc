@@ -16,7 +16,7 @@ pos = 1 -> ~endframe / buf.sampleRate
 GrainEcho_ : UGenFunc {
 	*ar {
 		var trate, dur, clk, pos, pan, buf; // , buf;
-		buf = \buf kr: ((~buf ? \default).buf ?? { \default.buf }).bufnum;
+		buf = \buf.brbuf;
 		trate = \trate.br(~trate ? 0.5).lin(5, 20);
 		// dur = MouseY.kr(0.2,24,1) / trate;
 		dur = \dur.br(~dur ? 0.5).linexp(0.0, 1.0, 0.2, 24.0) / trate;

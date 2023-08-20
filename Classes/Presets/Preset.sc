@@ -98,11 +98,31 @@ Preset {
 	sampleRate { ^dict[\buf].buf.sampleRate }
 	isPlaying { ^this.player.envir[this.player].notNil; }
 
+	switchBuffer { | b |
+		postln("Preset switchbuffer:" + b);
+		this.makeCurrent;
+		this.setBuf(b);
+		presetList.bufferWindow(b);
+	}
+
+	setBuf { | bufname |
+		dict[\buf] = bufname;
+		this.sendToSynth(\buf, bufname.bufnum);
+	}
+
+	setBufSelection { | start, end |
+		this.setParam(\startframe, start);
+		this.setParam(\endframe, end);
+	}
+
 	setParam { | param, value, code, ctl |
 		dict[param] = [value, code, ctl];
+		this.sendToSynth(param, value);
+	}
+
+	sendToSynth { | param, value |
 		// postln("debug setParam. this.isPlaying? " + this.isPlaying);
 		if (this.isPlaying) { this.sendParam2Synth(param, value); };
-		// this.sendParam2Synth(param, value);
 	}
 
 	sendParam2Synth { | param, value |
@@ -187,17 +207,4 @@ Preset {
 		.mouseDownAction_({ this.makeCurrent; })
 		.menuActions(presetList.scoremenu)
 	}
-
-	switchBuffer { | b |
-		postln("Preset switchbuffer:" + b);
-		this.makeCurrent;
-		presetList.bufferWindow(b);
-	}
-
-	setBufparams { | buf, start, end |
-		dict[\buf] = buf;
-		dict[\startframe] = start;
-		dict[\endframe] = end;
-	}
-
 }
