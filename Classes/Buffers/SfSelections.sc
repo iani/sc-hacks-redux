@@ -38,7 +38,8 @@ SfSelections {
 	init {
 		currentSelection = selections[0];
 		// create params:
-		params = { | n | BufSoundParams(this, this.playfunc, n); } ! 64;
+		// params = { | n | BufSoundParams(this, this.playfunc, n); } ! 64;
+		params = { Preset.fromPlayfunc(this.playfunc) } ! 64;
 		currentParam = params[0];
 		// Do NOT employ Notifications. DO NOT RE-ADD THESE!:
 		// (Instead, trigger actions explicitly trough messages from sbgui.)
@@ -64,7 +65,7 @@ SfSelections {
 		currentSelection = frameSpecs;
 		selections[currentSelectionIndex] = currentSelection;
 		currentParam = params[index];
-		currentParam.setFrame(frameSpecs);
+		// currentParam.setFrame(frameSpecs);
 	}
 	setCurrentSelectionIndex { | index |
 		// Change the current selection to a different selection

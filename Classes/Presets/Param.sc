@@ -1,7 +1,5 @@
 /* 13 Jul 2023 10:20
 
-
-
 */
 
 Param {
@@ -19,17 +17,11 @@ Param {
 
 	init { | dict |
 		name = spec.units.asSymbol;
-		// #value, code, ctl = ParamCode(name, *dict[name]).vcc;
-		value = 0;
-		code = "";
-		ctl = \off;
-		// player = model.player;
+		#value, code, ctl = ParamCode(name, *dict[name]).vcc;
 	}
 
 	player { ^model.player }
-	// player_ { | argPlayer | player = argPlayer;}
 	gui {
-		// postln("Param gui. model:" + model + "value" + value);
 		^HLayout(
 			this.label,
 			this.checkbox,
@@ -85,6 +77,7 @@ Param {
 		^TextField().maxWidth_(300).string_(code ? "").action_({ | me |
 			code = me.value;
 			postln("player: " + model.player + "param:" + name + "code:" + code);
+			this.updateModel;
 			if (this.isOn) { this.start; }
 		})
 	}

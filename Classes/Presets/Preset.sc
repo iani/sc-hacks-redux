@@ -178,11 +178,15 @@ Preset {
 	}
 
 	asScript {
-		this.updateDictFromParams;
+		// this.updateDictFromParams;
 		^"\n//:" + format("(%)", index) + this.player + playfunc + dict[\buf] ++ "\n" ++ dict.pp;
 	}
 
-	updateDictFromParams { params do: { | p | dict[p.name] = [p.value, p.code, p.ctl]; } }
+	updateDictFromParams {
+		params do: { | p |
+			dict[p.name] = [p.value, p.code, p.ctl];
+		}
+	}
 
 	clean { // remove legacy keys
 		dict[\ampctl] = nil;

@@ -37,7 +37,7 @@ BufSoundParams {
 
 	makeParams { | adict |
 		// postln("making sound params. playfunc is:" + playfunc);
-		paramSpecs = BufferSynth.getTemplate(playfunc).specs;
+		paramSpecs = SynthTemplate.getTemplate(playfunc).specs;
 		// postln("sound params found specs is:" + specs);
 		params = paramSpecs.flat collect: { | p | Param(this, p, adict) };
 	}
