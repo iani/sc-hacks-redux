@@ -12,13 +12,15 @@ ScorePlayer(nil, nil, "testscore-negative");
 */
 
 ScorePlayer {
-	var <list, index = 0, <name, <path, <score;
+	var <list, >index = 0, <name, <path, <score;
 
 	index { ^index ?? { index = 0 } }
 
 	*new { | list, index = 0, name |
 		^this.newCopyArgs(list, index, name).init;
 	}
+
+	presetList_ { | argList | list = argList }
 
 	init { this.readScore }
 
@@ -45,16 +47,14 @@ ScorePlayer {
 	defaultPath { ^this.makePath("default") }
 	gui { score.gui }
 	view {
-		//	{ this.changed(\gui) }.defer(0.1);
-		^View().background_(Color.rand).layout_(
-			VLayout(
-				this.playView,
-				this.paramView
-			)
+		var view;
+		view = View();
+		^view.background_(Color(*Array.rand(3, 0.7, 1.0))).layout_(
+			VLayout(this.playView(view))
 		)
 	}
 
-	playView {
+	playView { | view |
 		^HLayout(
 			StaticText().string_(
 			"Score:" + name ++ "."
@@ -75,7 +75,9 @@ ScorePlayer {
 			.action_({ score.gui }),
 			Button().maxWidth_(60).states_([["reset"]])
 			.action_({ score.makeStreamEvent }),
-
+			PfuncMenu(this).view,
+			PscoreMenu(this).view,
+			PdeleteButton(this, view).view
 		);
 	}
 
@@ -89,4 +91,8 @@ ScorePlayer {
 		^StaticText().string_("this is another test");
 	}
 
+	makeCurrent {
+		postln("Score makeCurrent index:" + index);
+		list.currentPreset = this;
+	}
 }
