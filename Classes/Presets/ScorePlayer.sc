@@ -12,12 +12,16 @@ ScorePlayer(nil, nil, "testscore-negative");
 */
 
 ScorePlayer {
-	var <list, >index = 0, <name, <path, <score;
+	var <list, >index = 0, <name, <path, <score, <>player;
 
 	index { ^index ?? { index = 0 } }
 
 	*new { | list, index = 0, name |
 		^this.newCopyArgs(list, index, name).init;
+	}
+
+	asScript {
+		^"\n//:" + format("(%)", index) + this.player ++ "\n" ++ name.asString.asCompileString;
 	}
 
 	presetList_ { | argList | list = argList }
@@ -37,6 +41,7 @@ ScorePlayer {
 		// postln("DOUBLECHECK PATH\n" ++ path);
 		// postln("DOUBLECHECK File exists?" + (File exists: path))
 		score = OscData.fromPath(path);
+		player = list.player;
 	}
 
 	makePath { | argName |

@@ -2,7 +2,7 @@
 
 */
 
-PscoreMenu : PresetView {
+PscoreMenu : PresetViewTemplate {
 	classvar pscoremenu; // cache
 	*scoresInLib { ^PathName(this.parentPath +/+ "Scores" +/+ "*.scd").pathMatch;}
 	*scoreNamesInLib { ^this.scoresInLib collect: _.name; }
@@ -15,7 +15,7 @@ PscoreMenu : PresetView {
 
 	pscoremenu {
 		^pscoremenu ?? {
-			pscoremenu = Scores.scoreNames collect: { | p | [p, { preset.addScore(p) }] };
+			pscoremenu = Scores.scoreNames collect: { | p | [p, { preset.list.addScore(p) }] };
 		}
 	}
 }

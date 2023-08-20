@@ -1,12 +1,12 @@
-/*presets for jun saved at 230820_211614*/
+/*presets for asayo saved at 230821_062323*/
 
-//: (0) jun plainsynthtest nil
+//: (0) asayo plainsynthtest nil
 (
-'amp': [ 0.044233434114386, "LFNoise2.kr(5).range(100, 10000) / 50000.0", 'on' ],
-'freq': [ 396.87070557371, "LFNoise2.kr(5).range(100, 10000)", 'on' ],
+'amp': [ 0.044233434114386, "Decay2.kr(Dust.kr(1)) * 0.2", 'on' ],
+'freq': [ 551.45005724336, "LFNoise2.kr(5).range(100, 10000)", 'on' ],
 'playfunc': 'plainsynthtest',
 )
-//: (1) jun grainmagshift hanbaiki
+//: (1) asayo grainmagshift hanbaiki
 (
 'amp': [ 0.47129314688838, "", 'on' ],
 'buf': 'hanbaiki',
@@ -20,7 +20,7 @@
 'trate': [ 50, "" ],
 'vol': [ 6.6824137062232, "", 'off' ],
 )
-//: (2) jun phasebuf weddellpock
+//: (2) asayo phasebuf weddellpock
 (
 'amp': [ 0.77607709750567, "", 'off' ],
 'buf': 'weddellpock',
@@ -34,7 +34,7 @@
 'trig': [ 62.0, "", 'off' ],
 'vol': [ 7.0107394809776, "", 'off' ],
 )
-//: (3) jun grainecho wind_strong
+//: (3) asayo grainecho wind_strong
 (
 'amp': [ 0.0, "", 'off' ],
 'buf': 'wind_strong',
@@ -47,7 +47,7 @@
 'trate': [ 0, "", 'off' ],
 'vol': [ 0, "", 'off' ],
 )
-//: (4) jun grainecho2 wind_strong
+//: (4) asayo grainecho2 wind_strong
 (
 'amp': [ 0, "", 'off' ],
 'buf': 'wind_strong',

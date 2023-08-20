@@ -152,16 +152,6 @@ Preset {
 
 	bufname { ^dict[\buf].asArray.first ? '----' }
 
-	addPreset { | p | //  create a new preset and add it to the list
-		var newPreset;
-		newPreset = SynthTemplate.makePreset(p.asSymbol, presetList, presetList.currentPreset.index);
-		presetList.insert(newPreset, presetList.currentPreset.index);
-	}
-
-	addScore { | name | // add a score - preset from name indicating path
-		presetList.addScore(name);
-	}
-
 	paramView { ^VLayout(*params.collect({ | p | p.gui })) }
 
 	viewSimplePrototype {
@@ -174,7 +164,6 @@ Preset {
 	}
 
 	asScript {
-		// this.updateDictFromParams;
 		^"\n//:" + format("(%)", index) + this.player + playfunc + dict[\buf] ++ "\n" ++ dict.pp;
 	}
 

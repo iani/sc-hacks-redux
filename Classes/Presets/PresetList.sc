@@ -33,11 +33,6 @@ PresetList {
 	*parentPath { ^PathName(this.filenameSymbol.asString).parentPath }
 	*scriptsInLib {^PathName(this.parentPath +/+ "PresetScripts" +/+ "*.scd").pathMatch; }
 
-	addScore { | name |
-		var i = currentPreset.index;
-		this.insert(ScorePlayer(this, i, name), i);
-	}
-
 	*init {
 		activeLists = Set();
 		this.loadPlayers;
@@ -57,8 +52,8 @@ PresetList {
 		this.scriptsInLib do: { | p |
 			var n;
 			n = PathName(p).fileNameWithoutExtension.asSymbol;
-			n.postln;
-			p.postln;
+			// n.postln;
+			// p.postln;
 			dict[n] = this.new(p);
 		}
 	}
@@ -75,6 +70,23 @@ PresetList {
 		this.reload;
 		player = argPlayer; // gui's should not permit 2 players in same system?
 		// when a list opens, it checks available players by consulting activeLists.
+	}
+
+	addPreset { | p | //  create a new preset and add it to the list
+		var newPreset;
+		newPreset = SynthTemplate.makePreset(p.asSymbol, this, currentPreset.index);
+		this.insert(newPreset);
+	}
+
+	// addScore { | name |
+	// 	var i = currentPreset.index;
+	// 	this.insert(ScorePlayer(this, i, name), i);
+	// }
+
+	addScore { | name | // add a score - preset from name indicating path
+		var newScore;
+		newScore = ScorePlayer(this, currentPreset.index, name);
+		this.insert(newScore);
 	}
 
 	reload {
@@ -97,7 +109,7 @@ PresetList {
 		seed = s.interpret;
 		^switch (seed.class,
 			Event, { Preset.newCopyArgs(this, i, s).importDict(seed) },
-			Symbol, { ScorePlayer(this, i, seed);},
+			Symbol, { ScorePlayer(this, i, seed); },
 			String, { ScorePlayer(this, i, seed); }
 		)
 	}
@@ -221,9 +233,10 @@ PresetList {
 	remove { | preset | presets remove: preset; this.renumber; }
 	renumber { presets do: { | p, i | p.index = i; } }
 	insert { | item, index |
+		index ?? { index = currentPreset.index };
 		item.presetList = this;
 		presets = presets.insert(index, item);
-		this.changed(\insert, item.view, index);
+		this.changed(\insert, item.view, index); // update gui!
 		this.renumber;
 	}
 

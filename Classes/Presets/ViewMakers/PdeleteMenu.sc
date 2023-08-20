@@ -2,7 +2,7 @@
 
 */
 
-PdeleteButton : PresetView {
+PdeleteButton : PresetViewTemplate {
 	var presetview;
 
 	*new { | preset, view | ^this.newCopyArgs(preset, view) }

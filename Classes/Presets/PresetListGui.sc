@@ -11,17 +11,15 @@ PresetListGui {
 	}
 
 	gui {
-		postln("PresetListGui stats: player:" + this.player
-			+ "numPresets:" + presetList.presets.size
-			+ "first preset player in dict:" + presetList.presets.first.dict[\player]);
-		this.window.front; // doubling window.front ... not needed?
+		postln("PresetListGui stats: player:" + this.player + "numPresets:" + presetList.presets.size);
+		this.window.front;
 	}
 
 	window {
 		var window, canvas;
 		// i = 0;
 		window = ScrollView(bounds:Rect(0,0,800,700).center_(Window.availableBounds.center));
-		canvas = View();		​
+		canvas = View();​
 		layout = VLayout();
 		window.canvas = canvas; // window < (canvas = view) < layout.
 		canvas.layout = layout;
@@ -29,8 +27,6 @@ PresetListGui {
 		this.addPresetViews;
 		// layout.add(nil); // stretch remaining empty space
 		layout.addNotifier(presetList, \insert, { | n, view, index |
-			// [n.listener, view, index].postln;
-			// postln("will insert" + view + "into" + n.listener + "at" + index);
 			this.insert(view, index);
 		});
 		layout.addNotifier(presetList, \remakeViews, { this.addPresetViews });
@@ -38,17 +34,28 @@ PresetListGui {
 	}
 
 	addPresetViews {
-		presetList.presets do: { | p | layout add: p.view };
+		presetList.presets do: { | p, i |
+			// var view;
+			// view = p.view;
+			// view.addNotifier(presetList, \reload, { view.remove });
+			// layout add: view
+			this.insert(p.view, i);
+		};
+		layout add: nil;
 	}
 
-	insert { | view, index | layout.insert(view, index + 1);} // skip initial non-preset element
+	insert { | view, index |
+		view.addNotifier(presetList, \reload, { view.remove });
+		layout.insert(view, index + 1);
+	} // skip initial non-preset element
 
 	makeHeader {
 		var view;
+		presetList.name.postln;
 		view = View().background_(Color.rand);
 		view.layout_(
 			HLayout(
-				StaticText().string_( ("Presets for:" + this.player) ),
+				StaticText().string_("" ++ presetList.name ++ ":" ++ this.player),
 				Button().states_([["Open other player"]])
 				.menuActions(PresetList.playerMenu)
 				.addNotifier(PresetList, \activeLists, { | n |

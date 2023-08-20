@@ -2,7 +2,7 @@
 Create a pfunc menu for any object;
 */
 
-PfuncMenu : PresetView {
+PfuncMenu : PresetViewTemplate {
 	var pfuncmenu; // cache
 
 	view {
@@ -13,7 +13,9 @@ PfuncMenu : PresetView {
 
 	pfuncmenu {
 		^pfuncmenu ?? {
-			pfuncmenu = SynthTemplate.templateNames collect: { | p | [p, { preset.addPreset(p) }] };
+			pfuncmenu = SynthTemplate.templateNames collect: { | p | [p, {
+				preset.presetList.addPreset(p)
+			}] };
 		}
 
 	}
