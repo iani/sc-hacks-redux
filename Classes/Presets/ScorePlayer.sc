@@ -12,7 +12,7 @@ ScorePlayer(nil, nil, "testscore-negative");
 */
 
 ScorePlayer {
-	var <list, >index = 0, <name, <path, <score, <>player;
+	var <>presetList, >index = 0, <name, <path, score, <>player;
 
 	index { ^index ?? { index = 0 } }
 
@@ -25,11 +25,12 @@ ScorePlayer {
 		^"\n//:" + format("(%)", index) + this.player ++ "\n" ++ name.asString.asCompileString;
 	}
 
-	presetList_ { | argList | list = argList }
+	//	preset
+	// presetList_ { | argList | list = argList }
 
-	init { this.readScore }
+	init { this.prepare }
 
-	readScore {
+	prepare { // delay reading score until displaying.
 		path = this.makePath;
 		postln("ScorePlayer:readScore. name:" + name);
 		postln("Path:" + path);
@@ -39,10 +40,12 @@ ScorePlayer {
 			"Using default score path instead".postln;
 			path = this.defaultPath;
 		};
+		// this.score; // doublechecking maybe needed here
+		// Mon 21 Aug 2023 16:41 score adding worked without loading here
 		// postln("DOUBLECHECK PATH\n" ++ path);
 		// postln("DOUBLECHECK File exists?" + (File exists: path))
-		score = OscData.fromPath(path);
-		player = list.player;
+
+		player = presetList.player;
 	}
 
 	makePath { | argName |
@@ -51,9 +54,17 @@ ScorePlayer {
 	}
 
 	defaultPath { ^this.makePath("default") }
-	gui { score.gui }
+
+	score {
+		if (score.isNil) { score = OscData.fromPath(path); };
+		^score;
+	}
+
+
+	gui { this.score.gui } // read score only when needed.
 	view {
 		var view;
+		this.score; // make score now at the latest;
 		view = View();
 		^view.background_(Color(*Array.rand(3, 0.7, 1.0))).layout_(
 			VLayout(this.playView(view))
@@ -64,16 +75,16 @@ ScorePlayer {
 		^HLayout(
 			StaticText().string_(
 			"Score:" + name ++ "."
-			+ score.unparsedEntries.size + "snippets. Duration:"
-			+ score.timeline.totalDuration + "sec."
+			+ this.score.unparsedEntries.size + "snippets. Duration:"
+			+ this.score.timeline.totalDuration + "sec."
 			),
 			CheckBox().maxWidth_(60).string_("trigger")
 			.action_({ | me |
 				if (me.value) {
-					postln("Activated triggering by" + list.player);
-					score addTrigger: list.player;
+					postln("Activated triggering by" + presetList.player);
+					this.score addTrigger: presetList.player;
 				}{
-					score removeTrigger:  list.player;
+					this.score removeTrigger:  presetList.player;
 					"Trigger switched off!".postln;
 				}
 			}),
@@ -89,7 +100,7 @@ ScorePlayer {
 	scoreMenu {
 		^Button().states_([["*"]]).maxWidth_(15)
 		.mouseDownAction_({ this.makeCurrent; })
-		.menuActions(list.scoremenu)
+		.menuActions(presetList.scoremenu)
 	}
 
 	paramView {
@@ -98,6 +109,6 @@ ScorePlayer {
 
 	makeCurrent {
 		postln("Score makeCurrent index:" + index);
-		list.currentPreset = this;
+		presetList.currentPreset = this;
 	}
 }
