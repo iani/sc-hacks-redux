@@ -99,6 +99,14 @@ First: Reloading selections for SoundBufferGui.
 			selections.addSelectionFromSnippet(*ps);
 		}
 	}
+	ensureNL {
+		// snippets must end in \n in order for export to result in playable script
+		if (this.last == Char.nl) {
+			^this;
+		}{
+			^this ++ "\n";
+		}
+	}
 }
 
 + Array {

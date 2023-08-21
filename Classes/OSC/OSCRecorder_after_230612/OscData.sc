@@ -534,6 +534,9 @@ OscData {
 		postln("exporting messages to" + exportPath);
 		File.use(this.messageExportPath, "w", { | f |
 			[timeline.segmentOnsets, this.selectedMessages].flop do: { | tm |
+				var check;
+				check = tm[1].removeFirstLine;
+				check.postln;
 				f.write(
 					"\n//:--[" ++
 					tm[0].asString ++

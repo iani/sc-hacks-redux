@@ -12,6 +12,8 @@ Preset {
 	var <paramSpecs, <params;
 	var <template; // subclass of SynthTemplate. creates the specs - and other customized stuff?
 
+	// compatibiity with score. TODO: change varname presetList to list?
+	list { ^presetList }
 	index_ { | i | index = i; this.changed(\index)	}
 	pfuncmenu {
 		^pfuncmenu ?? {

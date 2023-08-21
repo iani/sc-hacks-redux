@@ -230,7 +230,8 @@ FileNavigator {
 				.action_({ Menu(
 					MenuAction("export code", { this.exportCode }),
 					MenuAction("export messages", { this.exportMessages }),
-					MenuAction("export all", { this.exportAll })
+					MenuAction("export all", { this.exportAll }),
+					MenuAction("integrity check", { this.check })
 				).front }),
 				Button().states_([["load"]]).maxWidth_(40)
 				.action_({ this.loadSfSelections })
@@ -489,12 +490,18 @@ FileNavigator {
 		folder = this.codeFolder;
 		snippets = this.selectCode(this.collectSnippets);
 		times = snippets collect: _.time;
+		// postln("Debugging export code. Times:" + times);
+		if (times.size == 0) {
+			"There is no code to export in these files".warnWindow;
+			^"There is no code to export in these files".postln;
+
+		};
 		times = [0] ++ (times - times[0]).rotate(-1).butLast; // .postln;
 		filename = (this.homeDir +/+ folder +/+ Date.getDate.stamp).fullPath ++ ".scd";
 		File.use(filename, "w", { | f |
 			f.write("//Exporting" + snippets.size + "code snippets" + "on" + Date.getDate.stamp ++ "\n" );
 			snippets collect: { | x, i |
-				x.codeReplaceTimeStamp(times[i])
+				x.codeReplaceTimeStamp(times[i]).ensureNL;
 			} do: { | x | f write: x };
 			f write: "\n//the end\n\n";
 		});
@@ -545,9 +552,28 @@ FileNavigator {
 		filename = (this.homeDir +/+ folder +/+ Date.getDate.stamp).fullPath ++ ".scd";
 		File.use(filename, "w", { | f |
 			f.write("// Exporting" + snippets.size + "snippets" + "on" + Date.getDate.stamp ++ "\n" );
-			snippets do: { | x | f write: x };
+			snippets do: { | x | f write: x.ensureNL };
 			f write: "\n//the end\n\n";
 		});
 		"Export completed".postln;
+	}
+
+	check {
+		var snippets, faulty;
+		snippets = this.collectSnippets;
+		postln("checking export integrity. num snippets:" + snippets.size);
+		{ snippets do: {|s, i|
+			0.01.wait;
+			postln("-------" + i);
+			s.postln;
+			(s.last == Char.nl).postln;
+			if ((s.last == Char.nl).not) {
+				faulty = faulty add: [i, s];
+			};
+			postln("-------");
+		};
+			faulty do: _.postln;
+			faulty;
+		}.fork();
 	}
 }
