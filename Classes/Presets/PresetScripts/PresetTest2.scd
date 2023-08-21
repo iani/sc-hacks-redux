@@ -1,8 +1,8 @@
 /*presets for asayo saved at 230821_062323*/
 
 //: (0) asayo plainsynthtest nil
-//Testing some comments
-//This is a second comment
+//Towards bird chirping.
+//Can be varied and improved.
 (
 'amp': [ 0.044233434114386, "Decay2.kr(Dust.kr(1)) * 0.2", 'on' ],
 'freq': [ 551.45005724336, "LFNoise2.kr(5).range(100, 10000)", 'on' ],

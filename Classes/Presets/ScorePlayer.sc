@@ -72,31 +72,40 @@ ScorePlayer {
 	}
 
 	playView { | view |
-		^HLayout(
-			StaticText().string_(
-			"Score:" + name ++ "."
-			+ this.score.unparsedEntries.size + "snippets. Duration:"
-			+ this.score.timeline.totalDuration + "sec."
-			),
-			CheckBox().maxWidth_(60).string_("trigger")
-			.action_({ | me |
-				if (me.value) {
-					postln("Activated triggering by" + presetList.player);
-					this.score addTrigger: presetList.player;
-				}{
-					this.score removeTrigger:  presetList.player;
-					"Trigger switched off!".postln;
-				}
-			}),
-			Button().maxWidth_(60).states_([["gui"]]).action_({ score.gui }),
-			Button().maxWidth_(60).states_([["reset"]]).action_({ score.makeStreamEvent }),
-			Button().maxWidth_(60).states_([["edit"]]).action_({ score.edit }),
-			PfuncMenu(this).view,
-			PscoreMenu(this).view,
-			PdeleteButton(this, view).view
+		^VLayout(
+			this.mainView(view),
+			this.commentView
 		);
 	}
 
+	mainView { | view |
+		^HLayout(
+				StaticText().string_(
+					name.asString + this.score.unparsedEntries.size + "entries"
+					+ this.score.timeline.totalDuration.round(0.001) + "sec."
+				),
+				CheckBox().maxWidth_(60).string_("trigger")
+				.action_({ | me |
+					if (me.value) {
+						postln("Activated triggering by" + presetList.player);
+						this.score addTrigger: presetList.player;
+					}{
+						this.score removeTrigger:  presetList.player;
+						"Trigger switched off!".postln;
+					}
+				}),
+				Button().maxWidth_(60).states_([["gui"]]).action_({ score.gui }),
+				Button().maxWidth_(60).states_([["reset"]]).action_({ score.makeStreamEvent }),
+				Button().maxWidth_(60).states_([["edit"]]).action_({ score.edit }),
+				PfuncMenu(this).view,
+				PscoreMenu(this).view,
+				PdeleteButton(this, view).view
+			)
+	}
+
+	commentView {
+		^TextView().maxHeight_(50).string_(score.header);
+	}
 	scoreMenu {
 		^Button().states_([["*"]]).maxWidth_(15)
 		.mouseDownAction_({ this.makeCurrent; })

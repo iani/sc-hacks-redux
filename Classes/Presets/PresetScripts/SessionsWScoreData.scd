@@ -3,6 +3,7 @@
 //: (0) jun
 "11_230821_160835integrity_check"
 //: (1) jun plainsynthtest nil
+//Can be developed further to produce bird-song like sounds
 (
 'amp': [ 0.044233434114386, "Decay2.kr(Dust.kr(1)) * 0.2", 'on' ],
 'freq': [ 551.45005724336, "LFNoise2.kr(5).range(100, 10000)", 'on' ],

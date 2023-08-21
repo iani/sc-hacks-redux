@@ -23,7 +23,7 @@ PresetView : PresetViewTemplate {
 	paramView { ^VLayout(*preset.params.collect({ | p | p.gui })) }
 	commentsView {
 		^HLayout(
-			TextView().maxHeight_(20).string_(preset.comments)
+			TextView().maxHeight_(40).string_(preset.comments)
 			.addNotifier(this, \save, { | n | n.listener.string.postln; }),
 			Button().maxWidth_(10).states_([["!"]])
 			.action_({ | me |

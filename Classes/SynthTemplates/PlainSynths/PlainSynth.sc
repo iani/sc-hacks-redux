@@ -26,6 +26,7 @@ PlainSynth : SynthTemplate {
 			StaticText().maxWidth_(20).string_(preset.index.asString),
 			StaticText().maxWidth_(100).string_(preset.playfunc.asString),
 			StaticText().maxWidth_(500).string_("          "),
+			this.editButton,
 			PfuncMenu(preset).view,
 			PscoreMenu(preset).view,
 			PdeleteButton(preset, view).view

@@ -157,10 +157,14 @@ SynthTemplate {
 			.addNotifier(preset, \frames, { | n, start, end, dur |
 				n.listener.value = dur;
 			}),
-			// preset.templateMenu,
+			this.editButton,
 			PfuncMenu(preset).view,
 			PscoreMenu(preset).view,
 			PdeleteButton(preset, view).view
 		)
+	}
+	editButton {
+		^Button().maxWidth_(50).states_([["edit"]])
+		.action_({ this.edit })
 	}
 }
