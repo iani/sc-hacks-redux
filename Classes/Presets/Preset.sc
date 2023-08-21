@@ -1,3 +1,4 @@
+
 /* 29 Jul 2023 15:24
 Saving and loading presets as dictionaries (events), and in lists - with guis.
 
@@ -77,17 +78,12 @@ Preset {
 		}.fork; /// fork needed?
 	}
 
-	// stop { this.envir.stopSynths; }
 	stop {
 		format("%.envir.stopSynths", this.player.slash).share;
-		// TODO: check this:
-		// checkboxes of all presets must update here.
-		// Only the checkbox of a preset that just stared stays on! How?????
 		presetList.changed(\stopped, this);
 	}
 
 	envir { ^this.player.envir }
-	// may be different if not Buffer synth!
 	dur {^this.numFrames / this.sampleRate;}
 	valueAt { | param | ^(dict[param.asSymbol] ? 0).asArray.first }
 	startFrame { ^dict[\startframe].asArray.first ? 0 }
@@ -122,7 +118,6 @@ Preset {
 	}
 
 	sendToSynth { | param, value |
-		// postln("debug setParam. this.isPlaying? " + this.isPlaying);
 		if (this.isPlaying) { this.sendParam2Synth(param, value); };
 	}
 
@@ -137,34 +132,8 @@ Preset {
 	}
 
 	view { ^PresetView(this).view }
-	/*
-	view {
-		var view;
-		{ this.changed(\gui) }.defer(0.1);
-		view = View().background_(Color(*Array.rand(3, 0.8, 1.0)));
-		view.layout_(
-			VLayout(
-				template.playView(view, this),
-				this.paramView
-			)
-		);
-		view.addNotifier(presetList, \reload, { view.remove });
-		^view;
-	}
-	*/
 
 	bufname { ^dict[\buf].asArray.first ? '----' }
-
-	// paramView { ^VLayout(*params.collect({ | p | p.gui })) }
-
-	viewSimplePrototype {
-		^View().background_(Color.rand).layout_(
-			HLayout(
-				TextField().string_( ("This is entry number " + index + playfunc) ),
-				Button().states_([["Delete"]]).action_({ this.remove; })
-			)
-		)
-	}
 
 	asScript {
 		^"\n//:" + format("(%)", index) + this.player + playfunc + dict[\buf] ++ "\n" ++ dict.pp;
@@ -199,5 +168,10 @@ Preset {
 		^Button().states_([["*"]]).maxWidth_(15)
 		.mouseDownAction_({ this.makeCurrent; })
 		.menuActions(presetList.scoremenu)
+	}
+
+	comments {
+		// ^(code ?? { ^"" }).findRegexp("^//[^\n]*");
+		^(code ?? { "" }).comments;
 	}
 }

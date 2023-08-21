@@ -20,6 +20,7 @@ ScorePlayer {
 		^this.newCopyArgs(list, index, name).init;
 	}
 
+	edit { score.edit }
 	asScript {
 		^"\n//:" + format("(%)", index) + this.player ++ "\n" ++ name.asString.asCompileString;
 	}
@@ -76,10 +77,9 @@ ScorePlayer {
 					"Trigger switched off!".postln;
 				}
 			}),
-			Button().maxWidth_(60).states_([["gui"]])
-			.action_({ score.gui }),
-			Button().maxWidth_(60).states_([["reset"]])
-			.action_({ score.makeStreamEvent }),
+			Button().maxWidth_(60).states_([["gui"]]).action_({ score.gui }),
+			Button().maxWidth_(60).states_([["reset"]]).action_({ score.makeStreamEvent }),
+			Button().maxWidth_(60).states_([["edit"]]).action_({ score.edit }),
 			PfuncMenu(this).view,
 			PscoreMenu(this).view,
 			PdeleteButton(this, view).view

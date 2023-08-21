@@ -343,21 +343,19 @@ OscData {
 				.action_({ | me |
 					this.cloneMessages;
 				}),
-				Button().states_([["Edit"]])
-				.action_({ | me |
-					paths do: Document.open(_);
+				Button().states_([["Edit"]]).action_({ this.edit }),
+				Slider().orientation_(\horizontal)
+				.addNotifier(this, \progress, { | n, p |
+					// postln("progress: " + p);
+					n.listener.value = p;
 				})
-			),
-			Slider().orientation_(\horizontal)
-			.addNotifier(this, \progress, { | n, p |
-				// postln("progress: " + p);
-				n.listener.value = p;
-			})
+			)
 		);
 		window.name = this.windowName(argName);
 		{ this.selectAll; }.defer(0.1);
 	}
 
+	edit { paths do: Document.open(_); }
 	shareSnippet { | argSnippet |
 		var themessage;
 		themessage = argSnippet.interpret;

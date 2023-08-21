@@ -64,6 +64,11 @@ First: Reloading selections for SoundBufferGui.
 		^this.body.interpret[1];
 	}
 
+	comments { // experimental
+		^(this.body.findRegexp("^//[^\n]*").collect({ | x |
+			(x.last ?? { "" }) + "\n" })).cat;
+	}
+
 	selectionIndex { // used by SfSelections for loading.
 		^this.header.findRegexp("\\(\\d*\\)").first.last.interpret;
 	}
@@ -94,4 +99,8 @@ First: Reloading selections for SoundBufferGui.
 			selections.addSelectionFromSnippet(*ps);
 		}
 	}
+}
+
++ Array {
+	cat { ^(this.first ?? "").catArgs(*this[1..]) }
 }
