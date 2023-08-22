@@ -82,7 +82,7 @@ OscData {
 		// 'MAKING MESSAGEA'.postln;
 		parsedEntries = [];
 		[sourceStrings, paths].flop do: this.parseString(_);
-		postln("\nParsed " + parsedEntries.size + "entries");
+		postln("\n" ++ paths.first.name + "(" ++ paths.size ++ ")" + "parsed " + parsedEntries.size + "entries");
 		this.convertTimesMessages;
 		this.notifyLoaded;
 	}

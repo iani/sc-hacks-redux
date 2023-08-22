@@ -20,6 +20,7 @@ ScorePlayer {
 		^this.newCopyArgs(list, index, name).init;
 	}
 
+	list { ^presetList }
 	edit { score.edit }
 	asScript {
 		^"\n//:" + format("(%)", index) + this.player ++ "\n" ++ name.asString.asCompileString;
