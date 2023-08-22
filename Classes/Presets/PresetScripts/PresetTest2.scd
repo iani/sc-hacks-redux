@@ -1,6 +1,7 @@
 /*presets for jun saved at 230822_222454*/
 
 //: (0) jun plainsynthtest nil
+//Test with 01...sinesession script
 (
 'amp': [ 0.044233434114386, "Decay2.kr(Dust.kr(5), 0.01, 0.2) * 0.2", 'on' ],
 'freq': [ 551.45005724336, "LFNoise2.kr(5).range(100, 10000)", 'on' ],

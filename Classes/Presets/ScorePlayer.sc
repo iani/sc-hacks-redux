@@ -57,11 +57,9 @@ ScorePlayer {
 	defaultPath { ^this.makePath("default") }
 
 	score {
-		{"ScorePlayer trying to get score".postln; } ! 10;
 		if (score.isNil) {
 			score = OscData.fromPath(path); // score notifies when load is complete
 			this.notifyLoaded;
-		{"ScorePlayer just got th score".postln; } ! 10;
 		}{ // if score already loaded, then notify that load is already complete:
 			this.notifyLoaded;
 		};
