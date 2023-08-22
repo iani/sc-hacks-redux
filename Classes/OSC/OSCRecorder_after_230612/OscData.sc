@@ -79,12 +79,14 @@ OscData {
 	makeMessages {
 		// split sourceStrings to message components by regexp
 		// Collect interpreted time and message from each message.
+		// 'MAKING MESSAGEA'.postln;
 		parsedEntries = [];
 		[sourceStrings, paths].flop do: this.parseString(_);
 		postln("\nParsed " + parsedEntries.size + "entries");
 		this.convertTimesMessages;
+		this.notifyLoaded;
 	}
-
+	notifyLoaded { this.changed(\scoreLoaded); }
 	convertTimesMessages {
 		if (parsedEntries.size == 0) {
 			parsedEntries = sourceStrings;
@@ -492,7 +494,7 @@ OscData {
 	isPlaying { ^stream.isPlaying }
 
 	start {
-		"STARTING".postln;
+		postln("STARTING" + this);
 		if (this.isPlaying) { ^postln("Oscdata is already playing") };
 		this.makeStream; // update stream to current selection
 		//: TODO: advance progress to next message when restarting!

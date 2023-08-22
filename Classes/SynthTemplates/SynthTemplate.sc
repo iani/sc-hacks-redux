@@ -158,6 +158,7 @@ SynthTemplate {
 				n.listener.value = dur;
 			}),
 			this.editButton,
+			PplayScoreMenu(preset).view,
 			PfuncMenu(preset).view,
 			PscoreMenu(preset).view,
 			PdeleteButton(preset, view).view

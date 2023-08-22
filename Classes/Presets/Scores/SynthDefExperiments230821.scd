@@ -1,6 +1,7 @@
+//code
 //: 21 Aug 2023 17:36 From rehearsal of August 21 2023
 // Experimenting with synthdefs inline in score
-//:--[1]
+//:--[5]
 { Decay2.kr(Dust.kr(1)) * 0.2 } @>.test \amp;
 { LFNoise2.kr(5).range(100, 10000) } @>.test \freq;
 {

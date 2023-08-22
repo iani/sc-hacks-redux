@@ -68,6 +68,7 @@ Trace {
 
 
 + Object {
+	traceChanges { this addDependant: { | ... args | args.postln; } }
 	trace { this addDependant: Trace }
 	untrace { this removeDependant: Trace }
 }

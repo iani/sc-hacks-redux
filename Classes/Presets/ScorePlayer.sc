@@ -30,6 +30,7 @@ ScorePlayer {
 
 	init { this.prepare }
 
+	start { this.score.start; }
 	prepare { // delay reading score until displaying.
 		path = this.makePath;
 		postln("ScorePlayer:readScore. name:" + name);
@@ -56,16 +57,24 @@ ScorePlayer {
 	defaultPath { ^this.makePath("default") }
 
 	score {
-		if (score.isNil) { score = OscData.fromPath(path); };
+		{"ScorePlayer trying to get score".postln; } ! 10;
+		if (score.isNil) {
+			score = OscData.fromPath(path); // score notifies when load is complete
+			this.notifyLoaded;
+		{"ScorePlayer just got th score".postln; } ! 10;
+		}{ // if score already loaded, then notify that load is already complete:
+			this.notifyLoaded;
+		};
 		^score;
 	}
 
+	notifyLoaded { this.changed(\scoreLoaded); }
 
 	gui { this.score.gui } // read score only when needed.
 	view {
 		var view;
 		this.score; // make score now at the latest;
-		view = View();
+		view = View().maxHeight_(150);
 		^view.background_(Color(*Array.rand(3, 0.7, 1.0))).layout_(
 			VLayout(this.playView(view))
 		)
@@ -113,7 +122,7 @@ ScorePlayer {
 	}
 
 	paramView {
-		^StaticText().string_("this is another test");
+		^StaticText().string_("ScorePlayer: paramView - this is another test");
 	}
 
 	makeCurrent {

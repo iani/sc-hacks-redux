@@ -1,4 +1,3 @@
-
 /* 29 Jul 2023 15:24
 Saving and loading presets as dictionaries (events), and in lists - with guis.
 
@@ -61,6 +60,7 @@ Preset {
 	player { ^presetList.player }
 
 	play {
+		{  "blah blah blah playe".postln; } ! 10;
 		{
 			// this.player.envir.stopSynths;
 			this.stop;
@@ -160,6 +160,7 @@ Preset {
 		presetList.currentPreset = this;
 	}
 
+	/*
 	templateMenu {
 		^Button().states_([["+"]]).maxWidth_(15)
 		.mouseDownAction_({ this.makeCurrent; })
@@ -171,9 +172,35 @@ Preset {
 		.mouseDownAction_({ this.makeCurrent; })
 		.menuActions(presetList.scoremenu)
 	}
+	*/
 
 	comments {
 		// ^(code ?? { ^"" }).findRegexp("^//[^\n]*");
 		^(code ?? { "" }).comments;
+	}
+
+	startWithScore { | p |
+		var scorePlayer, score;
+		// postln("Preset startWithScore. Arg:" + p);
+		scorePlayer = ScorePlayer(presetList, index, p);
+		// postln("The score is:" + theScore + "Tracing it!");
+		// theScore.traceChanges;
+		// theScore.start;
+		// start preset before score, in order not to miss the first message from score
+		// minimize delay by starting preset when score has loaded
+		"theScore::::: mAKING IT TRACE".postln;
+		scorePlayer.trace;
+		this.addNotifier(scorePlayer, \scoreLoaded, {
+			// " the score loaded".postln;
+			"Preset starting before score".postln;
+			{ "a Preset CALLING THIS PLAY NOW".postln; } ! 10;
+			this.play;
+			{ // ensure all player synths have started before sending first message from score;
+				{  "Score starting now".postln; } ! 1;
+				score.start;
+			}.defer(0.1);
+		});
+		"Getting score now".postln;
+		score = scorePlayer.score; // get score to trigger \scoreLoaded;
 	}
 }

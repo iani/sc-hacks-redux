@@ -1,14 +1,12 @@
-/*presets for asayo saved at 230821_062323*/
+/*presets for jun saved at 230822_222454*/
 
-//: (0) asayo plainsynthtest nil
-//Towards bird chirping.
-//Can be varied and improved.
+//: (0) jun plainsynthtest nil
 (
-'amp': [ 0.044233434114386, "Decay2.kr(Dust.kr(1)) * 0.2", 'on' ],
+'amp': [ 0.044233434114386, "Decay2.kr(Dust.kr(5), 0.01, 0.2) * 0.2", 'on' ],
 'freq': [ 551.45005724336, "LFNoise2.kr(5).range(100, 10000)", 'on' ],
 'playfunc': 'plainsynthtest',
 )
-//: (1) asayo grainmagshift hanbaiki
+//: (1) jun grainmagshift hanbaiki
 (
 'amp': [ 0.47129314688838, "", 'on' ],
 'buf': 'hanbaiki',
@@ -22,7 +20,7 @@
 'trate': [ 50, "" ],
 'vol': [ 6.6824137062232, "", 'off' ],
 )
-//: (2) asayo phasebuf weddellpock
+//: (2) jun phasebuf weddellpock
 (
 'amp': [ 0.77607709750567, "", 'off' ],
 'buf': 'weddellpock',
@@ -36,7 +34,7 @@
 'trig': [ 62.0, "", 'off' ],
 'vol': [ 7.0107394809776, "", 'off' ],
 )
-//: (3) asayo grainecho wind_strong
+//: (3) jun grainecho wind_strong
 (
 'amp': [ 0.0, "", 'off' ],
 'buf': 'wind_strong',
@@ -49,7 +47,7 @@
 'trate': [ 0, "", 'off' ],
 'vol': [ 0, "", 'off' ],
 )
-//: (4) asayo grainecho2 wind_strong
+//: (4) jun grainecho2 wind_strong
 (
 'amp': [ 0, "", 'off' ],
 'buf': 'wind_strong',
