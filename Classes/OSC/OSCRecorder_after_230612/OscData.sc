@@ -29,7 +29,7 @@ OscData {
 	// var totalDuration; // 12 no longer used
 	// var selectedDuration; // 13 no longer used
 	// var totalOnsetsDuration; // 14 no longer used
-	var <>header = ""; // unused
+	var <>header = ""; // Displayed in PresetList gui score view
 
 	comments { ^header ? "" } // unused
 	comments_ { | s | header = s } // unused

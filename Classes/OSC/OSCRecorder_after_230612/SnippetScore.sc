@@ -14,6 +14,7 @@ SnippetScore : OscDataScore {
 		#string, path = stringAndPath;
 		// this.checkFileType(string, path);
 		delimiters = string.findAll("\n//:");
+		header = header ++ string[..delimiters.first] ++ "\n";
 		delimiters do: { | b, i |
 			var end;
 			end = delimiters[i + 1];

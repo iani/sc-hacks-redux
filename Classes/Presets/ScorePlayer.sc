@@ -58,8 +58,8 @@ ScorePlayer {
 	defaultPath { ^this.makePath("default") }
 
 	score {
-		if (score.isNil) {
-			score = OscData.fromPath(path); // score notifies when load is complete
+		if (score.isNil) { // score notifies when load is complete
+			score = OscData.fromPath(path); //.player_(player);
 			this.notifyLoaded;
 		}{ // if score already loaded, then notify that load is already complete:
 			this.notifyLoaded;
@@ -88,27 +88,29 @@ ScorePlayer {
 
 	mainView { | view |
 		^HLayout(
-				StaticText().string_(
-					name.asString + this.score.unparsedEntries.size + "entries"
-					+ this.score.timeline.totalDuration.round(0.001) + "sec."
-				),
-				CheckBox().maxWidth_(60).string_("trigger")
-				.action_({ | me |
-					if (me.value) {
-						postln("Activated triggering by" + presetList.player);
-						this.score addTrigger: presetList.player;
-					}{
-						this.score removeTrigger:  presetList.player;
-						"Trigger switched off!".postln;
-					}
-				}),
-				Button().maxWidth_(60).states_([["gui"]]).action_({ score.gui }),
-				Button().maxWidth_(60).states_([["reset"]]).action_({ score.makeStreamEvent }),
-				Button().maxWidth_(60).states_([["edit"]]).action_({ score.edit }),
-				PfuncMenu(this).view,
-				PscoreMenu(this).view,
-				PdeleteButton(this, view).view
-			)
+			StaticText().string_(
+				name.asString + this.score.unparsedEntries.size + "entries"
+				+ this.score.timeline.totalDuration.round(0.001) + "sec."
+			),
+			CheckBox().maxWidth_(60).string_("trigger")
+			.action_({ | me |
+				if (me.value) {
+					postln("Activated triggering by" + presetList.player);
+					this.score addTrigger: presetList.player;
+				}{
+					this.score removeTrigger:  presetList.player;
+					"Trigger switched off!".postln;
+				}
+			}),
+			Button().maxWidth_(90).states_([["test triggger"]]).
+			action_({ LocalAddr().sendMsg(presetList.player) }),
+			Button().maxWidth_(60).states_([["gui"]]).action_({ score.gui }),
+			Button().maxWidth_(60).states_([["reset"]]).action_({ score.makeStreamEvent }),
+			Button().maxWidth_(60).states_([["edit"]]).action_({ score.edit }),
+			PfuncMenu(this).view,
+			PscoreMenu(this).view,
+			PdeleteButton(this, view).view
+		)
 	}
 
 	commentView {

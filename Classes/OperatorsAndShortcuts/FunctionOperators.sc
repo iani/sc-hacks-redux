@@ -50,8 +50,17 @@
 		^synth;
 	}
 
+	/* // older version
 	+>> { | cmdName, player |
 		this.sendReply(cmdName, player)
+	}
+	*/
+
+	+>> { | cmdName, player = \osctrigger |
+		{
+			this.value.sendReply(cmdName.asOscMessage);
+			Silent.ar;
+		} +> player;
 	}
 
 	sendReply { | cmdName, player, values = 1, replyID = 1 |

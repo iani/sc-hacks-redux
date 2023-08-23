@@ -3,6 +3,9 @@
 */
 
 + UGen {
+	sendReply { | oscmessage |
+		^SendReply.kr(this, oscmessage)
+	}
 	mapdur { | buf | // map from 0-1 to scale matching duration of buffer selection
 		^this.linlin(0, 1,
 				\startframe.br(~startframe ? 0) / BufSampleRate.kr(buf),

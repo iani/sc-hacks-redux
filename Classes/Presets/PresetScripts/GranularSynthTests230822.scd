@@ -1,8 +1,14 @@
-/*presets for jun saved at 230823_134710*/
+/*presets for jun saved at 230823_174348*/
 
-//: (0) jun grainmagshift hanbaiki
-//Here are some comments for this presettttt!   all taken away again.
-//ah
+//: (0) jun
+"TriggerFuncs_Experimental_Jun"
+//: (1) jun
+"01_trigger_step_test_score"
+//: (2) jun
+"00_FromSineCrossingIntro230821_160835"
+//: (3) jun grainmagshift hanbaiki
+//Here are some comments for this presettttt!   all taken away again. 
+//ah 
 (
 'amp': [ 1, "", 'off' ],
 'buf': 'hanbaiki',
