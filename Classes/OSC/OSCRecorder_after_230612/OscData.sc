@@ -29,7 +29,10 @@ OscData {
 	// var totalDuration; // 12 no longer used
 	// var selectedDuration; // 13 no longer used
 	// var totalOnsetsDuration; // 14 no longer used
-	var <header = "";
+	var <>header = ""; // unused
+
+	comments { ^header ? "" } // unused
+	comments_ { | s | header = s } // unused
 
 	*fromPath { | p | // choose class depending on file contents
 		case

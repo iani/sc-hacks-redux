@@ -10,6 +10,7 @@ Preset {
 	var <selectionNum;
 	var <paramSpecs, <params;
 	var <template; // subclass of SynthTemplate. creates the specs - and other customized stuff?
+	var >comments; //, <>commentsView;
 
 	// compatibiity with score. TODO: change varname presetList to list?
 	list { ^presetList }
@@ -137,7 +138,9 @@ Preset {
 	bufname { ^dict[\buf].asArray.first ? '----' }
 
 	asScript {
-		^"\n//:" + format("(%)", index) + this.player + playfunc + dict[\buf] ++ "\n" ++ dict.pp;
+		^"\n//:" + format("(%)", index) + this.player + playfunc + dict[\buf]
+		++ comments.comment
+		++ "\n" ++ dict.pp;
 	}
 
 	updateDictFromParams {
@@ -160,11 +163,15 @@ Preset {
 	}
 
 	comments {
-		^(code ?? { "" }).comments;
+		^comments ?? { comments = (code ?? { "" }).comments; }
 	}
 
 	startWithScore { | p |
 		var scorePlayer, score;
+		this.makeCurrent;
+		postln("Debugging Preset startWithScore. index is:" + index +
+			"Current preset index is:" + presetList.currentPreset.index
+		);
 		scorePlayer = ScorePlayer(presetList, index, p);
 		scorePlayer.trace;
 		this.addNotifier(scorePlayer, \scoreLoaded, {

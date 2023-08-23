@@ -69,6 +69,17 @@ First: Reloading selections for SoundBufferGui.
 			(x.last ?? { "" }) + "\n" })).cat;
 	}
 
+	comment { // ensure each line starts with //
+		var result, result2 = "";
+		result = this.split($\n).collect({ | s |
+			case
+			{ s.size == 0 }{ s }
+			{ s[..1] == "//" } { "\n" ++ s }
+			{ true } { "\n//" ++ s }
+		});
+		result do: { | x | result2 = result2 ++ x };
+		^result2
+	}
 	selectionIndex { // used by SfSelections for loading.
 		^this.header.findRegexp("\\(\\d*\\)").first.last.interpret;
 	}

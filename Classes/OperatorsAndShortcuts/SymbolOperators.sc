@@ -4,6 +4,10 @@
 
 + Symbol {
 	// convert to specs for use by Param
+	gt { | thresh = 0.5 | ^this.sr > thresh }
+	ampSlope { | attack = 0.001, release = 1 |
+		^Amplitude.kr(Slope.kr(this.sr), attack, release)
+	}
 	linlin { | envir, param, lo, hi |
 		format(
 			"{ %%.sr.lin(%, %) } @>.% %%;", "%", this, lo, hi, envir, "%", param

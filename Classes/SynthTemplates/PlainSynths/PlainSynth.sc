@@ -5,7 +5,7 @@
 PlainSynth : SynthTemplate {
 	playView { | view, preset | // new version: Wed 16 Aug 2023 09:33
 		var buffermenu;
-		postln("this is PlainSynth.playView");
+		postln("this is PlainSynth.playView. Preset index is:" + preset.index);
 		buffermenu = Buffer.all collect: { | p | [p, { preset.switchBuffer(p) }] };
 		^HLayout(
 			CheckBox().string_("play").maxWidth_(50)

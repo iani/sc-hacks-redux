@@ -1,6 +1,8 @@
-/*presets for jun saved at 230822_234740*/
+/*presets for jun saved at 230823_134710*/
 
 //: (0) jun grainmagshift hanbaiki
+//Here are some comments for this presettttt!   all taken away again.
+//ah
 (
 'amp': [ 1, "", 'off' ],
 'buf': 'hanbaiki',
