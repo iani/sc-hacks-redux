@@ -15,7 +15,7 @@ PdeleteButton : PresetViewTemplate {
 		{
 			postln("will now remove preset" + preset.index + "from the preset list");
 			presetview !? { presetview.remove };
-			preset.presetList remove: this;
+			preset.presetList remove: preset;
 		}.confirm("Do you really want to remove preset no." + preset.index + "?");
 	}
 

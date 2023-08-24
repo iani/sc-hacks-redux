@@ -10,7 +10,7 @@ PplayScoreMenu : PresetViewTemplate {
 	view {
 		^Button().states_([["*", Color.red]]).maxWidth_(15)
 		.mouseDownAction_({
-			postln("Debugging pplayScoreMenu mouseDown. index:" + preset.index);
+			// postln("Debugging pplayScoreMenu mouseDown. index:" + preset.index);
 			preset.makeCurrent;
 		})
 		.menuActions(this.pplayscoremenu)
@@ -19,7 +19,7 @@ PplayScoreMenu : PresetViewTemplate {
 	pplayscoremenu {
 		^pscoremenu ?? {
 			pscoremenu = Scores.scoreNames collect: { | p | [p, {
-				postln("starting with score. preset:" + preset);
+				// postln("starting with score. preset:" + preset);
 				preset.startWithScore(p) }] };
 		}
 	}

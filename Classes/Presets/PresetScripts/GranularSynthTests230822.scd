@@ -7,8 +7,8 @@
 //: (2) jun
 "00_FromSineCrossingIntro230821_160835"
 //: (3) jun grainmagshift hanbaiki
-//Here are some comments for this presettttt!   all taken away again. 
-//ah 
+//Comments...
+//...
 (
 'amp': [ 1, "", 'off' ],
 'buf': 'hanbaiki',
