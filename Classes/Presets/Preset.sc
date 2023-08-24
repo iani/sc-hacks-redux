@@ -69,13 +69,13 @@ Preset {
 			// postln("checkBufParam. buf:" + theBuf);
 			// postln("checkBufParam. buf:" + theBuf + "buf.buf" + theBuf.asArray[0].buf);
 			theBuf = theBuf.asArray[0].buf;
-			if (dict[\startFrame].isNil) {
+			if (dict[\startframe].isNil) {
 				// postln("setting startFrame to:" + 0);
-				dict[\startFrame] = 0;
+				dict[\startframe] = 0;	//
 			};
-			if (dict[\endFrame].isNil) {
+			if (dict[\endframe].isNil) {
 				// postln("setting endFrame to:" + theBuf.numFrames);
-				dict[\endFrame] = theBuf.numFrames;
+				dict[\endframe] = theBuf.numFrames;
 			}
 			// postln("checkBufParams ready to provide default endFrame:" + theBuf.NumFrames);
 		}

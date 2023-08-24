@@ -3,6 +3,9 @@
 */
 
 + Function {
+	pan { | pan = 0 |
+		^{ Pan2.ar(this.value, \pan.br(~pan ? pan)) }
+	}
 	amplify { | amp = 1 | // Thu 17 Aug 2023 11:47 experimental: provide amp bus control.
 		^{ this.value * \amp.br(~amp ? amp) }
 	}

@@ -4,6 +4,5 @@ Experimental.
 [PhaseBuf_, Freeze_];
 //:
 {   // provides PlayBuf.ar ugen with br controls
-	"DEBUGGING: This is phasebuf - Freeze".postln;
-	PhaseBuf_.ar() +> Freeze_ * \amp.br(1)
-}
+	PhaseBuf_.ar() +> Freeze_
+}.pan

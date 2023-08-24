@@ -18,7 +18,7 @@ PresetListGui {
 	window {
 		var window, canvas;
 		// i = 0;
-		window = ScrollView(bounds:Rect(0,0,800,700).center_(Window.availableBounds.center));
+		window = ScrollView(bounds:Rect(0,0,1000,700).center_(Window.availableBounds.center));
 		canvas = View();​
 		layout = VLayout();
 		window.canvas = canvas; // window < (canvas = view) < layout.
@@ -71,7 +71,8 @@ PresetListGui {
 				.action_({ "CmdPeriod.run".share }),
 				Button().states_([["Edit"]]).action_({ this.openSource }),
 				Button().states_([["Reload"]]).action_({ presetList.reload }),
-				Button().states_([["Save"]]).action_({ presetList.save })
+				Button().states_([["Save"]]).action_({ presetList.save }),
+				Button().states_([["clonebufs"]]).action_({ presetList.cloneBuffers })
 			)
 		);
 		^view

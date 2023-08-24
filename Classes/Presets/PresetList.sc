@@ -15,6 +15,19 @@ PresetList {
 	var <currentPreset;
 	var scoremenu; // cache
 
+	cloneBuffers {
+		var theDict, thePresets;
+		theDict = presets.first.dict;
+		thePresets = Buffer.all collect: { | b, i |
+			theDict[\buf] = b.postln;
+			theDict[\startframe] = nil;
+			theDict[\endframe] = nil;
+			Preset.newCopyArgs(this, i).importDict(theDict.copy);
+		};
+		presets = thePresets;
+		this.renumber;
+		this.remakePresetViews;
+	}
 	windowClosed { this.removeActive }
 	scoremenu {
 		^scoremenu ??
@@ -89,9 +102,13 @@ PresetList {
 		this.readCode;
 		this.makeSnippets;
 		this.makePresets;
+		currentPreset = presets.first;
+		this.remakePresetViews;
+	}
+
+	remakePresetViews {
 		this.changed(\reload); // remove preset views
 		this.changed(\remakeViews); // remake preset views
-		currentPreset = presets.first;
 	}
 
 	readCode { code = File(path, "r").readAllString }

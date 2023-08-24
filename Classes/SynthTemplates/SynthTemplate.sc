@@ -115,6 +115,10 @@ SynthTemplate {
 			}]
 		};
 		{
+			postln("notifying frames startframe:" + preset.startFrame +
+				"endFrame" + preset.endFrame +
+				"dict" + preset.dict
+ 			);
 			preset.changed(\frames, preset.startFrame, preset.endFrame, preset.dur);
 		}.defer(0.1);
 		^HLayout(
