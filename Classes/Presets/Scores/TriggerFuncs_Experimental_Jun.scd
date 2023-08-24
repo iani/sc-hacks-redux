@@ -5,7 +5,3 @@
 { Impulse.kr(1) } +>>.trigger1 \jun;
 //:
 { \x1.gt } +>>.trigger1 \jun;
-//:
-{ Silent.ar } +> \trigger1;
-//:
-{ Impulse.kr(1) } +>> \jun;
