@@ -31,7 +31,8 @@ ScorePlayer {
 
 	init { this.prepare }
 
-	start { this.score.start; }
+	start { "ScorePlayer:start!".postln; this.score.start; }
+	stop { "ScorePlayer:stop!".postln; this.score.stop; }
 	prepare { // delay reading score until displaying.
 		path = this.makePath;
 		postln("ScorePlayer:readScore. name:" + name);
@@ -102,11 +103,13 @@ ScorePlayer {
 					"Trigger switched off!".postln;
 				}
 			}),
+			Button().maxWidth_(50).states_([["start"],["stop"]]).
+			action_({ | me | this perform: [\stop, \start][me.value].postln }),
 			Button().maxWidth_(90).states_([["test triggger"]]).
 			action_({ LocalAddr().sendMsg(presetList.player) }),
-			Button().maxWidth_(60).states_([["gui"]]).action_({ score.gui }),
-			Button().maxWidth_(60).states_([["reset"]]).action_({ score.makeStreamEvent }),
-			Button().maxWidth_(60).states_([["edit"]]).action_({ score.edit }),
+			Button().maxWidth_(50).states_([["gui"]]).action_({ score.gui }),
+			Button().maxWidth_(50).states_([["reset"]]).action_({ score.makeStreamEvent }),
+			Button().maxWidth_(50).states_([["edit"]]).action_({ score.edit }),
 			PfuncMenu(this).view,
 			PscoreMenu(this).view,
 			PdeleteButton(this, view).view
@@ -114,7 +117,7 @@ ScorePlayer {
 	}
 
 	commentView {
-		^TextView().maxHeight_(50).string_(score.header);
+		^TextView().maxHeight_(60).string_(score.header);
 	}
 	scoreMenu {
 		^Button().states_([["*"]]).maxWidth_(15)

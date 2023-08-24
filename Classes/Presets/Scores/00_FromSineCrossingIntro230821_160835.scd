@@ -1,4 +1,6 @@
 // Exporting 19836 snippets on 230821_160835
+// Messages recorded from Sine-Crossing duo session Jun-Asayo
+// For testing various sounds
 //:--[82577.245054875]
 [ '/minibee/data', 2, 0.53131484985352, 0.49957269430161, 0.49310219287872 ]
 //:--[82577.2571285]

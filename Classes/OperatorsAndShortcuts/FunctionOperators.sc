@@ -58,11 +58,12 @@
 
 	+>> { | cmdName, player = \osctrigger |
 		{
+			cmdName ?? { cmdName = player };
 			this.value.sendReply(cmdName.asOscMessage);
-			Silent.ar;
 		} +> player;
 	}
 
+	/*
 	sendReply { | cmdName, player, values = 1, replyID = 1 |
 		// always save in environment \triggers (special envir)
 		{
@@ -72,6 +73,7 @@
 			)
 		}.playInEnvir(player ? cmdName, \triggers)
 	}
+	*/
 
 	**> { | player, envir | // infinite loop in envir
 		{

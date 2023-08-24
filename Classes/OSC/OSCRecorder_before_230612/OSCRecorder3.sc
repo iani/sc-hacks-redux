@@ -21,7 +21,8 @@ OSCRecorder3 {
 	*initClass {
 		excludedMessages = [
 			'/cbmon', '/status.reply', '/done', '/n_end',
-			'/recordingDuration', '/n_go', '/d_removed', '/synced', '/minibee/rssi'
+			'/recordingDuration', '/n_go', '/d_removed', '/synced', '/minibee/rssi',
+			'localhostInLevels', 'localhostOutLevels'
 		];
 		filter = { | msg | excludedMessages includes: msg };
 		ShutDown add: { this.closeFile };

@@ -4,7 +4,7 @@
 
 + UGen {
 	sendReply { | oscmessage |
-		^SendReply.kr(this, oscmessage)
+		^SendReply.kr(this, oscmessage ? \trigger)
 	}
 	mapdur { | buf | // map from 0-1 to scale matching duration of buffer selection
 		^this.linlin(0, 1,
