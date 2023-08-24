@@ -105,11 +105,14 @@ Project {
 	}
 
 	*loadAudioFiles { | pathName |
-		this.matchingFilesDo(
-			pathName,
-			{ | p | p.loadAudiofile },
-			"wav", "WAV", "aiff", "aif"
-		)
+		Server.default doWhenBooted: {
+			this.matchingFilesDo(
+				pathName,
+				{ | p | p.loadAudiofile; Server.default.sync; },
+				"wav", "WAV", "aiff", "aif"
+			);
+			Server.default.changed(\buffersLoaded);
+		}
 	}
 
 	*loadScdFile { | pathName |

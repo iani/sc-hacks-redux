@@ -15,7 +15,7 @@ List all buffers
 		var bufferDict;
 		bufferDict = this.dict;
 		if (bufferDict.size == 0) {
-			"There are no buffers in the library. Please check if server is booted".postln;
+			// "There are no buffers in the library. Please check if server is booted".postln;
 			^[]
 		}{
 			^bufferDict.keys.asArray.sort;

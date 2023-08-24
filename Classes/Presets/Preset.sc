@@ -51,7 +51,37 @@ Preset {
 		selectionNum = adict[\selectionNum] ? 0; // possibly redundant
 		dict = adict;
 		this.makeParams(dict);
+		if (Buffer.all.size == 0) {
+			this.addNotifier(Server.default, \buffersLoaded, {
+				this.checkBufParams;
+			});
+		}{
+			this.checkBufParams;
+		};
 	}
+
+	checkBufParams {
+		var theBuf;
+		if (
+			dict[\buf].notNil
+		){
+			theBuf = dict[\buf];
+			// postln("checkBufParam. buf:" + theBuf);
+			// postln("checkBufParam. buf:" + theBuf + "buf.buf" + theBuf.asArray[0].buf);
+			theBuf = theBuf.asArray[0].buf;
+			if (dict[\startFrame].isNil) {
+				// postln("setting startFrame to:" + 0);
+				dict[\startFrame] = 0;
+			};
+			if (dict[\endFrame].isNil) {
+				// postln("setting endFrame to:" + theBuf.numFrames);
+				dict[\endFrame] = theBuf.numFrames;
+			}
+			// postln("checkBufParams ready to provide default endFrame:" + theBuf.NumFrames);
+		}
+
+	}
+
 	makeParams { | adict |
 		template = SynthTemplate.getTemplate(playfunc);
 		paramSpecs = template.specs;
