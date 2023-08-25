@@ -28,13 +28,20 @@ Asc to confirm before evaluating a function.
 		.bounds_(Rect(400, 400, 500, 300));
 	}
 
-	getFolderPath { | object, message = "Click OK and choose a path for" |
-		// TODO: Complete this method!
+	getFolderPath { | message = "Click OK and choose a path for" |
 		{
 			FileDialog({ | path |
 				this.(path);
 			}, {}, 2)
-		}.confirm(message + object)
+		}.confirm(message)
+	}
+
+	getFilePath { | message = "Click OK and choose a path for" |
+		{
+			FileDialog({ | path |
+				this.(path);
+			}, {}, 1)
+		}.confirm(message)
 	}
 
 	inputText {  | default = "something", prompt = "Enter a new string" |

@@ -72,6 +72,13 @@ PresetList {
 		}
 	}
 
+	*pathDialog { | player |
+		player ?? { player = players.first };
+		{ | p |
+			this.fromPath(p.first, player).gui;
+		}.getFilePath("Click OK to select a Preset file:");
+
+	}
 	*fromPath { | path, player | ^this.newCopyArgs(path).init(player ?? { players.first }); }
 	// To be rewritten:
 	*new { | path, player | ^this.newCopyArgs(path).init(player ?? { players.first }); }
@@ -186,7 +193,10 @@ PresetList {
 			HLayout(
 				ListView()
 				.items_(presetnames)
-				.action_({ | me | selectedPreset = me.item.postln; }),
+				.action_({ | me |
+					selectedPreset = me.item.postln;
+					this.changed(\selectedPreset);
+				}),
 				ListView()
 				.items_(this.availablePlayers)
 				.action_({ | me | selectedPlayer = me.item.postln; })
@@ -195,13 +205,23 @@ PresetList {
 					selectedPlayer = this.availablePlayers.first;
 				})
 			),
-			Button().states_([["open"]])
-			.action_({
-				postln("you selected preset list:" + selectedPreset + "and player:" + selectedPlayer);
-				// postln("the preset list has player" + selectedPreset.player);
-				postln("the path is" + dict[selectedPreset].path);
-				this.fromPath(dict[selectedPreset].path, selectedPlayer).gui;
-			})
+			HLayout(
+				Button().states_([["open" + presetnames.first]])
+				.addNotifier(this, \selectedPreset, { | n |
+					n.listener.states = [[ "open" + selectedPreset]]
+				})
+				.action_({
+					postln("you selected preset list:" + selectedPreset + "and player:" + selectedPlayer);
+					// postln("the preset list has player" + selectedPreset.player);
+					postln("the path is" + dict[selectedPreset].path);
+					this.fromPath(dict[selectedPreset].path, selectedPlayer).gui;
+				}),
+				Button().states_([["select from disk"]])
+				.action_({
+					// selectedPlayer.postln;
+					this.pathDialog(selectedPlayer);
+				})
+			)
 		)
 		.bounds_(Rect(0, 0, 400, 300).center_(Window.availableBounds.center))
 	}

@@ -56,7 +56,7 @@ PresetListGui {
 	makeHeader {
 		var view;
 		presetList.name.postln;
-		view = View().background_(Color.rand);
+		view = View().background_(Color(*Array.rand(3, 0.8, 1.0)));
 		view.layout_(
 			HLayout(
 				StaticText().string_("" ++ presetList.name ++ ":" ++ this.player),
