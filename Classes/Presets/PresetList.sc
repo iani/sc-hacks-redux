@@ -266,9 +266,12 @@ PresetList {
 	remove { | preset | presets remove: preset; this.renumber; }
 	renumber { presets do: { | p, i | p.index = i; } }
 	insert { | item, index |
+		// postln("PresetList insert. item" + item + "index" + index);
 		index ?? { index = currentPreset.index };
 		item.presetList = this;
+		// postln("presets before inserting" + presets);
 		presets = presets.insert(index, item);
+		// postln("presets after inserting" + presets);
 		this.changed(\insert, item.view, index); // update gui!
 		this.renumber;
 	}

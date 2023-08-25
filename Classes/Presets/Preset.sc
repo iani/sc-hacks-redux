@@ -150,11 +150,12 @@ Preset {
 	}
 
 	sendToSynth { | param, value |
+		// postln("Preset sendToSynth. param" + param + "value" + value);
 		if (this.isPlaying) { this.sendParam2Synth(param, value); };
 	}
 
 	sendParam2Synth { | param, value |
-		format("% @>.% %%", value, this.player, "\\", param).share;
+		format("% @>.% %%", value, this.player, "\\", param).postln.share;
 	}
 
 	gui {

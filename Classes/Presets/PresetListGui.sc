@@ -49,6 +49,7 @@ PresetListGui {
 	}
 
 	insert { | view, index |
+		// postln("PresetListGui insert. view" + view + "index" + index);
 		view.addNotifier(presetList, \reload, { view.remove });
 		layout.insert(view, index + 1);
 	} // skip initial non-preset element
