@@ -11,6 +11,6 @@ MagShift_ : UGenFunc {
 		var chain;
 		chain = FFT(LocalBuf(2048), in);
 		chain = PV_MagShift(chain, \stretch.br(~stretch ? 1), \shift.br(~shift ? 0));
-		^IFFT(chain).dup;
+		^IFFT(chain).pan;
 	}
 }

@@ -1,15 +1,17 @@
-/*presets for jun saved at 230825_002305*/
+/*presets for jun saved at 230825_171339*/
 
 //: (0) jun phasebuf bird_crickets
 (
-'amp': [ 1.0, "Xyz(1, 0.2, 0.1, 1.5)", 'on' ],
+'amp': [ 1.0, "Xyz(1, 0.2, 0.1, 1.5)", 'off' ],
 'buf': 'bird_crickets',
 'endframe': 2451380,
+'pan': [ -0.17985611510791, "", 'off' ],
 'playfunc': 'phasebuf',
 'pos': [ 0.079365079365079, "\\x1.sr", 'on' ],
+'rate': [ 0.83341883155249, "", 'off' ],
 'startframe': 0,
 'trate': [ 0.48412698412698, "\\z1.sr", 'on' ],
-'vol': [ 3.356638951877, "", 'off' ],
+'vol': [ 3.3559443054701, "", 'off' ],
 )
 //: (1) jun phasebuf birdcarman
 (

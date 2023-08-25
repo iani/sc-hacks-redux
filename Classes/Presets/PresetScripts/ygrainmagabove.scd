@@ -1,21 +1,24 @@
-/*presets for jun saved at 230825_002305*/
+/*presets for jun saved at 230825_164958*/
 
 //: (0) jun grainmagabove bird_crickets
 (
-'amp': [ 1.0, "Xyz(1, 0.2, 0.1, 1.5)", 'on' ],
+'amp': [ 1.0, "Xyz(1, 0.2, 0.1, 1.5)", 'off' ],
 'buf': 'bird_crickets',
 'endframe': 2451380,
+'pan': [ 0.36690647482014, "", 'off' ],
 'playfunc': 'grainmagabove',
-'pos': [ 0.079365079365079, "\\x1.sr", 'on' ],
+'pos': [ 0.63309352517986, "\\x1.sr", 'off' ],
 'startframe': 0,
-'trate': [ 0.48412698412698, "\\z1.sr", 'on' ],
-'vol': [ 3.356638951877, "", 'off' ],
+'thresh': [ 12.298535272501, "", 'off' ],
+'trate': [ 0.48412698412698, "\\z1.sr", 'off' ],
+'vol': [ 3.8725997619171, "", 'off' ],
 )
 //: (1) jun grainmagabove birdcarman
 (
 'amp': [ 1.0, "Xyz(1, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'birdcarman',
 'endframe': 6750651,
+'pan': [ 0.0028776978417266, "", 'off' ],
 'playfunc': 'grainmagabove',
 'pos': [ 0.079365079365079, "\\x1.sr", 'on' ],
 'startframe': 0,
@@ -35,14 +38,16 @@
 )
 //: (3) jun grainmagabove columbia
 (
-'amp': [ 1.0, "Xyz(1, 0.2, 0.1, 1.5)", 'on' ],
+'amp': [ 1.0, "Xyz(1, 0.2, 0.1, 1.5)", 'off' ],
 'buf': 'columbia',
 'endframe': 107520,
 'playfunc': 'grainmagabove',
-'pos': [ 0.079365079365079, "\\x1.sr", 'on' ],
+'pos': [ 0.89568345323741, "\\x1.sr", 'off' ],
+'rate': [ 0.99175152669822, "", 'off' ],
 'startframe': 0,
-'trate': [ 0.48412698412698, "\\z1.sr", 'on' ],
-'vol': [ 3.356638951877, "", 'off' ],
+'thresh': [ 10.559494850163, "", 'off' ],
+'trate': [ 19.00731789933, "\\z1.sr", 'off' ],
+'vol': [ 4.4764763728585, "", 'off' ],
 )
 //: (4) jun grainmagabove cricket_ff
 (

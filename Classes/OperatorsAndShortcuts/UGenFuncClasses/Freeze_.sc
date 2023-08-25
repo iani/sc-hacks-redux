@@ -9,6 +9,6 @@ Freeze_ : UGenFunc {
 		var chain;
 		chain = FFT(LocalBuf(2048), in);
 		chain = PV_Freeze(chain, \freeze.br(0));
-		^IFFT(chain);
+		^IFFT(chain).pan;
 	}
 }

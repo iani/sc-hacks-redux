@@ -4,8 +4,8 @@ Early prototype for settings:
 The settings could be names of Classes that contain specs, such as:
 PlayBuf_, PV_Magabove_ etc.  See folder
 */
-[PlayBuf_]
+[PlayBuf_, \pan]
 //:
 {   // provides PlayBuf.ar ugen with br controls
-	PlayBuf_.ar() * \amp.br(1)
+	PlayBuf_.ar().pan
 }

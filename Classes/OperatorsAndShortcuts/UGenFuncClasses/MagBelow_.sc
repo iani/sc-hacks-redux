@@ -7,6 +7,6 @@ MagBelow_ : UGenFunc {
 		var chain;
 		chain = FFT(LocalBuf(2048), in);
 		chain = PV_MagBelow(chain, \thresh.br(~thresh ? 100));
-		^IFFT(chain);
+		^IFFT(chain).pan;
 	}
 }
