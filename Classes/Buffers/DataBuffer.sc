@@ -12,16 +12,10 @@ All the other work regarding this is done in Symbol:dbuf.
 DataBuffer {
 	*initClass {
 		ServerBoot add: {
-			postln("Library at databufs BEFORE server boot" + Library.at(\databufs));
 			Library.global.removeEmptyAt(\databufs);
-			postln("Library at databufs AFTER server boot" + Library.at(\databufs));
 		}
 	}
 }
-
-/* 26 Aug 2023 16:59
-See DataBuffer.
-*/
 
 + Symbol {
 	dbuf { | data |
