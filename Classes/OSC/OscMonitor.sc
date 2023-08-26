@@ -95,16 +95,19 @@ OscMonitor {
 				})
 			),
 			HLayout(
-				CheckBox().string_("OscGroups")
-				.backColor_(Color(0.7, 0.9, 0.8))
-				.value_(OscGroups.isEnabled)
-				.action_({ | me |
-					if (me.value) { OscGroups.enable } { OscGroups.disable }
-				})
-				.addNotifier(OscGroups, \status, { | n |
-					// postln("OscGroups enabled status is now:" + OscGroups.isEnabled)
-					n.listener.value = OscGroups.isEnabled;
-				}),
+				HLayout(
+					CheckBox().string_("OscGroups")
+					.backColor_(Color(0.7, 0.9, 0.8))
+					.value_(OscGroups.isEnabled)
+					.action_({ | me |
+						if (me.value) { OscGroups.enable } { OscGroups.disable }
+					})
+					.addNotifier(OscGroups, \status, { | n |
+						// postln("OscGroups enabled status is now:" + OscGroups.isEnabled)
+						n.listener.value = OscGroups.isEnabled;
+					}),
+					PscoreMenu.oscdataview
+				),
 				// Button().states_([["Osc File Lists"]])
 				// .action_({ OscDataGui.gui }),
 

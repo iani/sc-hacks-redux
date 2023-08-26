@@ -34,6 +34,11 @@ OscData {
 	comments { ^header ? "" } // unused
 	comments_ { | s | header = s } // unused
 
+	*fromPathDialog {
+		{ | p |
+			this.fromPath(p.first).gui
+		}.getFilePath("Click OK to select an osc data file")
+	}
 	*fromPath { | p | // choose class depending on file contents
 		case
 		{ p.isCode }{ ^OscDataScore([p]) /*.gui */ }

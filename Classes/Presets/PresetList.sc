@@ -67,7 +67,7 @@ PresetList {
 			var n;
 			n = PathName(p).fileNameWithoutExtension.asSymbol;
 			// n.postln;
-			p.postln;
+			// p.postln;
 			dict[n] = this.new(p);
 		}
 	}
