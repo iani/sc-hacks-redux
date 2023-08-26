@@ -35,5 +35,4 @@ PscoreMenu : PresetViewTemplate {
 			++ Scores.scores.collect({ | p | [p.name, { OscData.fromPath(p).gui }] })
 		}
 	}
-
 }
