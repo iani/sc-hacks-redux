@@ -204,7 +204,7 @@ FileNavigator {
 		this.vlayout(
 			HLayout(
 				Button().states_([["*"]]).maxWidth_(10)
-				.action_({ this.openInFinder }),
+				.action_({ this.setHomeFolderFromUser }),
 				this.bookmarksbutton,
 				Button().states_([["recall"]]).maxWidth_(50)
 				.action_({ this.load }),
@@ -609,5 +609,15 @@ FileNavigator {
 			faulty do: _.postln;
 			faulty;
 		}.fork();
+	}
+
+	setHomeFolderFromUser {
+		{ | p |
+			p = p.first;
+			postln("Setting home folder to: " + p);
+			homeDir = PathName(p);
+			this.goHome;
+			this.save;
+		}.getFolderPath("Click OK to select a new home folder");
 	}
 }
