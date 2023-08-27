@@ -229,8 +229,11 @@ FileNavigator {
 				Button().states_([["export"]]).maxWidth_(50)
 				.action_({ Menu(
 					MenuAction("export code", { this.exportCode }),
+					MenuAction("export code as ...", { this.exportCodeAs }),
 					MenuAction("export messages", { this.exportMessages }),
+					MenuAction("export messages as ...", { this.exportMessagesAs }),
 					MenuAction("export all", { this.exportAll }),
+					MenuAction("export all as ...", { this.exportAllAs }),
 					MenuAction("integrity check", { this.check })
 				).front }),
 				Button().states_([["load"]]).maxWidth_(40)
@@ -485,7 +488,7 @@ FileNavigator {
 
 	codeFolder { ^"exports/code" }
 
-	exportCode {
+	exportCode { | argFilename |
 		var snippets, headers, times, messages, filename, folder;
 		folder = this.codeFolder;
 		snippets = this.selectCode(this.collectSnippets);
@@ -497,7 +500,11 @@ FileNavigator {
 
 		};
 		times = [0] ++ (times - times[0]).rotate(-1).butLast; // .postln;
-		filename = (this.homeDir +/+ folder +/+ Date.getDate.stamp).fullPath ++ ".scd";
+		if (argFilename.notNil) {
+			filename = argFilename;
+		}{
+			filename = (this.homeDir +/+ folder +/+ Date.getDate.stamp).fullPath ++ ".scd";
+		};
 		File.use(filename, "w", { | f |
 			f.write("//Exporting" + snippets.size + "code snippets" + "on" + Date.getDate.stamp ++ "\n" );
 			snippets collect: { | x, i |
@@ -510,6 +517,27 @@ FileNavigator {
 
 	exportMessages { this.export(this.selectMessages(this.collectSnippets), "exports/messages") }
 	exportAll { this.export(this.collectSnippets, "exports/all") }
+
+	exportMessagesAs { this.exportAs(this.selectMessages(this.collectSnippets)) }
+	exportCodeAs {
+		{ | name |
+			{ | p |
+				postln("Exporting all messages in:" + p.first +/+ name);
+				this.exportCode(p.first +/+ name);
+			}.getFolderPath("Click OK to choose a folder to export the data in.");
+		}.inputText(this.makeFilename, "Filename to save in:");
+	}
+	exportAllAs { this.exportAs(this.collectSnippets) }
+
+	exportAs { | collectedSnippets |
+		{ | name |
+			{ | p |
+				postln("Exporting all messages in:" + p.first +/+ name);
+				this.export(collectedSnippets, nil, p.first +/+ name);
+			}.getFolderPath("Click OK to choose a folder to export the data in.");
+		}.inputText(this.makeFilename, "Filename to save in:")
+	}
+
 	collectSnippets {
 		var snippets;
 		// selection.postln;
@@ -547,16 +575,22 @@ FileNavigator {
 
 	}
 
-	export { | snippets, folder |
-		var filename;
-		filename = (this.homeDir +/+ folder +/+ Date.getDate.stamp).fullPath ++ ".scd";
-		File.use(filename, "w", { | f |
+	export { | snippets, folder, fullpath |
+		// if fullpath is given, use it.
+		// else create full pat from home + folder + timestamp
+		fullpath ?? {
+			fullpath = (this.homeDir +/+ folder +/+ this.makeFilename).fullPath;
+		};
+		postln("Exporting in:" + fullpath);
+		File.use(fullpath, "w", { | f |
 			f.write("// Exporting" + snippets.size + "snippets" + "on" + Date.getDate.stamp ++ "\n" );
 			snippets do: { | x | f write: x.ensureNL };
 			f write: "\n//the end\n\n";
 		});
 		"Export completed".postln;
 	}
+
+	makeFilename { ^Date.getDate.stamp ++ ".scd" }
 
 	check {
 		var snippets, faulty;
