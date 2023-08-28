@@ -19,7 +19,7 @@ FileNavigator {
 	// homeDir { ^homeDir ?? { homeDir = this.class.defaultHomeDir; } }
 	*defaultHomeDir { ^(PathName(Platform.userHomeDir) +/+ "sc-projects").asDir; }
 	*defaultPath { ^(PathName(Platform.userHomeDir) +/+ "sc-projects").asDir.fullPath; }
-	*new { | key = \default | ^this.newCopyArgs(key) /* .getOuterItems */ }
+	*new { | key = \default, homedir | ^this.newCopyArgs(key, homedir) /* .getOuterItems */ }
 
 	save {
 		postln("Saving preferences for:" + this.class.name + "at key" + key + "prefs" + this.prefs);
