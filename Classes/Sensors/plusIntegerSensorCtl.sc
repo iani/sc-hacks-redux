@@ -9,6 +9,14 @@ Called by SensorCtl in Param, SoundParams.
 */
 
 + Integer {
+	slag { | lag = 0.5, sensor |
+		if (sensor.notNil) {
+			^(sensor ++ this).asSymbol.sr.lag(lag)
+		}{
+			^[\x, \y, \z] collect: { | s | this.slag(lag, s) }
+		}
+	}
+
 	sensorClip { ^this.clip(1, 12) } // constrain to existing sensor ids in current systsm
 	off {  | player, param, lo, hi, map | // turn control synth off.
 		// postln("Debugging off method for param" + param + "BEFORE");

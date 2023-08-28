@@ -16,6 +16,8 @@ Minibee {
 	classvar <>max = 0.56;
 	classvar <>forwardAddr;
 	classvar <of;
+	classvar <>verbose = false;
+	// ====================
 	var <id = 1;
 	var <busses;
 
@@ -39,8 +41,24 @@ Minibee {
 		all = { | i | this.new(i + 1) } ! numSensors; // 1-12
 		// postln("all after initing is:" + all);
 		this.getValues;
+		this.makeSmoothForwarder;
 	}
 
+	*makeSmoothForwarder {
+		var sendmsg = '/minibeesmooth';
+		{
+			var sensorlags;
+			sensorlags = (1..12).collect(_.slag).flat;
+			SendReply.kr(Impulse.kr(50), '/minibeesmooth', sensorlags);
+		} +> \minibeesmooth;
+		\minibeesmooth >>> { | n, args |
+			if (verbose) { postln("sending to of at: " + of + sendmsg + args[3..]); };
+			of.sendMsg('/minibeesmooth', *args[3..]);
+		};
+	}
+
+	*postSmooth { verbose = true }
+	*unpostSmooth { verbose = false }
 	*makeForwardAddresses {
 		of = NetAddr("127.0.0.1", 10000);
 		this.addForwardAddr(of);
