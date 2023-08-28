@@ -106,7 +106,12 @@ OscMonitor {
 						// postln("OscGroups enabled status is now:" + OscGroups.isEnabled)
 						n.listener.value = OscGroups.isEnabled;
 					}),
-					PscoreMenu.oscdataview
+					PscoreMenu.scores1view,
+					PscoreMenu.scores2view,
+					PscoreMenu.scores3view,
+					Button().states_([["browse"]]).action_({
+
+					})
 				),
 				// Button().states_([["Osc File Lists"]])
 				// .action_({ OscDataGui.gui }),
