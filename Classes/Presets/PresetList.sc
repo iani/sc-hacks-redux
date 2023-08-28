@@ -15,7 +15,9 @@ PresetList {
 	var <currentPreset;
 	var scoremenu; // cache
 
-	cloneBuffers {
+	cloneBuffers { // Add copies of the first preset, playing all buffers, like this:
+		// fill list with copies of the first preset, but different buffers.
+		// Make 1 preset copy per loaded buffer.
 		var theDict, thePresets;
 		theDict = presets.first.dict;
 		thePresets = Buffer.all collect: { | b, i |

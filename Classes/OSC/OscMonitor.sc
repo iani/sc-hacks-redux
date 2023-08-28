@@ -110,7 +110,8 @@ OscMonitor {
 					PscoreMenu.scores2view,
 					PscoreMenu.scores3view,
 					Button().states_([["browse"]]).action_({
-						FileNavigator(\oscscores, PathName(Scores.parentPath)).gui
+						// FileNavigator(\oscscores, PathName(Scores.parentPath)).gui
+						FileNavigator.browseHacksScores;
 					})
 				),
 				// Button().states_([["Osc File Lists"]])

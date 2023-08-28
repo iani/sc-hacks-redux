@@ -73,7 +73,8 @@ PresetListGui {
 				Button().states_([["Edit"]]).action_({ this.openSource }),
 				Button().states_([["Reload"]]).action_({ presetList.reload }),
 				Button().states_([["Save"]]).action_({ presetList.save }),
-				Button().states_([["clonebufs"]]).action_({ presetList.cloneBuffers })
+				Button().states_([["Clone Buffers"]]).action_({ presetList.cloneBuffers }),
+				Button().states_([["Scores"]]).action_({ FileNavigator.browseHacksScores })
 			)
 		);
 		^view

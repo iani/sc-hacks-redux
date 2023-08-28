@@ -5,6 +5,8 @@ PathName(Platform.userHomeDir).fullPath.size;
 */
 
 + String {
+	pn { ^this.pathname  }
+	pathname { ^PathName(this) }
 	userRelative {
 		^"~" ++ this[PathName(Platform.userHomeDir).fullPath.size..]
 	}

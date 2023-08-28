@@ -15,6 +15,9 @@ FileNavigator {
 	var <selection; // currently selected indices of inner list (for export/browsing)
 	var bookmarks; // TODO: Impement methods to use this.
 
+	*browseHacksScores {
+		this.new(\oscscores, PathName(Scores.parentPath)).gui
+	}
 	homeDir { ^homeDir ?? { homeDir = PathName(this.class.defaultPath); } }
 	// homeDir { ^homeDir ?? { homeDir = this.class.defaultHomeDir; } }
 	*defaultHomeDir { ^(PathName(Platform.userHomeDir) +/+ "sc-projects").asDir; }
