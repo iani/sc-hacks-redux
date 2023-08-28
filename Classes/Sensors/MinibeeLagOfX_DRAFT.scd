@@ -33,6 +33,10 @@ Use SendReply:
 \x >>> { | n, args | args.postln; };
 
 */
+
+Minibee.postSmooth;
+Minibee.unpostSmooth;
+
 //: send everything all the time
 {
 	var sensorlags;

@@ -234,7 +234,7 @@ FileNavigator {
 					MenuAction("export messages as ...", { this.exportMessagesAs }),
 					MenuAction("export all", { this.exportAll }),
 					MenuAction("export all as ...", { this.exportAllAs }),
-					MenuAction("integrity check", { this.check })
+					MenuAction("export code/messages/all as", { this.exportMultiAs })
 				).front }),
 				Button().states_([["load"]]).maxWidth_(40)
 				.action_({ this.loadSfSelections })
@@ -501,7 +501,7 @@ FileNavigator {
 		};
 		times = [0] ++ (times - times[0]).rotate(-1).butLast; // .postln;
 		if (argFilename.notNil) {
-			filename = argFilename;
+			filename = argFilename ++ ".scd";
 		}{
 			filename = (this.homeDir +/+ folder +/+ Date.getDate.stamp).fullPath ++ ".scd";
 		};
@@ -518,30 +518,50 @@ FileNavigator {
 	exportMessages { this.export(this.selectMessages(this.collectSnippets), "exports/messages") }
 	exportAll { this.export(this.collectSnippets, "exports/all") }
 
-	exportMessagesAs { this.exportAs(this.selectMessages(this.collectSnippets)) }
+	exportMessagesAs { this.exportAs(this.selectMessages(this.collectSnippets), "messages") }
 	exportCodeAs {
 		{ | name |
 			{ | p |
-				postln("Exporting all messages in:" + p.first +/+ name);
+				postln("Exporting all messages in:" + p.first +/+ name ++ ".scd");
 				this.exportCode(p.first +/+ name);
 			}.getFolderPath("Click OK to choose a folder to export the data in.");
-		}.inputText(this.makeFilename, "Filename to save in:");
+		}.inputText(this.makeFilename("code"), "Filename to save in:");
 	}
-	exportAllAs { this.exportAs(this.collectSnippets) }
+	exportAllAs { this.exportAs(this.collectSnippets, "all") }
 
-	exportAs { | collectedSnippets |
+	exportMultiAs { // export messages, code and all in the same folder
+		// "NOT YET IMPLEMENTED".postln;
+		{ | name |
+			// postln("experimental. will be multi-exporting with this base name:" + name);
+			{ | p |
+				var messagepath, codepath, allpath;
+				messagepath = p.first +/+ name ++ "messages" ++ ".scd";
+				codepath = p.first +/+ name ++ "code" ++ ".scd";
+				allpath = p.first +/+ name ++ "all" ++ ".scd";
+				postln("I will use the following three paths for exports of 3 kinds");
+				[messagepath, codepath, allpath] do: _.postln;
+				this.export(this.collectSnippets, nil, allpath);
+				this.export(this.selectMessages(this.collectSnippets), nil, messagepath);
+				this.export(this.selectCode(this.collectSnippets), nil, codepath);
+
+				// this.exportCode(p.first +/+ name);
+			}.getFolderPath("Click OK to choose a folder to export the data in.");
+		}.inputText(this.makeFilename(""), "Enter the filename without the .scd extension")
+	}
+
+	exportAs { | collectedSnippets, type = "all" |
 		{ | name |
 			{ | p |
 				postln("Exporting all messages in:" + p.first +/+ name);
 				this.export(collectedSnippets, nil, p.first +/+ name);
 			}.getFolderPath("Click OK to choose a folder to export the data in.");
-		}.inputText(this.makeFilename, "Filename to save in:")
+		}.inputText(this.makeFilename(type), "Filename to save in:")
 	}
 
+	// selectedPaths { ^innerList[selection ?? { [0] }] }
 	collectSnippets {
 		var snippets;
 		// selection.postln;
-
 		innerList[selection ?? { [0] }] do: { | i |
 			File.use(i.fullPath, "r", { | f |
 				var string, delimiters;
@@ -571,15 +591,15 @@ FileNavigator {
 	}
 
 	exportAsCode { | snippets, folder |
-		// experimental
+		// TODO: experimental - export as code file with relative timestamps
 
 	}
 
-	export { | snippets, folder, fullpath |
+	export { | snippets, folder, fullpath, type = "all" |
 		// if fullpath is given, use it.
 		// else create full pat from home + folder + timestamp
 		fullpath ?? {
-			fullpath = (this.homeDir +/+ folder +/+ this.makeFilename).fullPath;
+			fullpath = (this.homeDir +/+ folder +/+ this.makeFilename(type)).fullPath + ".scd";
 		};
 		postln("Exporting in:" + fullpath);
 		File.use(fullpath, "w", { | f |
@@ -590,7 +610,11 @@ FileNavigator {
 		"Export completed".postln;
 	}
 
-	makeFilename { ^Date.getDate.stamp ++ ".scd" }
+	makeFilename { | type = "all" |
+		^(this.selectedPaths.first.fileNameWithoutExtension[..12] ++ "_" ++ type).postln;
+		// (PathName(selection.first).fileNameWithoutExtension[..5] ++ "_" ++ type ++ ".scd").postln;
+		// ^Date.getDate.stamp ++ ".scd";
+	}
 
 	check {
 		var snippets, faulty;
