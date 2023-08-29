@@ -118,7 +118,7 @@ FileNavigator {
 		// postln("Current root is:" + this.currentRoot);
 		// postln("Folders are:");
 		// this.currentRoot.folders do: _.postln;
-		^this.currentRoot.folders;
+		^this entries: this.currentRoot;
 	}
 	getInnerItemsList {
 		^this entries: outerItem;
@@ -192,7 +192,17 @@ FileNavigator {
 
 	entries { | pathName |
 		^pathName.entries
-		.select({ |p| p.extension != "wav" and: { p.extension != "aiff" } });
+		// .select({ |p| p.extension == ".scd" });
+		.select({ |p|
+			p.extension != "wav"
+			and: { p.extension != "aiff" }
+			and: { p.extension != "txt" }
+			and: { p.extension != "org" }
+			and: { p.extension != "sc" }
+			and: { p.extension != "pdf" }
+			and: { p.extension != "doc" }
+			and: { p.extension != "docx" }
+		});
 	}
 
 	bookmarkAction { ^{ this.save } }
@@ -209,7 +219,10 @@ FileNavigator {
 		this.vlayout(
 			HLayout(
 				Button().states_([["*"]]).maxWidth_(10)
-				.action_({ this.setHomeFolderFromUser }),
+				.menuActions([
+					["select new home folder", { this.setHomeFolderFromUser }],
+					["reread folders", { this.reread }]
+				]),
 				this.bookmarksbutton,
 				Button().states_([["recall"]]).maxWidth_(50)
 				.action_({ this.load }),
@@ -217,6 +230,7 @@ FileNavigator {
 				.action_({ this.zoomOut }),
 				Button().states_([[">"]]).maxWidth_(30)
 				.action_({ this.zoomIn }),
+				Button().states_([["browse", Color.red]]).maxWidth_(50).action_({ this.openInnerItem; }),
 				Button().states_([["info"]]).maxWidth_(40)
 				.action_({ this.info }),
 				Button().states_([["edit"]]).maxWidth_(40)
@@ -229,8 +243,6 @@ FileNavigator {
 						Document.open(innerItem.fullPath);
 					}
 				}),
-				Button().states_([["browse"]]).maxWidth_(50)
-				.action_({ this.openInnerItem; }),
 				Button().states_([["export"]]).maxWidth_(50)
 				.action_({ Menu(
 					MenuAction("export code", { this.exportCode }),
@@ -265,6 +277,11 @@ FileNavigator {
 			n.listener.name = p;
 		});
 		{ this.load; }.defer(1.1); // load last saved path from preferences
+	}
+
+	reread {
+		"reread - testing .  go home".postln;
+		this.goHome;
 	}
 
 	loadSfSelections {
@@ -332,11 +349,17 @@ FileNavigator {
 
 	openAllFiles {
 		outerItem.postln;
-		"Testing".postln;
-		outerItem.files.postln;
-		outerItem.files do: { | p |
-			SnippetData([p.fullPath]).gui
-		};
+		// "Testing".postln;
+		// outerItem.files.postln;
+		if (outerItem.isFolder) {
+			outerItem.files do: { | p |
+				// SnippetData([p.fullPath]).gui
+				OscData.fromPath(p.fullPath).gui
+			};
+		}{
+			postln("What is wrong with this outer item:\n" + outerItem);
+			OscData.fromPath(outerItem.fullPath).gui;
+		}
 	}
 
 	outerIndex_ { | val |

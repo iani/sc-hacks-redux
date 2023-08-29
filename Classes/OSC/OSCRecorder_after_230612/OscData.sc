@@ -68,6 +68,7 @@ OscData {
 	}
 
 	init {
+		header = ""; // initialize header to reread from files.
 		this.readSource;
 		this.makeMessages;
 		localAddr = NetAddr.localAddr;
@@ -78,6 +79,7 @@ OscData {
 			if (this.isPlaying.not) { { this.makeStream }.fork };
 		});
 		this.selectAll;
+		this.changed(\reread);
 	}
 
 	readSource {
@@ -160,6 +162,7 @@ OscData {
 			^this;
 		};
 		window = this.br_(850, 500).vlayout(
+			this.headerView,
 			RangeSlider() // select a range of times
 			.orientation_(\horizontal)
 			.action_({ | me |
@@ -169,7 +172,8 @@ OscData {
 				timeline.mapClipTime(me.lo, me.hi);
 			})
 			.addNotifier(this, \segment, { | n, argTimeline |
-				n.listener.setSpan(*timeline.unmapTimeSpan)
+				n.listener.setSpan(*timeline.unmapTimeSpan);
+				// postln("Range slider action not implemented: setSpan");
 			}),
 			HLayout(
 				StaticText().string_("1st onset"),
@@ -367,6 +371,12 @@ OscData {
 		{ this.selectAll; }.defer(0.1);
 	}
 
+	headerView {
+		^TextView().maxHeight_(80).string_(header ?? { "(This score has no header)" })
+		.addNotifier(this, \reread, { | n |
+			// postln("Received reread from" + this + "and will refresh");
+			n.listener.string = header; });
+	}
 	edit { paths do: Document.open(_); }
 	shareSnippet { | argSnippet |
 		var themessage;
