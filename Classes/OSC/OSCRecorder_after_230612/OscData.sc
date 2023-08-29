@@ -503,7 +503,7 @@ OscData {
 
 	start {
 		postln("STARTING" + this);
-		{ "!!!!!!1 -------------- !!!!!!!!!!".postln; } ! 10;
+		// { "!!!!!!1 -------------- !!!!!!!!!!".postln; } ! 10;
 		if (this.isPlaying) { ^postln("Oscdata is already playing") };
 		this.makeStream; // update stream to current selection
 		//: TODO: advance progress to next message when restarting!

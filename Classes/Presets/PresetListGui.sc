@@ -74,7 +74,8 @@ PresetListGui {
 				Button().states_([["Reload"]]).action_({ presetList.reload }),
 				Button().states_([["Save"]]).action_({ presetList.save }),
 				Button().states_([["Clone Buffers"]]).action_({ presetList.cloneBuffers }),
-				Button().states_([["Scores"]]).action_({ FileNavigator.browseHacksScores })
+				Button().states_([["Scores"]]).action_({ FileNavigator.browseHacksScores }),
+				Button().states_([["Scope"]]).action_({ Server.default.scope; Server.default.meter; })
 			)
 		);
 		^view
