@@ -109,10 +109,14 @@ OscMonitor {
 					PscoreMenu.scores1view,
 					PscoreMenu.scores2view,
 					PscoreMenu.scores3view,
-					Button().states_([["browse"]]).action_({
+					Button().states_([["all"]]) /* .maxWidth_(35) */ .action_({
 						// FileNavigator(\oscscores, PathName(Scores.parentPath)).gui
 						FileNavigator.browseHacksScores;
-					})
+					}),
+					// Button().states_([["folders"]]).maxWidth_(45).action_({
+					// 	// FileNavigator(\oscscores, PathName(Scores.parentPath)).gui
+					// 	PscoreMenu.scorefoldersmenu;
+					// })
 				),
 				// Button().states_([["Osc File Lists"]])
 				// .action_({ OscDataGui.gui }),

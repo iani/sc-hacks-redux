@@ -21,16 +21,17 @@ PscoreMenu : PresetViewTemplate {
 	}
 
 	*scores1view {
-		^Button().states_([["scores1"]]) // .maxWidth_(100)
+		^Button()/*.maxWidth_(60) */.states_([["scores1"]]) // .maxWidth_(100)
 		.menuActions(this.oscdatamenu1)
 	}
 
-		*scores2view {
-		^Button().states_([["scores2"]]) // .maxWidth_(100)
+	*scores2view {
+		^Button() /* .maxWidth_(60) */ .states_([["scores2"]]) // .maxWidth_(100)
 		.menuActions(this.oscdatamenu2)
 	}
-		*scores3view {
-		^Button().states_([["scores3"]]) // .maxWidth_(100)
+
+	*scores3view {
+		^Button() /* .maxWidth_(60) */ .states_([["scores3"]]) // .maxWidth_(100)
 		.menuActions(this.oscdatamenu3)
 	}
 
@@ -57,5 +58,15 @@ PscoreMenu : PresetViewTemplate {
 		^[["Select score file from disc", { OscData.fromPathDialog }]]
 		++ Scores.scores3.collect({ | p | [p.name, { OscData.fromPath(p).gui }] })
 	}
+
+	// *scoresfolderview {
+	// 	^Button().states_([["folders"]]).maxWidth_(50)
+	// 	.menuActions(this.scorefoldersmenu)
+	// }
+	// *scorefoldersmenu {
+	// 	^PathName(Scores.parentPath).folders.postln.collect({ | p |
+	// 		[p.folderName, {FileNavigator.new(p.folderName, p).gui }]
+	// 	})
+	// }
 
 }

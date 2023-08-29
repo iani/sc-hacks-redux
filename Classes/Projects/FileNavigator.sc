@@ -93,8 +93,10 @@ FileNavigator {
 			// 	"You selected:".postln;
 			// 	path[0].postln;
 			// });
-			postln("No items found in" + currentRoot.fullPath);
-			this.goHome;
+			if (currentRoot != this.homeDir) {
+				// currentRoot = this.homeDir;
+				this.goHome;
+			};
 		};
 		outerIndex = 0;
 		outerItem = outerList[outerIndex];
