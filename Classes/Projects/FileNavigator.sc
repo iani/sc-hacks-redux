@@ -69,7 +69,8 @@ FileNavigator {
 		innerIndex = prefs[\innerIndex];
 		bookmarks = prefs[\bookmarks] ?? { Bookmarks(); }; // TODO: implement methods to use this.
 		this.changed(\setOuterListAndIndex,
-			currentRoot.folders,
+			// currentRoot.folders,
+			this entries: this.currentRoot,
 			outerIndex
 		);
 	}
@@ -150,6 +151,7 @@ FileNavigator {
 	// make currentRoot's superfolder the currentRoot;
 	zoomOut {
 		var newOuterItemPaths, newOuterItemPath;
+		// { "ZOOMING OUT - 10 x post for emphasis".postln; } ! 10;
 		if (this.currentRoot.asDir.fullPath == this.homeDir.asDir.fullPath) {
 			^postln("Cannot go above the homeDir: " + homeDir)
 		};
@@ -157,6 +159,7 @@ FileNavigator {
 		innerIndex = outerIndex;
 		innerItem = outerItem;
 		currentRoot = currentRoot.up;
+		// { "WILL NOW CALL this entries! - 10 x post for emphasis".postln; } ! 10;
 		outerList = this entries: currentRoot;
 		newOuterItemPaths = outerList collect: _.fullPath;
 		newOuterItemPath = outerItem.up.fullPath;
