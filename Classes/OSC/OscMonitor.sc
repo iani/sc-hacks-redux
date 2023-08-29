@@ -161,6 +161,10 @@ OscMonitor {
 				}),
 				Button().states_([["Minibee gui"]]).action_({ Minibee.gui }),
 				Button().states_([["BufferGui"]]).action_({ SoundBufferGui.gui }),
+				Button().states_([["Meters"]]).action_({
+					Server.default.meter;
+					Stethoscope().window.bounds = Rect(0, 0, 240, 200);
+				}),
 				Button().states_([["Presets"]]).action_({ PresetList.presetSelectionGui; })
 			),
 			ListView()

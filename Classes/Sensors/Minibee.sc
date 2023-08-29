@@ -23,7 +23,7 @@ Minibee {
 
 	*cmdPeriod { this.makeSmoothForwarder; }
 	*initClass { ServerBoot add: this; CmdPeriod add: this; }
-	*doOnServerBoot { | server
+	*doOnServerBoot { | server |
 		// "Sensors do on server boot".postln
 		// workaround for a bug: make sure the server is booted:
 		server doWhenBooted: { // remake busses
