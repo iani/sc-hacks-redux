@@ -9,7 +9,7 @@ Trace {
 		excludedMessages = [
 			'/cbmon', '/status.reply', '/done', '/n_end',
 			'/recordingDuration', '/n_go', '/d_removed', '/synced',
-			'/groupclient/ping'
+			'/groupclient/ping', '/minibeesmooth'
 		]
 	}
 

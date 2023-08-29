@@ -21,9 +21,10 @@ Minibee {
 	var <id = 1;
 	var <busses;
 
-	*initClass { ServerBoot add: this; }
-	*doOnServerBoot { | server |
-		// "Sensors do on server boot".postln;
+	*cmdPeriod { this.makeSmoothForwarder; }
+	*initClass { ServerBoot add: this; CmdPeriod add: this; }
+	*doOnServerBoot { | server
+		// "Sensors do on server boot".postln
 		// workaround for a bug: make sure the server is booted:
 		server doWhenBooted: { // remake busses
 			this.init;
@@ -46,6 +47,10 @@ Minibee {
 
 	*makeSmoothForwarder {
 		var sendmsg = '/minibeesmooth';
+		if (Server.default.serverRunning.not) {
+			^"Minibee cannot start minibesmooth synth. Boot the default server".postln;
+		};
+		"Starting Minibee smooth synth".postln;
 		{
 			var sensorlags;
 			sensorlags = (1..12).collect(_.slag).flat;
@@ -55,6 +60,7 @@ Minibee {
 			if (verbose) { postln("sending to of at: " + of + sendmsg + args[3..]); };
 			of.sendMsg('/minibeesmooth', *args[3..]);
 		};
+		// CmdPeriod.addDependant
 	}
 
 	*postSmooth { verbose = true }

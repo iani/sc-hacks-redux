@@ -70,12 +70,14 @@ PresetListGui {
 				.action_({ CmdPeriod.run }),
 				Button().states_([["Stop All Global", Color.yellow, Color.red]])
 				.action_({ "CmdPeriod.run".share }),
-				Button().states_([["Edit"]]).action_({ this.openSource }),
-				Button().states_([["Reload"]]).action_({ presetList.reload }),
-				Button().states_([["Save"]]).action_({ presetList.save }),
+				Button().states_([["Edit"]]).maxWidth_(50).action_({ this.openSource }),
+				Button().states_([["Reload"]]).maxWidth_(50).action_({ presetList.reload }),
+				Button().states_([["Save"]]).maxWidth_(50).action_({ presetList.save }),
 				Button().states_([["Clone Buffers"]]).action_({ presetList.cloneBuffers }),
-				Button().states_([["Scores"]]).action_({ FileNavigator.browseHacksScores }),
-				Button().states_([["Scope"]]).action_({ Server.default.scope; Server.default.meter; })
+				Button().states_([["Scores"]]).maxWidth_(50)
+				.action_({ FileNavigator.browseHacksScores }),
+				Button().states_([["Scope"]]).maxWidth_(50)
+				.action_({ Server.default.scope; Server.default.meter; })
 			)
 		);
 		^view
