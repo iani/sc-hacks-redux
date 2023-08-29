@@ -3,7 +3,7 @@
 //:Prepare the buffer:
 \c.dbuf((60..100).midicps);
 
-//:--[2] Play a sound using the buffer
+//: Play a sound using the buffer
 { | gate = 1, amp = 0.01 |
 	var trig, ind, freq;
 	trig = Impulse.kr(\trate.br(15));

@@ -3,6 +3,7 @@
 */
 
 + UGen {
+	amplify { | amp = 0.1 | ^this * \amp.br(~amp ? amp) }
 	pan { | pan = 0 | ^Pan2.ar(this, \pan.br(~pan ? pan)) }
 	sendReply { | oscmessage |
 		^SendReply.kr(this, oscmessage ? \trigger)

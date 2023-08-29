@@ -3,6 +3,22 @@
 */
 
 + Symbol {
+	// create multiple controls
+	brdup { | iter = 1, default = 1 |
+		^{ | i |
+			var ctl;
+			ctl = (this ++ i).asSymbol;
+			ctl.br(currentEnvironment.at(ctl) ?? { default })
+		} ! iter
+	}
+	brdupOld { | iter = 1, default = 1 |
+		^(1..iter) collect: { | i |
+			var ctl;
+			ctl = (this ++ i).asSymbol;
+			ctl.postln.br(currentEnvironment.at(ctl) ?? { default })
+		}
+	}
+	+++ { | obj | ^(this ++ obj).asSymbol }
 	// convert to specs for use by Param
 	gt { | thresh = 0.5 | ^this.sr > thresh }
 	ampSlope { | attack = 0.001, release = 1 |
