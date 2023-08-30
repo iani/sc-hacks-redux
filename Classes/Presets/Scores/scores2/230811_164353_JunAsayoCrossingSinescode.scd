@@ -10,10 +10,10 @@
 } +> \\asayo;
 " ]
 //:--[81756.788328292]
-[ '/code', '//:glissando jun
-{ XLine.kr(200, 200 * 8, 180) } @>.jun \freq;
-{ XLine.kr(200 * 8, 200, 180) } @>.asayo \freq;
-' ]
+[ '/code', "//:glissando jun
+{ XLine.kr(200, 200 * 8, 180) } @>.jun \\freq;
+{ XLine.kr(200 * 8, 200, 180) } @>.asayo \\freq;
+" ]
 
 //the end
 
