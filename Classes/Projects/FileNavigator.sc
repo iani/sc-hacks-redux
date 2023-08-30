@@ -99,7 +99,7 @@ FileNavigator {
 				this.goHome;
 			};
 		};
-		outerIndex = 0;
+		outerIndex = outerIndex ? 0;
 		outerItem = outerList[outerIndex];
 		this.changed(\outerItems);
 		// when updating outer items, always update inner items too
@@ -191,6 +191,7 @@ FileNavigator {
 		};
 		currentRoot = argNewRoot;
 		this.getOuterItems;
+		// OscData.fromPath(outerItem.fullPath).gui;
 	}
 
 	entries { | pathName |
@@ -227,24 +228,14 @@ FileNavigator {
 					["reread folders", { this.reread }]
 				]),
 				this.bookmarksbutton,
-				Button().states_([["recall"]]).maxWidth_(50)
-				.action_({ this.load }),
-				Button().states_([["<"]]).maxWidth_(30)
-				.action_({ this.zoomOut }),
-				Button().states_([[">"]]).maxWidth_(30)
-				.action_({ this.zoomIn }),
+				Button().states_([["recall"]]).maxWidth_(50).action_({ this.load }),
+				Button().states_([["<"]]).maxWidth_(30).action_({ this.zoomOut }),
+				Button().states_([[">"]]).maxWidth_(30).action_({ this.zoomIn }),
 				Button().states_([["browse", Color.red]]).maxWidth_(50).action_({ this.openInnerItem; }),
-				Button().states_([["info"]]).maxWidth_(40)
-				.action_({ this.info }),
+				Button().states_([["info"]]).maxWidth_(40).action_({ this.info }),
 				Button().states_([["edit"]]).maxWidth_(40)
 				.action_({
-					if (innerItem.isFolder) {
-						innerItem.folderName.post;
-						" is a folder".postln;
-						"Select a file to open instead".postln;
-					}{
-						Document.open(innerItem.fullPath);
-					}
+					this.edit;
 				}),
 				Button().states_([["export"]]).maxWidth_(50)
 				.action_({ Menu(
@@ -460,6 +451,14 @@ FileNavigator {
 
 	openInnerItem { // experimental: open in oscdata type gui
 		var selectedPaths;
+		innerItem ?? {
+			// postln("openInnerItem item nil. outeritem is:" + outerItem);
+			// "getting outer item".postln;
+			this.getOuterItems;
+			// "checking outer item again".postln;
+			// postln("after get OuterItems outerItem is:" + outerItem);
+			^OscData.fromPath(outerItem.fullPath).gui;
+		};
 		if (innerItem.isFolder) {
 			innerItem.folderName.post;
 			" is a folder".postln;
@@ -505,12 +504,40 @@ FileNavigator {
 
 	info {
 		var all, code;
-		all = this.collectSnippets;
+		if (selection.isNil) {
+			this.getOuterItems;
+			if (
+				outerItem.notNil and: { outerItem.isFile; }
+			) {
+				all = this collectSnippets: [outerItem];
+			}{
+				ok("Select at least one file and try again");
+				^"Select at least one file and try again".postln;
+			};
+		}{
+			all = this.collectSnippets;
+		};
 		code = this.selectCode(all);
 		ok("Selection contains" + all.size + "snippets\nand" + code.size + "code messages")
-
 	}
 
+	edit {
+		var item;
+		if (innerItem.isNil) {
+			if (innerList.size == 0) {
+				"the inner list is nil and I should try the outer list".postln;
+				this.getOuterItems;
+				item = outerItem;
+			}{
+				item = innerList[0];
+			};
+			// postln("the item chosen is" + item);
+			Document.open(item.fullPath)
+		}{
+			// postln("the inner item is" + innerItem);
+			Document.open(innerItem.fullPath);
+		}
+	}
 	// replaced by improved version below
 	// exportCode {
 	//	this.export(this.selectCode(this.collectSnippets), "exports/code");
@@ -590,10 +617,10 @@ FileNavigator {
 	}
 
 	// selectedPaths { ^innerList[selection ?? { [0] }] }
-	collectSnippets {
+	collectSnippets { | pathnames |
 		var snippets;
-		// selection.postln;
-		innerList[selection ?? { [0] }] do: { | i |
+		pathnames ?? { pathnames = innerList[selection ?? { [0] }] };
+		pathnames do: { | i |
 			File.use(i.fullPath, "r", { | f |
 				var string, delimiters;
 				string = f.readAllString;
@@ -611,6 +638,18 @@ FileNavigator {
 			})
 		};
 		^snippets; //.postln;
+	}
+
+	getSelection {
+		// TODO: Refactor FileNavigator to use separate classes for the two list views.
+		postln("testing getSelection. selection is:" + selection);
+		if (selection.isNil) {
+			if (innerList.isNil) {
+
+			}{
+
+			}
+		}
 	}
 
 	selectCode { | snippets |
