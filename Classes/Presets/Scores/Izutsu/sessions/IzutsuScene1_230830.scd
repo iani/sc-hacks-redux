@@ -4,13 +4,62 @@
 
 
 //:==================== ADDING freq * mods
-
+//:V1Target sound - diverging gliss cluster LFNoise2 100+- 20+- sec
+{
+	5 +>.test \fadeTime;
+	{ SinOsc.ar(\freq.br(400) * \freq.brdup(200, 1)).amix.amplify(0.3).pan } +> \test;
+	5.wait;
+	(1 - ((0..199).normalize / 8))
+	do: { | v, i |
+		{
+			XLine.kr(1, 1 - (i + -0.1.rrand(0.1) / 600).postln, 30)
+		}  @>.test (\freq +++ i);
+	}
+}.fork;
+//:V2 perc mark
+{
+	5 +>.test \fadeTime;
+	{ SinOsc.ar(\freq.br(400) * \freq.brdup(200, 1)).amix.amplify(0.3).pan } +> \test;
+	5.wait;
+	{ PinkNoise.ar.perc(0.001, 0.25) } +> \perc;
+	(1 - ((0..199).normalize / 8))
+	do: { | v, i |
+		{
+			XLine.kr(1, 1 - (i + -0.1.rrand(0.1) / 600), 60)
+		}  @>.test (\freq +++ i);
+	}
+}.fork;
+//:V3 larger spread
+{
+	5 +>.test \fadeTime;
+	{ SinOsc.ar(\freq.br(400) * \freq.brdup(200, 1)).amix.amplify(0.3).pan } +> \test;
+	5.wait;
+	{ PinkNoise.ar.perc(0.001, 0.25) } +> \perc;
+	(1 - ((0..199).normalize / 4))
+	do: { | v, i |
+		{
+			XLine.kr(1, 1 - (i + -0.1.rrand(0.1) / 600), 60)
+		}  @>.test (\freq +++ i);
+	}
+}.fork;
+//:V4 + main freq glissando
+{
+	1 +>.test \fadeTime;
+	{ SinOsc.ar(\freq.br(800) * \freq.brdup(200, 1)).amix.amplify(0.3).pan } +> \test;
+	15.wait;
+	{ PinkNoise.ar.perc(0.001, 0.25) } +> \perc;
+	{ XLine.kr(800, 200, 180) } @>.test \freq;
+	(1 - ((0..199).normalize / 4))
+	do: { | v, i |
+		{
+			XLine.kr(1, 1 - (i + -0.1.rrand(0.1) / 600), 180);
+		}  @>.test (\freq +++ i);
+	}
+}.fork;
 //:V1 Target sound - diverging gliss cluster LFNoise2 100+- 20+- sec
 25 +>.test \fadeTime;
-
 { SinOsc.ar(\freq.br(400) * \freq.brdup(200, 1)).amix.amplify(0.3).pan } +> \test;
-//: test
-(1 - ((0..19^9).normalize / 8))
+(1 - ((0..199).normalize / 8))
 do: { | v, i |
 	{
 		XLine.kr(1, 1 - (i + -0.1.rrand(0.1) / 600).postln, 30)

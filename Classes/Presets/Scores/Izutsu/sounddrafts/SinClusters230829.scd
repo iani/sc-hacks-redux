@@ -1,12 +1,40 @@
 //multiple sines diverging
-//:Target sound - diverging gliss cluster LFNoise2 100+- 20+- sec
-25 +>.test \fadeTime;
-{ SinOsc.ar(\freq.brdup(200, 800)).amix.amplify.pan } +> \test;
-200 do: { | i |
-	{
-		LFNoise2.kr(10).range(800, XLine.kr(800, 800 - i + -0.1.rrand(0.1), 7.rrand(12)))
-	}  @>.test (\freq +++ i);
-}
+//:Adding \freq.kr for global freq control
+// diverging gliss cluster LFNoise2 100+- 20+- sec
+{
+	25 +>.test \fadeTime;
+	{ SinOsc.ar(\freq.brdup(200, 800)).amix.amplify.pan } +> \test;
+	20.wait;
+	200 do: { | i |
+		{
+			LFNoise2.kr(10).range(800, XLine.kr(800, 800 - i + -0.1.rrand(0.1), 7.rrand(12)))
+		}  @>.test (\freq +++ i);
+	}
+}.fork;
+//:Same, shorter fade in, equal spread times
+// diverging gliss cluster LFNoise2 100+- 20+- sec
+{
+	5 +>.test \fadeTime;
+	{ SinOsc.ar(\freq.brdup(200, 800)).amix.amplify(0.25).pan } +> \test;
+	5.wait;
+	200 do: { | i |
+		{
+			LFNoise2.kr(10).range(800, XLine.kr(800, 800 - i + -0.1.rrand(0.1), 5))
+		}  @>.test (\freq +++ i);
+	}
+}.fork;
+//:Same, larger freq spread
+// diverging gliss cluster LFNoise2 100+- 20+- sec
+{
+	5 +>.test \fadeTime;
+	{ SinOsc.ar(\freq.brdup(200, 800)).amix.amplify(0.25).pan } +> \test;
+	5.wait;
+	200 do: { | i |
+		{
+			LFNoise2.kr(10).range(800, XLine.kr(800, 800 - i + -0.1.rrand(0.1), 5))
+		}  @>.test (\freq +++ i);
+	}
+}.fork;
 //:Above cluster with wider range
 10 +>.test \fadeTime;
 { SinOsc.ar(\freq.brdup(200, 800)).amix.amplify.pan } +> \test;

@@ -19,3 +19,10 @@
 //:Insert timing;
 { \trig.br(0).gt(400).sendReply(\trigger) } +> \test;
 { XLine.kr(200, 800, 10) } @>.test \trig;
+//:Multiple triggers in one synthfunc
+\trigger >>> { (dur: 0.1).play; };
+{  (21..79) * 10 do: { | i |
+	\trig.br(0).gt(i).sendReply(\trigger);
+}
+} +> \test;
+{ XLine.kr(200, 800, 7) } @>.test \trig;
