@@ -1,6 +1,6 @@
-/*presets for jun saved at 230825_002305*/
+/*presets for sanya saved at 230830_195041*/
 
-//: (0) jun grainfroth bird_crickets
+//: (0) sanya grainfroth bird_crickets
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'bird_crickets',
@@ -11,7 +11,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (1) jun grainfroth birdcarman
+//: (1) sanya grainfroth birdcarman
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'birdcarman',
@@ -22,7 +22,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (2) jun grainfroth birdcarmanshort
+//: (2) sanya grainfroth birdcarmanshort
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'birdcarmanshort',
@@ -33,7 +33,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (3) jun grainfroth columbia
+//: (3) sanya grainfroth columbia
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'columbia',
@@ -44,7 +44,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (4) jun grainfroth cricket_ff
+//: (4) sanya grainfroth cricket_ff
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'cricket_ff',
@@ -55,7 +55,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (5) jun grainfroth cricket_taps
+//: (5) sanya grainfroth cricket_taps
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'cricket_taps',
@@ -66,7 +66,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (6) jun grainfroth crickets
+//: (6) sanya grainfroth crickets
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'crickets',
@@ -77,7 +77,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (7) jun grainfroth crossing
+//: (7) sanya grainfroth crossing
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'crossing',
@@ -88,7 +88,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (8) jun grainfroth default
+//: (8) sanya grainfroth default
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'default',
@@ -99,7 +99,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (9) jun grainfroth echo_crickets
+//: (9) sanya grainfroth echo_crickets
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'echo_crickets',
@@ -110,7 +110,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (10) jun grainfroth fones
+//: (10) sanya grainfroth fones
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'fones',
@@ -121,7 +121,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (11) jun grainfroth hanbaiki
+//: (11) sanya grainfroth hanbaiki
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'hanbaiki',
@@ -132,7 +132,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (12) jun grainfroth kiiroi
+//: (12) sanya grainfroth kiiroi
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'kiiroi',
@@ -143,7 +143,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (13) jun grainfroth lake_plane
+//: (13) sanya grainfroth lake_plane
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'lake_plane',
@@ -154,7 +154,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (14) jun grainfroth loud_crickets
+//: (14) sanya grainfroth loud_crickets
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'loud_crickets',
@@ -165,7 +165,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (15) jun grainfroth melodia
+//: (15) sanya grainfroth melodia
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'melodia',
@@ -176,7 +176,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (16) jun grainfroth melodic_road
+//: (16) sanya grainfroth melodic_road
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'melodic_road',
@@ -187,7 +187,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (17) jun grainfroth noisebirdsclick
+//: (17) sanya grainfroth noisebirdsclick
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'noisebirdsclick',
@@ -198,7 +198,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (18) jun grainfroth pilgrims
+//: (18) sanya grainfroth pilgrims
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'pilgrims',
@@ -209,7 +209,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (19) jun grainfroth rough_steps
+//: (19) sanya grainfroth rough_steps
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'rough_steps',
@@ -220,7 +220,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (20) jun grainfroth silence
+//: (20) sanya grainfroth silence
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'silence',
@@ -231,7 +231,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (21) jun grainfroth swallows
+//: (21) sanya grainfroth swallows
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'swallows',
@@ -242,7 +242,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (22) jun grainfroth sweet_crickets
+//: (22) sanya grainfroth sweet_crickets
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'sweet_crickets',
@@ -253,7 +253,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (23) jun grainfroth takunia
+//: (23) sanya grainfroth takunia
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'takunia',
@@ -264,7 +264,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (24) jun grainfroth weddell
+//: (24) sanya grainfroth weddell
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'weddell',
@@ -275,7 +275,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (25) jun grainfroth weddellpock
+//: (25) sanya grainfroth weddellpock
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'weddellpock',
@@ -286,7 +286,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (26) jun grainfroth wind_moderate
+//: (26) sanya grainfroth wind_moderate
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'wind_moderate',
@@ -297,7 +297,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (27) jun grainfroth wind_strong
+//: (27) sanya grainfroth wind_strong
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'wind_strong',
@@ -308,7 +308,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (28) jun grainfroth yang_bird
+//: (28) sanya grainfroth yang_bird
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'yang_bird',
@@ -319,7 +319,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (29) jun grainfroth yangdrums
+//: (29) sanya grainfroth yangdrums
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'yangdrums',

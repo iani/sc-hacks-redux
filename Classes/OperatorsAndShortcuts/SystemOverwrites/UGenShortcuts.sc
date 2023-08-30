@@ -5,8 +5,8 @@
 + UGen {
 	amplify { | amp = 0.1 | ^this * \amp.br(~amp ? amp) }
 	pan { | pan = 0 | ^Pan2.ar(this, \pan.br(~pan ? pan)) }
-	sendReply { | oscmessage |
-		^SendReply.kr(this, oscmessage ? \trigger)
+	sendReply { | oscmessage = \trigger |
+		^SendReply.kr(this, oscmessage.asOscMessage)
 	}
 	mapdur { | buf | // map from 0-1 to scale matching duration of buffer selection
 		^this.linlin(0, 1,
