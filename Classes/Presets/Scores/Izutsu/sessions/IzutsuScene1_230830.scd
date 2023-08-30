@@ -9,10 +9,17 @@
 25 +>.test \fadeTime;
 
 { SinOsc.ar(\freq.br(400) * \freq.brdup(200, 1)).amix.amplify.pan } +> \test;
-//:
+//: test
+(1 - ((0..199).normalize / 8))
+do: { | v, i |
+	{
+		XLine.kr(1, 1 - (i + -0.1.rrand(0.1) / 600).postln, 30)
+	}  @>.test (\freq +++ i);
+}
+//:FIRST GOOD EXAMPLE
 200 do: { | i |
 	{
-		XLine.kr(1, (1 - (i / 400)).postln, 60)
+		XLine.kr(1, 1 - (i + -0.1.rrand(0.1) / 600).postln, 10)
 	}  @>.test (\freq +++ i);
 }
 //:
