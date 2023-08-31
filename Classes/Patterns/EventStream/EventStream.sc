@@ -97,7 +97,7 @@ EventStream {
 	}
 
 	playAndNotify { | inEvent |
-		// postln("debugging playAndNotify. inEvent" + inEvent);
+		// postln("debugging playAndNotify. inEvent" + inEvent.pp);
 		inEvent.play;
 		if (inEvent.isNil) {
 			this.changed(\ended);

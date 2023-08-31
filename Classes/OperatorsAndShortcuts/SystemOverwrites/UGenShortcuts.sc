@@ -66,6 +66,7 @@
 	// attackTime=0.01, releaseTime=1.0, level=1.0, curve = -4.0
 	perc { | attackTime=0.01, releaseTime=1.0, level=1.0, curve = -4.0,
 		doneAction = 2, gate = 1 |
+		// postln("debugging ugen perc" + attackTime + releaseTime + level + curve + doneAction + gate);
 		^this *
 		Env.perc(attackTime, releaseTime, level, curve)
 		.kr(doneAction: doneAction, gate: \gate.kr(gate))

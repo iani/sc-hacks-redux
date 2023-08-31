@@ -41,9 +41,10 @@ OscData {
 	}
 	*fromPath { | p | // choose class depending on file contents
 		case
-		{ p.isCode }{ ^OscDataScore([p]) /*.gui */ }
-		{ p.hasTimestamps }{ ^OscData([p]) /* .gui; */ }
-		{ true }{ ^SnippetScore([p]) /* .gui */ };
+					{ p.isCode }{ OscDataScore([p]).postln }
+					{ p.isOnsetCode }{ OscDataOnsetScore([p]).postln }
+					{ p.hasTimestamps }{ OscData([p]).postln; }
+					{ true }{ SnippetScore([p]).postln };
 	}
 
 	*new { | paths |

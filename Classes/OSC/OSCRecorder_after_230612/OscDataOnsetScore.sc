@@ -1,13 +1,10 @@
 /* 20 Jun 2023 23:29
 
-Subclass of OscData that introduces 2 differences:
+Subclass of OscDataScore that uses absolute onset timestamps instead
+of durations timestamps.
+To calculate times, this class uses the methods of OscData.:
 
-1. treats relative time values instead of absolute ones:
-
-//:--[0.1]
-// Here 0.1 is a time relative to the time of the previous message.
-
-2. The contents of the message are treated implicitly as code.
+As in OscDataScore, the contents of the message are treated implicitly as code.
 //:--[1.5]
 { WhiteNoise.ar(0.1).dup } +> \test;
 
@@ -17,24 +14,27 @@ Is equivalent to:
 
 */
 
-OscDataScore : OscData {
-	var durations;
+OscDataOnsetScore : OscDataScore {
 	checkFileType { | string, path |
-		if ("//code" == string[..string.find("\n")-1]) {
+		if ("//onsetcode" == string[..string.find("\n")-1]) {
 		}{
-			Error("File" + path + "is not a code file. Use OscData.").throw
+			Error("File" + path + "is not anOnset code file. Use OscData.").throw
 		};
 	}
 
 	makeTimeline { | argTimes |
-		timeline = Timeline(this).setDurations(argTimes);
+		timeline = Timeline(this).setOnsets(argTimes); // use onsets method from OscData
 	}
 
 	convertTimes {
-		durations = times;
-		times = ([0] ++ times).integrate.butLast;
+		times = times - times.first;
+		postln("original times" + times);
+		postln("difftimes" + times.differentiate);
+		durations = times.differentiate;
 	}
 
+	// USE THE SAME METHODS AS OscDataScore:
+	/*
 	makePlayFunc {
 		var localaddr, oscgroupsaddr;
 		localaddr = LocalAddr();
@@ -56,4 +56,5 @@ OscDataScore : OscData {
 		m = messages[timeline.segmentMin + i];
 		^(t.asString + m.copyRange(m.indexOf($]) + 1, m.indexOf(Char.nl) - 1))
 	}
+	*/
 }

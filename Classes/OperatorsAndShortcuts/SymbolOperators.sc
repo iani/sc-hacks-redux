@@ -36,6 +36,8 @@
 		// play playfunc in event envir of Mediator named by me
 		^Mediator.at(this).play(playFunc, event);
 	}
+
+	<!> { | object | this putGlobal: object }
 	putGlobal { | object | Mediator.putGlobal(this, object) }
 
 	//============================================================/

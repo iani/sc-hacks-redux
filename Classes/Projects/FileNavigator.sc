@@ -470,14 +470,12 @@ FileNavigator {
 			// this.mergeablePaths.postln;
 			// /*
 			if (selectedPaths.size == 1) {
-				// "debugging openInnerItem".postln;
-				// postln("selectedPaths is:" + selectedPaths);
-				// postln("innerItem is:" + innerItem);
 				innerItem.fullPath.doIfExists({ | p |
 					case
 					{ p.isCode }{ OscDataScore([p]).gui }
+					{ p.isOnsetCode }{ OscDataOnsetScore([p]).gui }
 					{ p.hasTimestamps }{ OscData([p]).gui; }
-					{ true }{ SnippetScore([p]).gui };
+					{ true }{ SnippetScore([p]).postln };
 					// { true }{SnippetScore([innerItem.fullPath]).gui};
 				},{ | p |
 					postln("File not found:" + p);
@@ -485,7 +483,6 @@ FileNavigator {
 			}{
 				OscData(this.mergeablePaths).gui;
 			}
-			//	*/
 		}
 	}
 

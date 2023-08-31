@@ -23,6 +23,20 @@
 		^isCode;
 	}
 
+	isOnsetCode {
+		var isCode;
+		File.use(this, "r", { | f |
+		var h;
+			h = f.getLine(1024); // .postln;
+			if (h == "//onsetcode") {
+				isCode = true;
+			}{
+				isCode = false;
+			};
+		});
+		^isCode;
+	}
+
 	isSfSelection {
 		var isSfs;
 		File.use(this, "r", { | f |
