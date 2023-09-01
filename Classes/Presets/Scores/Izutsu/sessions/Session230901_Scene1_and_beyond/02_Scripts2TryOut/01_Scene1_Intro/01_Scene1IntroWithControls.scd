@@ -12,8 +12,8 @@
 5 +>.jun \fadeTime;
 // controls:
 
-{ \x1.gt.lag(0.5) + 0.1 } @>.jun \vol;
-{ \z4.gt.lag(0.5) * 0.1 } @>.asayo \vol;
+{ \x5.gt.lag(0.5) + 0.1 } @>.jun \vol;
+{ \z8.gt.lag(0.5) * 0.1 } @>.asayo \vol;
 
 "Resetting noise multipliers to 1".postln;
 {
