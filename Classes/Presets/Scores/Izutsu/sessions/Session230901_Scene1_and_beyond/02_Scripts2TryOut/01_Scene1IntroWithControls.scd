@@ -1,7 +1,7 @@
 //code
 //2 sliding sindes morphing to noise, with sensor controls
 //Introducing control of LFNoise2 range + rate
-//Durations according to rehearsal.  Tested.
+//Durations + sensor controls according to rehearsal.  Tested.
 //script version
 //:--[80] global vars + modulator reset
 \s1_static <!> 7; // duration of initial static freq
@@ -10,8 +10,10 @@
 \s1_numsines <!> 50; // number of sine ugens
 5 +>.asayo \fadeTime;
 5 +>.jun \fadeTime;
-// contrrols:
+// controls:
 
+{ \x1.gt.lag(0.5) + 0.1 } @>.jun \vol;
+{ \z4.gt.lag(0.5) * 0.1 } @>.asayo \vol;
 
 "Resetting noise multipliers to 1".postln;
 {
@@ -24,8 +26,8 @@
 } +>.jun \fmod;
 
 "starting the sound".postln;
-{ SinOsc.ar(\freq.br(800) * \freq.brdup(~s1_numsines, 1)).amix.amplify(0.05).pan } +> \asayo;
-{ SinOsc.ar(\freq.br(200) * \freq.brdup(~s1_numsines, 1)).amix.amplify(0.05).pan } +> \jun;
+{ SinOsc.ar(\freq.br(800) * \freq.brdup(~s1_numsines, 1)).amix.amplify(0.05).pan * \vol.br(0) } +> \asayo;
+{ SinOsc.ar(\freq.br(200) * \freq.brdup(~s1_numsines, 1)).amix.amplify(0.05).pan * \vol.br(0)} +> \jun;
 //:--[90] start glides
 { PinkNoise.ar.perc } +> \perc;
 { XLine.kr(800, 200, ~s1_glide) } @>.asayo \freq; // main freq slides DOWN
