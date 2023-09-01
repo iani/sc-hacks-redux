@@ -1,21 +1,21 @@
 //TGrains with Dseq for rate. To explore
 //From: https://doc.sccode.org/Classes/TGrains.html
 //:sensor controls (for all snippets)
-{ \x5.sr.exp(0.2, 20) } @>.test \trate;
-{ \z5.sr.lin(0.0, 1.0) } @>.test \pos;
+{ \x7.sr.exp(0.2, 500) } @>.test \trate;
+{ \z8.sr.lin(0.0, 1.0) } @>.test \pos;
 //:weddell
 {
     var trate, dur, rate, b, pos;
 	// b = \default.buf;
 	// b = \crickets.buf;
-	b = \weddell.buf;
+	b = \crickets.buf;
     // trate = MouseY.kr(2,200,1);
     // trate = MouseY.kr(0.2,20,1);
     trate = \trate.br(1);
 	pos = \pos.br(0.5);
     dur = 16 / trate;
     rate = Dseq([0.2, 0.4, 0.5, 0.1, 0.1, 0.1, 0.1, 0.5, 0.25, 0.5, 0.25, 0.5], inf);
-    TGrains.ar(2, Impulse.ar(trate), b, rate, BufDur.kr(b) * pos, dur, Dseq([-1, 1], inf), 0.1, 2);
+    TGrains.ar(2, Impulse.ar(trate), b, rate * \x7.sr.exp(0.5, 5), BufDur.kr(b) * pos, dur, Dseq([-1, 1], inf), 0.1, 2);
 } +> \test;
 //:crickets
 {
