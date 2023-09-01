@@ -31,3 +31,7 @@
 } +>.jun \freqmod;
 //:--[67]
 { PinkNoise.ar.perc } +> \perc;
+//:--[80]
+{ PinkNoise.ar.perc } +> \perc;
+\asayo stop: 20;
+\jun stop: 20;

@@ -39,12 +39,17 @@ OscData {
 			this.fromPath(p.first).gui
 		}.getFilePath("Click OK to select an osc data file")
 	}
+
+	*fromPathGui { | p |
+		this.fromPath(p).gui;
+	}
+
 	*fromPath { | p | // choose class depending on file contents
 		case
-					{ p.isCode }{ OscDataScore([p]).postln }
-					{ p.isOnsetCode }{ OscDataOnsetScore([p]).postln }
-					{ p.hasTimestamps }{ OscData([p]).postln; }
-					{ true }{ SnippetScore([p]).postln };
+		{ p.isCode }{ ^OscDataScore([p]).postln }
+		{ p.isOnsetCode }{ ^OscDataOnsetScore([p]).postln }
+		{ p.hasTimestamps }{ ^OscData([p]).postln; }
+		{ true }{ ^SnippetScore([p]).postln };
 	}
 
 	*new { | paths |
