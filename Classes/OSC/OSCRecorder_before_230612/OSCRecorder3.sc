@@ -60,6 +60,10 @@ OSCRecorder3 {
 			^nil; // do not save or record if file is closed!
 		};
 		data = data add: [time, msg];
+		// ensure code messages are stored as strings:
+		if (msg[0] == '/code') {
+			msg[1] = msg[1].asString;
+		};
 		file.putString("\n//:--[" ++ time.asCompileString ++ "]\n");
 		file.putString(msg.asCompileString);
 		this.saveIfNeeded;

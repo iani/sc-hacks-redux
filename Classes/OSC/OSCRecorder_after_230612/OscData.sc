@@ -508,6 +508,7 @@ OscData {
 		^{
 			var msg;
 			msg = ~message.interpret;
+			// postln("debugging. message:" + msg);
 			// postln("message class" + ~message.class + "message:" + ~message);
 			localaddr.sendMsg(*msg);
 			oscgroupsaddr.sendMsg(*msg);

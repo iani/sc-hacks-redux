@@ -12,8 +12,8 @@
 5 +>.jun \fadeTime;
 // controls:
 
-{ \x5.gt.lag(0.5) + 0.1 } @>.jun \vol;
-{ \z8.gt.lag(0.5) * 0.1 } @>.asayo \vol;
+{ \x1.gt.lag(0.5) * 0.06 } @>.jun \amp;
+{ \z4.gt.lag(0.5) * 0.06} @>.asayo \amp;
 
 "Resetting noise multipliers to 1".postln;
 {
@@ -26,14 +26,14 @@
 } +>.jun \fmod;
 
 "starting the sound".postln;
-{ SinOsc.ar(\freq.br(800) * \freq.brdup(~s1_numsines, 1)).amix.amplify(0.05).pan * \vol.br(0) } +> \asayo;
-{ SinOsc.ar(\freq.br(200) * \freq.brdup(~s1_numsines, 1)).amix.amplify(0.05).pan * \vol.br(0)} +> \jun;
+{ SinOsc.ar(\freq.br(800) * \freq.brdup(~s1_numsines, 1)).amix.amplify(0.01).pan } +> \asayo;
+{ SinOsc.ar(\freq.br(200) * \freq.brdup(~s1_numsines, 1)).amix.amplify(0.01).pan } +> \jun;
 //:--[90] start glides
 { PinkNoise.ar.perc } +> \perc;
 { XLine.kr(800, 200, ~s1_glide) } @>.asayo \freq; // main freq slides DOWN
 { XLine.kr(200, 800, ~s1_glide) } @>.jun \freq; // main freq slides UP
 //:--[90] start noise clusters
-{ PinkNoise.ar.perc } +> \perc;
+{ PinkNoise.ar.perc * 0.01 } +> \perc;
 {	// cluster opens UPWARD
 	var scale;
 	// scale = \lfdscale.br(0);

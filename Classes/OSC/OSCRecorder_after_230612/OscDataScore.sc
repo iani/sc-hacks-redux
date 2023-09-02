@@ -41,6 +41,7 @@ OscDataScore : OscData {
 		OscGroups.enable(verbose: false);
 		oscgroupsaddr = OscGroups.sendAddress;
 		^{
+			postln("debugging playfunc. message class is:" + ~message.class);
 			localaddr.sendMsg('/code', ~message);
 			oscgroupsaddr.sendMsg('/code', ~message);
 		}

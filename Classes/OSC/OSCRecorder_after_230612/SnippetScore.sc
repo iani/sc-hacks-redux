@@ -37,7 +37,7 @@ SnippetScore : OscDataScore {
 		^(t.asString + m.copyRange(3, (m.indexOf(Char.nl) ?? { m.size }) - 1))
 	}
 	shareSnippet { | argSnippet |
-		postln("snippetscore sharing snippet:" + argSnippet);
+		// postln("snippetscore sharing snippet:" + argSnippet);
 		argSnippet.share;
 	}
 }
