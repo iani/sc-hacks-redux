@@ -5,6 +5,12 @@ PathName(Platform.userHomeDir).fullPath.size;
 */
 
 + String {
+	findRegexp1 { | regexp |
+		var found;
+		found = this.findRegexp(regexp).first;
+		if (found.size == 0) { ^"" } { ^found[1] }
+	}
+
 	pn { ^this.pathname  }
 	pathname { ^PathName(this) }
 	userRelative {
