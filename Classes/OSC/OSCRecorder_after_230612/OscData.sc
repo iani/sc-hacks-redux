@@ -286,7 +286,7 @@ OscData {
 					}
 				})
 				.addNotifier(this, \item, { | n, index |
-					postln("OscData gui received item. index:" + index);
+					// postln("OscData gui received item. index:" + index);
 					n.listener.value = index;
 				})
 				.addNotifier(this, \segment, { | n, who |

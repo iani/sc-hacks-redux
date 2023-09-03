@@ -5,10 +5,10 @@
 //:Asayo: 800->200 applying to the sine->noise design
 {
 	var dur1 = 3, dur = 30;
-	{ PinkNoise.ar.perc } +> \perc;
+	// { PinkNoise.ar.perc } +> \perc;
 	{ SinOsc.ar(\freq.br(800) * \freq.brdup(50, 1)).amix.amplify(0.3).pan } +> \asayo;
 	dur1.wait;
-	{ PinkNoise.ar.perc } +> \perc;
+	// { PinkNoise.ar.perc } +> \perc;
 	{ XLine.kr(800, 200, dur) } @>.asayo \freq; // main freq slides DOWN
 	{	// cluster opens UPWARD
 		(1..50).normalize + 1 + Array.rand(50, -0.01, 0.01) do: { | v, i |
@@ -16,7 +16,7 @@
 		};
 	} +>.asayo \freqmod;
 	dur.wait;
-	{ PinkNoise.ar.perc } +> \perc;
+	// { PinkNoise.ar.perc } +> \perc;
 }.fork;
 //:Jun: 200->800 applying to the sine->noise design
 {
