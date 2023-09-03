@@ -26,6 +26,7 @@ NoteSpec { // Only instantiate subclasses HiOctave and LoOctave!
 	classvar <notesArray;
 	var <spec, <noteName, <noteIndex, <degreeClass, <octChar;
 	var <octTranspose, <alts, <midi, <freq;
+	var <ptransp = 1; // partial transposition;
 
 	*initClass {
 		StartUp add: { this.makeNotesArray }
@@ -60,12 +61,14 @@ NoteSpec { // Only instantiate subclasses HiOctave and LoOctave!
 		bs = mods.findRegexp1("[f].*").size.neg;
 		hs = mods.findRegexp1("[s].*").size;
 		alts = bs + hs;
+		ptransp = ((mods.findRegexp1("\\^\\d")[1] ? $1).ascii - 48)
+		/ ((mods.findRegexp1("/\\d")[1] ? $1).ascii - 48);
 		midi = degreeClass + octTranspose + alts;
-		freq = midi.midicps;
+		freq = midi.midicps * ptransp;
 	}
 
 	octaveTranspose { ^0 } // only use the subclass versions of this.
-	report {
+	report { | dur = 0.25 |
 		postln("OctaveSpec: noteName" + noteName
 			+ "noteIndex" + noteIndex
 			+ "degreeClass" + degreeClass
@@ -74,7 +77,11 @@ NoteSpec { // Only instantiate subclasses HiOctave and LoOctave!
 			+ "alts" + alts
 			+ "midi" + midi
 		);
-		(midinote: midi).play;
+		(freq: freq, dur: dur).play;
+	}
+
+	play { | dur = 0.25 |
+		(freq: freq, dur: dur).play;
 	}
 }
 

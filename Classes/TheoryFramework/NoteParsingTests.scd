@@ -55,10 +55,23 @@ f = { | spec |
 	os = NoteSpec(spec);
 	os.report;
 };
-//:
 f.("c");
 //:*
-f.("c"); 0.25.wait;
+f = { | spec, dur = 0.25 |
+	var os;
+	os = NoteSpec(spec);
+	os.play(dur);
+};
+f.("c", 3);
+f.("e", 3);
+f.("g", 3);
+f.("c1", 3);
+f.("e1", 3);
+f.("g1", 3);
+f.("c2", 3);
+f.("e2", 3);
+f.("g2", 3);
+f.("c3"); 4.wait;
 f.("g"); 0.25.wait;
 f.("gs"); 0.25.wait;
 f.("gss"); 0.25.wait;
@@ -72,18 +85,52 @@ f.("g3fff"); 0.25.wait;
 f.("Gfff"); 0.25.wait;
 f.("G1f"); 0.25.wait;
 f.("G2ff"); 0.25.wait;
-f.("G3fff"); 0.25.wait;
-//:
-f.("Gfff");
-f.("Bfff");
-f.("Dfff");
-f.("ffff");
-//:
+f.("G3fff"); 0.5.wait;
+f.("Gfff", 1);
+f.("Bfff", 1);
+f.("Dfff", 1);
+f.("ffff", 1); 1.wait;
 f.("gfff");
 f.("bfff");
 f.("dfff");
-f.("f1fff");
-//:
+f.("f1fff"); 2.wait;
+f.("g1");
+f.("b1");
+f.("d1");
+f.("f2");
+3.wait;
+//:*===== overtones & undertones
+f = { | spec, dur = 0.25 |
+	var os;
+	os = NoteSpec(spec);
+	os.play(dur);
+};
+f.("C", 3);
+f.("c", 3);
+f.("c^5/4", 3);
+f.("c^3/2", 3);
+f.("c^7/4", 3);
+f.("c^2", 3);
+f.("c^5/2", 3);
+3.5.wait;
+f.("C", 3);
+f.("c", 3);
+f.("e", 3);
+f.("g", 3);
+f.("bf", 3);
+f.("c1", 3);
+f.("e1", 3);
+3.wait;
+//:*
+f.("C", 3);
+f.("c", 3);
+f.("e", 3);
+f.("g", 3);
+f.("bf", 3);
+f.("c1", 3);
+f.("e1", 3);
+3.wait;
+
 //:preliminary tries:
 
 o = "5".findRegexp("^\\d");
@@ -94,3 +141,9 @@ a = "bb".findRegexp("[bh]*");
 "4h".findRegexp("[bh].*");
 "hh".findRegexp("[bh].*");
 "1hh".findRegexp("[bh].*");
+"c4bb^3".findRegexp1("\\^\\d");
+"c4bb/3".findRegexp1("/\\d");
+//"c4bb/3".findRegexp1("\\^\\d");
+
+("ghh^3".findRegexp1("\^\\d")[1] ? $1).ascii - 48;
+("ghhx3".findRegexp1("u\\d")[1] ? $1).ascii - 48;
