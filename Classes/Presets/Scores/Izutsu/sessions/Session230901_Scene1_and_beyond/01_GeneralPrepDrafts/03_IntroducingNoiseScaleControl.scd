@@ -4,14 +4,12 @@
 //Durations according to rehearsal.  Tested.
 //script version
 //:--[80] global vars + modulator reset
-\s1_static <!> 7; // duration of initial static freq
-\s1_glide <!> 180; // total duration of glide
-\s1_spread <!> 90; // duration of spreading from sine to noise
-\s1_numsines <!> 50; // number of sine ugens
-5 +>.asayo \fadeTime;
-5 +>.jun \fadeTime;
+7 <!> \s1_static; // duration of initial static freq
+180 <!> \s1_glide; // total duration of glide
+90 <!> \s1_spread; // duration of spreading from sito noise
+50 <!> \s1_numsines; // of sine ugens
+90 <!> \s1_glide;
 
-"Resetting noise multipliers to 1".postln;
 {
 	~s1_numsines.do({ | i | (\freq +++ i).bus.set(1)});
 	PinkNoise.ar(0.05).perc(0.5, 0.9).pan(-1);

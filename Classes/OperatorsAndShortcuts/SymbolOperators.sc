@@ -3,6 +3,19 @@
 */
 
 + Symbol {
+	// DRAFT! Create gui view for setting the bus.
+	*bctlv { | spec = \amp, envir = \default |
+		spec = spec.asSpec;
+		^HLayout(
+			StaticText().string_(this),
+			NumberBox().action_({ | me | me.postln; }),
+			Slider().orientation_(\horizontal)
+			.action_({ | me |
+				[me.value, spec.map(me.value)].postln;
+				format(""); /// . share .. ....
+			})
+		)
+	}
 	// create multiple controls
 	brdup { | iter = 1, default = 1 |
 		^{ | i |
