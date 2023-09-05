@@ -7,13 +7,13 @@ Creates 2 ListViews (inner / outer) that can be built into other guis.
 */
 
 FileNavigator {
+	classvar bookmarks; // TODO: Impement methods to use this.
 	var <>key = \default;
 	var >homeDir;  // top folder holding all items.
 	var >currentRoot; // path for getting outerList items
 	var <>outerList, <>outerItem, <outerIndex = 0;
 	var <>innerList, <>innerItem, <innerIndex = 0;
 	var <selection; // currently selected indices of inner list (for export/browsing)
-	var bookmarks; // TODO: Impement methods to use this.
 
 	*browseHacksScores {
 		this.new(\oscscores, PathName(Scores.parentPath)).gui
@@ -29,7 +29,12 @@ FileNavigator {
 		Preferences.put(this.class.name, key, this.prefs);
 	}
 
-	bookmarks { ^bookmarks ?? { bookmarks = Bookmarks() } }
+	bookmarks { ^this.class.bookmarks }
+
+	*bookmarks { // incomplete
+		^bookmarks ?? { bookmarks = this.class.prefs }
+	}
+
 	prefs {
 		// save info needed to regenerate state,
 		// plus human-readable relevant info.

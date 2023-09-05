@@ -44,6 +44,15 @@ Asc to confirm before evaluating a function.
 		}.confirm(message)
 	}
 
+	getFilePathMultiple { | message = "Click OK and choose paths for" |
+		{
+			FileDialog({ | path |
+				this.(path);
+			}, {}, 3)
+		}.confirm(message)
+	}
+
+
 	inputText {  | default = "something", prompt = "Enter a new string" |
 		var window;
 		window = this.vlayout(
