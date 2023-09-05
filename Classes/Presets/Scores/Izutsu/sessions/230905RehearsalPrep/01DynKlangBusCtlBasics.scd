@@ -102,20 +102,14 @@ a.set(600);
 	).amplify.pan;
 } +> \test;
 0.1 @>.test \amp; // initialize amp
-//:add glisssandi
+//:add glissandi
 { XLine.kr(200, 600, 5) } @>.test \a;
 { XLine.kr(600, 200, 10) } @>.test \b;
 //:add noise modulation
-{ LFNoise2.kr().range(0.9, 1.0) } @>.test \a;
-{ XLine.kr(600, 200, 10) } @>.test \b;
-
+{ LFNoise2.kr(10).range(*0.1.bi) } @>.test \c;
+{ LFNoise0.kr(5).range(*0.1.bi) } @>.test \d;
+//:add noise modulation with graduall increasing range
+{ LFNoise2.kr(10).range(*0.5.bi.collect{ | r | XLine.kr(1, r, 10) }) } @>.test \c;
+{ LFNoise0.kr(15).range(*0.5.bi.collect{ | r | XLine.kr(1, r, 10) }) } @>.test \d;
 //:fadeout
 { XLine.kr(0.1, 0.0001, 2, doneAction: 2) - 0.0001 } @>.test \amp;
-//:========= calculate multiplers for equal ratio spread around 1
-m = {  | r |
-	[(1 + r).reciprocal, 1 + r]
-};
-//:
-m.value(0.25) collect: _.ratio;
-
-(m.(0.1) collect: _.ratio).integrate;

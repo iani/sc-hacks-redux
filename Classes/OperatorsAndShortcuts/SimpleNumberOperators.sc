@@ -20,6 +20,22 @@ Redoing on Fri  1 Sep 2023 07:50
 		// envir.envir.put(param, this);
 	}
 
+	>>! { | sensor | // emulate minibee
+		sensor.sensorbus.set(this)
+	}
+
+
+	// create a pair lo-hi at equal ratio distances from 1
+	/*
+		0.2.bi.postln collect: _.ratio;  // minor thirds
+		0.25.bi.postln collect: _.ratio; // major thirds
+		(4 / 3 - 1).postln.bi.postln collect: _.ratio; // fourths
+		0.5.bi.postln collect: _.ratio;  // fifths
+		0.2.bi(10).postln collect: _.ratio; // not implemented
+	*/
+	bi { // | center = 1 |
+		^[1 / (1 + this), 1 * (1 + this)]
+	}
 
 	// Older version:
 	// +> { | param, player |

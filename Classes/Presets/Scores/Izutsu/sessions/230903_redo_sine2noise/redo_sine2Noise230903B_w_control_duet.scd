@@ -23,5 +23,9 @@
 	"CLUSTER REACHED".postln;
 	// { SinOsc.ar(400, 0, 0.1).perc.pan }.play;
 }.fork;
-//:
+//:======= Sensor control tests
+//:on
+0.6 >>! \x1;
+//:off
+0.4 >>! \x1;
 //:

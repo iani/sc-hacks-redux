@@ -4,6 +4,7 @@
 
 + UGen {
 	amplify { | amp = 0.1 | ^this * \amp.br(~amp ? amp) }
+	vol { | vol = 1 | ^this * \vol.br(~vol ? vol) }
 	pan { | pan = 0 | ^Pan2.ar(this, \pan.br(~pan ? pan)) }
 	sendReply { | oscmessage = \trigger |
 		^SendReply.kr(this, oscmessage.asOscMessage)
