@@ -56,4 +56,15 @@ PathList {
 		};
 		this.put(key, list);
 	}
+
+	*getSelection { | key, selection |
+		selection = selection ?? { [] };
+		^this.get(key)[selection ?? { [] }].select(_.notNil);
+	}
+
+	*testSelection { | key, selection | // experimental
+		postln("testing PathList selection. key"
+			+ key + "selection" + selection);
+		this.get(key)[selection].select(_.notNil) do: _.postln;
+	}
 }

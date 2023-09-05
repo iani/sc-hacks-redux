@@ -17,14 +17,23 @@ PathListView {
 
 	makeWindow {
 		^key.vlayout(
-			listView = ListView().items_(this.getItems),
+			listView = ListView().selectionMode_(\extended).items_(this.getItems),
 			HLayout(
 				Button().states_([["add"]]).action_({ this.addPathFromUser }),
 				Button().states_([["remove"]]).action_({ this.removePath }),
 				Button().states_([["show path"]]).action_({ this.showPath }),
-				customView ?? { Button().states_([["not configured"]]) }
+				customView ?? {
+					Button().states_([["experimental"]])
+					.action_({ | me | this.testListSelection })
+				}
 			)
 		)
+	}
+
+	testListSelection { // experimental
+		"Testing PathListView:testListSelection".postln;
+		listView.selection.postln;
+		PathList.testSelection(key, listView.selection);
 	}
 
 	refreshList { listView.items = this.getItems; }
