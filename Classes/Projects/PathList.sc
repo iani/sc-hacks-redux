@@ -27,11 +27,11 @@ PathList {
 		this.dict.writeArchive(this.prefsPath);
 	}
 
-	*window { | key, customView |
+	*window { | key, customView, customAction |
 		// actions: 1 add path, 2 delete path, 3 do with selected paths.
 		// customView is created by the requesting object.
 		key = key.asSymbol;
-		^PathListView(key)
+		^PathListView(key, customView, customAction);
 	}
 
 	*addPaths { | key, paths | this.put(key, this.get(key) ++ paths); }

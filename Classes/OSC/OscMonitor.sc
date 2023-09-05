@@ -113,6 +113,7 @@ OscMonitor {
 						// FileNavigator(\oscscores, PathName(Scores.parentPath)).gui
 						FileNavigator.browseHacksScores;
 					}),
+					Button().states_([["set"]]).action_({ this.pathListView })
 					// Button().states_([["folders"]]).maxWidth_(45).action_({
 					// 	// FileNavigator(\oscscores, PathName(Scores.parentPath)).gui
 					// 	PscoreMenu.scorefoldersmenu;
@@ -205,5 +206,12 @@ OscMonitor {
 		}{
 			view.value = 0;
 		}
+	}
+
+	*pathListView {
+		PathList.window(\oscMonitor,
+			Button().states_([["multiplay"]]),
+			{ | plv | plv.getSelection do: _.postln; }
+		);
 	}
 }

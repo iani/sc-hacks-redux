@@ -7,15 +7,18 @@ customView is created by the requesting object.
 */
 
 PathListView {
-	var key, customView, listView;
-	*new { | key, customView |
+	var key, customView, customAction, listView;
+	*new { | key, view, action |
 		key = key.asSymbol;
-		^Registry(\pathlistview, key, { this.newCopyArgs(key, customView)})
+		^Registry(\pathlistview, key, {this.newCopyArgs(key, view, action)})
 		.postln
 		.makeWindow;
 	}
 
 	makeWindow {
+		if (customView.notNil) {
+			customView.action_({ customAction.(this) })
+		};
 		^key.vlayout(
 			listView = ListView().selectionMode_(\extended).items_(this.getItems),
 			HLayout(
@@ -24,7 +27,9 @@ PathListView {
 				Button().states_([["show path"]]).action_({ this.showPath }),
 				customView ?? {
 					Button().states_([["experimental"]])
-					.action_({ | me | this.testListSelection })
+					.action_({
+						"action should be provided when making me.".postln;
+					})
 				}
 			)
 		)
@@ -35,6 +40,8 @@ PathListView {
 		listView.selection.postln;
 		PathList.testSelection(key, listView.selection);
 	}
+
+	getSelection { ^PathList.getSelection(key, listView.selection); }
 
 	refreshList { listView.items = this.getItems; }
 	getItems { ^PathList.get(key) collect: _.name; }
