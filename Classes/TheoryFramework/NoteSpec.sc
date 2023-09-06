@@ -38,6 +38,7 @@ NoteSpec { // Only instantiate subclasses HiOctave and LoOctave!
 
 	*new { | spec |
 		var ascii, note, mods;
+		spec = spec.asString;
 		note = spec.first;
 		ascii = note.ascii;
 		mods = spec[1..];
@@ -63,7 +64,11 @@ NoteSpec { // Only instantiate subclasses HiOctave and LoOctave!
 		alts = bs + hs;
 		ptransp = ((mods.findRegexp1("\\^\\d")[1] ? $1).ascii - 48)
 		/ ((mods.findRegexp1("/\\d")[1] ? $1).ascii - 48);
-		midi = degreeClass + octTranspose + alts;
+		this.midi = degreeClass + octTranspose + alts;
+	}
+
+	midi_ { | argmidi |
+		midi = argmidi;
 		freq = midi.midicps * ptransp;
 	}
 
@@ -82,6 +87,10 @@ NoteSpec { // Only instantiate subclasses HiOctave and LoOctave!
 
 	play { | dur = 0.25 |
 		(freq: freq, dur: dur).play;
+	}
+
+	transpose { | semitones = 1 |
+		^this.copy.midi = midi + semitones;
 	}
 }
 

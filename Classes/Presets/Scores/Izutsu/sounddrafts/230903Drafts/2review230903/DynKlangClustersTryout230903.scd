@@ -33,6 +33,25 @@
 } +> \test;
 //:Use busses to add noise to the freq.
 {
+	50.do({ | i | (\freq +++ i).bus.set(1)});
+	Silent.ar
+} +>.test \fmod;
+{
+	SinOsc.ar(\freq.br(800) * \freq.brdup(50, 1))
+	.amix.amplify(0.15).pan
+} +> \test;
+//:add xline
+{
+	(1..50).normalize(800, 700).do({ | f, i |
+		LFNoise2.kr(2).range(800, 850).bout(\freq +++ i)
+	});
+	// Silent.ar
+} +>.test \fmod;
+//:
+
+//:
+
+{
     SinOsc.ar(
         XLine.kr(500, (1..10).normalize(400, 600), 10)
 	).amix.amplify.pan
