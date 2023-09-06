@@ -21,17 +21,17 @@ PscoreMenu : PresetViewTemplate {
 	}
 
 	*scores1view {
-		^Button()/*.maxWidth_(60) */.states_([["scores1"]]) // .maxWidth_(100)
+		^Button().maxWidth_(60).states_([["scores1"]]) // .maxWidth_(100)
 		.menuActions(this.oscdatamenu1)
 	}
 
 	*scores2view {
-		^Button() /* .maxWidth_(60) */ .states_([["scores2"]]) // .maxWidth_(100)
+		^Button().maxWidth_(60).states_([["scores2"]]) // .maxWidth_(100)
 		.menuActions(this.oscdatamenu2)
 	}
 
 	*scores3view {
-		^Button() /* .maxWidth_(60) */ .states_([["scores3"]]) // .maxWidth_(100)
+		^Button().maxWidth_(60).states_([["scores3"]]) // .maxWidth_(100)
 		.menuActions(this.oscdatamenu3)
 	}
 

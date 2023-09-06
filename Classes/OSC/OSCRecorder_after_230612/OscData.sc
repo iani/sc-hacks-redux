@@ -3,47 +3,59 @@ Redo of OscDataReader
 */
 
 OscData {
-	var <paths;
-	var <sourceStrings;
-	var <parsedEntries; // list of messages sorted by timestamp, in the form:
-	// [timestamp, message] where:
-	// float: timestamp
-	// array: The message and its arguments. Obtained by interpreting
-	// the source string of the message.
-	var <unparsedEntries; // the entries as read from file. For export! // NOT USED?
-	var <times, <messages; // times and messages obtained from parsedEntries
-	// ============= Store state from user selection for simpler updates ==============
-	var <timeline; // handle onsets and durations!
-	var <oscgroupsAddr; // 11 used by sendItemAsOsc
-	var <localAddr; // 10 used by sendItemAsOsc
-	// TODO: Cleanup many of these, below - that are no longer used.
-	var <selectedMinTime = 0; // 1
-	var <selectedMaxTime = 0; // 2 section selected
-	var <timesMessages; // 3,
-	var <selectedTimes; // 4
-	// var <selectedMessages; // 5 is method!
-	var <stream; // 6
-	var <progressRoutine; // 7
-	var <minIndex;  // 8
-	var <maxIndex; // 9
-	// var totalDuration; // 12 no longer used
-	// var selectedDuration; // 13 no longer used
-	// var totalOnsetsDuration; // 14 no longer used
-	var <>header = ""; // Displayed in PresetList gui score view
+var <paths;
+var <sourceStrings;
+var <parsedEntries; // list of messages sorted by timestamp, in the form:
+// [timestamp, message] where:
+// float: timestamp
+// array: The message and its arguments. Obtained by interpreting
+// the source string of the message.
+var <unparsedEntries; // the entries as read from file. For export! // NOT USED?
+var <times, <messages; // times and messages obtained from parsedEntries
+// ============= Store state from user selection for simpler updates ==============
+var <timeline; // handle onsets and durations!
+var <oscgroupsAddr; // 11 used by sendItemAsOsc
+var <localAddr; // 10 used by sendItemAsOsc
+// TODO: Cleanup many of these, below - that are no longer used.
+var <selectedMinTime = 0; // 1
+var <selectedMaxTime = 0; // 2 section selected
+var <timesMessages; // 3,
+var <selectedTimes; // 4
+// var <selectedMessages; // 5 is method!
+var <stream; // 6
+var <progressRoutine; // 7
+var <minIndex;  // 8
+var <maxIndex; // 9
+// var totalDuration; // 12 no longer used
+// var selectedDuration; // 13 no longer used
+// var totalOnsetsDuration; // 14 no longer used
+var <>header = ""; // Displayed in PresetList gui score view
 
-	comments { ^header ? "" } // unused
-	comments_ { | s | header = s } // unused
+comments { ^header ? "" } // unused
+comments_ { | s | header = s } // unused
 
-	*fromPathDialog {
-		{ | p |
-			this.fromPath(p.first).gui
-		}.getFilePath("Click OK to select an osc data file")
+*fromPathDialog {
+	{ | p |
+		this.fromPath(p.first).gui
+	}.getFilePath("Click OK to select an osc data file")
+}
+
+*fromPathGui { | p |
+	^this.fromPath(p).gui;
+}
+
+	*multiPlay { | paths |
+		var scores;
+		"--------------".postln;
+		"Playing scores for following paths at once:".postln;
+		paths do: { | x | postln("***<" + x.name + ">***") };
+		"--------------".postln;
+		scores = paths collect: { | p | this.fromPathGui(p) };
+		scores do: { | s |
+			postln("Playing" + s + "of class" + s.class);
+			s.play;
+		};
 	}
-
-	*fromPathGui { | p |
-		this.fromPath(p).gui;
-	}
-
 	*fromPath { | p | // choose class depending on file contents
 		case
 		{ p.isCode }{ ^OscDataScore([p]).postln }
@@ -518,6 +530,7 @@ OscData {
 
 	isPlaying { ^stream.isPlaying }
 
+	play { this.start }
 	start {
 		postln("STARTING" + this);
 		// { "!!!!!!1 -------------- !!!!!!!!!!".postln; } ! 10;

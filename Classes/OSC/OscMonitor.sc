@@ -109,11 +109,13 @@ OscMonitor {
 					PscoreMenu.scores1view,
 					PscoreMenu.scores2view,
 					PscoreMenu.scores3view,
-					Button().states_([["all"]]) /* .maxWidth_(35) */ .action_({
+					Button().states_([["browse", Color.red]]).maxWidth_(60)
+					.menuActions([
 						// FileNavigator(\oscscores, PathName(Scores.parentPath)).gui
-						FileNavigator.browseHacksScores;
-					}),
-					Button().states_([["set"]]).action_({ this.pathListView })
+						["browse folder", { FileNavigator.browseHacksScores }],
+						["open sets", { this.pathListView }]
+					]),
+					// Button().states_([["browse sets"]]).action_({ this.pathListView })
 					// Button().states_([["folders"]]).maxWidth_(45).action_({
 					// 	// FileNavigator(\oscscores, PathName(Scores.parentPath)).gui
 					// 	PscoreMenu.scorefoldersmenu;
@@ -211,7 +213,7 @@ OscMonitor {
 	*pathListView {
 		PathList.window(\oscMonitor,
 			Button().states_([["multiplay"]]),
-			{ | plv | plv.getSelection do: _.postln; }
+			{ | plv | OscData multiPlay: plv.getSelection; }
 		);
 	}
 }

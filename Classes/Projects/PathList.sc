@@ -5,17 +5,16 @@ One more attempt to save and retrieve a list of paths ...
 PathList {
 	classvar dict; // one list per key;
 
+	*get { | key, set | ^this.dict.at(key, set) ? []; }
 
-	*get { | key | ^this.dict[key.asSymbol] ? []; }
-
-	*put { | key, value |
-		this.dict[key] = value;
+	*put { | key, set, value |
+		this.dict.put(key, set, value);
 		this.save;
 	}
 
 	*dict {
 		dict ?? { dict = Object.readArchive(this.prefsPath) };
-		dict ?? { dict = IdentityDictionary() };
+		dict ?? { dict = MultiLevelIdentityDictionary() };
 		^dict;
 	}
 
@@ -34,18 +33,21 @@ PathList {
 		^PathListView(key, customView, customAction);
 	}
 
-	*addPaths { | key, paths | this.put(key, this.get(key) ++ paths); }
-	*pathAt { | key, index = 0 |
-		if (index >= this.get(key).size) {
+	*addPaths { | key, set, paths |
+		this.put(key, set, this.get(key, set) ++ paths);
+	}
+
+	*pathAt { | key, set, index = 0 |
+		if (index >= this.get(key, set).size) {
 			postln("index" + 0 + "is out of range of the path list");
 			^"";
 		}{
-			^this.get(key)[index];
+			^this.get(key, set)[index];
 		}
 	}
-	*removePathAt { | key, index = 0 |
+	*removePathAt { | key, set, index = 0 |
 		var list;
-		list = this.get(key);
+		list = this.get(key, set);
 		if (index >= list.size) {
 			postln(
 				"PathList removePathsAt error: index"
@@ -54,17 +56,38 @@ PathList {
 		}{
 			list.removeAt(index);
 		};
-		this.put(key, list);
+		this.put(key, set, list);
 	}
 
-	*getSelection { | key, selection |
+	*getSelection { | key, set, selection |
 		selection = selection ?? { [] };
-		^this.get(key)[selection ?? { [] }].select(_.notNil);
+		^this.get(key, set)[selection ?? { [] }].select(_.notNil);
 	}
 
-	*testSelection { | key, selection | // experimental
+	*testSelection { | key, set, selection | // experimental
 		postln("testing PathList selection. key"
-			+ key + "selection" + selection);
-		this.get(key)[selection].select(_.notNil) do: _.postln;
+			+ key + "set" + set + "selection" + selection);
+		this.get(key, set)[selection].select(_.notNil) do: _.postln;
 	}
+
+
+	*addSet { | key, setName |
+		setName = setName.asSymbol;
+		if (this.setNames includes: setName) {
+			postln("There is already a set named" + setName);
+		}{
+			this.dict.put(key, setName, []);
+			this.save;
+		}
+	}
+
+	*removeSet { | key, set |
+		this.dict.removeEmptyAt(key, set);
+	}
+
+	*setPaths { | key |
+		^this.setNames(key) collect: { | n | this.get(key, n) }
+	}
+	*setNames { | key | ^this.sets(key).keys.asArray.sort }
+	*sets { | key | ^this.dict.at(key) ?? { IdentityDictionary() }}
 }
