@@ -90,8 +90,10 @@ NoteSpec { // Only instantiate subclasses HiOctave and LoOctave!
 	}
 
 	transpose { | semitones = 1 |
-		^this.copy.midi = midi + semitones;
+		^this.copy.init.transposeMidi(semitones);
 	}
+
+	transposeMidi { | semitones = 1 | this.midi = midi + semitones }
 }
 
 HiOctave : NoteSpec { // octaves above middle c (letters a-g)

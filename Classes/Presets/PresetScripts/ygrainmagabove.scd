@@ -1,4 +1,4 @@
-/*presets for jun saved at 230825_164958*/
+/*presets for jun saved at 230907_144709*/
 
 //: (0) jun grainmagabove bird_crickets
 (
@@ -8,9 +8,10 @@
 'pan': [ 0.36690647482014, "", 'off' ],
 'playfunc': 'grainmagabove',
 'pos': [ 0.63309352517986, "\\x1.sr", 'off' ],
+'rate': [ 0.58855109583614, "", 'off' ],
 'startframe': 0,
 'thresh': [ 12.298535272501, "", 'off' ],
-'trate': [ 0.48412698412698, "\\z1.sr", 'off' ],
+'trate': [ 6.5345930438087, "\\z1.sr", 'off' ],
 'vol': [ 3.8725997619171, "", 'off' ],
 )
 //: (1) jun grainmagabove birdcarman
