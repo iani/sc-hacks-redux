@@ -7,8 +7,8 @@
 //:===== 1. 230803_195659_JunAsayo3code
 'tokyo'.envir play: (
 	'playfunc': 'grainfroth'
-	'selectionNum': 0,
 	'pos': 0.15525114155251,
+	// 'selectionNum': 0,
 	'player': 'tokyo',
 	'vol': 1,
 	'endframe': 1750985,
