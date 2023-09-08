@@ -567,6 +567,7 @@ FileNavigator {
 		};
 		File.use(filename, "w", { | f |
 			f.write("//Exporting" + snippets.size + "code snippets" + "on" + Date.getDate.stamp ++ "\n" );
+			f.write("//Source:" + (innerList[selection ?? { [0] }].collect(_.name)) ++ "\n");
 			snippets collect: { | x, i |
 				x.codeReplaceTimeStamp(times[i]).ensureNL;
 			} do: { | x | f write: x };
@@ -676,6 +677,7 @@ FileNavigator {
 		postln("Exporting in:" + fullpath);
 		File.use(fullpath, "w", { | f |
 			f.write("// Exporting" + snippets.size + "snippets" + "on" + Date.getDate.stamp ++ "\n" );
+			f.write("//Source:" + (innerList[selection ?? { [0] }].collect(_.name)) ++ "\n");
 			snippets do: { | x | f write: x.ensureNL };
 			f write: "\n//the end\n\n";
 		});

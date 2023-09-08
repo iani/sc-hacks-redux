@@ -602,6 +602,7 @@ comments_ { | s | header = s } // unused
 		postln("Exporting code to" + exportPath);
 		File.use(this.codeExportPath, "w", { | f |
 			f.write("//code\n");
+			f.write("Source:" + (paths collect: _.name) + "\n");
 			[timeline.segmentOnsets.rotate(-1).differentiate.max(0),
 				this.selectedMessages].flop do: { | e |
 				var time, message;

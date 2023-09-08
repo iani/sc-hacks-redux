@@ -5,6 +5,7 @@ String - PathName utilities
 */
 
 + PathName {
+	name { ^this.shortName }
 	loadAudiofile { this.fullPath.loadAudiofile }
 	asDir { ^this +/+ "" }
 	up {
