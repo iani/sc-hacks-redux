@@ -4,7 +4,7 @@ Notes are specified with an array of specs for NoteSpecs
 */
 
 Chord {
-	var noteNames, notes;
+	var <noteNames, <notes;
 	*new { | ... notes |
 		^this.newCopyArgs(notes).init
 	}

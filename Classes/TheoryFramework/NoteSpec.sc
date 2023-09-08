@@ -64,6 +64,10 @@ NoteSpec { // Only instantiate subclasses HiOctave and LoOctave!
 		alts = bs + hs;
 		ptransp = ((mods.findRegexp1("\\^\\d")[1] ? $1).ascii - 48)
 		/ ((mods.findRegexp1("/\\d")[1] ? $1).ascii - 48);
+		this.makeMidi;
+	}
+
+	makeMidi {
 		this.midi = degreeClass + octTranspose + alts;
 	}
 
@@ -90,7 +94,7 @@ NoteSpec { // Only instantiate subclasses HiOctave and LoOctave!
 	}
 
 	transpose { | semitones = 1 |
-		^this.copy.init.transposeMidi(semitones);
+		^this.copy.makeMidi.transposeMidi(semitones);
 	}
 
 	transposeMidi { | semitones = 1 | this.midi = midi + semitones }
