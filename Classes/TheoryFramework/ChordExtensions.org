@@ -1,0 +1,34 @@
+#+TITLE: Chord Extensions
+
+Sat  9 Sep 2023 09:57
+
+Draft of Methods extending functionaly of Chord.
+
+As shown by the sections below, there are too many different features and combinations to attempt a systematic combination straightaway.
+
+Instead, we proceed by developing a series of characteristic examples.
+
+* EXAMPLES !?
+
+
+
+* A. deriving modified versions of a chord
+** transpose
+** transposex
+** scale
+** scalex
+* B. exporting frequencies to environment / busses
+** 1. Writing single frequencies as single environment variables
+** 2. Writing and array of frequences in a single environment variable
+** 3. Writing Frequenceies into busses - with generated or given names
+** 4. Writing frequencies into named allocated buffers
+** 5. Setting frequencies in synths
+* C. composing chords
+
+Creating the unions or intersections of midi / frequency arrays.
+
+* D. creating sequences of chords
+
+- With x-line tranistions
+
+* E. playing with different types of source synths
