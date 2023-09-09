@@ -3,6 +3,9 @@
 */
 
 + Array {
+	*> { | param, envir | // store in param of envir
+		envir.envir.put(param, this);
+	}
 	@> { | bufname |
 		// send contents to buffer
 		// Create new buffer and store it in bufname, under Library at Arrray (!)

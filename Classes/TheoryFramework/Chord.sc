@@ -32,7 +32,7 @@ Chord {
 				freq,
 				amp / freq.size,
 				pi
-			]) * Env.perc(0.01, dur - 0.01, 0.1).kr(doneAction: 2)
+			]).pan * Env.perc(0.01, dur - 0.01, 0.1).kr(doneAction: 2)
 		}.play
 	}
 
