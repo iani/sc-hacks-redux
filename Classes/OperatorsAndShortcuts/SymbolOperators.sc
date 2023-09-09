@@ -33,7 +33,18 @@
 	}
 	+++ { | obj | ^(this ++ obj).asSymbol }
 	// convert to specs for use by Param
-	gt { | thresh = 0.5 | ^this.sr > thresh }
+	gt { | thresh = 0.5 |
+		^this.sr > thresh;
+	}
+
+	// TODO: move the code below to gt
+	gtreply { | thresh = 0.5 |
+		var src;
+		src = this.sr > thresh;
+		src.sendReply(this.asOscMessage, 1);
+		(1 - src).sendReply(this.asOscMessage, 0);
+		^src;
+	}
 	ampSlope { | attack = 0.001, release = 1 |
 		^Amplitude.kr(Slope.kr(this.sr), attack, release)
 	}
