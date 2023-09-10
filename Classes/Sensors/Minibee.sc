@@ -17,11 +17,21 @@ Minibee {
 	classvar <>forwardAddr;
 	classvar <of;
 	classvar <>verbose = false;
+	classvar <smoothEnabled = true;
 	// ====================
 	var <id = 1;
 	var <busses;
 
-	*cmdPeriod { this.makeSmoothForwarder; }
+	*enableSmoothing { this.smoothEnabled = true }
+	*disableSmoothing { this.smoothEnabled = false }
+	*smoothEnabled_ { | bool = true |
+		smoothEnabled = bool;
+		this.initSmoothing;
+	}
+	*cmdPeriod { this.initSmoothing; }
+	*initSmoothing {
+		if (smoothEnabled) { this.makeSmoothForwarder } { this.stopSmoothForwarder }
+	}
 	*initClass { ServerBoot add: this; CmdPeriod add: this; }
 	*doOnServerBoot { | server |
 		// "Sensors do on server boot".postln
@@ -62,6 +72,8 @@ Minibee {
 		};
 		// CmdPeriod.addDependant
 	}
+
+	*stopSmoothForwarder { nil +> \minibeesmooth }
 
 	*postSmooth { verbose = true }
 	*unpostSmooth { verbose = false }

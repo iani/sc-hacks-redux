@@ -21,6 +21,7 @@ Chord {
 		notes = notes.collect({ | n | n.transpose(semitones)});
 	}
 
+	midi { ^notes collect: _.midi }
 	freqs { ^notes collect: _.freq }
 
 	// simple play
@@ -48,4 +49,7 @@ Chord {
 			]) * env.kr(doneAction: 2)
 		}.play
 	}
+
+	asChord { ^this }
+
 }
