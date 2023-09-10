@@ -154,6 +154,7 @@ OscMonitor {
 			),
 			HLayout(
 				CheckBox()
+				.maxWidth_(70)
 				.string_("Minibee")
 				.backColor_(Color(0.9, 0.8, 0.7))
 				.action_({ | me |
@@ -166,7 +167,14 @@ OscMonitor {
 						n.listener.value = false;
 					}
 				}),
-				Button().states_([["Minibee gui"]]).action_({ Minibee.gui }),
+				CheckBox()
+				.maxWidth_(65)
+				.string_("smooth")
+				.action_({ | me |
+					if (me.value) { Minibee.enableSmoothing } { Minibee.disableSmoothing }
+				})
+				.value_(Minibee.smoothEnabled),
+				Button().maxWidth_(40).states_([["gui"]]).action_({ Minibee.gui }),
 				Button().states_([["BufferGui"]]).action_({ SoundBufferGui.gui }),
 				Button().states_([["Meters"]]).action_({
 					Server.default.meter;
