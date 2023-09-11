@@ -4,7 +4,18 @@ Playing chords in various ways.
 
 Here a basic first start.
 
+To play use class variable play. Args: playfunc, freqs, durations = 1, amps = 0.1
 */
+//	where:
+// playfunc is one of:
+// 1. symbol -> obtain from template or use as synthdef name
+// 		the template may return a function or an array of synthdef names.
+//      the template is looked up in playfuncTemplates folder. if not found, it
+//      is used as a SynthDef name, and a function is constructed for playing it
+//      withe one synth per freq - dur - amp triple.
+// 2. function -> use as playFunc
+// 3. array -> array of symbols to be used as synthdef names.
+
 // ====== Getting the chordPlayfunc:
 // 1. If a Function: store it.
 // 2. If an array: The array should contain only names of synthdefs!:
@@ -29,7 +40,9 @@ ChordPlayer {
 
 	*readPlayfuncs {
 		playfuncs = IdentityDictionary();
-		this.playfuncTemplatePaths.postln;
+		this.playfuncTemplatePaths do: { | p |
+			playfuncs[p.name] = p.load;
+		};
 	}
 
 	*playfuncTemplatePaths {
