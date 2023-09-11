@@ -44,4 +44,32 @@ Symbol.sc                  Symbol-midicps
 // with freq key set to the chordpattern
 // alternatively code this directly in the key of a pbind
 // or eventstream:
+// Does not work!:
 // (freq: ["a", "bdg"].pseq.chordcps, dur: 0.5) +> \x;
+// works:
+/*
+Pbind(\freq, ["a", "bd:g"].pseq.chordcps, \dur, 0.5).play;
+
+*/
+//
++ AbstractFunction {
+	chordcps { ^this.composeUnaryOp('chordcps') }
+}
+
++ SequenceableCollection {
+	chordcps { ^this.performUnaryOp('chordcps') }
+}
+
++ Symbol {
+	chordcps {
+		^this.asChord.freqs
+	}
+
+}
+
++ String {
+	chordcps {
+		^this.asChord.freqs
+	}
+
+}
