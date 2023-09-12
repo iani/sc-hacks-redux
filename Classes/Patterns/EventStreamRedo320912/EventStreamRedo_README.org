@@ -1,0 +1,21 @@
+#+TITLE: Event Stream Redo_readme
+
+Tue 12 Sep 2023 09:50
+Cancelled. No need for this, since chordcps works in EventStream!
+
+However, thoughts for later:
+Should revisit Pbind, EventStreamPlayer again later, to see if their
+code can be simplified or refactored.
+
+#+begin_src sclang
+(freq: ["a", "b:dg", "G:d:f1"].pseq.chordcps, dur: 0.5) +> \x;
+#+end_src
+
+#+RESULTS:
+: // Does not work!:
+: (freq: ["a", "b:dg", "G:d:f1"].pseq.chordcps, dur: 0.5) +> \x;
+
+#+begin_src sclang
+// works:
+Pbind(\freq, ["a", "bd:g"].pseq.chordcps, \dur, 0.5).play;
+#+end_src
