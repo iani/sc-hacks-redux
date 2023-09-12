@@ -1,6 +1,15 @@
 /* 21 Feb 2022 13:14
 Redo EventStream, removing all extras.
 
+event: An event that provides values to play. It can contain patterns.
+stream: An event (!), that contains the streams obtained from the event's patterns or values.
+filter: An optional function that can change the stream at:
+- stream creation time (reset). (See method makeStream),
+- every time the stream-event is played. (See method getNextEvent).
+
+routine: A routine that plays the event according to the durations returned by the stream
+stored under "dur" in the event.
+
 */
 
 EventStream {
@@ -67,8 +76,6 @@ EventStream {
 		routine.stop;
 		routine = nil;
 		this changed: \stopped;
-		// this.objectClosed;
-		// this.reset; // ?????
 	}
 
 	makeRoutine { | quant |
@@ -82,7 +89,6 @@ EventStream {
 				this.playAndNotify(nextEvent);
 				nextEvent[\dur].wait;
 			};
-			// this.stop; // this is not the same
 			this.changed(\stopped);
 			routine = nil;
 			this.reset;
@@ -97,7 +103,6 @@ EventStream {
 	}
 
 	playAndNotify { | inEvent |
-		// postln("debugging playAndNotify. inEvent" + inEvent.pp);
 		inEvent.play;
 		if (inEvent.isNil) {
 			this.changed(\ended);
@@ -109,12 +114,11 @@ EventStream {
 	getNextEvent {
 		var nextEvent, nextValue;
 		nextEvent = ().parent_(event.parent);
-		// Make the stream event available to any functions running in it
+		// Make the stream event available to any functions running in it:
 		stream use: {
 			stream keysValuesDo: { | key, value |
 				nextValue = value.next(stream);
 				if (nextValue.isNil) {
-					// postf("% has ended\n", this);
 					^nil
 				};
 				nextEvent[key] = nextValue;
