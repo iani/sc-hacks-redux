@@ -58,6 +58,7 @@ Pbind(\freq, ["a", "bd:g"].pseq.chordcps, \dur, 0.5).play;
 
 + SequenceableCollection {
 	chordcps { ^this.performUnaryOp('chordcps') }
+	chords { ^this collect: _.asChord }
 }
 
 + Symbol {
