@@ -16,4 +16,36 @@ Event.addEventType(\chord0, {
 	(freq: freq, dur: dur).splay;
 	// (freq: freq, dur: ~dur / 6).splay;
 });
-(type: \chord0, chord: ["b:a:c", "C:e:g", "c:e:g:b1", "c:e:g:b1f"].chords.pseq, dur: 0.4) +> \test;
+(type: \chord0, chord: ["b:a:c", "C:e:g", "c:e:g:b1", "c:e:g:b1f"].chords.pseq,
+dur: Pdup(12, [0.2, 0.4, 0.8, 1.6].pseq)
+) +> \test;
+//:alternative: get chords of pattern.  This recurses inside nested patterns!
+(type: \chord0, chord: ["b:a:c", "C:e:g", "c:e:g:b1", "c:e:g:b1f"].pseq.chords,
+dur: Pdup(12, [0.2, 0.4, 0.8, 1.6].pseq)
+) +> \test;
+
+//:
+(type: \chord0, chord:
+["C", "C", "C", "Cs", "Cs", "Cs", "b:a:g:c", "b:a:gf:c", "bf:af:gf:cs",
+	"Cs:cs:e:g", "C:c:e:g", "c:e:g:b1", "c:e:g:b1f"
+].pseq.chords,
+dur: Pdup(12, [0.2, 0.4, 0.8, 1.6].pseq)
+) +> \test;
+
+//:Nested patterns
+(type: \chord0, chord:
+[Pn("C", 3), Pn("b:a:g:c", 3), Pn("b:a:g:c", 3), "bf:af:gf:cs",
+	"Cs:cs:e:g", "C:c:e:g", "c:e:g:b1", "c:e:g:b1f"
+].pseq.chords,
+dur: Pdup(12, [0.2, 0.4, 0.8, 1.6].pseq)
+) +> \test;
+//:Nested patterns - variation 2
+(type: \chord0, chord:
+Pdup(3, ["C", "c", "b", "bf", "b:a:g:c", "b:af:g:c", "bf:af:gf:cs",
+	"Cs:cs:e:g", "C:c:e:g", "c:e:g:b1", "c:e:g:b1f"
+].pseq).chords,
+dur: Pdup(24, [0.2, 0.4, 0.8, 1.6].pseq)
+) +> \test;
+//:
+Pcollect({ | c | c.asChord }, Pn(3, "C"));
+)
