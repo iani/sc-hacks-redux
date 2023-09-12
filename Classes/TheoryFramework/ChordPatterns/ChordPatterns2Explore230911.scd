@@ -33,7 +33,20 @@ Routine({
 (freq: ["C1:C:c:bf", "C1:C:c:b", "C1s:C:cs:b"].prand.stutter(5).chordcps) ++> \x;
 //:
 (freq: ["C1:C:c:bf", "C1s:C:c:bf", "C1ss:C:c:bf", "C1sss:C:c:bf"]
-.pseq.stutter(5).chordcps, dur: 1, amp: 0.5) ++> \x;
+.pseq.stutter(5).chordcps, dur: 0.1, amp: 0.5) ++> \x;
+
+//:
+(freq: ["C1:C:c:bf", "C1s:C:c:bf", "C1ss:C:c:bf", "C1sss:C:c:bf"]
+.pseq.stutter(10).chordcps, dur: 0.1, amp: [0.95, 0.2, 0.1, 0.02, 0.03]) ++> \x;
+
+//:!!!!!!!!!
+(freq: ["C1:C:c:b", "C1s:C:c:bf", "C1ss:C:c:bff", "C1sss:C:c:bfff"]
+.pseq.stutter(10).chordcps, dur: 0.1, amp: [0.95, 0.2, 0.1, 0.2]) ++> \x;
+
+//:
+(freq: ["C1:C:c:bf", "C1", "C1s:C:c:bf", "C1s", "C1ss:C:c:bf",  "C1ss",
+"C1sss:C:c:bf", "C1sss"]
+.pseq.stutter(5).chordcps, dur: 0.1, amp: [0.5, 0.2, 0.1, 0.05, 0.03]) ++> \x;
 
 //:
 (freq: ["C1", "C1s", "C1ss", "C1sss"]
