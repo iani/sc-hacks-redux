@@ -32,7 +32,7 @@ SynthDEFaults {
 			(p.fullPath +/+ "*.scd").pathMatch do: { | p |
 				var name, def;
 				name = p.name;
-				PathName(p).folderName.postln;
+				PathName(p).folderName; // .postln;
 				defs.put(
 					PathName(p).folderName.asSymbol,
 					name,
@@ -43,7 +43,7 @@ SynthDEFaults {
 	}
 
 	*categories { ^defs.dictionary.keys.asArray.sort }
-	*defNames { | category |
+	*defcat { | category |
 		^defs[category].keys.asArray.sort;
 	}
 

@@ -2,7 +2,7 @@
 Test SynthDefs loaded by ChordSynthdefLoader.
 */
 //:
-SynthDEFaults.defNames(\pitched)
+SynthDEFaults.defcat(\pitched)
 //:
 (freq: [
 "a", "b:dg", "G:d:f1", "c:ef:g",
@@ -14,8 +14,19 @@ freq: [
 "a", "b:dg", "G:d:f1", "c:ef:g",
 "C:e:g:bf:e1"
 ].pseq.chordcps,
-instrument: SynthDEFaults.defNames(\pitched).pseq(1).pdup(3),
+instrument: SynthDEFaults.defcat(\pitched).pseq(1).pdup(3),
 dur: 0.15
 ) +> \x;
+//:post the instrument
 //:
-})
+(
+freq: [
+"a", "b:dg", "G:d:f1", "c:ef:g",
+"C:e:g:bf:e1"
+].pseq.chordcps,
+instrument: SynthDEFaults.defcat(\pitched).pseq(1).pdup(3),
+dur: 0.15
+) +> \x;
+\y.addNotifier(~x, \played, { | n, event |
+	event[\instrument].postln;
+});

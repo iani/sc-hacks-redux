@@ -36,8 +36,16 @@
 	gt { | thresh = 0.5 |
 		^this.sr > thresh;
 	}
-
-	// TODO: move the code below to gt
+	// TODO: this may become gt!
+	gt2 { | thresh = 0.5 |
+		var src;
+		src = this.sr > thresh;
+		src.sendReply(this.asOscMessage, 1);
+		(1 - src).sendReply(this.asOscMessage, 0);
+		^src;
+	}
+	// TODO: maybe delete after testing and
+	// transferring to gt / gt2
 	gtreply { | thresh = 0.5 |
 		var src;
 		src = this.sr > thresh;
@@ -61,7 +69,6 @@
 		^Mediator.at(this).play(playFunc, event);
 	}
 
-	<!> { | object | this putGlobal: object }
 	putGlobal { | object | Mediator.putGlobal(this, object) }
 
 	//============================================================/
