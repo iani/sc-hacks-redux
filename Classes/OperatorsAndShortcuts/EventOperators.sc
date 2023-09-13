@@ -20,7 +20,7 @@
 		})
 	}
 
-	splay { ^EventStream(this).start; } // obsolete?!
+	splay { | filter | ^EventStream(this, filter).start; }
 
 	getParent { if (this.parent.isNil) { ^defaultParentEvent } { ^this.parent }  }
 

@@ -1,13 +1,36 @@
-/* 21 Feb 2022 13:14
-Redo EventStream, removing all extras.
+/* 21 Feb 2022 13:14 (Redo EventStream, removing all extras.)
 
-event: An event that provides values to play. It can contain patterns.
-stream: An event (!), that contains the streams obtained from the event's patterns or values.
-filter: An optional function that can change the stream at:
-- stream creation time (reset). (See method makeStream),
-- every time the stream-event is played. (See method getNextEvent).
+This plays like a pbind, except that its stream is an event containing streams.
+That is:
 
-routine: A routine that plays the event according to the durations returned by the stream
+Pbind uses as a source an array of key-value pairs, where each key is a symbol
+and each value an object that can generate a stream (a constant, or a Pattern).
+
+Pbind(\key1, value1, \key2, \value2 ...);
+
+EventStream uses as source an event that contains key-value pairs, like those of Pbind:
+
+(key1: value1, key2: value2 ...)
+
+At each scheduled play-time, the EventStream creates and plays a new event, by getting
+the values from the streams stored in the event in variable "stream".
+The stream event is created by method "makeStream".
+
+Variables:
+
+1. event: An event containing the patterns that provide the values to play.
+	It is given by the user.
+2. filter: An optional function that can change the stream at both
+(a) stream creation time (reset). (See method makeStream), and
+(b) every time the stream-event is played. (See method getNextEvent).
+
+3. stream: An event (!), created from the original event given by the user,
+The stream event contains the streams obtained from the event's patterns or values.
+This stream is used to generate the values that are played each time.
+It is created by method makeStream, which is called by method reset, and
+restarts the EventStream.
+
+4. routine: A routine that plays the event according to the durations returned by the stream
 stored under "dur" in the event.
 
 */
@@ -45,7 +68,19 @@ EventStream {
 		CmdPeriod add: this;
 	}
 
-	doOnCmdPeriod {
+	free { this.stop }
+
+	stop { // stop routine, but keep stream for continuing!
+		routine.stop;
+		this.stopped;
+		// routine = nil;
+		// this changed: \stopped;
+	}
+
+	cmdPeriod { this.stopped; }
+	doOnCmdPeriod { this.stopped }
+
+	stopped {
 		routine = nil;
 		this.changed(\stopped);
 	}
@@ -68,14 +103,6 @@ EventStream {
 	start { | quant |
 		if (this.isRunning) { ^postf("% is running. will not restart it\n", this) };
 		this.makeRoutine(quant);
-	}
-
-	free { this.stop }
-
-	stop { // stop routine, but keep stream for continuing!
-		routine.stop;
-		routine = nil;
-		this changed: \stopped;
 	}
 
 	makeRoutine { | quant |
@@ -132,7 +159,6 @@ EventStream {
 	isRunning { ^this.isPlaying }
 	isPlaying { ^routine.notNil }
 
-	cmdPeriod { routine = nil; }
 
 	setEvent { | inEvent |
 		this mergeEvent: inEvent;

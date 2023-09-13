@@ -12,7 +12,8 @@ Event.addEventType(\chord0, {
 	freq = ~chord.freqs;
 	size = freq.size;
 	freq = freq.pseq(1);
-	dur = ~dur / (size max: 6);
+	// dur = ~dur / (size max: 6);
+	dur = ~dur / size;
 	(freq: freq, dur: dur).splay;
 	// (freq: freq, dur: ~dur / 6).splay;
 });
@@ -24,22 +25,22 @@ dur: Pdup(12, [0.2, 0.4, 0.8, 1.6].pseq)
 dur: Pdup(12, [0.2, 0.4, 0.8, 1.6].pseq)
 ) +> \test;
 
-//:
+//:Nested pattern 1
 (type: \chord0, chord:
-["C", "C", "C", "Cs", "Cs", "Cs", "b:a:g:c", "b:a:gf:c", "bf:af:gf:cs",
+["C", "C", "C", "Cs", "Cs:g", Pn("Cs:fs", 4), "Cs", "b:a:g:c", "b:a:gf:c", "bf:af:gf:cs",
 	"Cs:cs:e:g", "C:c:e:g", "c:e:g:b1", "c:e:g:b1f"
 ].pseq.chords,
 dur: Pdup(12, [0.2, 0.4, 0.8, 1.6].pseq)
 ) +> \test;
 
-//:Nested patterns
+//:Nested pattern 2
 (type: \chord0, chord:
 [Pn("C", 3), Pn("b:a:g:c", 3), Pn("b:a:g:c", 3), "bf:af:gf:cs",
 	"Cs:cs:e:g", "C:c:e:g", "c:e:g:b1", "c:e:g:b1f"
 ].pseq.chords,
 dur: Pdup(12, [0.2, 0.4, 0.8, 1.6].pseq)
 ) +> \test;
-//:Nested patterns - variation 2
+//:Nested patterns - variation 3
 (type: \chord0, chord:
 Pdup(3, ["C", "c", "b", "bf", "b:a:g:c", "b:af:g:c", "bf:af:gf:cs",
 	"Cs:cs:e:g", "C:c:e:g", "c:e:g:b1", "c:e:g:b1f"
@@ -47,5 +48,3 @@ Pdup(3, ["C", "c", "b", "bf", "b:a:g:c", "b:af:g:c", "bf:af:gf:cs",
 dur: Pdup(24, [0.2, 0.4, 0.8, 1.6].pseq)
 ) +> \test;
 //:
-Pcollect({ | c | c.asChord }, Pn(3, "C"));
-)
