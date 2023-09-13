@@ -15,6 +15,10 @@ array.sprandi becomes: Pub(Prand(array, inf)) etc.
 	p1 { ^Pn(this, 1) }
 }
 
++ Pattern {
+	pdup { | n = 2 | ^Pdup(n, this) }
+}
+
 + SequenceableCollection {
     pseq { | repeats = inf | ^Pseq(this, repeats); }
     pseqi { | repeats = inf | ^this.pseq(repeats); } // shortcut/synonym

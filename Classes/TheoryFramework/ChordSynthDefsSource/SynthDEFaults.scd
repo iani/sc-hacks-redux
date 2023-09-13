@@ -34,7 +34,7 @@ Contribuitions, comments, advises, criticisms, etc are very welcome: zecraum at 
 ////    Pianos    ////
 //  //  //  //  //  //
 
-SynthDef(\piano_MDA, {
+SynthDef(\piano_MDA, { // added Wed 13 Sep 2023 12:56
 	//Piano synth based on Mda Plugin
     |out = 0, freq= 440, gate= 1, vel= 80, decay= 0.8, release= 0.8, hard= 0.4, velhard= 0.8, muffle= 0.8, velmuff= 0.8, velcurve= 0.8, stereo= 0.2, tune= 0.5, random= 0.1, stretch= 0.1, sustain= 0, mul= 1, add= 0, amp = 0.5|
     var snd;
@@ -50,7 +50,7 @@ SynthDef(\piano_MDA, {
 //  //  //  //  //  //  //  //  //
 
 
-SynthDef(\Piano_rhodeySC, {
+SynthDef(\Piano_rhodeySC, { // added Wed 13 Sep 2023 12:57
 	//FM Rhodes Synthethizer
     |
     // standard meanings
@@ -86,7 +86,7 @@ SynthDef(\Piano_rhodeySC, {
 //http://sccode.org/1-522
 }).add;
 
-
+// Wed 13 Sep 2023 12:57
 SynthDef(\everythingrhodes,{|out= 0 freq = 440 amp = 0.1 gate=1 lforate = 4.85 lfowidth= 0.5 cutoff= 2000 rq=0.5 pan = 0.0|
 
 //Electric Piano
@@ -110,6 +110,7 @@ SynthDef(\everythingrhodes,{|out= 0 freq = 440 amp = 0.1 gate=1 lforate = 4.85 l
 ////    Harpsichord     ////
 //  //  //  //  //  //  //  //
 
+// added Wed 13 Sep 2023 12:58
 SynthDef(\harpsichord_simple, { arg out = 0, freq = 440, amp = 0.1, pan = 0;
     var env, snd;
 	env = Env.perc(level: amp).kr(doneAction: 2);
@@ -122,6 +123,7 @@ SynthDef(\harpsichord_simple, { arg out = 0, freq = 440, amp = 0.1, pan = 0;
 //https://github.com/brunoruviaro/SynthDefs-for-Patterns/blob/master/harpsichord.scd
 }).add;
 
+// added Wed 13 Sep 2023 12:59
 SynthDef(\harpsichord_pluck, {
 	|amp=0.1, freq=440, pan=0, atk=0, rel=0, trig= 1, maxdelaytime= 0.2, decaytime= 7, coef= 0.1|
 	var env, sig, delay;
@@ -157,6 +159,7 @@ SynthDef(\organ_tonewheel0, {
 //By Zé Craum
 }).add;
 
+// added Wed 13 Sep 2023 13:01
 SynthDef(\organ_tonewheel1, {
 	//additive tonewheel organ with more CPU usage
 
@@ -174,7 +177,7 @@ SynthDef(\organ_tonewheel1, {
 //By Zé Craum
 }).add;
 
-
+// added Wed 13 Sep 2023 13:02
 SynthDef(\organ_tonewheel2, {
 	//subtractive tonewheel organ with cheap CPU usage
 	arg freq = 440, amp = 0.9, atk = 0.001, sus = 0.4, rel = 0.1, tune = 0.29, tuneRate = 6.0, rq = 1;
@@ -210,7 +213,7 @@ SynthDef(\organ_tonewheel3, {
 //By Zé Craum
 }).add;
 
-
+// added Wed 13 Sep 2023 13:03
 SynthDef(\organ_tonewheel4,{|out= 0 freq = 440 amp = 0.1 gate=1 lforate = 4.85 lfowidth= 0.1 cutoff= 5000 rq=0.25 pan = 0.0|
 //Subtractive tonewheel organ from Steal this Sound example
 	var lfo, pulse, filter, env;
@@ -231,7 +234,7 @@ SynthDef(\organ_tonewheel4,{|out= 0 freq = 440 amp = 0.1 gate=1 lforate = 4.85 l
 //http://www.sussex.ac.uk/Users/nc81/index.html
 }).add;
 
-
+// added: Wed 13 Sep 2023 13:03
 SynthDef(\organ_donor,{|out= 0 freq = 440 amp = 0.2 gate=1 lforate = 10 lfowidth= 0.0 cutoff= 100 rq=0.5 pan=0.0|
 
 	//Simulation of transistor organ from Steal This Sound
@@ -261,7 +264,7 @@ SynthDef(\organ_donor,{|out= 0 freq = 440 amp = 0.2 gate=1 lforate = 10 lfowidth
 }).add;
 
 
-
+// added Wed 13 Sep 2023 13:05
 SynthDef(\organ_reed, {
 	//Reed Organ Simulation
     |out = 0, freq = 440, amp = 0.1, gate = 1, attack = 0.3, release = 0.3|
@@ -289,7 +292,7 @@ SynthDef(\organ_reed, {
 ////    Woodwinds      ////
 //  //  //  //  //  //  //  //
 
-
+// added Wed 13 Sep 2023 13:05
 SynthDef("flute_waveguide", { arg scl = 0.2, freq = 440, ipress = 0.9, ibreath = 0.09, ifeedbk1 = 0.4, ifeedbk2 = 0.4, dur = 1, gate = 1, amp = 0.4;
 
 	var kenv1, kenv2, kenvibr, kvibr, sr, cr, block;
@@ -351,7 +354,7 @@ SynthDef("flute_waveguide", { arg scl = 0.2, freq = 440, ipress = 0.9, ibreath =
 //  //  //  //  //  //  //  //
 ////       Strings         ////
 //  //  //  //  //  //  //  //
-
+// added Wed 13 Sep 2023 13:05
 SynthDef(\strings, { arg out, freq=440, amp=0.8, gate=1, pan, freqLag=0.2;
 					var env, in, delay, f1, f2;
 					f1 = freq.lag(freqLag);
@@ -369,7 +372,7 @@ SynthDef(\strings, { arg out, freq=440, amp=0.8, gate=1, pan, freqLag=0.2;
 // Julian Rohrhuber, 2007
 }).add;
 
-
+// added Wed 13 Sep 2023 13:06
 SynthDef(\violin, {
 	| midinote=60, gate=1, amp=0.8 |
 	var env = EnvGen.kr(Env.asr(0.1, 1, 0.1), gate, doneAction:2);
@@ -387,7 +390,7 @@ SynthDef(\violin, {
 ////     Percussion       ////
 //  //  //  //  //  //  //  //
 
-
+// added Wed 13 Sep 2023 13:06
 SynthDef(\kalimba, {
 	//Kalimba based on bank of ressonators
     |out = 0, freq = 440, amp = 0.1, mix = 0.1, relMin = 2.5, relMax = 3.5|
@@ -407,7 +410,7 @@ SynthDef(\kalimba, {
 //http://sccode.org/1-51l
 }).add;
 
-
+// added Wed 13 Sep 2023 13:07
 SynthDef("marimba1", {arg freq = 440, amp = 0.4;
 	var snd, env;
 	env = Env.linen(0.015, 1, 0.5, amp).kr(doneAction: 2);
@@ -419,7 +422,7 @@ SynthDef("marimba1", {arg freq = 440, amp = 0.4;
 //https://github.com/brunoruviaro/SynthDefs-for-Patterns/blob/master/marimba.scd
 }).add;
 
-
+// Wed 13 Sep 2023 13:08
 SynthDef(\bell_tubular, {
 	|freq = 440, t60=9, pitchy=1, amp=0.25, gate=1, pan = 0|
 	var sig, exciter;
@@ -439,6 +442,7 @@ SynthDef(\bell_tubular, {
 //	http://sccode.org/1-5ay#c835
 }).add;
 
+// added Wed 13 Sep 2023 13:09
 SynthDef(\glockenspiel, {
 	|freq = 440, t60=6, pitchy=1, amp=0.25, gate=1, pan = 0|
 	var sig, exciter;
@@ -458,7 +462,7 @@ SynthDef(\glockenspiel, {
 //	http://sccode.org/1-5ay#c835
 }).add;
 
-
+// added Wed 13 Sep 2023 13:09
 SynthDef(\xilophone, {
 	|freq = 440, t60=1, pitchy=1, amp=0.25, gate=1, pan = 0|
 	var sig, exciter;
@@ -478,7 +482,7 @@ SynthDef(\xilophone, {
 //	http://sccode.org/1-5ay#c835
 }).add;
 
-
+// added Wed 13 Sep 2023 13:10
 SynthDef(\marimba, {
 	|freq = 440, t60=0.5, pitchy=1, amp=0.25, gate=1, pan = 0|
 	var sig, exciter;
@@ -498,6 +502,7 @@ SynthDef(\marimba, {
 //	http://sccode.org/1-5ay#c835
 }).add;
 
+// added Wed 13 Sep 2023 13:11
 SynthDef(\prayer_bell, { |outbus, t_trig = 1, sing_switch = 0, freq = 2434, amp = 0.5, decayscale = 1, lag = 10, i_doneAction = 0|
   var sig, input, first, freqscale, mallet, sing;
   freqscale = freq / 2434;
@@ -577,7 +582,7 @@ SynthDef(\prayer_bell, { |outbus, t_trig = 1, sing_switch = 0, freq = 2434, amp 
 
 
 
-
+// added Wed 13 Sep 2023 13:12
 SynthDef(\snare909,{ |out=0,mul=1,velocity=1|
 	var excitation, membrane;
 
@@ -595,7 +600,7 @@ SynthDef(\snare909,{ |out=0,mul=1,velocity=1|
 	Out.ar(out, membrane!2)
 }).add;
 
-
+// added Wed 13 Sep 2023 13:12
 SynthDef(\neurosnare, {
     var snd;
     // a percussive click to give it some attack
@@ -618,7 +623,7 @@ SynthDef(\neurosnare, {
 
 
 // Basic drum kit
-
+// added Wed 13 Sep 2023 13:12
 SynthDef("hihat", {arg out = 0, amp = 0.5, att = 0.01, rel = 0.2, ffreq = 6000, pan = 0;
 	var env, snd;
 	env = Env.perc(att, rel, amp).kr(doneAction: 2);
@@ -629,7 +634,7 @@ SynthDef("hihat", {arg out = 0, amp = 0.5, att = 0.01, rel = 0.2, ffreq = 6000, 
 //By Nathan Ho aka Snappizz
 //http://sccode.org/1-523
 }).add;
-
+// added Wed 13 Sep 2023 13:13
 SynthDef("snare", {arg out = 0, amp = 0.1, sinfreq = 180, att = 0.01, rel = 0.2, ffreq = 2000, pan = 0;
 	var env, snd1, snd2, sum;
 	env = Env.perc(att, rel, amp).kr(doneAction: 2);
@@ -646,6 +651,7 @@ SynthDef("snare", {arg out = 0, amp = 0.1, sinfreq = 180, att = 0.01, rel = 0.2,
 //http://sccode.org/1-523
 }).add;
 
+// added Wed 13 Sep 2023 13:13
 SynthDef("kick", {arg out = 0, amp = 0.3, sinfreq = 60, glissf = 0.9, att = 0.01, rel = 0.45, pan = 0;
 	var env, snd, ramp;
 	env = Env.perc(att, rel, amp).kr(doneAction: 2);
@@ -663,7 +669,7 @@ SynthDef("kick", {arg out = 0, amp = 0.3, sinfreq = 60, glissf = 0.9, att = 0.01
 }).add;
 
 
-
+// added Wed 13 Sep 2023 13:14
 SynthDef(\kick1, {
     var snd;
     snd = DC.ar(0);
@@ -679,7 +685,7 @@ SynthDef(\kick1, {
 
 
 
-
+// added Wed 13 Sep 2023 13:14
 SynthDef(\kick2, {
     var snd;
     snd = DC.ar(0);
@@ -695,7 +701,7 @@ SynthDef(\kick2, {
 
 
 
-
+// added Wed 13 Sep 2023 13:14
 SynthDef(\kick3, {
     var snd;
     snd = DC.ar(0);
@@ -709,7 +715,7 @@ SynthDef(\kick3, {
 //http://sccode.org/1-57g
 }).add;
 
-
+// added Wed 13 Sep 2023 13:15
 SynthDef("kick_808", {arg out = 0, freq1 = 240, freq2 = 60, amp = 1, ringTime = 10, rel = 1, dist = 0.5, pan = 0;
     var snd, env;
 	snd = Ringz.ar(
@@ -725,7 +731,7 @@ SynthDef("kick_808", {arg out = 0, freq1 = 240, freq2 = 60, amp = 1, ringTime = 
 //https://github.com/brunoruviaro/SynthDefs-for-Patterns/blob/master/kick808.scd
 }).add;
 
-
+// added Wed 13 Sep 2023 13:16
 SynthDef(\SOSkick,
 	{ arg out = 0, freq = 50, mod_freq = 5, mod_index = 5, sustain = 0.4, amp = 0.8, beater_noise_level = 0.025;
 	var pitch_contour, drum_osc, drum_lpf, drum_env;
@@ -755,7 +761,7 @@ SynthDef(\SOSkick,
 // increase mod_freq and mod_index for interesting electronic percussion
 	).add;
 
-
+// added Wed 13 Sep 2023 13:17
 SynthDef(\SOSsnare,
 	{arg out = 0, sustain = 0.1, drum_mode_level = 0.25,
 	snare_level = 40, snare_tightness = 1000,
@@ -793,7 +799,7 @@ SynthDef(\SOSsnare,
 // SOSsnare -------
 // http://www.soundonsound.com/sos/Mar02/articles/synthsecrets0302.asp
 
-
+// added Wed 13 Sep 2023 13:18
 SynthDef(\SOShats,
 	{arg out = 0, freq = 6000, sustain = 0.1, amp = 0.8;
 	var root_cymbal, root_cymbal_square, root_cymbal_pmosc;
@@ -820,7 +826,7 @@ SynthDef(\SOShats,
 // recipes from Gordon Reid in his Sound on Sound articles
 // SOShats -------
 // http://www.soundonsound.com/sos/Jun02/articles/synthsecrets0602.asp
-
+// added Wed 13 Sep 2023 13:19
 SynthDef(\SOStom,
 	{arg out = 0, sustain = 0.4, drum_mode_level = 0.25,
 	freq = 90, drum_timbre = 1.0, amp = 0.8;
@@ -849,7 +855,7 @@ SynthDef(\SOStom,
 // http://www.soundonsound.com/sos/Mar02/articles/synthsecrets0302.asp
 
 
-
+// Wed 13 Sep 2023 13:20
 SynthDef(\kick_electro, {
     |out = 0, pan = 0, amp = 0.3|
     var body, bodyFreq, bodyAmp;
@@ -878,6 +884,7 @@ SynthDef(\kick_electro, {
 //http://sccode.org/1-523
 }).add;
 
+// added Wed 13 Sep 2023 13:21
 SynthDef(\snare_electro, {
     |out = 0, pan = 0, amp = 0.3|
     var pop, popAmp, popFreq;
@@ -900,6 +907,7 @@ SynthDef(\snare_electro, {
 //http://sccode.org/1-523
 }).add;
 
+// added Wed 13 Sep 2023 13:22
 SynthDef(\hihat_electro, {
     |out = 0, pan = 0, amp = 0.3|
     var click, clickAmp;
@@ -959,7 +967,7 @@ SynthDef(\clap_electro, {
 ////       Others         ////
 //  //  //  //  //  //  //  //
 
-
+// added Wed 13 Sep 2023 13:24
 SynthDef(\blips1, {arg out = 0, freq = 25, numharm = 10, atk = 0.01, rel = 1, amp = 0.1, pan = 0.5, beatsPercentage = 1.001;
 	var snd, env;
 	env = Env.perc(atk, rel, amp).kr(doneAction: Done.freeSelf);
@@ -973,7 +981,7 @@ SynthDef(\blips1, {arg out = 0, freq = 25, numharm = 10, atk = 0.01, rel = 1, am
 }).add;
 
 
-
+// added Wed 13 Sep 2023 13:24
 SynthDef("sawSynth", { arg freq = 440, amp = 0.1, att = 0.1, rel = 2, lofreq = 1000, hifreq = 3000;
     var env, snd;
     env = Env.perc(
@@ -993,7 +1001,7 @@ SynthDef("sawSynth", { arg freq = 440, amp = 0.1, att = 0.1, rel = 2, lofreq = 1
 //http://sccode.org/1-54H
 }).add;
 
-
+// Wed 13 Sep 2023 13:25
 SynthDef("noisy", {arg out = 0, freq = 440, amp = 0.2, pan = 0.5;
 	var snd, env;
 	env = Env.perc(0.02, 0.1).kr(doneAction: 2);
@@ -1010,7 +1018,7 @@ SynthDef("noisy", {arg out = 0, freq = 440, amp = 0.2, pan = 0.5;
 
 
 //INCLUDE A SAMPLER
-
+// added Wed 13 Sep 2023 13:26
 SynthDef(\sampler_PlayBuf, {
 //A really simple sampler	based on PlayBuf and midi ratios
 	|out=0, pan=0, buf=0, midiratio=2, amp=1.0, pos=0.0, atk= 0.001, sus = 0.01 rel=1.0|
@@ -1023,6 +1031,7 @@ SynthDef(\sampler_PlayBuf, {
 //By Zé Craum
 }).add;
 
+// added Wed 13 Sep 2023 13:27
 SynthDef(\sine_simple, {
 //A really simple sinusoidal sine wave synth
 	|amp=0.1, freq=440, pan=0, atk = 0.001, sus = 1, rel = 0.01|
@@ -1034,6 +1043,7 @@ SynthDef(\sine_simple, {
 //By Zé Craum
 }).add;
 
+// added Wed 13 Sep 2023 13:27
 SynthDef(\sine_vintage, {
 //Crude simulation of old sinusoidal generators - with vibrato and high noise floor
 	|amp=0.2, freq=440, pan=0, atk = 0.001, sus = 2, rel = 0.01,
@@ -1049,6 +1059,7 @@ SynthDef(\sine_vintage, {
 //By Zé Craum
 }).add;
 
+// added Wed 13 Sep 2023 13:27
 SynthDef(\prophet5pwmstrings,{|out= 0 freq = 440 amp = 1.0 gate=1 lforate = 10 lfowidth= 0.5 cutoff= 12000 rq=0.5 pan = 0.0|
 
 	var lfo, pulse, filter, env;
@@ -1073,7 +1084,7 @@ SynthDef(\prophet5pwmstrings,{|out= 0 freq = 440 amp = 1.0 gate=1 lforate = 10 l
 ////       Effects         ////
 //  //  //  //  //  //  //  //
 
-
+// added Wed 13 Sep 2023 13:32
 //Steal This Sound
 SynthDef(\choruscompresseffect, {|out =0 gate= 1|
 	var source = In.ar(out,2);
@@ -1093,7 +1104,7 @@ SynthDef(\choruscompresseffect, {|out =0 gate= 1|
 //From Steal This Sound SC Example
 //By Nick Collins
 }).add;
-
+// added Wed 13 Sep 2023 13:32
 SynthDef(\reverb, {
 	arg out = 0, gate = 1, roomsize = 100, revtime = 1, damping = 0.6, inputbw = 0.5, spread = 15, drylevel = 1, earlyreflevel = 0.7, taillevel = 0.5, maxroomsize = 300, amp = 0.5;
 	var source = In.ar(out,8);
