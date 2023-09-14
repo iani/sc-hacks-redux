@@ -10,6 +10,9 @@ Testing:
 ['c', 'e', 'g'].asChord.midi;
 
 ["c:g:b", "d:f:a"].pseq.asChord;
+a = ["c:g:b", "d:f:a"].pseq.asChord;
+b = a.asStream;
+b.next.freqs;
 */
 
 // each element should be a note spec: ...
@@ -19,6 +22,9 @@ Testing:
 // "c:g:e", "c:gf:e1", "C1:g:e"
 // "c:c^5/4:c^3/2"
 + String {
+	chord { ^this.asChord }
+	freqs { ^this.chordfreqs }
+	chordfreqs { ^this.asChord.freqs }
 	asChord {
 		^Chord(*this.split($:))
 	}
@@ -29,10 +35,12 @@ Testing:
 	}
 }
 
-//: ============== this does not work yet Tue 12 Sep 2023 20:05
 + Pattern {
 	chords { ^this.asChord(this) }
 	asChord { ^Pcollect({ | c | c.asChord }, this);}
+	freqs { ^Pcollect({ | c | c.asChord.freqs }, this);}
+	// ???: untested:
+	midi { ^Pcollect({ | c | c.asChord.midi }, this);}
 }
 
 + Pcollect {

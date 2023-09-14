@@ -144,9 +144,14 @@
 			currentEnvironment[this].isPlaying;
 		}, envir)
 	}
-	+> { | player, envir |
-		^this.pushPlayInEnvir(player, envir);
-    }
+	// Setting is more useful Thu 14 Sep 2023 15:24
+	+> { | param, envir |
+		envir.envir.put(param, this);
+	}
+	// playing as synth is hardly used
+	// +> { | player, envir |
+	// 	^this.pushPlayInEnvir(player, envir);
+    // }
 
 	+>! { | player, envir |
 		// osc message triggers play next event of an EventStream player

@@ -27,6 +27,7 @@ Minibee {
 	*smoothEnabled_ { | bool = true |
 		smoothEnabled = bool;
 		this.initSmoothing;
+		this.changed(\smoothing);
 	}
 	*cmdPeriod { this.initSmoothing; }
 	*initSmoothing {

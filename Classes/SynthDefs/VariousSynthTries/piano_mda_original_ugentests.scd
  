@@ -1,0 +1,31 @@
+/* 14 Sep 2023 16:15
+Testing MdaPiano ugen directly.
+*/
+//:https://plugin.sccode.org/MdaUGens/Help/MdaPiano.html
+// This simple example triggers one note per second, monophonically:
+x = {
+	MdaPiano.ar(
+		LFNoise0.kr(1).range(20, 60).round.midicps, // random note
+		stereo: 0.5,
+		gate: LFPulse.kr(1),
+		vel: LFPar.kr(0.1).range(10, 100), // varying velocity
+		mul: 0.2
+	)
+}.play
+//:interesting sounding range: 10-114 midicps
+//extreme ranges beyond that are more gag-like. - noisiness increases In the upper register
+{
+	MdaPiano.ar(
+		// up to 2 notes possible.
+		// [70, 74].midicps,
+		4.midicps,
+		// LFNoise0.kr(1).range(20, 60).round.midicps  [0, 3], // random note
+		gate: Impulse.kr(2.reciprocal),
+		vel: LFPar.kr(0.1).range(10, 100), // varying velocity
+		vel: 50,
+		release: Line.kr(2, 0.01, 20),
+		stereo: 0.5,
+		mul: 0.2
+	)
+} +> \x;
+//:

@@ -173,7 +173,11 @@ OscMonitor {
 				.action_({ | me |
 					if (me.value) { Minibee.enableSmoothing } { Minibee.disableSmoothing }
 				})
-				.value_(Minibee.smoothEnabled),
+				.value_(Minibee.smoothEnabled)
+				.addNotifier(Minibee, \smoothing, { | n |
+					// "updating smoothing value".postln;
+					n.listener.value = Minibee.smoothEnabled
+				}),
 				Button().maxWidth_(40).states_([["gui"]]).action_({ Minibee.gui }),
 				Button().states_([["BufferGui"]]).action_({ SoundBufferGui.gui }),
 				Button().states_([["Meters"]]).action_({
