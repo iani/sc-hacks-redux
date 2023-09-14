@@ -23,7 +23,7 @@
 //:
 
 //:
-{ Impulse.kr(0.2) } @>.test \trig;
+{ Impulse.kr(2.9, pi) } @>.test \trig;
 4.1 @>.test \vol;
 { GrainBuf0_.ar } +> \test;
 3.04 @>.test \dur;
@@ -37,3 +37,4 @@
 \test.push;
 3 +>.test \xxx;
 \test +>.test \yyy;
+//:
