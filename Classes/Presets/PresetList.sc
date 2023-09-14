@@ -11,7 +11,7 @@ PresetList {
 	classvar <dict, <players, <playerIdConverters;
 	classvar <activeLists; // lists whose gui is open
 	var <path, <code, <snippets, <presets;
-	var <player; // setting the player stops the previous one
+	var <player; // must restart synth when changing player
 	var <currentPreset;
 	var scoremenu; // cache
 
@@ -31,6 +31,12 @@ PresetList {
 		this.remakePresetViews;
 	}
 	windowClosed { this.removeActive }
+
+	player_ { | argPlayer |
+		player = argPlayer;
+		this.changed(\player);
+	}
+
 	scoremenu {
 		^scoremenu ??
 		{
@@ -151,16 +157,28 @@ PresetList {
 		})
 	}
 
-	*playerMenu {
+	*playerMenu { // making this an instance function on Thu 14 Sep 2023 12:48
 		// this.availablePlayers.postln;
 		^this.availablePlayers collect: { | p | [p, { | me |
 			// postln("you selected player" + p ++". Now making gui!");
 			// TODO: customize path choice.
 			// PresetList(this.first.path, p.asSymbol).gui;
-			this.presetListChoiceGui(p)
+			this.presetListChoiceGui(p) // stopped using this on Thu 14 Sep 2023 12:37
 		}] }
 	}
 
+	playerMenu {
+		^players collect: { | p | [p, { | me |
+			this.setPlayer(p);
+		}] }
+	}
+
+	setPlayer { | p |
+		// postln("the new player is: " + p);
+		this.player = p;
+	}
+
+	// stopped using this on Thu 14 Sep 2023 12:37
 	*presetListChoiceGui { | p |
 		^this.vlayoutKey(\listChoice,
 			StaticText().string_("Choose preset list for player" + p + "(Press enter to open)"),

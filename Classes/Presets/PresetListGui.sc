@@ -60,11 +60,15 @@ PresetListGui {
 		view = View().background_(Color(*Array.rand(3, 0.8, 1.0)));
 		view.layout_(
 			HLayout(
-				StaticText().string_("" ++ presetList.name ++ ":" ++ this.player),
-				Button().states_([["Open other player"]])
-				.menuActions(PresetList.playerMenu)
+				StaticText().string_(presetList.name.asString),
+				// StaticText().string_("" ++ presetList.name ++ ":" ++ this.player),
+				Button().states_([[presetList.player.asString]])
+				.menuActions(presetList.playerMenu)
+				.addNotifier(presetList, \player, { | n |
+					n.listener.states_([[presetList.player.asString]])
+				})
 				.addNotifier(PresetList, \activeLists, { | n |
-					n.listener.menuActions(PresetList.playerMenu)
+					n.listener.menuActions(presetList.playerMenu)
 				}),
 				Button().states_([["Stop All Local", Color.red, Color.white]])
 				.action_({ CmdPeriod.run }),

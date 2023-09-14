@@ -10,6 +10,7 @@ Mediator : EnvironmentRedirect {
 	classvar default, global;
 	var <name, busses;
 
+	*allKeys { ^this.all.keys.asArray.sort }
 	*global {// experimental: Use Event instead of Environment
 		^global ?? { global = Event() }
 	}
