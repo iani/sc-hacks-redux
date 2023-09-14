@@ -1,8 +1,8 @@
-/*presets for jun saved at 230908_173214*/
+/*presets for jun saved at 230913_181359*/
 
 //: (0) jun grainfroth bird_crickets
-//this is the template from mgrainfroth 230830_195041  
-//The source is: 230803_195659_JunAsayo3code  
+//this is the template from mgrainfroth 230830_195041   
+//The source is: 230803_195659_JunAsayo3code   
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'off' ],
 'buf': 'bird_crickets',

@@ -24,6 +24,24 @@ dur: [0.2, 0.15, 0.1, 0.04].choose
 [\strings] <!> \sounds;
 [\xylophone] <!> \sounds;
 [\prophet5strings] <!> \sounds;
+[\bell_tubular] <!> \sounds;
+[\flute_waveguide] <!> \sounds;
+[\everythingrhodes] <!> \sounds;
+[\glockenspiel] <!> \sounds;
+[\harpsichord_pluck] <!> \sounds;
+[\harpsichord_simple] <!> \sounds;
+[\piano_mda] <!> \sounds;
+[\piano_rhodey] <!> \sounds;
+[\noisy] <!> \sounds;
+[\kalimba] <!> \sounds;
+[\organ_donor] <!> \sounds;
+[\organ_tonewheel1] <!> \sounds;
+[\blips1] <!> \sounds;
+[\sine_simple] <!> \sounds;
+[\sine_vintage] <!> \sounds;
+[\sostom] <!> \sounds;
+[\kick808] <!> \sounds;
+[\soshats] <!> \sounds;
 { \x5.gt2; } +>.jun \trig1;
 \x5 >>> { | n, vals |
 	if (vals[3] > 0) {
@@ -31,7 +49,7 @@ dur: [0.2, 0.15, 0.1, 0.04].choose
 freq: ([
 "a", "A1:A:a:e:c", "b:dg", "G:d:f1", "c:ef:g",
 "C:e:g:bf:e1", "C:c:c1:g1:e2"
-].prand(inf).chordcps),
+].pseq(inf).chordcps),
 instrument: ~sounds.prand(3).pdup(3),
 // SynthDEFaults.defcat(\pitched).prand(3).pdup(3),
 dur: [0.2, 0.15, 0.1, 0.4].choose
