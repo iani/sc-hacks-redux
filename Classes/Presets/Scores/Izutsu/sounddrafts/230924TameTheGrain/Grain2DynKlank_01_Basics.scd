@@ -12,11 +12,53 @@ filtering rains through a dynklank resonant filter bank
 //:
 { Line.kr(0, 1, 100) } @>.test \pos;
 //:
+{ Impulse.kr(2.9, pi) } @>.test \trig;
+\crickets +>.test \buf;
+0.1 @>.test \vol;
 {
 	var src;
 	src = GrainBuf0_.ar;
 	DynKlank.ar(
 		`[[400, 500, 600, 700], [0.05, 0.05, 0.05, 0.05]],
+		src
+	);
+} +> \test;
+{ Line.kr(0, 1, 100) } @>.test \pos;
+//:
+{ Impulse.kr(2.9, pi) } @>.test \trig;
+\crickets +>.test \buf;
+0.1 @>.test \vol;
+{
+	var src;
+	src = GrainBuf0_.ar;
+	DynKlank.ar(
+		`[[400, 500, 600, 700] / 2, [0.01, 0.01, 0.01, 0.01]],
+		src
+	);
+} +> \test;
+{ Line.kr(0, 1, 100) } @>.test \pos;
+//:
+{ Impulse.kr(2.9, pi) } @>.test \trig;
+\crickets +>.test \buf;
+0.1 @>.test \vol;
+{
+	var src;
+	src = GrainBuf0_.ar;
+	DynKlank.ar(
+		`[[400, 1500, 1600, 700] * 2, [0.01, 0.01, 0.01, 0.01]],
+		src
+	);
+} +> \test;
+{ Line.kr(0, 1, 100) } @>.test \pos;
+//:
+{ Impulse.kr(2.9, pi) } @>.test \trig;
+\crickets +>.test \buf;
+0.1 @>.test \vol;
+{
+	var src;
+	src = GrainBuf0_.ar;
+	DynKlank.ar(
+		`[[400, 1500, 1600, 700] / 2, [0.01, 0.01, 0.01, 0.01]],
 		src
 	);
 } +> \test;
