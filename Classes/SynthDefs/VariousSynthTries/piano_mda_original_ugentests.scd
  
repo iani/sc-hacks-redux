@@ -28,4 +28,11 @@ x = {
 		mul: 0.2
 	)
 } +> \x;
-//:
+//: compare to synthDEFault mda piano:
+
+(instrument: \piano_mda, midinote: (14..114).pseq, dur: 0.1) +> \test;
+(instrument: \piano_mda, midinote: (14..114).pseq, dur: 0.3) +> \test;
+(instrument: \piano_mda, midinote: (14..114).pseq, muffle: 1.2, dur: 0.3) +> \test;
+(instrument: \piano_mda, midinote: (14..114).pseq.pdup, muffle: [0.02, 2].pseq, dur: 0.3) +> \test;
+(instrument: \piano_mda, midinote: (14..114).pseq.pdup, velmuff: [0.02, 2].pseq, dur: 0.3) +> \test;
+(instrument: \piano_mda, midinote: (14..114).pseq.pdup, hard: [0.02, 2].pseq, dur: 0.3) +> \test;
