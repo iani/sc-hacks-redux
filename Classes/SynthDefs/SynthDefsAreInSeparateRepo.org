@@ -1,0 +1,4 @@
+#+TITLE: Synth Defs Are In Separate Repo
+
+The synthdefs have been moved to a separate repository.
+This is to avoid conflicts and compile errors when using sc-hacks-redux on a computer that may miss some of the third-party plug-ins required by the synthdefs.
