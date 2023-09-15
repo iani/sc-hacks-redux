@@ -148,10 +148,11 @@
 	+> { | param, envir |
 		envir.envir.put(param, this);
 	}
+
 	// playing as synth is hardly used
-	// +> { | player, envir |
-	// 	^this.pushPlayInEnvir(player, envir);
-    // }
+	!+> { | player, envir |
+		^this.pushPlayInEnvir(player, envir);
+    }
 
 	+>! { | player, envir |
 		// osc message triggers play next event of an EventStream player
