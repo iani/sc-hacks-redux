@@ -55,8 +55,12 @@ Adapt this to script for scene, with sensor controls
 600 / 2 @>.jun \f2;
 //: @>.jun \f3
 800 / 2 @>.jun \f3;
+//: @>.jun \f3
+700 / 2 @>.jun \f3;
 //: @>.jun \f4
 1000 / 2 @>.jun \f4;
+//: @>.jun \f4
+900 / 2 @>.jun \f4;
 //: 16/15 @>.jun \f4
 1000 * 16 / 15 / 2 @>.jun \f4;
 //: 14/15 @>.jun \f4

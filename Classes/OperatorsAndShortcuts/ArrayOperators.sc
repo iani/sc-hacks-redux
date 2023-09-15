@@ -3,6 +3,16 @@
 */
 
 + Array {
+	@@> { | symbol | ^this.brdup(symbol) }
+	// create / initialize kr busses with values
+	brdup { | symbol | // return the controls for use in synth funcs!
+		^this collect: { | val, i |
+			var ctl;
+			ctl = (symbol ++ i).asSymbol;
+			ctl.br(val);
+		}
+	}
+
 	*> { | param, envir | // store in param of envir
 		envir.envir.put(param, this);
 	}
