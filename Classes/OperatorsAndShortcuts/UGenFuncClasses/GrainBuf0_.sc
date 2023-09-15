@@ -19,7 +19,7 @@ the buffer number containing a signal to use for the grain envelope.
 */
 
 GrainBuf0_ : UGenFunc {
-	*ar {
+	*ar { | numChannels = 1 |
 		var trig, dur, buf, rate, pos, pan;
 		trig = \trig.br(0);
 		// trig = \trig.tr(0);
@@ -29,10 +29,10 @@ GrainBuf0_ : UGenFunc {
 		// NOTE: GrainBuf takes pos in 0-1 where 1 is end of buffer!
 		// pos = \pos.br(~pos ? 0); // TRY THIS LATER!
 		// pos = \pos.kr(0);
-		pos = \pos.br(0);
-		pan = \pan.br(~pan ? 0);
+		pos = \pos.br(~pos ? 0);
+		pan = \gpan.br(~gpan ? 0); // pan can be added by other parts!
 		^GrainBuf.ar(
-			2,
+			1,
 			trig,
 			dur,
 			buf,
@@ -42,6 +42,6 @@ GrainBuf0_ : UGenFunc {
 			pan,
 			-1, // Hann envelope - see notes on envbufnum above
 			512 // maxGrains
-		) * \vol.br(~vol ? 1).amplify(1);
+		) * \vol.br(~vol ? 1).amplify(0.2);
 	}
 }
