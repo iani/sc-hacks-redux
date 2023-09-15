@@ -3,12 +3,12 @@
 */
 
 + Array {
-	@@> { | symbol | ^this.brdup(symbol) }
+	@@> { | symbol, offset = 0 | ^this.brdup(symbol, offset) }
 	// create / initialize kr busses with values
-	brdup { | symbol | // return the controls for use in synth funcs!
+	brdup { | symbol, offset = 0 | // return the controls for use in synth funcs!
 		^this collect: { | val, i |
 			var ctl;
-			ctl = (symbol ++ i).asSymbol;
+			ctl = (symbol ++ (i + offset)).asSymbol;
 			ctl.br(val);
 		}
 	}
