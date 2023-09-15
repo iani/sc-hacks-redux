@@ -38,6 +38,8 @@ p=Impulse;
 			\soft.br(0.2))
 	}!10)
 } +> \pluckstaircase;
+0.9 @> \soft;
+
 //:softness of pluck
 0.9 @> \soft;
 //:wetness
