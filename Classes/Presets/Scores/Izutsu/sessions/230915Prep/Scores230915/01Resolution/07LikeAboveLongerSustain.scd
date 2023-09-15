@@ -17,7 +17,7 @@ Adapt this to script for scene, with sensor controls.
 {
 	var src, out, freqs, amps, ringtimes;
 	src = GrainBuf0_.ar;
-	freqs = (4..7) * 100 @@>.1 \f;
+	freqs = (5..8) / 2 * 100 @@>.1 \f;
 	amps = 0.01.dup(4) @@>.1 \a;
 	ringtimes = 1.dup(4) @@>.1 \r;
 	// ringtimes
@@ -31,38 +31,45 @@ Adapt this to script for scene, with sensor controls.
 { LFNoise2.kr(1/10).range(0, 1) } @>.jun \pos;
 // LFNoise2 -> rate
 { LFNoise2.kr(1/10).range(0.8, 1.2) } @>.jun \rate;
-//:====== ADD Demand ctl of freqs
-[12, 10, 9, 8, 4, 6, 8, 7, 10 * 16 / 15 / 2,  10 * 14 / 15 / 2] @> \freqs;
-//:change fm!
-1.5 @>.jun \fm;
-//:change fm!
-0.75 @>.jun \fm;
-//:change fm!
-1 @>.jun \fm;
-//: NO! NO RANDOM SLIDE OF CHORD!
-{ LFNoise0.kr(1).range(0.8, 1.2) } @>.jun \fm;
-//:--- less interesting: Move through the file in 100 seconds
-{ Line.kr(0, 1, 100) } @>.jun \pos;
+//:first play a little adjusting the notes without control from dancers
 //: ===! asayo: high register, f1, f2
 //:1200 @>.jun \f1
-1200 @>.jun \f1;
+1200 @>.jun \f1;  /// keep this
 //:1200 @>.jun \f1
-1400 @>.jun \f1;
+1100 @>.jun \f1;  /// keep this
+//:1200 @>.jun \f1
+1000 @>.jun \f1;  /// keep this
+//:1200 @>.jun \f1
+1400 @>.jun \f1; /// keep this
 //:1000 @>.jun \f2
-1000 @>.jun \f2;
-////:900 @>.jun \f3
-//900 @>.jun \f3;
+1000 @>.jun \f2; /// keep this
+//:900 @>.jun \f3
+900 @>.jun \f3;
 //:1000 @>.jun \f2
- 900 @>.jun \f2;
+// 900 @>.jun \f2;
 ////:900 @>.jun \f3
 //900 @>.jun \f3;
 //:800 @>.jun \f4
-//800 @>.jun \f4;
+800 @>.jun \f4;
 //:Jun: -- wider spaced lower register f3, f4
 //: @>.jun \f1
-400 / 2 @>.jun \f3;
+400 / 2 @>.jun \f3; // keep this
 //:@>.jun \f2
-600 / 2 @>.jun \f4;
+600 / 2 @>.jun \f4; // keep this
+//:------------- now introduce individual hand control
+1200 @>.jun \f1;  /// keep this
+1000 @>.jun \f2; /// keep this
+400 / 2 @>.jun \f3; // keep this
+600 / 2 @>.jun \f4; // keep this
+// xyz control jun f3 amp LH ---- DO USE THIS YES YES YES
+{ Xyz(7, 0.15, 0.05, 3.1, 0.005) * 0.5 } @>.jun \a3;
+// xyz control jun f3 amp LH DO USE THIS YES YES YES
+{ Xyz(6, 0.15, 0.05, 3.1, 0.005) * 0.5 } @>.jun \a4;
+// xyz control ASAYO f1 amp LH ----- DO USE THIS YES YES YES
+{ Xyz(5, 0.15, 0.05, 3.1, 0.005) * 1.5 } @>.jun \a1;
+// xyz control ASAYO f2 amp LH ------ DO USE THIS YES YES YES
+{ Xyz(8, 0.15, 0.05, 3.1, 0.005) * 1.5 } @>.jun \a2;
+//:========= individual control code section ends here
 //: @>.jun \f3
 800 / 2 @>.jun \f3;
 //: @>.jun \f3
@@ -81,23 +88,38 @@ Adapt this to script for scene, with sensor controls.
 0 @>.jun \a2;
 0 @>.jun \a3;
 0 @>.jun \a4;
-
-//: xyz control jun amp
-{ Xyz(7, 0.15, 0.05, 1.1, 0.01) + Xyz(6, 0.15, 0.05, 1.1, 0.01) } @>.jun \amp;
-//: xyz control jun f3 amp LH
-{ Xyz(7, 0.15, 0.05, 1.1, 0.01) } @>.jun \a3;
-//: xyz control jun f3 amp LH
-{ Xyz(6, 0.15, 0.05, 1.1, 0.01) } @>.jun \a4;
-//: xyz control ASAYO f1 amp LH
-{ Xyz(5, 0.15, 0.05, 1.1, 0.01) } @>.jun \a1;
-//: xyz control ASAYO f2 amp LH
-{ Xyz(8, 0.15, 0.05, 1.1, 0.01) } @>.jun \a2;
+//: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
+// WE WILL ONLY USE INDIVIDUAL HAND TO INDIVIDUAL NOTE AMP CONTROL
+//:
 //:trigger with Xyz. Jun LH
 {
 	(Xyz(7, 0.15, 0.05, 1.1, 0.01) > 0.2).sendReply(\junlon)
 };
 //:monitor jun's trigger
 \junlon >>> { "Jun left hand on".postln; (dur: 0.1, amp: 0.04, freq: 400).play; };
+//:
+{
+	\x5.gt.sendReply(\asayolon)
+} +>.jun \asayolon;
+//:
+\asayolon >>> { (degree: 10.rrand(20), dur: 0.2).play; };
+//:
+{
+	SendReply.kr(\x5.sr > 0.5, \asyolon)
+} +>.jun \asayolon;
+
+//:trigger with Xyz. Asayo LH
+{
+	WhiteNoise.ar(Decay.kr(Xyz(8, 0.15, 0.05, 0.1, 0.01) > 0.02)) * 0.001
+	//.sendReply(\asayolon)
+} +>.jun \asayoron;
+//:trigger with Xyz. Asayo LH
+{
+	SinOsc.ar(400, 0, Decay.kr(Xyz(5, 0.15, 0.05, 0.1, 0.01) > 0.02)) * 0.001
+	//.sendReply(\asayolon)
+} +>.jun \asayolon;
+//:monitor asayos's trigger
+\junlon >>> { "Asayo left hand on".postln; (dur: 0.1, amp: 0.04, freq: 400).play; };
 //:
 (dur: 0.1, amp: 0.04, freq: 100).play;
 //: stop amp control
