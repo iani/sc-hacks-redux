@@ -78,23 +78,24 @@ Simplenumber @> \symbol // set bus to number
 	// prepend b_. Used to mark controls that read from busses
 	busify { ^("b_" ++ this).asSymbol }
 
-	bus { | val, player, rate = \control, numchans = 1, server |
-		// Return the bus for this symbol.
+	// bus { | val, player, rate = \control, numchans = 1, server |
+	bus { | val, envirName, rate = \control, numchans = 1, server |
+		// Return the bus for this symbol, from environment named envirName.
 		// If bus does not exist, create new one.
 		// If val is not nil, then set the bus to val.
 		// Works with new AND already existing busses.
 		var bus, envir;
 		server = server.asTarget.server;
-		player = player ?? { currentEnvironment.name ?? { ~mediator } };
-		// player.postln;
-		envir = Mediator.at(player);
+		// get envirName from currentEnvironment (if needed):
+		envirName = envirName ?? { currentEnvironment.name ?? { ~mediator } };
+		envir = Mediator.at(envirName);
 		bus = envir.busses.at(this);
 		if (bus.isNil) {
 			bus = Bus.perform(rate, server, numchans);
 			{
 				server.sync;
 				val !? { bus.set(val) };
-				Bus.changed(this, player); // reset new bus numbers in other objects?
+				Bus.changed(this, envirName); // reset new bus numbers in other objects?
 			}.fork;
 			envir.busses.put(this, bus);
 		}{

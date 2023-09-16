@@ -15,6 +15,13 @@
 				\endframe.br(~endframe ?? { BufFrames.kr(buf) }) / BufSampleRate.kr(buf))
 	}
 	+> { | ugenfunc | ^ugenfunc.ar(this) } // play as input to other ugen
+	@> { | bus, envir |
+		this.bout(bus, envir)
+	}
+	bout { | busName, envirName | // send kr signal to a named kr bus
+		Out.kr(busName.bus(nil, envirName).index, this);
+	}
+
 	br {} // return self. enable ugen args in synth func shortcuts
 	// value mapping + comparing shortcuts
 	lin { | lo = 0.0, hi = 1.0 | ^this.linlin(0.0, 1.0, lo, hi) }
@@ -71,10 +78,6 @@
 		^this *
 		Env.perc(attackTime, releaseTime, level, curve)
 		.kr(doneAction: doneAction, gate: \gate.kr(gate))
-	}
-
-	bout { | busName | // send kr signal to a named kr bus
-		Out.kr(busName.bus.index, this);
 	}
 
 	decay { | dt = 0.25 | ^Decay.kr(this, dt) }

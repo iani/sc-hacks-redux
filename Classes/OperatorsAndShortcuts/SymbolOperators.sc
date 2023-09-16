@@ -3,8 +3,8 @@
 */
 
 + Symbol {
-	// DRAFT! Create gui view for setting the bus.
-	*bctlv { | spec = \amp, envir = \default |
+	// DRAFT! "ur": User Rate. Create gui view for setting the bus.
+	*ur { | spec = \amp, envir = \default |
 		spec = spec.asSpec;
 		^HLayout(
 			StaticText().string_(this),
