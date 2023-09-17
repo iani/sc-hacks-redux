@@ -18,21 +18,20 @@
 	p=Impulse;
 	mean({|i|
 		Pluck.ar(
-			LFSaw.ar([ // IN: Sound source
+			LFSaw.ar([
 				// \ls1.br(102),
 				\ls1.br, // par 1
 				\ls2.br  // par 2
 				// \ls2.br(101)
 			]),
-			x=p.ar( // trigger: Impulse.ar
-				// trigger rate
+			x=p.ar(
 				\tempo.br, // \tempo.br(1) // par 3
-				i/ // phase
+				i/
 				\idiv.br // \idiv.br(10) // par 4
 			)
-			+p.ar(0), // initial trigger???
-			1,  // max delay time
-			1/  // delaytime
+			+p.ar(0),
+			1,
+			1/
 			Latch.ar(
 				// \lin.br(1.015)  // par 5???
 				1.015
@@ -49,7 +48,7 @@
 			\wet.br, // \wet.br(4),
 			\soft.br // \soft.br(0.2)
 		)
-	}!10)
+	}!10) * Env([0, 0.1, 0.25], [1, 1], 5).kr;
 } +> \jun
 //:--[50] tempo
 { XLine.kr(0.5, 5, 50) } @>.jun \tempo; // par
@@ -73,3 +72,19 @@
 //:--[10] ls1, ls2
 { XLine.kr(20.1, 101, 20) } @>.jun \ls1;
 { XLine.kr(20.2, 102, 20) } @>.jun \ls2;
+//:--[10] SENSOR CONTROLS ---------- SENSOR CONTROLS
+{ \x6.sr.lag(2).lin(0.1, 50.0) } @>.jun \wet;
+{ \z6.sr.lag(2).lin(0.1, 0.9) } @>.jun \soft;
+//:--[10] TEST SENSOR CONTROL LIMITS
+0.1 @>.jun \wet;
+50.0 @>.jun \wet;
+25 @>.jun \wet;
+0.1 @>.jun \soft;
+0.9 @>.jun \soft;
+25 @>.jun \wet;
+5 @>.jun \tempo;
+1 @>.jun \sweepdir;
+-1 @>.jun \sweepir;
+5 @>.jun \tempo;
+0.2 @>.jun \tempo;
+20 @>.jun \idiv;
