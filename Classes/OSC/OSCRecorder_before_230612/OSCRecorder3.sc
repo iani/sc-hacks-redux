@@ -22,7 +22,7 @@ OSCRecorder3 {
 		excludedMessages = [
 			'/cbmon', '/status.reply', '/done', '/n_end',
 			'/recordingDuration', '/n_go', '/d_removed', '/synced', '/minibee/rssi',
-			'localhostInLevels', 'localhostOutLevels', '/groupclient/ping', '/minibeesmooth'
+			'/localhostInLevels', '/localhostOutLevels', '/groupclient/ping', '/minibeesmooth'
 		];
 		filter = { | msg | excludedMessages includes: msg };
 		ShutDown add: { this.closeFile };
