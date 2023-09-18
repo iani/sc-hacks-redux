@@ -36,11 +36,11 @@ nil +>.asayo \freqmodnoise;
 	Silent.ar.perc;
 } +>.asayo \fmod;
 //======= add sensor control =======
-{ \x5.gt.lag(0.5) * 0.5 } @>.jun \amp;
+{ \x7.gt.lag(0.5) * 0.5 } @>.jun \amp;
 { \z8.gt(0.3).lag(0.5) * 0.5 } @>.asayo \amp;
 
 //======= Set sensor values to off =======
-0 >>! \x5;
+0 >>! \x7;
 0 >>! \z8;
 //======= Start sine synth =======
 {
