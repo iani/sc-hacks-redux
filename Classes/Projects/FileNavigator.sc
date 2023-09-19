@@ -603,6 +603,7 @@ FileNavigator {
 				[messagepath, codepath, allpath] do: _.postln;
 				this.export(this.collectSnippets, nil, allpath);
 				this.export(this.selectMessages(this.collectSnippets), nil, messagepath);
+				// TODO: Use exportCode instead: Produce human editable //code file
 				this.export(this.selectCode(this.collectSnippets), nil, codepath);
 
 				// this.exportCode(p.first +/+ name);
