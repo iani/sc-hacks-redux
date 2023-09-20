@@ -604,6 +604,7 @@ FileNavigator {
 				this.export(this.collectSnippets, nil, allpath);
 				this.export(this.selectMessages(this.collectSnippets), nil, messagepath);
 				// TODO: Use exportCode instead: Produce human editable //code file
+				// Use a variant of exportAsCode?
 				this.export(this.selectCode(this.collectSnippets), nil, codepath);
 
 				// this.exportCode(p.first +/+ name);
