@@ -1,6 +1,7 @@
 /*presets for sanya saved at 230830_195041*/
 // LEFT HAND
 //: (0) sanya grainfroth crickets
+//scene 1 lh
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'crickets',
@@ -23,6 +24,7 @@
 'vol': [ 3.356638951877, "", 'off' ],
 )
 //: (2) sanya grainfroth fones
+//scene 3
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'fones',
@@ -45,6 +47,7 @@
 'vol': [ 3.356638951877, "", 'off' ],
 )
 //: (4) sanya grainfroth noisebirdsclick
+//scene 4
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'noisebirdsclick',
