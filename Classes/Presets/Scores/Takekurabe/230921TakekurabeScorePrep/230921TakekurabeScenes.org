@@ -8,6 +8,19 @@
 |   |     3 | yang_bird | yangdrums | hanbaiki        | fones           |
 |   |     4 | weddel    |           | noisebirdsclick | noisebirdsclick |
 
+Order of entry and dialogue per scene:
+
+* Scene 1
+1. Yoshimitsu columbia
+2. Yoshimitsu weddel
+3. Mary Crickets
+4. Mary Fones
+5. Dialogue between Mary and Yoshimitsu
+
+* Scene 2
+
+
+
 ** Old Notes
 
 Total number of scenes: 4 scenes.  Scene 4 is a variation of scene 1
