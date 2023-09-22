@@ -2,11 +2,11 @@
 
 * New scene draft 230830
 
-| ! | scene | YL        | YR       | ML              | MR              |
-|   |     1 | Weddel    | columbia | crickets        | fones           |
-|   |     2 | yang_bird |          | swallows        | noisebirdsclick |
-|   |     3 | Weddel    |          | hanbaiki        | fones           |
-|   |     4 | Weddel    |          | noisebirdsclick | noisebirdsclick |
+| ! | scene | YL        | YR        | ML              | MR              |
+|   |     1 | weddel    | columbia  | crickets        | fones           |
+|   |     2 | yang_bird | hanbaiki  | swallows        | noisebirdsclick |
+|   |     3 | yang_bird | yangdrums | hanbaiki        | fones           |
+|   |     4 | weddel    |           | noisebirdsclick | noisebirdsclick |
 
 ** Old Notes
 
