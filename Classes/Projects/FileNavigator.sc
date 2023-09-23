@@ -566,6 +566,7 @@ FileNavigator {
 			filename = (this.homeDir +/+ folder +/+ Date.getDate.stamp).fullPath ++ ".scd";
 		};
 		File.use(filename, "w", { | f |
+			f.write("//onsetcode\n"); // filetype compatible with timestamp format!!!
 			f.write("//Exporting" + snippets.size + "code snippets" + "on" + Date.getDate.stamp ++ "\n" );
 			f.write("//Source:" + (innerList[selection ?? { [0] }].collect(_.name)) ++ "\n");
 			snippets collect: { | x, i |
@@ -606,6 +607,8 @@ FileNavigator {
 				// TODO: Use exportCode instead: Produce human editable //code file
 				// Use a variant of exportAsCode?
 				this.export(this.selectCode(this.collectSnippets), nil, codepath);
+				// Use this one ...
+				// this.exportCode(/* ... ???? !!!! */)
 
 				// this.exportCode(p.first +/+ name);
 			}.getFolderPath("Click OK to choose a folder to export the data in.");
