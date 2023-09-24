@@ -37,6 +37,14 @@
 		^isCode;
 	}
 
+	scd { // provide .scd extension if needed.
+		if (PathName(this).extension == "scd") {
+			^this
+		}{
+			^this ++ ".scd"
+		}
+	}
+
 	isSfSelection {
 		var isSfs;
 		File.use(this, "r", { | f |

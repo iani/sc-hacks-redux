@@ -561,7 +561,7 @@ FileNavigator {
 		};
 		times = [0] ++ (times - times[0]).rotate(-1).butLast; // .postln;
 		if (argFilename.notNil) {
-			filename = argFilename ++ ".scd";
+			filename = argFilename.scd; // provide scd if missing:  ++ ".scd";
 		}{
 			filename = (this.homeDir +/+ folder +/+ Date.getDate.stamp).fullPath ++ ".scd";
 		};
@@ -571,7 +571,11 @@ FileNavigator {
 			f.write("//Source:" + (innerList[selection ?? { [0] }].collect(_.name)) ++ "\n");
 			snippets collect: { | x, i |
 				x.codeReplaceTimeStamp(times[i]).ensureNL;
-			} do: { | x | f write: x };
+			} do: { | x |
+				"\n======== checking how snippet is formatted. this is what I write: ===== ".postln;
+				x.postln;
+				f write: x;
+			};
 			f write: "\n//the end\n\n";
 		});
 		"Export completed".postln;
@@ -604,13 +608,8 @@ FileNavigator {
 				[messagepath, codepath, allpath] do: _.postln;
 				this.export(this.collectSnippets, nil, allpath);
 				this.export(this.selectMessages(this.collectSnippets), nil, messagepath);
-				// TODO: Use exportCode instead: Produce human editable //code file
-				// Use a variant of exportAsCode?
-				this.export(this.selectCode(this.collectSnippets), nil, codepath);
-				// Use this one ...
-				// this.exportCode(/* ... ???? !!!! */)
-
-				// this.exportCode(p.first +/+ name);
+				// Use exportCode instead: Produce human editable //code file
+				this.exportCode(codepath);
 			}.getFolderPath("Click OK to choose a folder to export the data in.");
 		}.inputText(this.makeFilename(""), "Enter the filename without the .scd extension")
 	}

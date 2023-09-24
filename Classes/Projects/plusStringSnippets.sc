@@ -42,27 +42,52 @@ First: Reloading selections for SoundBufferGui.
 	}
 
 	timeStampLocation {
+		// postln("Debugging timeStampLocation" + this.header);
+		// postln("regexpmatch is" + this.header.findRegexp(":--\\[\\d.*\\]"));
 		^this.header.findRegexp(":--\\[\\d.*\\]")[0]
 	}
 	time {
 		^this.timeStampLocation[1][3..].interpret.first;
 	}
 
+	// TODO: Sun 24 Sep 2023 04:35: catch //: snippets without timestamps in hand edited code
 	codeReplaceTimeStamp { | newTime = 0 |
 		var oldHeader, strippedHeader, location;
 		oldHeader = this.header;
 		location = this.timeStampLocation;
 		strippedHeader = oldHeader[location[0] + location[1].size..];
-		^format("//:--[%]%%", newTime, strippedHeader, this.code);
+		^format("//:--[%]%%", newTime, strippedHeader, this.code.stripTimestamp);
+	}
+
+	// remove hand-edited timestamps when exporting as code:
+	stripTimestamp {
+		if (this[..5] == "//:--[") {
+			^"//(ts)" + this[5..]
+		}{
+			^this;
+		}
 	}
 
 	body { // return the rest of the snippet after the header
 		^this[this.find("\n")..]
 	}
 
+	// this resulted in deep error on Sun 24 Sep 2023 03:57
+	// TODO: Sun 24 Sep 2023 04:35: catch //: snippets without timestamps in hand-edited code
 	code {
 		^this.body.interpret[1];
 	}
+
+	// body returns something too short in just 1 case
+	// need to find out what that is.
+	// TODO: Sun 24 Sep 2023 04:35: catch //: snippets without timestamps in hand edited code
+	codeDebugging {
+		"============ body starts here: !!!! =============".postln;
+		this.body.postln;
+		"============ body ended above !!!! =============".postln;
+		^this.body;//  [12..this.body.size-2]
+	}
+
 
 	comments { // experimental
 		^(this.body.findRegexp("^//[^\n]*").collect({ | x |
