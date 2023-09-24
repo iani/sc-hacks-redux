@@ -12,15 +12,19 @@ First: Reloading selections for SoundBufferGui.
 		})
 	}
 
-	readSnippets {  // read snippets from a files
+	readSnippets {  // read snippets from a file
 		var string;
 		string = File(this, "r").readAllString;
 		^string.snippets;
 	}
 
-	snippets {
+	// collect snippet substrings, based on separator
+	// default separator does not require timestamp
+	// To ensure that all snippets have a timestamp, use
+	// as separator this: "\n//:--["
+	snippets { | separator = "\n//:" |
 		var delimiters, snippets;
-		delimiters = this.findAll("\n//:");
+		delimiters = this.findAll(separator);
 		if (delimiters.size == 0) {
 			snippets = [this];
 		}{

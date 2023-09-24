@@ -551,7 +551,7 @@ FileNavigator {
 	exportCode { | argFilename |
 		var snippets, headers, times, messages, filename, folder;
 		folder = this.codeFolder;
-		snippets = this.selectCode(this.collectSnippets);
+		snippets = this.selectCode(this.collectSnippets(separator: "\n//:--["));
 		times = snippets collect: _.time;
 		// postln("Debugging export code. Times:" + times);
 		if (times.size == 0) {
@@ -565,6 +565,7 @@ FileNavigator {
 		}{
 			filename = (this.homeDir +/+ folder +/+ Date.getDate.stamp).fullPath ++ ".scd";
 		};
+		postln("Exporting code in:" + filename);
 		File.use(filename, "w", { | f |
 			f.write("//onsetcode\n"); // filetype compatible with timestamp format!!!
 			f.write("//Exporting" + snippets.size + "code snippets" + "on" + Date.getDate.stamp ++ "\n" );
@@ -572,8 +573,8 @@ FileNavigator {
 			snippets collect: { | x, i |
 				x.codeReplaceTimeStamp(times[i]).ensureNL;
 			} do: { | x |
-				"\n======== checking how snippet is formatted. this is what I write: ===== ".postln;
-				x.postln;
+				// "\n======== checking how snippet is formatted. this is what I write: ===== ".postln;
+				// x.postln;
 				f write: x;
 			};
 			f write: "\n//the end\n\n";
@@ -623,15 +624,19 @@ FileNavigator {
 		}.inputText(this.makeFilename(type), "Filename to save in:")
 	}
 
-	// selectedPaths { ^innerList[selection ?? { [0] }] }
-	collectSnippets { | pathnames |
+	// collect snippet substrings, based on separator
+	// default separator does not require timestamp
+	// To ensure that all snippets have a timestamp, use
+	// as separator this: "\n//:--["
+	// see also method  String:snippets in plusStringSnippets.
+	collectSnippets { | pathnames, separator = "\n//:" |
 		var snippets;
 		pathnames ?? { pathnames = innerList[selection ?? { [0] }] };
 		pathnames do: { | i |
 			File.use(i.fullPath, "r", { | f |
 				var string, delimiters;
 				string = f.readAllString;
-				delimiters = string.findAll("\n//:");
+				delimiters = string.findAll(separator);
 				delimiters do: { | b, i |
 					var end, entry;
 					end = delimiters[i + 1];
