@@ -235,7 +235,7 @@ OscData {
 						n.listener.value = timeline.duration;
 					}
 				}),
-				StaticText().string_("total duration:" + timeline.totalDuration),
+				StaticText().string_("total duration:" + timeline.totalDuration.formatTime),
 				StaticText().string_("size").maxWidth_(70),
 				NumberBox()
 				.maxWidth_(70)
