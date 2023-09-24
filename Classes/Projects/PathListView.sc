@@ -21,6 +21,11 @@ PathListView {
 		^key.vlayout(
 			this.setPane,
 			pathView = ListView().selectionMode_(\extended)
+			.enterKeyAction_({ | me |
+				me.items[me.selection] do: { | p |
+					OscData.fromPath(p);
+				};
+			})
 			.lightPalette.items_(this.getItems),
 			this.innerListButtons
 		).name_("Path Sets for" + key);

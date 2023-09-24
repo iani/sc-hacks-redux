@@ -8,8 +8,8 @@ GrainFroth with guards against clipping:
 //:
 {   // provides PlayBuf.ar ugen with br controls
 	var src, amp;
-	amp = \amp.br(1) min: 0.7;
-	src = GrainFroth_.ar() * amp;
-	Limiter.ar(in: src, level: 0.7) // dur: 0.01 i.e. default
+	amp = \amp.br(1) min: 0.5; // tried: 0.7
+	src = GrainFroth_.ar() * amp; // tried: level 0.7:
+	Limiter.ar(in: src, level: 0.5) // dur: 0.01 i.e. default
 	// see: https://doc.sccode.org/Classes/Limiter.html
 }
