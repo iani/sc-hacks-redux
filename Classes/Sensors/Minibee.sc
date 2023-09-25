@@ -17,7 +17,7 @@ Minibee {
 	classvar <>forwardAddr;
 	classvar <of;
 	classvar <>verbose = false;
-	classvar <smoothEnabled = true;
+	classvar <smoothEnabled = false;
 	// ====================
 	var <id = 1;
 	var <busses;
@@ -53,7 +53,7 @@ Minibee {
 		all = { | i | this.new(i + 1) } ! numSensors; // 1-12
 		// postln("all after initing is:" + all);
 		this.getValues;
-		this.makeSmoothForwarder;
+		if (smoothEnabled) { this.makeSmoothForwarder; }
 	}
 
 	*makeSmoothForwarder {

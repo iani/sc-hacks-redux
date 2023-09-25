@@ -16,11 +16,3 @@ The old version is kept in grainmagshift0.
 	src = Grain_.ar() +> MagShift_ * amp;
 	Limiter.ar(src, level: 0.5); // dur: default: 0.01
 }
-/* Fri  7 Jul 2023 21:18
-Experimental.
-*/
-[Grain_, MagShift_];
-//:
-{   // provides PlayBuf.ar ugen with br controls
-	Grain_.ar() +> MagShift_ * \amp.br(1)
-}
