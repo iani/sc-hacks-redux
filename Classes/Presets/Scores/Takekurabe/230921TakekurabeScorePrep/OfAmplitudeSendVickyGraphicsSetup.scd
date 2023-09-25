@@ -2,8 +2,9 @@
 
 */
 
-var of;
-of = NetAddr("127.0.0.1", 10000);
+var of1, of2;
+of1 = NetAddr("127.0.0.1", 10000);
+of2 = NetAddr("127.0.0.1", 10001);
 {
 	var trig, yoshi, mary;
 	trig = Impulse.kr(20);
@@ -13,5 +14,6 @@ of = NetAddr("127.0.0.1", 10000);
 } +> \yoshimaryxyzof;
 \xyz >>> { | n, msg |
 	// msg[3..].postln;
-	of.sendMsg('/xyz', *msg[3..])
+	of1.sendMsg('/xyz', *msg[3..])
+	of2.sendMsg('/xyz', *msg[3..])
 };
