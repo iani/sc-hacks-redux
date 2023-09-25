@@ -1,7 +1,7 @@
 /*  7 Jul 2023 12:52
 GrainFroth with guards against clipping:
-1. amp limited to 0.7
-2. Limiter
+1. amp limited to 0.5
+2. Limiter to level 0.5
 	to prevent clipping
 */
 [GrainFroth_];
