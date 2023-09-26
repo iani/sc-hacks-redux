@@ -6,7 +6,7 @@ Forward {
 	*forward {
 		{
 			var oscgroups;
-			oscgroups = OscGroups.sendAddress;
+			// oscgroups = OscGroups.sendAddress;
 			{
 				var trig, yoshi, mary;
 				trig = Impulse.kr(20);
@@ -18,7 +18,7 @@ Forward {
 				// msg[3..].postln;
 				// of1.sendMsg('/xyz', *msg[3..])
 				// of2.sendMsg('/xyz', *msg[3..])
-				oscgroups.sendMsg('/xyz', *msg[3..]);
+				OscGroups.sendAddress.sendMsg('/xyz', *msg[3..]);
 			};
 		}.defer(5);
 	}
