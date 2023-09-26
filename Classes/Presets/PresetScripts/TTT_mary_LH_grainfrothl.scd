@@ -27,7 +27,7 @@
 //scene 3
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'fones',
+'buf': 'hanbaiki',
 'endframe': 3105211,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x5.sr", 'on' ],
@@ -38,7 +38,7 @@
 //: (3) sanya grainfrothl hanbaiki
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'hanbaiki',
+'buf': 'noisebirdsclick',
 'endframe': 107520,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x5.sr", 'on' ],
