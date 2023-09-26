@@ -14,10 +14,13 @@ Forward {
 				mary = Xyz(5, 0.2, 0.1, 1.5) + Xyz(7, 0.2, 0.1, 1.5);
 				trig.sendReply(\xyzforward, [yoshi, mary]);
 			} +> \yoshimaryxyzof;
-			\xyzfoward >>> { | n, msg |
+			\xyzforward >>> { | n, msg |
 				// msg[3..].postln;
 				// of1.sendMsg('/xyz', *msg[3..])
 				// of2.sendMsg('/xyz', *msg[3..])
+				// "Sending xyz".postln;
+
+				// OscGroups.sendAddress.sendMsg('/test', 1, 2, 3);
 				OscGroups.sendAddress.sendMsg('/xyz', *msg[3..]);
 			};
 		}.defer(5);
