@@ -1,21 +1,3 @@
-/*
-Convert the ids stored in a dict - possibly from another player - into the ids required for the
-current player.  This follows a mapping of all left hand ids and all right hand ids into
-the left and right hand ids of the current player. Example:
-
-For Jun:
-[1, 3, 5, 9, 11] maps to: 1
-[2, 4, 7, 8, 10, 12] maps to: 2 // NOTE: Mary uses 7 instead of 6!!!
-For Yoshiitsu:
-[1, 3, 5, 9, 11] maps to: 9
-[2, 4, 7, 8, 10, 12] maps to: 10
-
-There is one exception: Mary uses 7 instead of 6. TODO: Check the
-sets for consistency with the Mary rule.
-
-
-
-*/
 // later substitute this with specs for players that translate sensor numbers?
 [
 	[\jun, [[[1, 3, 5, 9, 11], 1], [[2, 4, 7, 8, 10, 12], 2]]],
