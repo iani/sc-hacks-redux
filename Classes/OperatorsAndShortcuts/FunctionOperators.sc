@@ -9,6 +9,10 @@
 	amplify { | amp = 1 | // Thu 17 Aug 2023 11:47 experimental: provide amp bus control.
 		^{ this.value * \amp.br(~amp ? amp) }
 	}
+
+	amplifyl { | amp = 1, lim = 0.5 | // Thu 17 Aug 2023 11:47 experimental: provide amp bus control.
+		^{ this.value * (\amp.br(~amp ? amp) min: lim) }
+	}
 	+> { | player, envir |
 		^this.pushPlayInEnvir(player, envir);
 	}
