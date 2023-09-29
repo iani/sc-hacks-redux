@@ -22,8 +22,14 @@ Ofx {
 		this.addr add: NetAddr("127.0.0.1", portNum);
 	}
 
-	*broadcast { | msg |
+	*broadcast { | msg | // broadcast entire message to all ports
 		this.addr do: { | a | a.sendMsg(*msg) }
+	}
+
+	*forward { | msg | // forward message matching msg to all ports
+		msg >>> { | n, message |
+			this broadcast: message;
+		}
 	}
 
 }
