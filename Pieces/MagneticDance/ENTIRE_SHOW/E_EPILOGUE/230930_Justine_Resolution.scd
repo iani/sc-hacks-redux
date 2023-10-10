@@ -7,7 +7,7 @@ Adapt this to script for scene, with sensor controls.
 */
 //:GrainBuf setup + start
 //buffer for demand ugens for frequency;
-[12, 10, 9, 8, 4, 6, 8, 7, 10 * 16 / 15 / 2,  10 * 14 / 15 / 2] @> \freqs;
+[12, 10, 9, 8, 4, 6, 8, 7, 10 * 16 / 15 / 2, 10 * 14 / 15 / 2] @> \freqs;
 // trigger every 2.9 seconds
 { Impulse.kr(2.9, pi) } @>.jun \trig;
 // use crickets buffer
@@ -50,7 +50,12 @@ Adapt this to script for scene, with sensor controls.
 //:1000 @>.jun \f2
 1000 @>.jun \f2; /// keep this
 //:900 @>.jun \f3
-900 @>.jun \f3;
+250 @>.jun \f3;
+//:900 @>.jun \f3 // U150
+150 @>.jun \f3;
+//:900 @>.jun \f3 use 100
+100 @>.jun \f4;
+
 //:1000 @>.jun \f2
 // 900 @>.jun \f2;
 ////:900 @>.jun \f3
@@ -68,13 +73,13 @@ Adapt this to script for scene, with sensor controls.
 400 / 2 @>.jun \f3; // keep this
 600 / 2 @>.jun \f4; // keep this
 // xyz control jun f3 amp LH ---- DO USE THIS YES YES YES
-{ Xyz(7, 0.15, 0.05, 3.1, 0.005) * 0.5 } @>.jun \a3;
+{ Xyz(1, 0.15, 0.05, 3.1, 0.005) * 0.05 } @>.jun \a3;
 // xyz control jun f3 amp LH DO USE THIS YES YES YES
-{ Xyz(8, 0.15, 0.05, 3.1, 0.005) * 0.5 } @>.jun \a4;
+{ Xyz(2, 0.15, 0.05, 3.1, 0.005) * 0.1 } @>.jun \a4;
 // xyz control ASAYO f1 amp LH ----- DO USE THIS YES YES YES
 { Xyz(5, 0.15, 0.05, 3.1, 0.005) * 1.5 } @>.jun \a1;
 // xyz control ASAYO f2 amp LH ------ DO USE THIS YES YES YES
-{ Xyz(6, 0.15, 0.05, 3.1, 0.005) * 1.5 } @>.jun \a2;
+{ Xyz(7, 0.15, 0.05, 3.1, 0.005) * 1.5 } @>.jun \a2;
 //:========= individual control code section ends here
 //: @>.jun \f3
 800 / 2 @>.jun \f3;
