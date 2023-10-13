@@ -4,7 +4,7 @@
 //scene 1 lh
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'crickets',
+'buf': 'izumi',
 'endframe': 2451380,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x5.sr", 'on' ],
@@ -15,7 +15,7 @@
 //: (1) sanya grainfrothl swallows
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'swallows',
+'buf': 'kojobottling',
 'endframe': 6750651,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x5.sr", 'on' ],
@@ -26,8 +26,8 @@
 //: (2) sanya grainfrothl fones
 //scene 3
 (
-'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'hanbaiki',
+'amp': [ 1.0, "Xyz(1, 0.2, 0.1, 1.5)", 'on' ],
+'buf': 'kojohaisuizemi',
 'endframe': 3105211,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x5.sr", 'on' ],
@@ -37,8 +37,8 @@
 )
 //: (3) sanya grainfrothl hanbaiki
 (
-'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'noisebirdsclick',
+'amp': [ 1.0, "Xyz(1, 0.2, 0.1, 1.5)", 'on' ],
+'buf': 'marina',
 'endframe': 107520,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x5.sr", 'on' ],
@@ -49,8 +49,8 @@
 //: (4) sanya grainfrothl noisebirdsclick
 //scene 4
 (
-'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'noisebirdsclick',
+'amp': [ 1.0, "Xyz(1, 0.2, 0.1, 1.5)", 'on' ],
+'buf': 'marinaboto',
 'endframe': 979297,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x5.sr", 'on' ],

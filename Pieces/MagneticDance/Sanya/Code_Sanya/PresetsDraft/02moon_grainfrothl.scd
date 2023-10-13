@@ -4,7 +4,7 @@
 // scene 1 rh
 (
 'amp': [ 1.0, "Xyz(7, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'fones',
+'buf': 'marinagunyoki',
 'endframe': 2451380,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x5.sr", 'on' ],
@@ -15,7 +15,7 @@
 //: (1) sanya grainfrothl noisebirdsclick
 (
 'amp': [ 1.0, "Xyz(7, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'noisebirdsclick',
+'buf': 'mizujuten',
 'endframe': 6750651,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x7.sr", 'on' ],
@@ -26,8 +26,8 @@
 //: (2) sanya grainfrothl fones
 //scene 3
 (
-'amp': [ 1.0, "Xyz(7, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'fones',
+'amp': [ 1.0, "Xyz(2, 0.2, 0.1, 1.5)", 'on' ],
+'buf': 'nami',
 'endframe': 3105211,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x7.sr", 'on' ],
@@ -38,8 +38,8 @@
 //: (3) sanya grainfrothl noisebirdsclick
 //scene 4
 (
-'amp': [ 1.0, "Xyz(7, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'noisebirdsclick',
+'amp': [ 1.0, "Xyz(2, 0.2, 0.1, 1.5)", 'on' ],
+'buf': 'namikodomokuruma',
 'endframe': 107520,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x7.sr", 'on' ],

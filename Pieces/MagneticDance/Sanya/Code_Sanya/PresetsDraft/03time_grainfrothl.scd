@@ -3,8 +3,8 @@
 //: (0) sanya grainfrothl weddell
 //scene 1
 (
-'amp': [ 1.0, "Xyz(1, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'weddell',
+'amp': [ 1.0, "Xyz(3, 0.2, 0.1, 1.5)", 'on' ],
+'buf': 'namitooiugoki',
 'endframe': 2451380,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x1.sr", 'on' ],
@@ -15,8 +15,8 @@
 //: (1) sanya grainfrothl swallows
 //scene 2
 (
-'amp': [ 1.0, "Xyz(1, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'yang_bird',
+'amp': [ 1.0, "Xyz(3, 0.2, 0.1, 1.5)", 'on' ],
+'buf': 'niwatoriame',
 'endframe': 6750651,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x1.sr", 'on' ],
@@ -27,8 +27,8 @@
 //: (2) sanya grainfrothl yang_bird
 //scene 3
 (
-'amp': [ 1.0, "Xyz(1, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'yang_bird',
+'amp': [ 1.0, "Xyz(3, 0.2, 0.1, 1.5)", 'on' ],
+'buf': 'pulu',
 'endframe': 3105211,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x1.sr", 'on' ],
@@ -39,8 +39,8 @@
 //: (3) sanya grainfrothl yang-bird
 //scene 4
 (
-'amp': [ 1.0, "Xyz(1, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'weddell',
+'amp': [ 1.0, "Xyz(3, 0.2, 0.1, 1.5)", 'on' ],
+'buf': 'sarizaglassbottle',
 'endframe': 107520,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x1.sr", 'on' ],
@@ -51,8 +51,8 @@
 //: (4) sanya grainfrothl noisebirdsclick
 //scene 4
 (
-'amp': [ 1.0, "Xyz(1, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'weddell',
+'amp': [ 1.0, "Xyz(3, 0.2, 0.1, 1.5)", 'on' ],
+'buf': 'sarizakogawazoom',
 'endframe': 979297,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x1.sr", 'on' ],

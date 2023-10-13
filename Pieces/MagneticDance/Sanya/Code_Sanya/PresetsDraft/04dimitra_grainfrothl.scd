@@ -3,8 +3,8 @@
 //: (0) sanya grainfrothl columbia
 //scene 1
 (
-'amp': [ 1.0, "Xyz(2, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'columbia',
+'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
+'buf': 'sarizakojo',
 'endframe': 2451380,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x2.sr", 'on' ],
@@ -15,8 +15,8 @@
 //: (1) sanya grainfrothl wind_moderate
 //scene 2
 (
-'amp': [ 1.0, "Xyz(2, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'wind_moderate',
+'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
+'buf': 'sarizaplasticbottle',
 'endframe': 6750651,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x2.sr", 'on' ],
@@ -27,8 +27,8 @@
 //: (2) sanya grainfrothl yangdrums
 //scene 3
 (
-'amp': [ 1.0, "Xyz(2, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'yangdrums',
+'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
+'buf': 'sarizaplasticbottle2',
 'endframe': 3105211,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x2.sr", 'on' ],
@@ -39,8 +39,8 @@
 //: (3) sanya grainfrothl hanbaiki
 //scene 4
 (
-'amp': [ 1.0, "Xyz(2, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'yang_bird',
+'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
+'buf': 'sarizasuiryu',
 'endframe': 107520,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x2.sr", 'on' ],
@@ -50,8 +50,7 @@
 )
 //: (4) sanya grainfrothl noisebirdsclick
 (
-'amp': [ 1.0, "Xyz(2, 0.2, 0.1, 1.5)", 'on' ],
-'buf': 'weddell',
+'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ], 'buf': 'shireimarina',
 'endframe': 979297,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x2.sr", 'on' ],
