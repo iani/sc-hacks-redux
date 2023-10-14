@@ -3,7 +3,7 @@
 //: (0) sanya grainfrothl fones
 // scene 1 rh
 (
-'amp': [ 1.0, "Xyz(7, 0.2, 0.1, 1.5)", 'on' ],
+'amp': [ 1.0, "Xyz(2, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'marinagunyoki',
 'endframe': 2451380,
 'playfunc': 'grainfrothl',
@@ -14,7 +14,7 @@
 )
 //: (1) sanya grainfrothl noisebirdsclick
 (
-'amp': [ 1.0, "Xyz(7, 0.2, 0.1, 1.5)", 'on' ],
+'amp': [ 1.0, "Xyz(2, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'mizujuten',
 'endframe': 6750651,
 'playfunc': 'grainfrothl',

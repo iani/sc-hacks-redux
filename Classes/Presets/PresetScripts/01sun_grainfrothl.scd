@@ -3,7 +3,7 @@
 //: (0) sanya grainfrothl crickets
 //scene 1 lh
 (
-'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
+'amp': [ 1.0, "Xyz(1, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'izumi',
 'endframe': 2451380,
 'playfunc': 'grainfrothl',
@@ -14,7 +14,7 @@
 )
 //: (1) sanya grainfrothl swallows
 (
-'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
+'amp': [ 1.0, "Xyz(1, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'kojobottling',
 'endframe': 6750651,
 'playfunc': 'grainfrothl',
