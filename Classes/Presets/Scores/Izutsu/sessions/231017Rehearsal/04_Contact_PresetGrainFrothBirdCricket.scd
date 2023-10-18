@@ -7,7 +7,7 @@
 'amp': [ 1.0, "Xyz(7, 0.2, 0.3, 1.5) + Xyz(6, 0.2, 0.3, 1.5)", 'on' ],
 'buf': 'bird_crickets',
 'endframe': [ 2393634, nil, nil ],
-'playfunc': 'grainfroth',
+'playfunc': 'grainfrothl',
 'pos': [ 0.079185223249971, "\\x7.sr", 'on' ],
 'startframe': [ 16764, nil, nil ],
 'trate': [ 0.0, "\\z7.sr", 'off' ],

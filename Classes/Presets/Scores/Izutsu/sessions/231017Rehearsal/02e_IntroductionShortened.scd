@@ -12,7 +12,7 @@
 	{ SinOsc.ar(800, 0, 0.1).perc(0.01, 0.1).pan } +> \ping;
 }.fork;
 */
-//:--[40] start the sound with named busses
+//:--[20] start the sound with named busses
 //======= stop synths from previous tests. =======
 nil +>.jun \freq;
 nil +>.jun \amp;
@@ -67,7 +67,7 @@ nil +>.asayo \freqmodnoise;
 		]
 	).amplify.vol.pan(0);
 } +> \asayo;
-//:--[40] add softening cluster noise modulation
+//:--[20] add softening cluster noise modulation
 { \z5.sr.lag(0.5).lin(0, 0.01) } @>.jun \noiseb;
 { \y8.sr.lag(0.5).lin(0, 0.01) } @>.asayo \noiseb;
 1.1 @>.jun \vol;
@@ -85,10 +85,10 @@ nil +>.asayo \freqmodnoise;
 				1, 1 + \noiseb.br(0.0001)).bout(\freq +++ i)
 		};
 } +>.asayo \freqmodnoise;
-//:--[150] start glissando
-//180' gliss + 20'stable
-{ XLine.kr(200, 800, 120) } @>.jun \freq; // gliss duration: 180!
-{ XLine.kr(800, 200, 120) } @>.asayo \freq; // gliss duration: 180!
+//:--[100] start glissando
+//100' gliss + 20'stable
+{ XLine.kr(200, 800, 100) } @>.jun \freq; // gliss duration: 180!
+{ XLine.kr(800, 200, 100) } @>.asayo \freq; // gliss duration: 180!
 //:--[20] spread cluster (WITHOUT NOISE!) + cresc spread duration: 90'
 // stop the previous noise modulation
 nil +>.asayo \freqmodnoise;
@@ -108,19 +108,19 @@ nil +>.jun \freqmodnoise;
 { Line.kr(1, 2, 50) } @>.jun \vol;
 { Line.kr(1, 2, 50) } @>.asayo \vol;
 
-//:--[70] add gradually spreading noise to the cluster lines. dur: 70'
+//:--[50] add gradually spreading noise to the cluster lines. dur: 70'
 {
 		50 do: { | i |
 			LFNoise2.kr(1).range(
-				0, XLine.kr(0.001, 0.05, 70)).bout(\freq +++ i)
+				0, XLine.kr(0.001, 0.05, 50)).bout(\freq +++ i)
 		};
 } +>.jun \freqmodnoise;
 {
 		50 do: { | i |
 			LFNoise2.kr(1).range(
-				0, XLine.kr(0.001, 0.05, 70)).bout(\freq +++ i)
+				0, XLine.kr(0.001, 0.05, 50)).bout(\freq +++ i)
 		};
 } +>.asayo \freqmodnoise;
-//:--[10] fadeout
-{ XLine.kr(2, 0.0001, 10, doneAction: 2) - 0.0001 } @>.jun \vol;
-{ XLine.kr(2, 0.0001, 10, doneAction: 2) - 0.0001 } @>.asayo \vol;
+//:--[20] fadeout
+{ XLine.kr(2, 0.0001, 20, doneAction: 2) - 0.0001 } @>.jun \vol;
+{ XLine.kr(2, 0.0001, 20, doneAction: 2) - 0.0001 } @>.asayo \vol;

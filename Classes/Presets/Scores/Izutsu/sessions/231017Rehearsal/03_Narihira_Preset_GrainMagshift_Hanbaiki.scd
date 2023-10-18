@@ -1,16 +1,16 @@
-/*presets for sun saved at 231017_131721*/
+/*presets for sun saved at 231017_130753*/
 
 //: (0) sun grainfrothl bird_crickets
 //this is the template from mgrainfroth 230830_195041      
 //The source is: 230803_195659_JunAsayo3code      
 (
-'amp': [ 1.0, "Xyz(5, 0.2, 0.3, 1.5) + Xyz(6, 0.2, 0.3, 1.5) + Xyz(7, 0.2, 0.3, 1.5) + Xyz(8, 0.2, 0.3, 1.5)", 'on' ],
+'amp': [ 1.0, "Xyz(7, 0.2, 0.3, 1.5) + Xyz(6, 0.2, 0.3, 1.5)", 'on' ],
 'buf': 'bird_crickets',
 'endframe': [ 2393634, nil, nil ],
 'playfunc': 'grainfrothl',
 'pos': [ 0.079185223249971, "\\x7.sr", 'on' ],
 'startframe': [ 16764, nil, nil ],
-'trate': [ 0.0, "\\z8.sr", 'on' ],
+'trate': [ 0.0, "\\z7.sr", 'off' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
 //: (1) sun grainmagshift hanbaiki

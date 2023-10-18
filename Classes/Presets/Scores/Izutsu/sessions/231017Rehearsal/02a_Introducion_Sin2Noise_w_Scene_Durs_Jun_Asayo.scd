@@ -3,6 +3,7 @@
 //Score with fixed onsets for each stage.
 //With sounds and players for Jun and Asayo.
 //:--[5] countdown and synchronization prompt
+/*
 {
 	{ SinOsc.ar(800, 0, 0.1).perc(0.01, 0.1).pan } +> \ping;
 	1.wait;
@@ -10,6 +11,7 @@
 	1.wait;
 	{ SinOsc.ar(800, 0, 0.1).perc(0.01, 0.1).pan } +> \ping;
 }.fork;
+*/
 //:--[80] start the sound with named busses
 //======= stop synths from previous tests. =======
 nil +>.jun \freq;
@@ -36,10 +38,10 @@ nil +>.asayo \freqmodnoise;
 	Silent.ar.perc;
 } +>.asayo \fmod;
 //======= add sensor control =======
-{ \x5.gt.lag(0.5) * 0.1 } @>.jun \amp;
+{ \x7.gt.lag(0.5) * 0.1 } @>.jun \amp;
 { \z8.gt(0.3).lag(0.5) * 0.1 } @>.asayo \amp;
 //======= Set sensor values to off =======
-0 >>! \x5;
+0 >>! \x7;
 0 >>! \z8;
 //======= Start sine synth =======
 {
