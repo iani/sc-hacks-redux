@@ -1,9 +1,9 @@
-/*presets for sanya saved at 230830_195041*/
-// LEFT HAND
-//: (0) sanya grainfrothl crickets
-//scene 1 lh
+/*presets for justineL saved at 231019_105914*/
+
+//: (0) justineL grainfrothl crickets
+//scene 1 lh 
 (
-'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
+'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5) * 0.5", 'on' ],
 'buf': 'crickets',
 'endframe': 2451380,
 'playfunc': 'grainfrothl',
@@ -12,9 +12,9 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (1) sanya grainfrothl swallows
+//: (1) justineL grainfrothl swallows
 (
-'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
+'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5) * 0.5", 'on' ],
 'buf': 'swallows',
 'endframe': 6750651,
 'playfunc': 'grainfrothl',
@@ -23,10 +23,10 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (2) sanya grainfrothl fones
-//scene 3
+//: (2) justineL grainfrothl hanbaiki
+//scene 3 
 (
-'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
+'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5) * 0.5", 'on' ],
 'buf': 'hanbaiki',
 'endframe': 3105211,
 'playfunc': 'grainfrothl',
@@ -35,7 +35,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (3) sanya grainfrothl hanbaiki
+//: (3) justineL grainfrothl noisebirdsclick
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'noisebirdsclick',
@@ -46,8 +46,8 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (4) sanya grainfrothl noisebirdsclick
-//scene 4
+//: (4) justineL grainfrothl noisebirdsclick
+//scene 4 
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'noisebirdsclick',
@@ -58,3 +58,4 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
+/* THE END */
