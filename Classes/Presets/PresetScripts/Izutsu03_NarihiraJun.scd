@@ -1,22 +1,9 @@
-/*presets for sun saved at 231019_190807*/
+/*presets for jun saved at 231019_192657*/
 
-//: (0) sun grainfrothl bird_crickets
-//this is the template from mgrainfroth 230830_195041       
-//The source is: 230803_195659_JunAsayo3code       
-(
-'amp': [ 1.0, "Xyz(7, 0.2, 0.3, 1.5) + Xyz(6, 0.2, 0.3, 1.5)", 'on' ],
-'buf': 'bird_crickets',
-'endframe': [ 2393634, nil, nil ],
-'playfunc': 'grainfrothl',
-'pos': [ 0.079185223249971, "\\x7.sr", 'on' ],
-'startframe': [ 16764, nil, nil ],
-'trate': [ 0.0, "\\z7.sr", 'on' ],
-'vol': [ 3.356638951877, "", 'off' ],
-)
-//: (1) sun grainmagshift hanbaiki
-//This should be used in asayo's last solo as it is here.     
-//see also separate file copy of the preset 230913_asayo_finale_solo.scd     
-//It should be softened through resonant filters, rate and shift etc.!!!     
+//: (0) jun grainmagshift hanbaiki
+//This should be used in asayo's last solo as it is here.      
+//see also separate file copy of the preset 230913_asayo_finale_solo.scd      
+//It should be softened through resonant filters, rate and shift etc.!!!      
 (
 'amp': [ 0.70246105274054, "Xyz(7, 0.15, 0.05, 2.1) + Xyz(6, 0.15, 0.05, 2.1) - 2.0 * 1.0", 'on' ],
 'buf': 'hanbaiki',
@@ -31,7 +18,7 @@
 'trate': [ 4.8761198231362, "\\z7.sr", 'off' ],
 'vol': [ 8.6798043579525, "", 'off' ],
 )
-//: (2) sun grainbrickwall bird_crickets
+//: (1) jun grainbrickwall bird_crickets
 (
 'amp': [ 0.49707572071839, "Xyz(7, 0.15, 0.05, 2.1) + Xyz(6, 0.15, 0.05, 2.1) - 3.0", 'off' ],
 'buf': 'bird_crickets',
@@ -44,7 +31,7 @@
 'vol': [ 9.0181667615548, "", 'off' ],
 'wipe': [ -0.62805755395683, "xz6.sr.lin(-0.1, 0.1)", 'off' ],
 )
-//: (3) sun grainbrickwall swallows
+//: (2) jun grainbrickwall swallows
 (
 'amp': [ 0.98566326794679, "Xyz(5, 0.2, 0.1, 1.5)", 'off' ],
 'buf': 'swallows',
@@ -57,7 +44,7 @@
 'vol': [ 9.7143005020444, "", 'off' ],
 'wipe': [ -0.39496402877698, "xz6.sr", 'off' ],
 )
-//: (4) sun grainbrickwall fones
+//: (3) jun grainbrickwall fones
 (
 'amp': [ 0.99281869468454, "Xyz(5, 0.2, 0.1, 1.5)", 'off' ],
 'buf': 'fones',
