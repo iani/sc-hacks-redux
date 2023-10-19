@@ -29,10 +29,10 @@ Adapt this to script for scene, with sensor controls.
 	);
 	out = Limiter.ar(out, 0.5);
 
-	out.pan;
+	out.panAz(8, 0);
 	// out.postln;
 } +> \jun;
-//:
+//: lfnoise2 sound variation
 // LFNoise2 -> pos
 { LFNoise2.kr(1/10).range(0, 1) } @>.jun \pos;
 // LFNoise2 -> rate
@@ -80,6 +80,7 @@ Adapt this to script for scene, with sensor controls.
 600 / 2 @>.jun \f4; // keep this
 
 //: xyz control jun f3 amp LH ---- DO USE THIS YES YES YES
+{ \x5.sr.lag(0.5) } @>.jun \pan;
 { Xyz(5, 0.15, 0.05, 3.1, 0.005) * 0.5 } @>.jun \a3; // asayo L
 // xyz control jun f3 amp LH DO USE THIS YES YES YES
 { Xyz(6, 0.15, 0.05, 3.1, 0.005) * 0.5 } @>.jun \a4;
@@ -87,6 +88,10 @@ Adapt this to script for scene, with sensor controls.
 { Xyz(8, 0.15, 0.05, 3.1, 0.005) * 0.5 } @>.jun \a1; // asayo R
 // xyz control ASAYO f2 amp LH ------ DO USE THIS YES YES YES
 { Xyz(7, 0.15, 0.05, 3.1, 0.005) * 0.5 } @>.jun \a2;
+// { \x7.sr.lag(0.5) } @>.jun \pan;
+
+//pan control
+
 //:========= individual control code section ends here
 //: @>.jun \f3
 800 / 2 @>.jun \f3;
