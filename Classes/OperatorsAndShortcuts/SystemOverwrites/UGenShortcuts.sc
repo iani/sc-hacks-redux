@@ -7,6 +7,7 @@
 	amplifyl { | amp = 0.1, lim = 0.5 | ^this * (\amp.br(~amp ? amp) min: lim) }
 	vol { | vol = 1 | ^this * \vol.br(~vol ? vol) }
 	pan { | pan = 0 | ^Pan2.ar(this, \pan.br(~pan ? pan)) }
+	panAz { | numchans = 8, pan = 0 | ^PanAz.ar(numchans, this, \pan.br(~pan ? pan)) }
 	sendReply { | oscmessage = \trigger, values = 0, replyId = 1 |
 		^SendReply.kr(this, oscmessage.asOscMessage, values, replyId);
 	}

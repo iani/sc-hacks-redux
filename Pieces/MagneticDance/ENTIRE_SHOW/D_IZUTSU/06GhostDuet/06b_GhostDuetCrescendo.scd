@@ -1,4 +1,6 @@
 // Exporting 13 snippets on 230917_194221
+// Output is stereo from original algorithm.
+// pan to 8 channels must be done manually
 //Source: [ 230917_193251, 230917_193336, 230917_193426, 230917_193516, 230917_193606, 230917_193656, 230917_193745 ]
 //:--[13203.623501792]
 [ '/code', "//:--[60] ===== ASAYO ======
