@@ -12,7 +12,10 @@
 //// REMOVING DELAY//:--[0.012848833000021]
 {\x5.sr}@>.justineL \pos
 //// REMOVING DELAY//:--[0.01405833299998]
-{\z5.sr}@>.justineL \trate
+{\z5.sr}@>.justineL \trate;
+{\z5.sr}@>.justineL \lpos;
+{\z5.sr}@>.justineL \rpos;
+
 //:--[1.6810296250001] JUSTINER stop
 \justineR.envir.stopSynths
 //:--[1.681997041] JUSTINER grainfrothlpanaz
@@ -24,6 +27,10 @@
 {\x6.sr}@>.justineR \pos
 //:--[1.692816333]
 {\z6.sr}@>.justineR \trate
+{\z6.sr}@>.justineR \trate;
+{\z6.sr}@>.justineR \lpos;
+{\z6.sr}@>.justineR \rpos;
+
 //:--[4.9310054580001] // YOSHIMITSUL STOP
 \yoshimitsuL.envir.stopSynths
 //:--[4.932683666] // YOSHIMITSUL grainfrothl8
