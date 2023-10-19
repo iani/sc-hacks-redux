@@ -93,9 +93,9 @@ nil +>.asayo \freqmodnoise;
 { XLine.kr(200, 800, 100) } @>.jun \freq; // gliss duration: 180!
 { XLine.kr(800, 200, 100) } @>.asayo \freq; // gliss duration: 180!
 //:--[20] spread cluster (WITHOUT NOISE!) + cresc spread duration: 90'
-// stop the previous noise modulation
-nil +>.asayo \freqmodnoise;
-nil +>.jun \freqmodnoise;
+// stop the previous noise modulation check these to remove ping
+// nil +>.asayo \freqmodnoise;
+// nil +>.jun \freqmodnoise;
 
 {	// jun cluster opens DOWNWARD
 	(1..50).normalize(1, 0.5) do: { | v, i |
@@ -107,9 +107,9 @@ nil +>.jun \freqmodnoise;
 		XLine.kr(1, v, 90).bout(\freq +++ i) // spread duration: 90!
 	};
 } +>.asayo \freqmod;
-//:crescendo:
-{ Line.kr(1, 2, 50) } @>.jun \vol;
-{ Line.kr(1, 2, 50) } @>.asayo \vol;
+//:crescendo: check these to remove ping
+// { Line.kr(1, 2, 50) } @>.jun \vol;
+// { Line.kr(1, 2, 50) } @>.asayo \vol;
 
 //:--[50] add gradually spreading noise to the cluster lines. dur: 70'
 {

@@ -24,7 +24,7 @@ Adapt this to script for scene, with sensor controls.
 	out = DynKlank.ar(
 		`[freqs, amps, ringtimes],
 		src
-	).pan;
+	).panAz(8, 0);
 	// out.postln;
 } +> \jun;
 // LFNoise2 -> pos
@@ -59,7 +59,7 @@ Adapt this to script for scene, with sensor controls.
 //:1000 @>.jun \f2
 // 900 @>.jun \f2;
 ////:900 @>.jun \f3
-//900 @>.jun \f3;
+//900 @>.jun \f3; fd
 //:800 @>.jun \f4
 800 @>.jun \f4;
 //:Jun: -- wider spaced lower register f3, f4
@@ -73,13 +73,14 @@ Adapt this to script for scene, with sensor controls.
 400 / 2 @>.jun \f3; // keep this
 600 / 2 @>.jun \f4; // keep this
 // xyz control jun f3 amp LH ---- DO USE THIS YES YES YES
-{ Xyz(1, 0.15, 0.05, 3.1, 0.005) * 0.05 } @>.jun \a3;
+{ Xyz(1, 0.15, 0.05, 3.1, 0.005) * 0.10 } @>.jun \a3;
 // xyz control jun f3 amp LH DO USE THIS YES YES YES
-{ Xyz(2, 0.15, 0.05, 3.1, 0.005) * 0.1 } @>.jun \a4;
+{ Xyz(2, 0.15, 0.05, 3.1, 0.005) * 0.01 } @>.jun \a4;
 // xyz control ASAYO f1 amp LH ----- DO USE THIS YES YES YES
-{ Xyz(5, 0.15, 0.05, 3.1, 0.005) * 1.5 } @>.jun \a1;
+{ Xyz(5, 0.15, 0.05, 3.1, 0.005) * 0.15 } @>.jun \a1;
 // xyz control ASAYO f2 amp LH ------ DO USE THIS YES YES YES
-{ Xyz(7, 0.15, 0.05, 3.1, 0.005) * 1.5 } @>.jun \a2;
+{ Xyz(6, 0.15, 0.05, 3.1, 0.005) * 0.15 } @>.jun \a2;
+{ \x7.sr.lag(0.5) } @>.jun \pan;
 //:========= individual control code section ends here
 //: @>.jun \f3
 800 / 2 @>.jun \f3;
@@ -171,7 +172,7 @@ nil @>.jun \amp;
 1 @>.jun \amp;
 //:======================================== controls
 //:amp test amp Xyz
-{ Xyz(7, 0.15, 0.05, 2.1) + Xyz(6, 0.15, 0.05, 2.1) + 0.01 } @>.jun \amp;
+{ Xyz(5, 0.15, 0.05, 2.1) + Xyz(6, 0.15, 0.05, 2.1) + 0.01 } @>.jun \amp;
 //:
 //:==== ==============
 //:====================REJECTED FREQUENCIES! ====================

@@ -81,15 +81,14 @@ Adapt this to script for scene, with sensor controls.
 
 //: xyz control jun f3 amp LH ---- DO USE THIS YES YES YES
 { \x5.sr.lag(0.5) } @>.jun \pan;
-{ Xyz(5, 0.15, 0.05, 3.1, 0.005) * 0.5 } @>.jun \a3; // asayo L
+{ Xyz(5, 0.15, 0.05, 3.1, 0.005) * 0.15 } @>.jun \a3; // asayo L
 // xyz control jun f3 amp LH DO USE THIS YES YES YES
-{ Xyz(6, 0.15, 0.05, 3.1, 0.005) * 0.5 } @>.jun \a4;
+{ Xyz(6, 0.15, 0.05, 3.1, 0.005) * 0.15 } @>.jun \a4;
 // xyz(control ASAYO f1 amp LH ----- DO USE THIS YES YES YES
-{ Xyz(8, 0.15, 0.05, 3.1, 0.005) * 0.5 } @>.jun \a1; // asayo R
+{ Xyz(8, 0.15, 0.05, 3.1, 0.005) * 0.15 } @>.jun \a1; // asayo R
 // xyz control ASAYO f2 amp LH ------ DO USE THIS YES YES YES
-{ Xyz(7, 0.15, 0.05, 3.1, 0.005) * 0.5 } @>.jun \a2;
+{ Xyz(7, 0.15, 0.05, 3.1, 0.005) * 0.15 } @>.jun \a2;
 // { \x7.sr.lag(0.5) } @>.jun \pan;
-
 //pan control
 
 //:========= individual control code section ends here
