@@ -15,6 +15,33 @@ PresetListGui {
 		this.window.front;
 	}
 
+	gui2 { // narrower window - for multiple preset lists
+		postln("PresetListGui stats: player:" + this.player + "numPresets:" + presetList.presets.size);
+		this.window2.front;
+	}
+
+	window2 {
+		var window, canvas;
+		// i = 0;
+		window = ScrollView(bounds:Rect(0,0,250,700).center_(Window.availableBounds.center));
+		canvas = View();​
+		layout = VLayout();
+		window.canvas = canvas; // window < (canvas = view) < layout.
+		canvas.layout = layout;
+		layout add: this.makeHeader;
+		this.addPresetViews;
+		// layout.add(nil); // stretch remaining empty space
+		layout.addNotifier(presetList, \insert, { | n, view, index |
+			this.insert(view, index);
+		});
+		layout.addNotifier(presetList, \remakeViews, { this.addPresetViews });
+		window.onClose_({
+			"My window closed. Player should return".postln;
+			presetList.windowClosed;
+		});
+		^window.front;
+	}
+
 	window {
 		var window, canvas;
 		// i = 0;

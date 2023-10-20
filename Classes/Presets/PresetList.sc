@@ -156,7 +156,13 @@ PresetList {
 			PresetListGui(this).gui;
 		})
 	}
-
+	gui2 { // narrower window, for multiple presetlists
+		this.addActive;
+		Registry(this, this.name, {
+			this.changed(\activeLists);
+			PresetListGui(this).gui2;
+		})
+	}
 	*playerMenu { // making this an instance function on Thu 14 Sep 2023 12:48
 		// this.availablePlayers.postln;
 		^this.availablePlayers collect: { | p | [p, { | me |
@@ -247,7 +253,7 @@ PresetList {
 	}
 
 	*openPresetWithPlayer { | argPreset, argPlayer |
-			this.fromPath(dict[argPreset].path, argPlayer).gui;
+			this.fromPath(dict[argPreset].path, argPlayer).gui2;
 	}
 
 	availablePlayers { ^this.class.availablePlayers }
