@@ -1,4 +1,0 @@
-#+TITLE: Sensor Numbers
-
-JUN: 6, 7
-ASAYO 5, 8
