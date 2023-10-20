@@ -39,7 +39,7 @@ Adapt this to script for scene, with sensor controls.
 { LFNoise2.kr(1/10).range(0.8, 1.2) } @>.jun \rate;
 //:noise rate variations
 { LFNoise2.kr(1/1).range(0.4, 1.2) } @>.jun \rate;
- jlw//:first play a little adjusting the notes without control from dancers
+//:first play a little adjusting the notes without control from dancers
 //: ===! asayo: high register, f1, f2
 //:1200 @>.jun \f1
 1200 @>.jun \f1;  /// keep this
@@ -160,13 +160,7 @@ nil @>.jun \amp;
 	+ 0.5
 } @>.jun \amp;
 //: trig for pitch change asayo
-//:
-nil @>.jun \amp;
-//: xyz control jun+asayo amp
-nil @>.jun \amp;
-
-
-
+//
 //
 //:0.5 @>.jun \rate
 0.5 @>.jun \rate;
