@@ -246,6 +246,10 @@ PresetList {
 		.bounds_(Rect(0, 0, 400, 300).center_(Window.availableBounds.center))
 	}
 
+	*openPresetWithPlayer { | argPreset, argPlayer |
+			this.fromPath(dict[argPreset].path, argPlayer).gui;
+	}
+
 	availablePlayers { ^this.class.availablePlayers }
 
 	*availablePlayers {
@@ -261,7 +265,7 @@ PresetList {
 	addActive {
 		activeLists add: this.player;
 		this.class.changed(\activeLists);
-	}
+ 	}
 
 	removeActive {
 		// postln("before removeActive availablePlayers:" + this.availablePlayers);
