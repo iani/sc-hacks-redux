@@ -6,3 +6,6 @@ JUN: 6, 7
 ASAYO 5, 8
 ----
 Justine / Elli:
+
+JUSTINE: 5
+ELLI: 6
