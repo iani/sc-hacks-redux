@@ -266,7 +266,8 @@ OscGroups {
 		// Remotely only execute core CmdPeriod method.
 		sendAddress ?? { ^nil };
 		"Sending CmdPeriod to OscGroups".postln;
-		sendAddress.sendMsg(codeMessage, "OscGroups.remoteCmdPeriod")
+		sendAddress.sendMsg(codeMessage, "OscGroups.remoteCmdPeriod");
+		this.changed(\cmdperiod);
 	}
 
 	*remoteCmdPeriod {
