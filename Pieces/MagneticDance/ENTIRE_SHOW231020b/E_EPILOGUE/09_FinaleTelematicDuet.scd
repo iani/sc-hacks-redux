@@ -73,13 +73,13 @@ Adapt this to script for scene, with sensor controls.
 400 / 2 @>.jun \f3; // keep this
 600 / 2 @>.jun \f4; // keep this
 // xyz control jun f3 amp LH ---- DO USE THIS YES YES YES
-{ Xyz(1, 0.15, 0.05, 3.1, 0.005) * 0.15 } @>.jun \a3;
+{ Xyz(1, 0.15, 0.05, 3.1, 0.005) * 0.1 } @>.jun \a3;
 // xyz control jun f3 amp LH DO USE THIS YES YES YES
-{ Xyz(2, 0.15, 0.05, 3.1, 0.005) * 0.15 } @>.jun \a4;
+{ Xyz(2, 0.15, 0.05, 3.1, 0.005) * 0.1 } @>.jun \a4;
 // xyz control ASAYO f1 amp LH ----- DO USE THIS YES YES YES
-{ Xyz(5, 0.15, 0.05, 3.1, 0.005) * 0.25 } @>.jun \a1;
+{ Xyz(5, 0.15, 0.05, 3.1, 0.005) * 0.1 } @>.jun \a1;
 // xyz control ASAYO f2 amp LH ------ DO USE THIS YES YES YES
-{ Xyz(6, 0.15, 0.05, 3.1, 0.005) * 0.25 } @>.jun \a2;
+{ Xyz(6, 0.15, 0.05, 3.1, 0.005) * 0. } @>.jun \a2;
 //:========= individual control code section ends here
 //: @>.jun \f3
 800 / 2 @>.jun \f3;

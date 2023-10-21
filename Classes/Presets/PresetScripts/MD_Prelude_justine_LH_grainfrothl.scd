@@ -1,7 +1,7 @@
-/*presets for justineL saved at 231019_105914*/
+/*presets for justineL saved at 231020_191139*/
 
-//: (0) justineL grainfrothl crickets
-//scene 1 lh 
+//: (0) justineL grainfrothl8 crickets
+//scene 1 lh  
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5) * 0.5", 'on' ],
 'buf': 'crickets',
@@ -12,7 +12,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (1) justineL grainfrothl swallows
+//: (1) justineL grainfrothl8 swallows
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5) * 0.5", 'on' ],
 'buf': 'swallows',
@@ -23,8 +23,8 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (2) justineL grainfrothl hanbaiki
-//scene 3 
+//: (2) justineL grainfrothl8 hanbaiki
+//scene 3  
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5) * 0.5", 'on' ],
 'buf': 'hanbaiki',
@@ -35,7 +35,7 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (3) justineL grainfrothl noisebirdsclick
+//: (3) justineL grainfrothl8 noisebirdsclick
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'noisebirdsclick',
@@ -46,8 +46,8 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (4) justineL grainfrothl noisebirdsclick
-//scene 4 
+//: (4) justineL grainfrothl8 noisebirdsclick
+//scene 4  
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'noisebirdsclick',
