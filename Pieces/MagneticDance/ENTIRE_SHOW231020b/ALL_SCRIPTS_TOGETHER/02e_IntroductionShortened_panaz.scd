@@ -27,8 +27,8 @@ nil +>.asayo \freqmodnoise;
 800 @>.asayo \freq;
 0.1 @>.jun \amp;
 0.1 @>.asayo \amp;
-0.25 @>.jun \vol;
-0.25 @>.asayo \vol;
+0.15 @>.jun \vol;
+0.15 @>.asayo \vol;
 {
 	50.do({ | i | (\freq +++ i).bus.set(1)});
 	Silent.ar.perc;
@@ -38,9 +38,9 @@ nil +>.asayo \freqmodnoise;
 	Silent.ar.perc;
 } +>.asayo \fmod;
 //======= add sensor control =======
-{ \x7.gt.lag(0.5) * 0.25 } @>.jun \amp;
+{ (\z7.sr.lag(0.5) < 0.5 * 0.25).lag(0.5) } @>.jun \amp;
 { \x7.sr.lag(0.5) } @>.jun \pan;
-{ (\z8.sr.lag(0.5) < 0.5 * 0.25).lag(0.5) } @>.asayo \amp;
+{ (\z8.sr.lag(0.5) > 0.5 * 0.25).lag(0.5) } @>.asayo \amp;
 { \z8.sr.lag(0.5) } @>.asayo \pan;
 
 //======= Set sensor values to off =======
@@ -70,10 +70,10 @@ nil +>.asayo \freqmodnoise;
 	).amplify.vol.panAz(8, 0);
 } +> \asayo;
 //:--[20] add softening cluster noise modulation
-// { \z5.sr.lag(0.5).lin(0, 0.01) } @>.jun \noiseb;
-// { \y8.sr.lag(0.5).lin(0, 0.01) } @>.asayo \noiseb;
-// 1.1 @>.jun \vol;
-// 1.1 @>.asayo \vol;
+{ \z5.sr.lag(0.5).lin(0, 0.01) } @>.jun \noiseb;
+{ \y8.sr.lag(0.5).lin(0, 0.01) } @>.asayo \noiseb;
+3.0 @>.jun \vol;
+3.0 @>.asayo \vol;
 /*
 {
 		50 do: { | i |
@@ -125,5 +125,5 @@ nil +>.asayo \freqmodnoise;
 		};
 } +>.asayo \freqmodnoise;
 //:--[20] fadeout
-{ XLine.kr(2, 0.0001, 20, doneAction: 2) - 0.0001 } @>.jun \vol;
-{ XLine.kr(2, 0.0001, 20, doneAction: 2) - 0.0001 } @>.asayo \vol;
+{ XLine.kr(3.0, 0.0001, 20, doneAction: 2) - 0.0001 } @>.jun \vol;
+{ XLine.kr(3.0, 0.0001, 20, doneAction: 2) - 0.0001 } @>.asayo \vol;
