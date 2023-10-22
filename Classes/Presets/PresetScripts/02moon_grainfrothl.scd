@@ -7,9 +7,9 @@
 'buf': 'marinagunyoki',
 'endframe': 2451380,
 'playfunc': 'grainfrothl',
-'pos': [ 0.079365079365079, "\\x5.sr", 'on' ],
+'pos': [ 0.079365079365079, "\\x2.sr", 'on' ],
 'startframe': 0,
-'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
+'trate': [ 0.48412698412698, "\\z2.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
 //: (1) sanya grainfrothl noisebirdsclick
@@ -18,9 +18,9 @@
 'buf': 'mizujuten',
 'endframe': 6750651,
 'playfunc': 'grainfrothl',
-'pos': [ 0.079365079365079, "\\x7.sr", 'on' ],
+'pos': [ 0.079365079365079, "\\x2.sr", 'on' ],
 'startframe': 0,
-'trate': [ 0.48412698412698, "\\z7.sr", 'on' ],
+'trate': [ 0.48412698412698, "\\z2.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
 //: (2) sanya grainfrothl fones
@@ -30,9 +30,9 @@
 'buf': 'nami',
 'endframe': 3105211,
 'playfunc': 'grainfrothl',
-'pos': [ 0.079365079365079, "\\x7.sr", 'on' ],
+'pos': [ 0.079365079365079, "\\x2.sr", 'on' ],
 'startframe': 0,
-'trate': [ 0.48412698412698, "\\z7.sr", 'on' ],
+'trate': [ 0.48412698412698, "\\z2.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
 //: (3) sanya grainfrothl noisebirdsclick
@@ -42,8 +42,8 @@
 'buf': 'namikodomokuruma',
 'endframe': 107520,
 'playfunc': 'grainfrothl',
-'pos': [ 0.079365079365079, "\\x7.sr", 'on' ],
+'pos': [ 0.079365079365079, "\\x2.sr", 'on' ],
 'startframe': 0,
-'trate': [ 0.48412698412698, "\\z7.sr", 'on' ],
+'trate': [ 0.48412698412698, "\\z2.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
