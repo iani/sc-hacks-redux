@@ -1,7 +1,7 @@
-/*presets for sanya saved at 230830_195041*/
-// LEFT HAND
-//: (0) sanya grainfrothl columbia
-//scene 1
+/*presets for dimitra saved at 231022_112741*/
+
+//: (0) dimitra grainfrothl japasea
+//scene 1 
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'japasea',
@@ -12,8 +12,8 @@
 'trate': [ 0.48412698412698, "\\z2.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (1) sanya grainfrothl wind_moderate
-//scene 2
+//: (1) dimitra grainfrothl sarizaplasticbottle
+//scene 2 
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'sarizaplasticbottle',
@@ -24,8 +24,8 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (2) sanya grainfrothl yangdrums
-//scene 3
+//: (2) dimitra grainfrothl sarizaplasticbottle2
+//scene 3 
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'sarizaplasticbottle2',
@@ -36,8 +36,8 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (3) sanya grainfrothl hanbaiki
-//scene 4
+//: (3) dimitra grainfrothl sarizasuiryu
+//scene 4 
 (
 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
 'buf': 'sarizasuiryu',
@@ -48,9 +48,10 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
-//: (4) sanya grainfrothl noisebirdsclick
+//: (4) dimitra grainfrothl shireimarina
 (
-'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ], 'buf': 'shireimarina',
+'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5)", 'on' ],
+'buf': 'shireimarina',
 'endframe': 979297,
 'playfunc': 'grainfrothl',
 'pos': [ 0.079365079365079, "\\x5.sr", 'on' ],
@@ -58,3 +59,4 @@
 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ],
 'vol': [ 3.356638951877, "", 'off' ],
 )
+/* THE END */

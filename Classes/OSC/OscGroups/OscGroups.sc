@@ -263,11 +263,12 @@ OscGroups {
 	}
 
 	*cmdPeriod { // disabling cmd period Sat 21 Oct 2023 17:14
+		// reenabling cmd period Mon  6 Nov 2023 19:21
 		// Remotely only execute core CmdPeriod method.
 		sendAddress ?? { ^nil };
 		"Sending CmdPeriod to OscGroups".postln;
-		// sendAddress.sendMsg(codeMessage, "OscGroups.remoteCmdPeriod");
-		// this.changed(\cmdperiod);
+		sendAddress.sendMsg(codeMessage, "OscGroups.remoteCmdPeriod");
+		this.changed(\cmdperiod);
 	}
 
 	*remoteCmdPeriod {
