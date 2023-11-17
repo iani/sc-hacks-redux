@@ -145,10 +145,10 @@
 		}, envir)
 	}
 	// Sat 11 Nov 2023 08:18 - cancel !+> --- too cumbersome.
-	// Setting is more useful Thu 14 Sep 2023 15:24
-	// +> { | param, envir |
-	// 	envir.envir.put(param, this);
-	// }
+	// Mon 13 Nov 2023 22:29: Substitute for earlier !+> or +>
+	++> { | param, envir |
+		envir.envir.put(param, this);
+	}
 
 	// // playing as synth is hardly used. Keep it for compatibility
 	!+> { | player, envir |

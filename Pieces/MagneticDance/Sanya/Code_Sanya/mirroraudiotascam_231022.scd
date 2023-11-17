@@ -1,3 +1,6 @@
+/*
+Tried this with various configs and it did not work.
+*/
 ServerBoot add: {
 	{
 		"adding output copy synth".postln;
