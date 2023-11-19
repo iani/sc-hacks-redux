@@ -23,7 +23,7 @@ PresetListGui {
 	window2 {
 		var window, canvas;
 		// i = 0;
-		window = ScrollView(bounds:Rect(0,0,250,700).center_(Window.availableBounds.center));
+		window = ScrollView(bounds:Rect(0,0,350,700).center_(Window.availableBounds.center));
 		canvas = View();​
 		layout = VLayout();
 		window.canvas = canvas; // window < (canvas = view) < layout.

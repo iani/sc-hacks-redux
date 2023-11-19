@@ -1,0 +1,33 @@
+#+TITLE: Sample List
+
+* Japan
+** japanbrook
+** japansea
+* Greece
+** Andros
+izumi.wav
+mizujuten.wav
+sarizaglassbottle.wav
+sarizaplasticbottle.wav
+suiro.wav
+takikoorogi.wav
+kojobottling.wav
+niwatoriame.wav
+sarizakogawazoom.wav
+sarizaplasticbottle2.wav
+suiryuzemi.wav
+takisuiryu.wav
+kojohaisuizemi.wav
+pulu.wav
+sarizakojo.wav
+sarizasuiryu.wav
+takiike.wav
+takizemi.wav
+** Elevsis
+marina.wav
+marinaboto.wav
+marinagunyoki.wav
+nami.wav
+namikodomokuruma.wav
+namitooiugoki.wav
+shireimarina.wav

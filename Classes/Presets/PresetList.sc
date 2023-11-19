@@ -249,7 +249,7 @@ PresetList {
 				})
 			)
 		)
-		.bounds_(Rect(0, 0, 400, 300).center_(Window.availableBounds.center))
+		.bounds_(Rect(0, 0, 400, 350).center_(Window.availableBounds.center))
 	}
 
 	*openPresetWithPlayer { | argPreset, argPlayer |
