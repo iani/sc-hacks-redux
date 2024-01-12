@@ -7,11 +7,8 @@ See README.
 */
 
 Mediator : EnvironmentRedirect {
-	classvar default, global, <>doPush = true;
+	classvar default, global;
 	var <name, busses;
-
-	*activate { doPush = true }
-	*deactivate { doPush = false }
 
 	*allKeys { ^this.all.keys.asArray.sort }
 	*global {// experimental: Use Event instead of Environment
@@ -115,8 +112,9 @@ Mediator : EnvironmentRedirect {
 		stream << " ]" ;
 	}
 
-	*initClass { StartUp add: { this.push } }
-	*push { if (doPush) { this.default.push } }
+	*initClass { StartUp add: { this.push; } }
+
+	*push { this.default.push }
 	push { // get rid of warning
 		if(currentEnvironment !== this) {
 			Environment.push(this)
