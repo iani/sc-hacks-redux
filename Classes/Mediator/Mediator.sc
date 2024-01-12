@@ -114,6 +114,20 @@ Mediator : EnvironmentRedirect {
 
 	*initClass { StartUp add: { this.push; } }
 
+	*mergeEnvir {
+		// merge currentEnvironment and then push
+		// Put this in beginning of startup file if you are setting
+		// environment variables from class startup code or from startup file
+		if (currentEnvironment isKindOf: this) {
+			// "will not merge".postln;
+		}{
+			var envir;
+			envir = currentEnvironment;
+			this.push;
+			envir keysValuesDo: { | key, value | currentEnvironment.put(key, value);}
+		}
+	}
+
 	*push { this.default.push }
 	push { // get rid of warning
 		if(currentEnvironment !== this) {
