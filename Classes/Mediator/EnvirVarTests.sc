@@ -4,7 +4,7 @@ EnvirTest1 {
 	*initClass {
 		StartUp add: {
 			"Setting envir class from EnvirTest1 startup".postln;
-			~classInitSet = 123;
+			~classInitSet = "Environment variable set by EnvirTest1 at startup";
 			currentEnvironment.postln;
 		}
 	}
