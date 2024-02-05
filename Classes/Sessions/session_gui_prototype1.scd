@@ -16,8 +16,8 @@ blv ={ | label = "default", items |
 };
 \sessions.bl_(800, 400).vlayout(
 	HLayout(
-		[llv.("Bookmarks", ["a", "beta", "c"]), stretch: 1],
-		[llv.("Outer List", ["a", "beta", "c"]), stretch: 2],
+		[llv.("Bookmarks", ["audiofiles", "synthdefs", "scores"]), stretch: 1],
+		[llv.("Outer List", ["water", "othonoi", "sumidagawa"]), stretch: 2],
 		[llv.("Inner List"), stretch: 2]
 	),
 		HLayout(
