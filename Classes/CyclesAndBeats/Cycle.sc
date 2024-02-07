@@ -8,5 +8,24 @@
 //3. By issuing a changed message from the Cycle instance itself.
 
 Cycle {
+	classvar all;
+	var <name, <tempo, <subdivisions, <synth;
 
+	*all {
+		^all ?? { all = IdentityDictionary() }
+	}
+
+	*new { | name = \c1, tempo = 1, subdivisions |
+		var new;
+		new = this.all.at(name) ?? {
+			new = this.newCopyArgs(name, tempo, subdivisions).init;
+			this.all.put(name, new);
+			new;
+		};
+		^new;
+	}
+
+	init {
+
+	}
 }
