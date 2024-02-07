@@ -1,4 +1,7 @@
 // posted in sc forum on Feb 7 2024
+// from dietcv
+// https://scsynth.org/t/bresenham-implementation-of-the-euclidean-rhythm-algorithm-in-supercollider/3127
+
 (
 var rampToTrig = { |phase|
 	var history = Delay1.ar(phase);

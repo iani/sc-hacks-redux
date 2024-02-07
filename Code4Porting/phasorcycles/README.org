@@ -1,0 +1,4 @@
+#+title: Readme
+Wed  7 Feb 2024 16:21
+
+implementing cycle triggering with synths on scserver.
