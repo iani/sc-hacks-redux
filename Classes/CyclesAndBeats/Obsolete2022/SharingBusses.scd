@@ -21,9 +21,3 @@ Testing flexible bus connections.
 
 
 
-PlayerHistory
-
-currentEnvironment
-currentEnvironment.name;
-
-player
