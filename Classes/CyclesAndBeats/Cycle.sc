@@ -26,6 +26,23 @@ Cycle {
 	}
 
 	init {
+		// subdivisions ?? { subdivisions = [1]
+		this.start;
+	}
+
+	start {
+		this.startSynth;
+	}
+
+	startSynth {
+
+	}
+
+	*delete { | name |
+
+	}
+
+	*stop {
 
 	}
 }
