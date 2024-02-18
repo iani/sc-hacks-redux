@@ -9,8 +9,13 @@ MyEnvir.buf1 = \justTesting;
 // retrieve the thing stored in the variable
 MyEnvir.buf1;
 
+Sun 18 Feb 2024 10:59
+
+Disabling this class here, because used by other libs in collaboration with others.
+
 */
 
+/*
 MyEnvir {
 	classvar >event;
 
@@ -23,3 +28,4 @@ MyEnvir {
 	}
 
 }
+*/
