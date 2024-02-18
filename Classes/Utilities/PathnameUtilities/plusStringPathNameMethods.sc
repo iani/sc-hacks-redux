@@ -12,9 +12,10 @@
 	lastColonIndex { ^PathName(this).lastColonIndex }
 	up { ^this.superFolder }
 	superFolder {
-		var up;
+		var up, index;
 		up = this.pathOnly;
-		^up.copyRange(0, up.lastColonIndex - 1).folder;
+		up = up.copyRange(0, up.lastColonIndex - 1).folder;
+		if (up.size == 0) { ^"/" } { ^up }
 	}
 
     isAbsolutePath { ^PathName(this).isAbsolutePath }
@@ -23,20 +24,49 @@
     folderName { ^PathName(this).folderName }
 	// !!!!! this causes seggmentation faul!!!!!!!!!!
     // fullPath { ^PathName(this).fullPath } // WHY ????????
-    entries { ^PathName(this).entries }
-    files { ^PathName(this).files }
-    folders { ^PathName(this).folders }
+    entries {
+		if (this.isFolder) {
+			^PathName(this).entries
+		}{
+			^PathName(this.folder).entries
+		}
+	}
+    // files { ^PathName(this).files }
+	files {
+		if (this.isFolder) {
+			^PathName(this).files
+		}{
+			^PathName(this.folder).files
+		}
+	}
+
+    // folders { ^PathName(this).folders }
+	folders {
+		if (this.isFolder) {
+			^PathName(this).folders
+		}{
+			^PathName(this.folder).folders
+		}
+	}
+
     isFile { ^PathName(this).isFile }
     isFolder { ^PathName(this).isFolder }
-    filesDo { | func | PathName(this).filesDo(func) }
-	allFolders { ^PathName(this).allFolders }
+    filesDo { | func |
+		PathName(this).filesDo(func)
+	}
+	allFolders {
+		^PathName(this).allFolders
+	}
 	diskName { ^PathName(this).diskName }
 	endNumber { ^PathName(this).endNumber }
 	// +/+ { | path | ^(PathName(this) +/+ path).fullPath } // already exists
 	noEndNumbers { ^PathName(this).noEndNumbers }
 	nextName { ^PathName(this).nextName }
 	absolutePath { ^PathName(this).absolutePath }
-	deepFiles { ^PathName(this).deepFiles }
+	deepFiles {
+		^PathName(this).deepFiles
+
+	}
 	fileNameWithoutDoubleExtension { ^PathName(this).fileNameWithoutDoubleExtension }
 	parentPath { ^PathName(this).parentPath }
 }
