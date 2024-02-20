@@ -18,5 +18,9 @@ Bookmark {
 		^all ?? { all = Set() }
 	}
 
-	== { | b | ^path == b.path }
+	// == { | b | ^path == b.path }
+
+	== { arg that;
+		^this.compareObject(that, #[\path])
+	}
 }
