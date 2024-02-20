@@ -3,6 +3,16 @@
 //String instead of PathName instances.
 
 + String {
+	// new utility method: return filenamewithoutextension or folder name:
+	basicName {
+		var p;
+		p = PathName(this);
+		if (p.pathOnly == p.fullPath) {
+			^"[" ++ p.folderName ++ "]";
+		}{
+			^p.fileNameWithoutExtension;
+		}
+	}
 	scroot { ^PathName.scroot }
     fileName { ^PathName(this).fileName }
     fileNameWithoutExtension { ^PathName(this).fileNameWithoutExtension }

@@ -1,5 +1,25 @@
 //Sun 18 Feb 2024 12:45 testing PathName methos for string
 // When
+"~/Dev/Test.scd".folderName.postln;
+"~/Dev/".folderName.postln;
+//:
+PathName("~/Dev/Test.scd").fileNameWithoutExtension;
+PathName("~/Dev/").fileNameWithoutExtension;
+PathName("~/Dev").fileNameWithoutExtension;
+
+PathName("~/Devx/").isFolder;
+
+PathName("~/Dev/").pathOnly;
+PathName("~/Dev/Test.scd").pathOnly;
+PathName("~/Dev").pathOnly;
+PathName("~/Dev").fullPath;
+
+PathName("~/Dev/").pathOnly;
+PathName("~/Dev/").fullPath;
+
+"~/Dev/".basicName;
+
+"~/Dev/Test.scd".basicName;
 //:testing parentPath:
 [
 	// "",
