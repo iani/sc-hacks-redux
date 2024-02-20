@@ -1,0 +1,68 @@
+#+title: Forum Query
+
+Custom equality test does not work for Set add: if ignoring instance variables
+
+Hello,
+
+Instances of Set, according to the help file, and to the code of add method,
+should not add instances that are equal.
+
+Example:
+```
+a = "alpha";
+b = "alpha";
+a == b; // a is equal to b
+a === b; // a is not identical to b
+c = Set();
+c add: a; // a was added
+c add: b; // b was not added
+```
+
+Class NetAddr overwrites the equality operator == to
+make objects
+
+Hello,
+
+Instances of Set, according to the help file, and to the code of add method,
+should not add instances that are equal. For example, one cannot add
+equal instances of a string ("abc") to a set more than once.
+Also, NetAddr overwrites the equal operator == so as to make it
+impossible to add a NetAddr instance to a Set that already includes
+another instance with the same address and port number.
+
+However:
+While using the custom == operator for a new class, the following
+is observed:
+
+When the operator compares all instance variables of the class for equality,
+then the Set rejects equal instances, just as in NetAddr.
+However, if another instance variable is added, then the Set
+no longer rejects equal instances, even if the test of equality works
+as expected.
+
+Following are examples showing this.
+
+Could anyone help out?
+In the meanwhile, I am using a custom class that overrrides
+"add" to work as expected.
+
+Best,
+
+Iannis Zannos
+
+=======================
+
+Examples:
+
+1. Set rejects second instances that equal (but not identical):
+```
+a = "alpha";
+b = "alpha";
+a == b; // a is equal to b
+a === b; // a is not identical to b
+c = Set();
+c add: a; // a was added
+c add: b; // b was not added
+```
+
+2.
