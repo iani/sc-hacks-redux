@@ -3,12 +3,24 @@
 //Note: If variable name is removed, then Set does not add duplicate
 //Bpath instances.
 
-Bpath {
-	var <path, <name;
+B1 {
+	var <path;
 
 	*new { | path | ^this.newCopyArgs(path); }
 
 	== { arg that; ^path == that.path }
+}
+
+B2 {
+	var <path, <name;
+
+	*new { | path | ^this.newCopyArgs(path); }
+
+	// == { arg that; ^path == that.path }
 	// also tested with this, modeled after NetAddr:
-	// == { arg that; ^this.compareObject(that, #[\path]) }
+	== { arg that; ^this.compareObject(that, #[\path]) }
+
+	hash {
+		^this.instVarHash(#[\path])
+	}
 }

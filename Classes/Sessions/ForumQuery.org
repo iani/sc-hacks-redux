@@ -4,35 +4,19 @@ Custom equality test does not work for Set add: if ignoring instance variables
 
 Hello,
 
-Instances of Set, according to the help file, and to the code of add method,
-should not add instances that are equal.
-
-Example:
-```
-a = "alpha";
-b = "alpha";
-a == b; // a is equal to b
-a === b; // a is not identical to b
-c = Set();
-c add: a; // a was added
-c add: b; // b was not added
-```
-
-Class NetAddr overwrites the equality operator == to
-make objects
-
-Hello,
-
-Instances of Set, according to the help file, and to the code of add method,
-should not add instances that are equal. For example, one cannot add
+a Set cannot add duplicate instances that are equal ( == )
+even if the instances are not identical ( === ).
+For example, one cannot add
 equal instances of a string ("abc") to a set more than once.
-Also, NetAddr overwrites the equal operator == so as to make it
-impossible to add a NetAddr instance to a Set that already includes
+Furthermore, one can overwrite the == operator to make it
+impossible to add duplicate instances whose contents are equal.
+A working example exists in class NetAddr.
+NetAddr overwrites the equal operator ==, and thus one cannot
+add a "duplicate" NetAddr instance to a Set that already includes
 another instance with the same address and port number.
 
-However:
-While using the custom == operator for a new class, the following
-is observed:
+However, in writing the == operator method for a my own
+class, the following was observed:
 
 When the operator compares all instance variables of the class for equality,
 then the Set rejects equal instances, just as in NetAddr.
@@ -62,7 +46,64 @@ a == b; // a is equal to b
 a === b; // a is not identical to b
 c = Set();
 c add: a; // a was added
-c add: b; // b was not added
+c add: b; // b was rejected
+c; // c only contains first instance
 ```
 
-2.
+2. Set rejects equal B1 instance
+```
+a = B1("alpha");
+b = B1("alpha");
+a == b; // a is equal to b
+a === b; // a is not identical to b
+c = Set();
+c add: a; // a was added
+c add: b; // b WAS REJECTED
+c; // c ONLY CONTAINS FIRST INSTANCE
+```
+
+2. Set DOES NOT REJECT equal B2 instance
+
+   Note Thu 22 Feb 2024 09:12 - this was resolved by
+   adding
+```
+	hash {
+		^this.instVarHash(#[\path])
+	}
+
+```
+
+To the B2 class code.
+
+```
+a = B2("alpha");
+b = B2("alpha");
+a == b; // a is equal to b
+a === b; // a is not identical to b
+c = Set();
+c add: a; // a was added
+c add: b; // b WAS NOT REJECTED
+c; // c CONTAINS BOTH INSTANCES
+```
+
+Class code for B1, B2 (see also attached file.)
+
+```
+B1 {
+	var <path;
+
+	*new { | path | ^this.newCopyArgs(path); }
+
+	== { arg that; ^path == that.path }
+}
+
+B2 {
+	var <path, <name;
+
+	*new { | path | ^this.newCopyArgs(path); }
+
+	== { arg that; ^path == that.path }
+	// also tested with this, modeled after NetAddr:
+	// == { arg that; ^this.compareObject(that, #[\path]) }
+}
+```
