@@ -24,7 +24,8 @@
 
 	getParent { if (this.parent.isNil) { ^defaultParentEvent } { ^this.parent }  }
 
-	+> { | player, envir | ^this.pushPlayInEnvir(player, envir ? player, true) }
+	// see OperatorFix240222.sc
+	// +> { | player, envir | ^this.pushPlayInEnvir(player, envir ? player, true) }
 
 	playInEnvir { | player, envir, start = true |
 		var atKey, new;

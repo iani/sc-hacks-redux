@@ -16,7 +16,8 @@
 				\startframe.br(~startframe ? 0) / BufSampleRate.kr(buf),
 				\endframe.br(~endframe ?? { BufFrames.kr(buf) }) / BufSampleRate.kr(buf))
 	}
-	+> { | ugenfunc | ^ugenfunc.ar(this) } // play as input to other ugen
+	// See OperatorFix240222
+	// +> { | ugenfunc | ^ugenfunc.ar(this) } // play as input to other ugen
 	@> { | bus, envir |
 		this.bout(bus, envir)
 	}

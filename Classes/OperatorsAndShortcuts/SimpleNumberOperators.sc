@@ -2,13 +2,13 @@
 Redoing on Fri  1 Sep 2023 07:50
 */
 + SimpleNumber {
-
+	// See OperatorFix240222.sc
 	// Set a key in the environment to me
-	+> { | param, envir |
-		param ?? { ^"SimpleNumber +> requires a parameter adverb".warn };
-		envir = envir ? \default;
-		envir.envir.put(param, this);
-	}
+	// +> { | param, envir |
+	// 	param ?? { ^"SimpleNumber +> requires a parameter adverb".warn };
+	// 	envir = envir ? \default;
+	// 	envir.envir.put(param, this);
+	// }
 
 	// Set the parameter of a synth of a player in the environment to me.
 	+>! { | playerParam, envir |

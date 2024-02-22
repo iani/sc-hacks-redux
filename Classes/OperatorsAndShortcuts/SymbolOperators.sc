@@ -156,9 +156,10 @@
     }
 
 	// Sat 11 Nov 2023 08:19  restore +> play in envir
-	+> { | player, envir |
-	 	^this.pushPlayInEnvir(player, envir);
-    }
+	// See SymbolOperators.sc
+	// +> { | player, envir |
+	//  	^this.pushPlayInEnvir(player, envir);
+    // }
 
 	+>! { | player, envir |
 		// osc message triggers play next event of an EventStream player
@@ -388,15 +389,16 @@
 
 + Nil {
 	envir { ^currentEnvironment }
-	+> { | player, envir |
-		Mediator.wrap(
-			{
-				// currentEnvironment[player].playNext;
-				// postln("debugging Nil+>. player is:" + currentEnvironment[player]);
-				// currentEnvironment.postln;
-				currentEnvironment[player].free;
-			},
-			envir ? player
-		)
-	}
+	// see OperatorFix240222.sc
+	// +> { | player, envir |
+	// 	Mediator.wrap(
+	// 		{
+	// 			// currentEnvironment[player].playNext;
+	// 			// postln("debugging Nil+>. player is:" + currentEnvironment[player]);
+	// 			// currentEnvironment.postln;
+	// 			currentEnvironment[player].free;
+	// 		},
+	// 		envir ? player
+	// 	)
+	// }
 }

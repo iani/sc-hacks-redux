@@ -44,8 +44,8 @@ EventStream {
 	}
 
 	// playing evenstream after adding a filter:
-
-	+> { | player, envir | ^this.pushPlayInEnvir(player, envir ? player, true) }
+	// see OperatorFix24022.sc
+	// +> { | player, envir | ^this.pushPlayInEnvir(player, envir ? player, true) }
 
 	// saving some time by copying this from Event.
 	playInEnvir { | player, envir, start = true |

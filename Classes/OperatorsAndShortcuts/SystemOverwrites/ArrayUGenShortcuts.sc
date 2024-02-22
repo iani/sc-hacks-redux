@@ -4,7 +4,8 @@
 
 // Make this work also with UGenArrays (usuall obtained from multichannel expansion)
 + Array {
-	+> { | ugenfunc | ^ugenfunc.ar(this) } // play as input to other ugen
+	// see OperatorFix240222.sc
+	// +> { | ugenfunc | ^ugenfunc.ar(this) } // play as input to other ugen
 	// use example: WhiteNoise.ar(0.1).dup +> Klank_
 	// To put array in an environment, use *>  (<array> *>.envir \parameter)
 	fader { | fadeTime = 0.02, amp = 1 |
