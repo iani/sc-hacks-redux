@@ -1,0 +1,26 @@
+#+title: Readme
+
+* List of algorithms
+** Rhythm
+*** add
+*** distortion
+*** fmbass
+*** hi
+*** kick
+*** mid
+*** noisebomb
+*** rock
+*** sequance
+** ambient
+*** addsynth
+*** fmsynth
+*** mixer group
+*** subbass
+** fm
+** fm2
+** hi
+** hi2
+** impulse
+** impulse2
+** kick
+** mid

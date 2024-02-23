@@ -15,24 +15,13 @@ SynthDef(\newsynth, {arg freq1=440, freq2=440, freq3=440, freq4=440, filfreq1=64
 	fil1=LPF.ar(osc1+osc2, filfreq1, 1)!2;
 	fil2=HPF.ar(fil1, 300+SinOsc.kr( hpffreq, 200, 200), 80).softclip;
 
-	Out.ar(out, fil2, Env.adsr().kr(2, gate));
+	Out.ar(out, fil2);
 
 }).add;
 )
-//:
-Synth(\newsynth,[\freq1,110,\freq2,100,\freq3,2,\freq4,50,\mul,0.5]);
-//:Try improving this one:
-(instrument: \newsynth, freq1: 500) +> \test;
 
-(instrument: \newsynth, freq1: 50, freq2: 50, freq3: 1.5) +> \test;
-//:
-(
-instrument: \newsynth,
-freq1: (1..5).normalize(100, 500).pseq,
-clock: TempoClock(125 / 60)
-) +> \distortion;
-//:
-//:
+Synth(\newsynth,[\freq1,110,\freq2,100,\freq3,2,\freq4,50,\mul,0.5]);
+
 t=TempoClock.new(240 / 60);
  t.beats;
 
@@ -47,6 +36,3 @@ durations = [4];
 
 ]).play(TempoClock(125 / 60));
 )
-nil +> \test;
-nil +> \hihi;
-//:

@@ -2,6 +2,7 @@
 //SymbolOperators
 
 + Symbol {
-	<+ { | value, envir | envir.envir.put(this, value); }
-
+	// EventStream played actions
+	// Actions run every time an EventStream plays its next event
+	<! { | func, envir | this.addEventStreamAction(func, envir); }
 }

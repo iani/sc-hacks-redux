@@ -1,4 +1,4 @@
-// {Crackle.ar(2, Env.perc(0, 0, 100, -100).kr)!2}.play;
+{Crackle.ar(2, Env.perc(0, 0, 100, -100).kr)!2}.play;
 
 (
 SynthDef(\hi, {arg cp=0.8, gate=1, mul=1, out=0;
@@ -14,11 +14,11 @@ SynthDef(\hi, {arg cp=0.8, gate=1, mul=1, out=0;
 	lim=Limiter.ar(osc1, 1, 0.0001);
 
 	Out.ar(out, lim);
-}).add;
+}).add
 )
-//:
+
 Synth(\hi);
-//:
+
 
 (
     Pbind(*[
@@ -34,7 +34,7 @@ Synth(\hi);
 ]).play(TempoClock(125 / 60));
 )
 
-//:
+
 
 (
 SynthDef(\hihi, {arg cp=0.8, gate=1, mul=1, out=0;
@@ -49,13 +49,13 @@ SynthDef(\hihi, {arg cp=0.8, gate=1, mul=1, out=0;
 
 	lim=Limiter.ar(osc1, 1, 0.0001);
 
-	Out.ar(out, LeakDC.ar(lim));
+	Out.ar(out, lim);
 }).add
 )
-//:
+
 Synth(\hihi);
 
-//:
+
 (
     Pbind(*[
         instrument: \hihi,
@@ -69,26 +69,6 @@ Synth(\hihi);
 
 ]).play(TempoClock(170 / 60));
 )
-//:
 
-//:
-(instrument: \hihi,
-cp: [0.2, 0.8, 1, 2].prand,
-dur: ([1/4, 1/4, 1/4, 1/4]).normalize(1, 2).pseq,
-clock: TempoClock(170 / 60)
-) +> \hihi
-//:
-(instrument: \hihi,
-cp: ([0.2, 0.8, 1, 2]).normalize(0.01, 0.04).pseq,
-dur: ([1/4, 1, 2, 4].flat).normalize(4, 9).pseq,
-clock: TempoClock(170 / 60)
-) +> \hihi
-//:
-(instrument: \hihi,
-cp: [0.2, 0.8, 1, 2].prand,
-dur: [1/4, 1/4, 1/4, 1/4].pseq,
-clock: TempoClock(170 / 60)
-) +> \hihi
-//:
 
-nil +> \hihi;
+
