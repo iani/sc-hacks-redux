@@ -31,7 +31,6 @@
 			ctl.postln.br(currentEnvironment.at(ctl) ?? { default })
 		}
 	}
-	+++ { | obj | ^(this ++ obj).asSymbol }
 	// convert to specs for use by Param
 	gt { | thresh = 0.5 |
 		^this.sr > thresh;
@@ -80,63 +79,11 @@
 		this.envir[name] = target;
 	}
 	//=================================================================
-	// Pdefn
-	*> { | value | ^this.pd(value) }
-	pd { | value | ^Pdefn(this, value) }
 	//=================================================================
-	// Operate in the environment named by me:
-	!!> { | value, variable |
-		this use: {
-			currentEnvironment[variable] = value;
-		}
-	}
-	!!* { | funcName |
-		^this evalLocalFunc: funcName;
-	}
-	evalLocalFunc { | funcName |
-		^this use: { currentEnvironment[funcName].value };
-	}
-	!!! { | func | ^this use: func }
 
-	use { | func | // evaluate func in this Mediator
-		// var envir, result;
-		// postln("debugging symbol use");
-		// envir = Mediator.at(this);
-		// postln("Environment before eval func is:");
-		// envir.postln;
-		// result = Mediator.at(this) use: func;
-		// postln("Environment after eval func is:");
-		// postln(result);
-		// ^result;
-		^Mediator.at(this) use: func;
-	}
-
-	@ { | envir | ^this.at(envir) }
 	asEnvir { ^Mediator.at(this) } // doubtful synonym?
-	at { | envir | // has same effect as Symbol:player below?
-		^Mediator.at(envir ? currentEnvironment.name).at(this);
-	}
-
 	asPlayer { ^this.at(nil) }
 
-	//============================================================
-	// Tests for more operators with |
-	@|> { "@|> works".postln; }
-	|@|> { "|@|> works".postln; }
-	|@| { "|@| works".postln; }
-	|> { "|> works".postln; }
-
-	//=================================================================
-	-- { | envir, time = 1 |
-		// Stop player from specified envir
-		Mediator.at(envir).at(this).stop(time);
-	}
-	&> { | value, envir = \default |
-		envir.addKey(this, value);
-	}
-	addKey { | key, value | // add key to a player environment
-		Mediator.at(this).put(key, value);
-	}
 	// ================================================================
 	// player operators
 	playingp { | envir |
@@ -144,33 +91,6 @@
 			currentEnvironment[this].isPlaying;
 		}, envir)
 	}
-	// Sat 11 Nov 2023 08:18 - cancel !+> --- too cumbersome.
-	// Mon 13 Nov 2023 22:29: Substitute for earlier !+> or +>
-	++> { | param, envir |
-		envir.envir.put(param, this);
-	}
-
-	// // playing as synth is hardly used. Keep it for compatibility
-	!+> { | player, envir |
-	^this.pushPlayInEnvir(player, envir);
-    }
-
-	// Sat 11 Nov 2023 08:19  restore +> play in envir
-	// See SymbolOperators.sc
-	// +> { | player, envir |
-	//  	^this.pushPlayInEnvir(player, envir);
-    // }
-
-	+>! { | player, envir |
-		// osc message triggers play next event of an EventStream player
-		this >>> {
-			Mediator.wrap(
-				{ currentEnvironment[player].playNext },
-				envir ? \default
-			)
-		}
-	}
-	<+ { | value, envir | envir.envir.put(this, value); }
 
 	player { | envir |
 		var player;
@@ -259,7 +179,6 @@
 	// ================================================================
 	// EventStream played actions
 	// Actions run every time an EventStream plays its next event
-	<! { | func, envir | this.addEventStreamAction(func, envir); }
 
 	addEventStreamAction { | func, envir |
 		Mediator.wrap({
@@ -301,32 +220,8 @@
 	// 	currentEnvironment[this].removeBeat(beatKey ? this);
 	// }
 
-	// ============================ Toggle. UNTESTED!!!
-	<?> { | player, envir |
-		^this.toggle(player, envir);
-	}
-
-	toggle { | player, envir |
-		var process;
-		Mediator.wrap({
-			process = currentEnvironment[this];
-			if (process.isPlaying) {
-				process.stop
-			}{
-				process = player.playInEnvir(this, envir);
-			}
-		}, envir);
-		^process;
-	}
 	// ================================================================
 	// bus operators
-	<+@ { | value |
-		this.bus.set(value)
-	}
-
-	<@ { | bus, player |
-		currentEnvironment[player].map(this, bus.bus)
-	}
 
 	//
 

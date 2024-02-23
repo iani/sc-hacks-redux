@@ -11,22 +11,21 @@
 
 + Array {
 	+> { | ugenfunc |
-		"This is Array+>ugenfunc!!!!!!!".postln;
+		// "This is Array+>ugenfunc!!!!!!!".postln;
 		^ugenfunc.ar(this) } // play as input to other ugen
 }
 
 + Event {
 
 	+> { | player, envir |
-
-		"This is Event+>ugenfunc!!!!!!!".postln;
+		// "This is Event+>ugenfunc!!!!!!!".postln;
 		^this.pushPlayInEnvir(player, envir ? player, true)
 	}
 }
 
 + EventStream {
 		+> { | player, envir |
-			"This is EventStream+>ugenfunc!!!!!!!".postln;
+			// "This is EventStream+>ugenfunc!!!!!!!".postln;
 			^this.pushPlayInEnvir(player, envir ? player, true) }
 
 }
@@ -34,16 +33,23 @@
 // FunctionOperators.sc      Function-+>
 + Function {
 		+> { | player, envir |
-			"This is Function+>ugenfunc!!!!!!!".postln;
+			// "This is Function+>ugenfunc!!!!!!!".postln;
 			^this.pushPlayInEnvir(player, envir ? player, true)
 		}
+	// older version:
+		// See OperatorFix240222.sc
+	// +> { | player, envir |
+	// 	^this.pushPlayInEnvir(player, envir);
+	// }
+
+
 }
 
 // SymbolOperators.sc        Nil-+>
 
 + Nil {
 	+> { | player, envir |
-		"This is Nil+>player, envir!!!!!!!".postln;
+		// "This is Nil+>player, envir!!!!!!!".postln;
 		Mediator.wrap(
 			{
 				// currentEnvironment[player].playNext;
@@ -59,7 +65,7 @@
 // SimpleNumberOperators.sc  SimpleNumber-+>
 + SimpleNumber {
 	+> { | param, envir |
-		"This is SimpleNumber+>player, envir!!!!!!!".postln;
+		// "This is SimpleNumber+>player, envir!!!!!!!".postln;
 
 		param ?? { ^"SimpleNumber +> requires a parameter adverb".warn };
 		envir = envir ? \default;
@@ -70,7 +76,7 @@
 
 + Symbol {
 	+> { | player, envir |
-		"This is Symbol+>player, envir!!!!!!!".postln;
+		// "This is Symbol+>player, envir!!!!!!!".postln;
 	 	^this.pushPlayInEnvir(player, envir);
     }
 }
@@ -79,7 +85,6 @@
 + UGen {
 
 	+> { | ugenfunc |
-		"This is Symbol+>ugenfunc !!!!!!!".postln;
-
+		// "This is Symbol+>ugenfunc !!!!!!!".postln;
 		^ugenfunc.ar(this) } // play as input to other ugen
 }

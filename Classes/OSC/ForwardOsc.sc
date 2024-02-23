@@ -48,17 +48,3 @@ ForwardOsc {
 	}
 }
 
-+ Array {
-	>>> { | message, port |
-		([message] ++ this).forwardOsc(port);
-	}
-
-	fosc { | port | this.forwardOsc(port) }
-	forwardOsc { | port | ForwardOsc.forward(this, port); }
-}
-
-+ SimpleNumber {
-	>>> { | message, port |
-		[message, this].forwardOsc(port);
-	}
-}

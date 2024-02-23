@@ -19,40 +19,14 @@ Use Notification to add OSC functions.
 		)
 	}
 
-	>>> { | func, key | // add OSC response to this message under key
-		// One can add different functions for the same message under different keys
-		// The receiver becomes the message that OSC will respond to.
-		// The key can optionally be used to add several actions for the same message.
-		// The key becomes a Notification's listener, and the receiver becomes
-		// the Notification's message.
-		this.addAction(func, key);
-	}
-
-	>>! { | func, key |
-		// Like >>> without prepending / to self.
-		// For use with SendReply.
-		OSC.addRaw(this, func, key);
-	}
 
 	addAction { | func, key |
 		// message, function, key
 		OSC.add(this, func, key)
 	}
 
-	<<< { | key | // remove action registered under this message and key pair.
-		this.removeOSC(key);
-	}
-
 	removeOSC { | key |
 		OSC.remove(this, key);
-	}
-
-	>>? { | key | // does OSC respond to this message under this key?
-
-	}
-
-	>>@ { | address |
-		this.forwardOSC(address)
 	}
 
 	forwardOSC { | address, receiver = \forward |

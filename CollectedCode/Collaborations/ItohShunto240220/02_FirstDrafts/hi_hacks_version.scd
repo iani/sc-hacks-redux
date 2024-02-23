@@ -14,7 +14,7 @@ SynthDef(\hi, {arg cp=0.8, gate=1, mul=1, out=0;
 	lim=Limiter.ar(osc1, 1, 0.0001);
 
 	Out.ar(out, lim);
-}).add
+}).add;
 )
 //:
 Synth(\hi);
@@ -49,7 +49,7 @@ SynthDef(\hihi, {arg cp=0.8, gate=1, mul=1, out=0;
 
 	lim=Limiter.ar(osc1, 1, 0.0001);
 
-	Out.ar(out, lim);
+	Out.ar(out, LeakDC.ar(lim));
 }).add
 )
 //:

@@ -13,21 +13,6 @@
 	amplifyl { | amp = 1, lim = 0.5 | // Thu 17 Aug 2023 11:47 experimental: provide amp bus control.
 		^{ this.value * (\amp.br(~amp ? amp) min: lim) }
 	}
-	+> { | player, envir |
-		^this.pushPlayInEnvir(player, envir);
-	}
-
-	// set the target group of the player's environment and use it
-	+>@ { | player, group = \default_group |
-		player.envir[\target] = group;
-		^this.pushPlayInEnvir(player, player);
-	}
-
-	// override (bypass) the target group of the player's environment
-	// but do not set it.
-	+><@> { | player, group = \root |
-		^this.pushPlayInEnvir(player, player, group);
-	}
 
 	playInEnvir { | player, envir, target, outbus = 0, addAction = \addToHead |
 		// TODO: add arguments setting, bus mapping
@@ -63,13 +48,6 @@
 	}
 	*/
 
-	+>> { | cmdName, player = \osctrigger |
-		{
-			cmdName ?? { cmdName = player };
-			this.value.sendReply(cmdName.asOscMessage);
-		} +> player;
-	}
-
 	/*
 	sendReply { | cmdName, player, values = 1, replyID = 1 |
 		// always save in environment \triggers (special envir)
@@ -81,21 +59,6 @@
 		}.playInEnvir(player ? cmdName, \triggers)
 	}
 	*/
-
-	**> { | player, envir | // infinite loop in envir
-		{
-			inf do: {
-				var dur;
-				dur = this.(player, envir);
-				if (dur.isKindOf(SimpleNumber).not) { dur = 1 };
-				dur.wait;
-			}
-		}.routineInEnvir(player, envir);
-	}
-
-	*> { | player, envir | // play as routine
-		this.routineInEnvir(player, envir);
-	}
 
 	routineInEnvir { | player, envir |
 		var routine;

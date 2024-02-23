@@ -1,0 +1,18 @@
+#+title: More Operators
+
+Fri 23 Feb 2024 12:12
+
+The following operator methods could be defined.
+But these operators have not been used yet.
+
+#+begin_src sclang
++ Symbol {
+
+	// Tests for more operators with |
+	@|> { "@|> works".postln; }
+	|@|> { "|@|> works".postln; }
+	|@| { "|@| works".postln; }
+	|> { "|> works".postln; }
+
+ }
+#+end_src
