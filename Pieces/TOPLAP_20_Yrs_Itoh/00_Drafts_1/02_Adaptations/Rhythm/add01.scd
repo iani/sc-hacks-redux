@@ -1,11 +1,4 @@
-#+title: Readme
-
-* List of algorithms
-** Rhythm (Folder)
-*** add: Additive synthesis
-
-#+begin_src sclang
-
+//:
 SynthDef(\add, {arg freq=440, gate=1, mul=1, out=0;
 	var sin1, sin2, sin3, sin4, sin5, sin6, allsin, hpf, lpf,env;
 
@@ -21,31 +14,25 @@ SynthDef(\add, {arg freq=440, gate=1, mul=1, out=0;
 	hpf=HPF.ar(allsin, freq+50, 1);
 	lpf=LPF.ar(hpf, freq-50, 1);
 
-
-
 	Out.ar(out, lpf*mul);
 }).add;
-
-#+end_src
-
-*** distortion
-*** fmbass
-*** hi
-*** kick
-*** mid
-*** noisebomb
-*** rock
-*** sequance
-** ambient
-*** addsynth
-*** fmsynth
-*** mixer group
-*** subbass
-** fm
-** fm2
-** hi
-** hi2
-** impulse
-** impulse2
-** kick
-** mid
+//:
+//:
+Synth(\add,[\freq,400,\mul,0.03]);
+//:
+(
+Pbind(*[
+	    instrument: \add,
+	freq: Prand([400, 200, 800],inf),
+		dur: Prand([Rest(7),Rest(1/2),1/4,1/4], inf),
+		mul: 0.1
+]).play;
+)
+//:
+(freq: [400, 200, 800].prand, dur: [1/4, 1/2].prand, mul: 0.1) +> \test;
+//:
+\add +> (freq: [400, 200, 800].prand, dur: [1/4, 1/2].prand, mul: 0.1) +> \test;
+//:
+\add +> () +> \test;
+//:
+[1/4, 1/2].prand isKindOf: Pattern;

@@ -76,8 +76,12 @@
 
 + Symbol {
 	+> { | player, envir |
-		// "This is Symbol+>player, envir!!!!!!!".postln;
-	 	^this.pushPlayInEnvir(player, envir);
+		// 240224: Hack for setting instrument key in events.
+		if (player isKindOf: Event) {
+			^player.put(\instrument, this);
+		}{
+			^this.pushPlayInEnvir(player, envir);
+		}
     }
 }
 // UGenShortcuts.sc          UGen-+>

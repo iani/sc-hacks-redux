@@ -2,7 +2,7 @@
 
 * List of algorithms
 ** Rhythm (Folder)
-*** add: Additive synthesis
+*** add
 
 #+begin_src sclang
 
