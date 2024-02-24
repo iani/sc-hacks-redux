@@ -14,7 +14,7 @@ SynthDef(\rock, {arg freq=1000, gate=1, mul=1.5, out=0;
 
 Synth(\rock,[\freq,1200,\mul,7]);
 
-
+//:
 (
 Pbind(*[
 		instrument: \rock,
@@ -24,3 +24,5 @@ Pbind(*[
 	out: 3
 ]).play
 );
+//:
+\rock +> () +> \test

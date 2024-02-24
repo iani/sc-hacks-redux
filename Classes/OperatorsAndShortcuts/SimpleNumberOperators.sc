@@ -37,6 +37,7 @@ Redoing on Fri  1 Sep 2023 07:50
 		^[1 / (1 + this), 1 * (1 + this)]
 	}
 
+	tc { ^TempoClock(this) }
 	// Older version:
 	// +> { | param, player |
 	// 	player ?? { ^"SimpleNumber +> requires a parameter adverb".warn };

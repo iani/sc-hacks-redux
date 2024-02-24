@@ -16,7 +16,7 @@ Synth(\fmbass, [\freq,15000,\mul,0.5,\modfreq,1.498, \modfreq2, 3.323, \modmul,4
 (
 Synth(\fmbass, [\freq,40,\mul,2,\modfreq,1.298, \modfreq2, 4.423, \modmul,20]);
 )
-
+//:
 (
 Pbind(*[
 	\mul: 0.15,
@@ -27,7 +27,7 @@ Pbind(*[
 	\dur: Prand([Rest(1/2),1,Rest(1/2),1/2,Rest(1/4),3/4,Rest(1),3/2],inf)
 ]).play
 )
-
+//:
 {Out.ar(0, SinOsc.ar(53, 0, 0.3)!2)}.play;
 
 

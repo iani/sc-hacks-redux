@@ -23,9 +23,9 @@ SynthDef(\addnoise, {arg freq=440, gate=1, mul=4, out=0;
 	Out.ar(out, fil4*mul);
 }).add;
 )
-
-Synth(\addnoise, [\freq,4000,\mul,4]);
-
+//
+Synth(\addnoise, [\freq,4000,\mul,0.4]);
+//:
 	sp.wait(16);
 
 

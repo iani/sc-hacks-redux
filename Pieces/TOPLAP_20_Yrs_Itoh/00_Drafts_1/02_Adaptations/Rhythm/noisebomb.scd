@@ -13,7 +13,7 @@ SynthDef(\noisebomb, {arg freq=440, gate=1, mul=1, out=0;
 )
 
 Synth(\noisebomb,[\freq,200,\mul,0.02]);
-
+//:
 (
 var durations;
 durations = [1/8, 1/16, 1/8, 1/8, 1/16, 1/16, 1/8, 1/8, 1/4, 1/3, 1/3, 1/3, 1/4, 1/4, 1/4];
@@ -28,9 +28,5 @@ durations = [1/8, 1/16, 1/8, 1/8, 1/16, 1/16, 1/8, 1/8, 1/4, 1/3, 1/3, 1/3, 1/4,
 
 
 ]).play(TempoClock(120 / 60));
-)
-
-
-
-
-	
+);
+//:
