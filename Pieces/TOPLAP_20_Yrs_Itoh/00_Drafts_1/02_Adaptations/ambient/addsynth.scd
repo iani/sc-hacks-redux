@@ -37,3 +37,5 @@ Synth("addsynth",[\freq,10000],~modsources);
 Synth("addsynth");
 //:
 Synth(\rock);
+//:
+\test.stop;

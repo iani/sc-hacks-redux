@@ -208,3 +208,10 @@ env=
 	Out.ar(0,modulator*carrier*env * mul * Env.adsr().kr(2, gate));
 
 }).add;
+//:subbass - broken???
+SynthDef("subbass",{arg out=0,gate=1,freq=50,mul=0.1;
+	var env;
+
+	env=Env.pairs([[0,0],[2,1.1],[4,0.01],[6,2.5],[9,2.5],[15,0]],-2).kr(2,gate);
+	Out.ar(out,SinOsc.ar(freq,0,env*mul * Env.adsr().kr(2, gate)));
+}).add;
