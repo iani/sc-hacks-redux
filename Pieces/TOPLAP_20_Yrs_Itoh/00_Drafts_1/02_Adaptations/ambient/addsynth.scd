@@ -25,3 +25,15 @@ SystemClock.sched(0.0,{h=Synth("addsynth",[\freq,10000],~modsources);rrand(20,50
 
 
 h.set(\freq,20);
+//:
+\addsynth +> (freq: [100, 500].pwhite) +> \test;
+//:
+(dur: 5) ++> \test;
+//:
+(legato: 1.5) ++> \test;
+//:
+Synth("addsynth",[\freq,10000],~modsources);
+//:
+Synth("addsynth");
+//:
+Synth(\rock);

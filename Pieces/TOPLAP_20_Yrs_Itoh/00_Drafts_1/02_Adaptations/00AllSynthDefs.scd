@@ -188,3 +188,23 @@ SynthDef(\rock, {arg freq=1000, gate=1, mul=1.5, out=0;
 	Out.ar(out, fil2*mul);
 
 }).add;
+//:addsynth
+SynthDef("addsynth",{arg freq = 40, gate=1, mul = 0.1;
+var modulator,carrier,env;
+
+modulator=
+	SinOsc.ar(100)+SinOsc.ar(200);
+
+carrier=
+	SinOsc.ar(freq, 0, 0.1)   +
+    SinOsc.ar(freq+10.567, 0, 0.1) +
+    SinOsc.ar(freq+40.489, 0, 0.1) +
+    SinOsc.ar(freq+60.9174, 0, 0.1) +
+	SinOsc.ar(freq+70.1245, 0, 0.1) +
+	SinOsc.ar(freq+80.2345, 0, 0.1) !2;
+env=
+	Env.pairs([[0,0],[10,0.8],[14,0.01],[16,1.0],[20,1.0],[35,0]],-2).kr(2,gate);
+
+	Out.ar(0,modulator*carrier*env * mul * Env.adsr().kr(2, gate));
+
+}).add;
