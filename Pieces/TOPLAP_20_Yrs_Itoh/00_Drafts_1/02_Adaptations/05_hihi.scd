@@ -1,5 +1,11 @@
 // {Crackle.ar(2, Env.perc(0, 0, 100, -100).kr)!2}.play;
 
+HAPPY BIRTHDAY TOPLAP.
+
+USING SYNTHDEFS BY Shunto Itoh, with Sc-hacks-redux.
+
+Giorgo, you are up now.
+
 //:
 
 (
@@ -39,5 +45,8 @@ dur: [1/4, 1/4, 1/4, 1/4].pseq,
 clock: TempoClock(170 / 60)
 ) +> \hihi
 //:
+(dur: [1, 2].pwhite) ++> \hihi;
+
+(cp: (20..2).normalize(0.2, 2).pseq) ++> \hihi;
 
 nil +> \hihi;
