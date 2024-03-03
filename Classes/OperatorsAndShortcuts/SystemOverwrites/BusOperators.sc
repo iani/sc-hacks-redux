@@ -42,13 +42,6 @@ Simplenumber @> \symbol // set bus to number
 	// usage:
 	// \parameter @> \targetbus ++>.envir \player;
 
-	// <+ { | value, envir | envir.envir.put(this, value); }
-	@> { | targetBus, player |
-		^().put(
-			this.busify,
-			targetBus.bus(nil, player ? currentEnvironment.name).index
-		);
-	}
 	pget { | player, format = "%" | ^this.bus(nil, player).pget(format) }
 	blag { | lag = 0.1 | ^this.bin.lag(lag) }
 	bamp { | attack = 0.01, decay = 0.1 | ^this.bin.amp(attack, decay); }
@@ -110,85 +103,3 @@ Simplenumber @> \symbol // set bus to number
 	}
 }
 
-
-+ Function {
-	@> { | bus, player | // play as kr function in bus (or player) name
-		player ?? { player = currentEnvironment.name };
-		// postln("debugging function @>. bus is:" + bus + "player is" + player);
-		// postln("prev synth is:" + player.envir[bus]);
-		{
-			Out.kr(bus.bus(nil, player), this.value.kdsr);
-		}.playInEnvir(bus, player); // do not push envir !!!
-	}
-}
-
-+ Event {
-	@> { | bus, player |
-		var busNames, busStreams, stream;
-		player = player ? bus;
-		busNames = this[\busNames] ?? { [bus] };
-		busStreams = busNames collect: { | busName |
-			stream = this[busName];
-			stream ?? { stream = defaultParentEvent[busName] };
-			if (stream.isNil) {
-				postln("Missing value for bus: " + busName + "in Event: " + this);
-				[busName.bus, 0]
-			}{
-				[busName.bus, stream.asStream]
-			};
-		};
-		this[\busStreams] = busStreams;
-		this[\play] = {
-			var bus, val;
-			~busStreams do: { | busStreamPair |
-				#bus, val = busStreamPair;
-				val = val.value;
-				if (val.isNil) { // the next line actually never gets executed:
-					postln("Stream for bus" + bus + "ended.");
-				}{  // \_ is a pause. Do not set the value.
-					if (val !== \_) { // only set if not pause \_
-						bus.set(val);
-					}
-				};
-			};
-			val;
-		};
-		this.playInEnvir(player, \busses);
-	}
-}
-
-+ SimpleNumber {
-	@> { | bus, playerEnvir | // set bus value
-		// works with new AND already existing busses.
-		// Stop processes playing in this bus before setting a new value:
-		playerEnvir ?? { playerEnvir = currentEnvironment.name };
-		playerEnvir.envir[bus].free;
-		bus.bus(nil, playerEnvir).set(this);
-	}
-}
-
-+ Point {
-	// create XLine from current value to x in y seconds
-	@> { | bus, playerEnvir | // glide with xline
-		var b;
-		b = bus.bus(nil, playerEnvir ? currentEnvironment.name);
-		b.get({ | v |
-			// Hack: permit XLine ... with 0 to positive values :
-			v = v max: 0.00000001;
-			{ XLine.kr(v, x, y) }.perform('@>', bus, playerEnvir);
-		})
-	}
-}
-+ Array { // generate bus names from base name + index of array element
-	@> { | bus, playerEnvir |
-		this do: { | el, in |
-			el.perform('@>', format("%%", bus, in).asSymbol, playerEnvir);
-		}
-	}
-}
-+ Nil {
-	@> { | busPlayer, envir | // Stop player for bus
-		// stop player with same name as bus in an environment
-		busPlayer.stopPlayer(envir, 0);
-	}
-}
