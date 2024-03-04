@@ -1,6 +1,6 @@
 //Sat 24 Feb 2024 20:39
 //:
-\ +> () +> \noisebomb;
+\noisebomb +> () +> \noisebomb;
 //:
 (freq: [30, 200].pwhite) ++> \noisebomb;
 (legato: 1.5) ++> \noisebomb;

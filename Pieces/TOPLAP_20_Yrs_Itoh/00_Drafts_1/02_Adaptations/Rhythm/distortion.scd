@@ -24,15 +24,16 @@ Synth(\newsynth,[\freq1,110,\freq2,100,\freq3,2,\freq4,50,\mul,0.5]);
 
 t=TempoClock.new(240 / 60);
  t.beats;
-
+//:
 (
 var durations;
 durations = [4];
     Pbind(*[
         instrument: \newsynth,
-
+		mul: 0.01,
 	    hpffreq: Pseq([1], inf),
 
 
 ]).play(TempoClock(125 / 60));
 )
+//:

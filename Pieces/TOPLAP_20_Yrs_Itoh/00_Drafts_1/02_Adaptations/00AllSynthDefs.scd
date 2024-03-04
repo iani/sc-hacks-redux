@@ -1,58 +1,58 @@
 //:Rhythm - add
 SynthDef(\add, {arg freq=440, gate=1, mul=0.1, out=0;
-	var sin1, sin2, sin3, sin4, sin5, sin6, allsin, hpf, lpf,env;
+var sin1, sin2, sin3, sin4, sin5, sin6, allsin, hpf, lpf,env;
 
-	env=Env.perc(0.001, 0.5, 0.1, -5).kr(2,gate);
+env=Env.perc(0.001, 0.5, 0.1, -5).kr(2,gate);
 
-	sin1=SinOsc.ar(freq, 0, env).distort!3;
-	sin2=SinOsc.ar(freq+80.589, 0, env).distort*5;
-	sin3=SinOsc.ar(freq+150.522, 0, env).distort*10.5;
-	sin4=SinOsc.ar(freq+220.983, 0, env).distort*20.2;
-	sin5=SinOsc.ar(freq+313.134, 0, env).distort*30.47;
-	sin6=SinOsc.ar(freq+429.134, 0, env).distort*40.17;
-	allsin=sin1+sin2+sin3+sin4+sin5+sin6;
-	hpf=HPF.ar(allsin, freq+50, 1);
-	lpf=LPF.ar(hpf, freq-50, 1);
+sin1=SinOsc.ar(freq, 0, env).distort!3;
+sin2=SinOsc.ar(freq+80.589, 0, env).distort*5;
+sin3=SinOsc.ar(freq+150.522, 0, env).distort*10.5;
+sin4=SinOsc.ar(freq+220.983, 0, env).distort*20.2;
+sin5=SinOsc.ar(freq+313.134, 0, env).distort*30.47;
+sin6=SinOsc.ar(freq+429.134, 0, env).distort*40.17;
+allsin=sin1+sin2+sin3+sin4+sin5+sin6;
+hpf=HPF.ar(allsin, freq+50, 1);
+lpf=LPF.ar(hpf, freq-50, 1);
 
-	Out.ar(out, lpf*mul);
+Out.ar(out, lpf*mul);
 }).add;
 //:Rhythm - addnoise
 SynthDef(\addnoise, {arg freq=440, gate=1, mul=0.4, out=0;
-	var osc, osc2, osc3, osc4, osc5, env, fil, fil2, fil3, fil4;
+var osc, osc2, osc3, osc4, osc5, env, fil, fil2, fil3, fil4;
 
-	env=Env.perc(0.05, 3, 1, -30).kr(2, gate);
-	osc=WhiteNoise.ar(env).distort*3!7;
-	fil=BPF.ar(osc, freq, 0.5, 1);
+env=Env.perc(0.05, 3, 1, -30).kr(2, gate);
+osc=WhiteNoise.ar(env).distort*3!7;
+fil=BPF.ar(osc, freq, 0.5, 1);
 
-	osc2=WhiteNoise.ar(env);
-	fil2=BPF.ar(osc, freq+200, 0.3, 2.5);
+osc2=WhiteNoise.ar(env);
+fil2=BPF.ar(osc, freq+200, 0.3, 2.5);
 
-	osc3=SinOsc.ar(freq+100, 0, env);
-	osc4=SinOsc.ar(freq+200, 0, env);
-	osc5=SinOsc.ar(freq=300, 0, env);
+osc3=SinOsc.ar(freq+100, 0, env);
+osc4=SinOsc.ar(freq+200, 0, env);
+osc5=SinOsc.ar(freq=300, 0, env);
 
-	fil3=LPF.ar(fil+fil2+osc2+osc3+osc4, freq+1000, 1);
-	fil4=HPF.ar(fil3, 4000, 1);
+fil3=LPF.ar(fil+fil2+osc2+osc3+osc4, freq+1000, 1);
+fil4=HPF.ar(fil3, 4000, 1);
 
-	Out.ar(out, fil4*mul);
+Out.ar(out, fil4*mul);
 }).add;
 //:Rhythm - distortion
 SynthDef(\newsynth, {arg freq1=440, freq2=440, freq3=440, freq4=440, filfreq1=640, filfreq2=440,
-	gate=1, mul=0.1, mul1=0.25, mul2=0.15, mul3=300, mul4=0.25, out=0, hpffreq=1;
-	var osc1, osc2, osc3, osc4, fil1, fil2, env, lfo, dec;
+gate=1, mul=0.1, mul1=0.25, mul2=0.15, mul3=300, mul4=0.25, out=0, hpffreq=1;
+var osc1, osc2, osc3, osc4, fil1, fil2, env, lfo, dec;
 
-	t=TempoClock.new(125 / 60);
-    t.beats;
+t=TempoClock.new(125 / 60);
+t.beats;
 
-	env=Env.linen(10, 3, 10, mul, -5).kr(2, gate);
+env=Env.linen(10, 3, 10, mul, -5).kr(2, gate);
 
-	osc1=SinOsc.ar(freq1*SinOsc.kr(50, 2, 10), 0, env*mul1);
-	osc2=SinOsc.ar(SinOsc.kr(100,0,freq2,0)+SinOsc.kr(135.12,0,freq2*4.2,0)+SinOsc.kr(140.135,0,freq2*2.4,0), 0, env*mul2);
-	osc3=SinOsc.ar(freq3*Env.linen(1, 2, 3, 5).kr, 0, env)*mul3;
-	osc4=SinOsc.ar(freq4+SinOsc.ar(Env.linen(1, 2, 3, 1000).kr,0,1), 0, env*mul4);
+osc1=SinOsc.ar(freq1*SinOsc.kr(50, 2, 10), 0, env*mul1);
+osc2=SinOsc.ar(SinOsc.kr(100,0,freq2,0)+SinOsc.kr(135.12,0,freq2*4.2,0)+SinOsc.kr(140.135,0,freq2*2.4,0), 0, env*mul2);
+osc3=SinOsc.ar(freq3*Env.linen(1, 2, 3, 5).kr, 0, env)*mul3;
+osc4=SinOsc.ar(freq4+SinOsc.ar(Env.linen(1, 2, 3, 1000).kr,0,1), 0, env*mul4);
 
-	fil1=LPF.ar(osc1+osc2, filfreq1, 1)!2;
-	fil2=HPF.ar(fil1, 300+SinOsc.kr( hpffreq, 200, 200), 80).softclip;
+fil1=LPF.ar(osc1+osc2, filfreq1, 1)!2;
+fil2=HPF.ar(fil1, 300+SinOsc.kr( hpffreq, 200, 200), 80).softclip;
 
 	Out.ar(out, fil2 * mul);
 

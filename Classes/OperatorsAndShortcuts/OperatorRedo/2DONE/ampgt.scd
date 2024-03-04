@@ -23,6 +23,7 @@
 	}
 }
 
+// !!!!!!!!!!!!!!!! cleanup needed. which @> will we use for Array
 + Array { // generate bus names from base name + index of array element
 	@> { | bus, playerEnvir |
 		this do: { | el, in |

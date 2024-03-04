@@ -40,12 +40,33 @@
 0.3 <!> \addnoisemul;
 
 //:
-\hi +> (freq: 4000, dur: Prand(~hidur, inf), mul: ~himul) +> \seqa;
+\hi +> (freq: [4000, 2000, 1500].prand, dur: [0.4, 0.8, 1.6].prand / 2, mul: ~himul)
++> \seqa;
+//:
+(dur: [0.4, 0.8, 1.6].prand / 3) ++> \seqa;
+
+(freq: [200, 250, 300].pseq) ++> \seqa;
+
+(mul: 0.01) ++> \seqa;
+(mul: [0.01, 0.2, 0.01, 0.03].pseq) ++> \seqa;
+
+nil +> \seqa;
+\hi +> (freq: [4000, 2000, 1500].prand, dur: (1..100).normalize(0.1, 1).pseq, mul: ~himul) +> \seqa;
+
+\hi +> (freq: [4000, 2000, 1500].prand, dur: (1..100).normalize(0.1, 1).reverse.pseq, mul: ~himul) +> \seqa;
+
+(freq: 100) ++> \seqa;
 
 nil +> \seqa;
 //:
-\fmbass +> (mul: ~fmbassmul, freq: 55, dur: Pseq([2,Rest(1/2),1/2,Rest(1/4),3/4],inf)) +> \seqfmbass;
-
+\fmbass +> (mul: 0.2, freq: 55) +> \seqfmbass;
+\fmbass +> (mul: 0.2, freq: [55, 110].pseq, dur: [0.1, 0.2, 1.4].prand) +> \seqfmbass;
+//:
+\fmbass +> (mul: 0.2, freq: 55, dur: Pseq([2,Rest(1/2),1/2,Rest(1/4),3/4],inf)) +> \seqfmbass;
+//:
+nil +> \seqfmbass;
+//:
+\kick +> (freq: 60)
 // // 	~fmbass=sp.par(Pbind(*[
 // 	\mul: fmbassmul,
 // 	\instrument: \fmbass,
@@ -53,8 +74,7 @@ nil +> \seqa;
 // 	\dur: Pseq([2,Rest(1/2),1/2,Rest(1/4),3/4],inf)
 // ]));
 
-
-	sp.wait(32);
+	// sp.wait(32);
 
 	~kick=sp.par(Pbind(*[
         instrument: \kick,

@@ -51,5 +51,8 @@ Synth(\add,[\freq,400,\mul,0.03]);
 (mul: (0.01, 0.1).pwhite) ++> \test;
 //:
 (dur: (50..1).normalize(0.01, 0.3).pseq) ++> \test;
+//:====================
+\add +> (quant: 2, dur: 2) +> \b1;
+\add +> (quant: 2, dur: 2, freq: 1000) +> \b2;
+
 //:
-VolumeGui();
