@@ -2,7 +2,7 @@
 //Exporting 64 code snippets on 231019_110527
 //Source: [ 231019_110222 ]
 //:--[0] CLEAR
-\justineL.envir.stopSynths
+\justineL.envir.stopsynths
 //:--[0.0027503329999945] JUSTINEL grainfrothlpanaz
 'justineL'.envir play: ( 'vol': [ 3.356638951877, "", 'off' ], 'endframe': 2451380, 'buf': 'crickets', 'amp': [ 1.0, "Xyz(5, 0.2, 0.1, 1.5) * 0.5", 'on' ], 
   'startframe': 0, 'playfunc': 'grainfrothl8', 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ], 'pos': [ 0.079365079365079, "\\x5.sr", 'on' ] )

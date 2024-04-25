@@ -51,10 +51,13 @@ Mediator : EnvironmentRedirect {
 			};
 		};
 		playfunc = SynthTemplate.getFunc(argEvent[\playfunc]);
+		// "======== debugging mediator play ===========".postln;
+		// "playfunc is:".postln;
+		// playfunc.postln;
 		envir[\play] = { playfunc +> name }; // prepare event for playing
 		envir[\mediator] = name;
 		this.push;  // make self available to event during playing
-		envir.play; // play as event
+		envir.play; // play a
 		this.class.changed(\started, name);
 	}
 
