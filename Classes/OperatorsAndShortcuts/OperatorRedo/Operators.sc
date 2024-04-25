@@ -39,7 +39,9 @@
 + Function {
 		+> { | player, envir |
 			// "This is Function+>ugenfunc!!!!!!!".postln;
-			^this.pushPlayInEnvir(player, envir ? player, true)
+			// "true" below is a bug. Retrying older version?????
+			// ^this.pushPlayInEnvir(player, envir ? player, true)
+			^this.pushPlayInEnvir(player, envir)
 		}
 	// older version:
 		// See OperatorFix240222.sc
