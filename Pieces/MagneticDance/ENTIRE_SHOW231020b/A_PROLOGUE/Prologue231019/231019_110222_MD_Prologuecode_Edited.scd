@@ -20,16 +20,21 @@
 \justineR.envir.stopSynths
 //:--[1.681997041] JUSTINER grainfrothlpanaz
 'justineR'.envir play: ( 'vol': [ 3.356638951877, "", 'off' ], 'endframe': 2451380, 'buf': 'fones', 'amp': [ 1.0, "Xyz(6, 0.2, 0.1, 1.5)", 'on' ], 
-  'startframe': 0, 'playfunc': 'grainfrothl8', 'trate': [ 0.48412698412698, "\\z5.sr", 'on' ], 'pos': [ 0.079365079365079, "\\x5.sr", 'on' ] )
+  'startframe': 0, 'playfunc': 'grainfrothl8', 'trate': [ 0.48412698412698, "\\z6.sr", 'on' ], 'pos': [ 0.079365079365079, "\\x6.sr", 'on' ] )
 //:--[1.688779583] JUSTINER Control
 {Xyz(6, 0.2, 0.1, 1.5) * 0.5 }@>.justineR \amp
+{Xyz(6, 0.2, 0.1, 1.5) * 1.5 }@>.justineR \amp
 //:--[1.69148425]
 {\x6.sr}@>.justineR \pos
 //:--[1.692816333]
-{\z6.sr}@>.justineR \trate
 {\z6.sr}@>.justineR \trate;
 {\z6.sr}@>.justineR \lpos;
 {\z6.sr}@>.justineR \rpos;
+
+//:--[1.681997041] JUSTINER grainfrothlpanaz
+'justineR'.envir play: ( 'vol': [ 5.356638951877, "", 'off' ], 'endframe': 2451380, 'buf': 'fones', 'amp': [ 1.0, "Xyz(6, 0.2, 0.1, 1.5)", 'on' ],
+  'startframe': 0, 'playfunc': 'grainfrothl8', 'trate': [ 0.48412698412698, "\\z6.sr", 'on' ], 'pos': [ 0.079365079365079, "\\x6.sr", 'on' ] )
+
 
 //:--[4.9310054580001] // YOSHIMITSUL STOP
 \yoshimitsuL.envir.stopSynths
