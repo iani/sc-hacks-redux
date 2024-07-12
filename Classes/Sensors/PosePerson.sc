@@ -221,6 +221,7 @@ PosePerson {
 	}
 
 	*gui {
+		this.enable;
 		this.tr_.vlayout(
 			MultiSliderView()
 			.thumbSize_(5)
