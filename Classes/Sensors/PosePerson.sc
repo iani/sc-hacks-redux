@@ -26,8 +26,8 @@ PosePerson {
 	// ====================
 	var <id = 1;
 	var <busses;
-	var <>minX = 0, <>minY = 0;
-	var <>maxX = 640, <>maxY = 640;
+	var <>minX = 0, <>minY = 200;
+	var <>maxX = 640, <>maxY = 400;
 
 	*enableSmoothing { this.smoothEnabled = true }
 	*disableSmoothing { this.smoothEnabled = false }
@@ -183,8 +183,8 @@ PosePerson {
 		var confidence;
 		// raw.postln;
 		confidence = raw[0];
-		maxX = raw[1];
-		maxY = raw[2];
+		maxX = raw[1]; // this should become the principle
+		// maxY = raw[2];
 		scaledValues = [ confidence ];
 		if ( confidence < confidenceMinGlobal, {
 			scaledValues = scaledValues ++ 0.dup(17 * 3);
@@ -197,8 +197,8 @@ PosePerson {
 					scaledValues = scaledValues ++ [ 0, 0, confidence ]
 				},{
 				scaledValues = scaledValues ++ [
-					raw[ i * 3 ].linlin(minX, maxX, 0.0, 1.0)
-					, raw[ i * 3 + 1 ].linlin(minY, maxY, 0.0, 1.0)
+					raw[ i * 3 ].linlin(minX, maxX, 1.0, 0.0)
+					, raw[ i * 3 + 1 ].linlin(minY, maxY, 1.0, 0.0)
 					, confidence // raw[ i * 3 + 2 ]
 				]})};
 		});
