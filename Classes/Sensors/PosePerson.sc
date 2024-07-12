@@ -65,7 +65,7 @@ PosePerson {
 		// postln("all before initing is:" + all);
 		all = { | i | this.new(i + 1) } ! numSensors; // 1-12
 		// postln("all after initing is:" + all);
-		// this.getValues;
+		this.getValues;
 		// if (smoothEnabled) { this.makeSmoothForwarder; }
 	}
 
@@ -200,8 +200,8 @@ PosePerson {
 					raw[ i * 3 ].linlin(minX, maxX, 0.0, 1.0)
 					, raw[ i * 3 + 1 ].linlin(minY, maxY, 0.0, 1.0)
 					, confidence // raw[ i * 3 + 2 ]
-				]});
-			}});
+				]})};
+		});
 		// scaledValues[4..6].postln; // eyeL
 		// this.class.testSendOsc;
 		// forwardAddr.postln;
