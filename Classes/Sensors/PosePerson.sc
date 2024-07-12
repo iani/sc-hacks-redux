@@ -21,6 +21,7 @@ PosePerson {
 	classvar <>forwardAddr;
 	classvar <of;
 	classvar <>verbose = false;
+	classvar <enabled = false;
 	classvar <smoothEnabled = false;
 	// ====================
 	var <id = 1;
@@ -43,9 +44,11 @@ PosePerson {
 	*doOnServerBoot { | server |
 		// "Sensors do on server boot".postln
 		// workaround for a bug: make sure the server is booted:
-		server doWhenBooted: { // remake busses
-			this.init;
-		}
+		if ( enabled, { // mc: but only, if enabled!
+			server doWhenBooted: { // remake busses
+				this.init;
+			}
+		})
 	}
 
 	*testSendOsc {
@@ -62,7 +65,7 @@ PosePerson {
 		// postln("all before initing is:" + all);
 		all = { | i | this.new(i + 1) } ! numSensors; // 1-12
 		// postln("all after initing is:" + all);
-		this.getValues;
+		// this.getValues;
 		// if (smoothEnabled) { this.makeSmoothForwarder; }
 	}
 
@@ -134,17 +137,17 @@ PosePerson {
 	}
 
 	makeBusses {
-		busses = [format("C%", id).asSymbol.sensorbus];
-		keypoints  collect: { | n |
-			busses = busses ++ [\x, \y, \c] collect: { | s |
-				format("%%%", n, s, id).asSymbol.sensorbus;
-			}
+		busses = [format("%C", id).asSymbol.sensorbus];
+		keypoints do: { | n | // n.postln;
+			busses = busses ++
+			[\x, \y, \c].collect{|s| format("%%%", id, n, s).asSymbol.sensorbus}
 		}
 	}
 
 	*busses { ^all collect: _.busses }
 
 	*enable {
+		enabled = true;
 		Server.default.waitForBoot({
 			OSC addDependant: this; this.changed(\status);
 			"PosePerson enabled".postln;
@@ -153,11 +156,13 @@ PosePerson {
 	}
 
 	*disable {
+		enabled = false;
 		OSC removeDependant: this; this.changed(\status);
 		"PosePerson disabled".postln;
 	}
 
-	*enabled { ^OSC.dependants includes: this }
+	*activated { ^OSC.dependants includes: this }
+	// *enabled { ^OSC.dependants includes: this }
 
 	*update { | sender, cmd, msg |
 		var index;

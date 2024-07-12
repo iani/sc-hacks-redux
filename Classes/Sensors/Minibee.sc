@@ -17,6 +17,7 @@ Minibee {
 	classvar <>forwardAddr;
 	classvar <of;
 	classvar <>verbose = false;
+	classvar <enabled = false;
 	classvar <smoothEnabled = false;
 	// ====================
 	var <id = 1;
@@ -37,9 +38,11 @@ Minibee {
 	*doOnServerBoot { | server |
 		// "Sensors do on server boot".postln
 		// workaround for a bug: make sure the server is booted:
-		server doWhenBooted: { // remake busses
-			this.init;
-		}
+		if ( enabled, { // mc: but only, if enabled!
+			server doWhenBooted: { // remake busses
+				this.init;
+			}
+		})
 	}
 
 	*testSendOsc {
@@ -130,6 +133,7 @@ Minibee {
 	*busses { ^all collect: _.busses }
 
 	*enable {
+		enabled = true;
 		Server.default.waitForBoot({
 			OSC addDependant: this; this.changed(\status);
 			"Minibee enabled".postln;
@@ -138,11 +142,13 @@ Minibee {
 	}
 
 	*disable {
+		enabled = false;
 		OSC removeDependant: this; this.changed(\status);
 		"Minibee disabled".postln;
 	}
 
-	*enabled { ^OSC.dependants includes: this }
+	*activated { ^OSC.dependants includes: this }
+	// *enabled { ^OSC.dependants includes: this }
 
 	*update { | sender, cmd, msg |
 		var index;
