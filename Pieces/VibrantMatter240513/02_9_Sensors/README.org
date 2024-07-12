@@ -1,0 +1,35 @@
+#+title: Readme
+
+Assigning 14 sample sounds to 9 sensors.
+Each file contains the code assigning one sample sound to one sensor.
+
+Sounds:
+A. Justine samples: justine002, 003, 7, 8, 9, 10, 12, 13, 14, 15, 16, 20
+B. Samples from magnetic dance: crickets, fones.
+
+Sensors: Sensors 1 to 9: 1, 2, 3, 4, 5, 6, 7, 8, 9.
+
+Assignments:
+Each sensor-sample pairing is contained in a single separate file.
+
+|---+---------------+----------|
+| ! | Sensor number |     File |
+|---+---------------+----------|
+|   |             1 |        2 |
+|   |             2 |        3 |
+|   |             3 |        7 |
+|   |             4 |        8 |
+|   |             5 |        9 |
+|   |             6 |       10 |
+|   |             7 |       12 |
+|   |             8 |       13 |
+|   |             9 |       14 |
+|   |             1 |       15 |
+|   |             2 |       16 |
+|   |             3 |       20 |
+|   |             4 | crickets |
+|   |             5 |    fones |
+|   |             6 | crickets |
+|   |             7 |    fones |
+|   |             8 | crickets |
+|   |             9 |    fones |

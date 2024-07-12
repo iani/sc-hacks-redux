@@ -133,7 +133,7 @@ PineTime {
 	*busses { ^all collect: _.busses }
 
 	*enable {
-		enabled = true;	
+		enabled = true;
 		Server.default.waitForBoot({
 			OSC addDependant: this; this.changed(\status);
 			"PineTime enabled".postln;
@@ -152,6 +152,7 @@ PineTime {
 
 	*update { | sender, cmd, msg |
 		var index;
+		// "PINETIME UPDATING".postln;
 		switch(cmd,
 			sensormsg, { // handle values input from local sensors
 				index = msg[1];
@@ -186,6 +187,7 @@ PineTime {
 	}
 
 	*gui {
+		this.enable;
 		this.tr_.vlayout(
 			MultiSliderView()
 			.thumbSize_(5)
