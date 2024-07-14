@@ -178,7 +178,8 @@ OscMonitor {
 					// "updating smoothing value".postln;
 					n.listener.value = Minibee.smoothEnabled
 				}),
-				Button().maxWidth_(40).states_([["gui"]]).action_({ Minibee.gui }),
+				Button().maxWidth_(20).states_([["gui"]]).action_({ Minibee.gui }),
+				Button().maxWidth_(20).states_([["PT"]]).action_({ PineTime.gui }),
 				Button().states_([["BufferGui"]]).action_({ SoundBufferGui.gui }),
 				Button().states_([["Meters"]]).action_({
 					Server.default.meter;

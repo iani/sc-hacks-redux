@@ -1,19 +1,23 @@
 /*  7 Jun 2023 15:45
-Simple specialized class for handling input from Minibee sensors.
+Simple specialized class for handling input from PosePerson sensors.
 
 ~spec = [0.44, 0.56].asSpec;
 
 ~spec.unmap(0.55)
 
+frameN personInx frameConfidence resX resY (x y confidence) * 17
 */
 
-Minibee {
-	classvar <>sensormsg = '/minibee/data';
-	classvar <>numSensors = 12; // three sets of sense-stage, connected via osc groups
+PosePerson {
+	classvar <>sensormsg = '/pose/person';
+	classvar <>numSensors = 2; // three sets of sense-stage, connected via osc groups
 	classvar <all;
 	classvar <values;
-	classvar <>min = 0.44;
-	classvar <>max = 0.56;
+	// classvar <>min = -2048;
+	// classvar <>max = 2048;
+	classvar <>keypoints;
+	classvar <>confidenceMinGlobal = 0.7;
+	classvar <>confidenceMin = 0.9;
 	classvar <>forwardAddr;
 	classvar <of;
 	classvar <>verbose = false;
@@ -22,6 +26,8 @@ Minibee {
 	// ====================
 	var <id = 1;
 	var <busses;
+	var <>minX = 0, <>minY = 200;
+	var <>maxX = 640, <>maxY = 400;
 
 	*enableSmoothing { this.smoothEnabled = true }
 	*disableSmoothing { this.smoothEnabled = false }
@@ -50,29 +56,34 @@ Minibee {
 	}
 
 	*init {
-		// "Minibee initing".postln;
+		// "PosePerson initing".postln;
 		this.makeForwardAddresses;
+		// keypoints = ['nose', 'left_eye', 'right_eye', 'left_ear', 'right_ear', 'left_shoulder', 'right_shoulder', 'left_elbow', 'right_elbow', 'left_wrist', 'right_wrist', 'left_hip', 'right_hip', 'left_knee', 'right_knee', 'left_ankle', 'right_ankle'];
+		keypoints = ['nose', 'eyeL', 'eyeR', 'earL', 'earR', 'shoulderL', 'shoulderR',
+			'elbowL', 'elbowR', 'wristL', 'wristR', 'hipL', 'hipR', 'kneeL', 'kneeR',
+			'ankleL', 'ankleR'];
 		// postln("all before initing is:" + all);
 		all = { | i | this.new(i + 1) } ! numSensors; // 1-12
 		// postln("all after initing is:" + all);
 		this.getValues;
-		if (smoothEnabled) { this.makeSmoothForwarder; }
+		// if (smoothEnabled) { this.makeSmoothForwarder; }
 	}
 
 	*makeSmoothForwarder {
-		var sendmsg = '/minibeesmooth';
+		var sendmsg = '/posepersonsmooth';
+		// "PosePerson smooth synth not implemented".postln;
 		if (Server.default.serverRunning.not) {
-			^"Minibee cannot start minibesmooth synth. Boot the default server".postln;
+			^"PosePerson cannot start posepersonsmooth synth. Boot the default server".postln;
 		};
-		"Starting Minibee smooth synth".postln;
+		"Starting PosePerson smooth synth".postln;
 		{
 			var sensorlags;
-			sensorlags = (1..12).collect(_.slag).flat;
+			sensorlags = (1..2).collect(_.slag).flat;
 			SendReply.kr(Impulse.kr(50), '/minibeesmooth', sensorlags);
-		} +> \minibeesmooth;
-		\minibeesmooth >>> { | n, args |
-			if (verbose) { postln("sending to of at: " + of + sendmsg + args[3..]); };
-			of.sendMsg('/minibeesmooth', *args[3..]);
+		} +> \posepersonsmooth;
+		\posepersonsmooth >>> { | n, args |
+			if (verbose) { postln("sending to of at: " + of + sendmsg + args[18..]); };
+			of.sendMsg('/posepersonsmooth', *args[18..]);
 		};
 		// CmdPeriod.addDependant
 	}
@@ -104,7 +115,7 @@ Minibee {
 	*resetForwardAddr { forwardAddr = Set() }
 
 	*getValues {
-		values = 0.dup(all.size * 3);
+		values = 0.dup(all.size * (17 * 3 + 1));
 		all do: _.getBusValues;
 	}
 
@@ -114,8 +125,9 @@ Minibee {
 
 	getBusValues {
 		var offset;
-		offset = id - 1 * 3;
+		offset = id - 1 * 17 * 3  + 1;
 		busses do: { | b, i |
+			// postln("bus: " + i + " " + b);
 			b.get({ | val | values[offset + i] = val })
 		};
 	}
@@ -125,8 +137,10 @@ Minibee {
 	}
 
 	makeBusses {
-		busses = [\x, \y, \z] collect: { | s |
-			format("%%", s, id).asSymbol.sensorbus;
+		busses = [format("%C", id).asSymbol.sensorbus];
+		keypoints do: { | n | // n.postln;
+			busses = busses ++
+			[\x, \y, \c].collect{|s| format("%%%", id, n, s).asSymbol.sensorbus}
 		}
 	}
 
@@ -136,7 +150,7 @@ Minibee {
 		enabled = true;
 		Server.default.waitForBoot({
 			OSC addDependant: this; this.changed(\status);
-			"Minibee enabled".postln;
+			"PosePerson enabled".postln;
 		});
 		OscGroups.enable;
 	}
@@ -144,7 +158,7 @@ Minibee {
 	*disable {
 		enabled = false;
 		OSC removeDependant: this; this.changed(\status);
-		"Minibee disabled".postln;
+		"PosePerson disabled".postln;
 	}
 
 	*activated { ^OSC.dependants includes: this }
@@ -154,33 +168,54 @@ Minibee {
 		var index;
 		switch(cmd,
 			sensormsg, { // handle values input from local sensors
-				index = msg[1];
-				this.changed(\values, index, all[index - 1].input(msg[2..]));
+				index = msg[2];
+				this.changed(\values, index, all[index - 1].input(msg[3..]));
 			},
-			'/minibee', { // handle values input via OscGroups
+			'/poseperson', { // handle values input via OscGroups
 				index = msg[1];
-				this.changed(\values, all[index - 1].inputScaled(msg[2..]));
+				this.changed(\values, index, all[index - 1].inputScaled(msg[2..]));
 			}
 		);
-		// if (cmd === sensormsg) }
 	}
 
-	input { | xyz |
+	input { | raw |
 		var scaledValues;
-		scaledValues = xyz.linlin(min, max, 0.0, 1.0);
+		var confidence;
+		// raw.postln;
+		confidence = raw[0];
+		maxX = raw[1]; // this should become the principle
+		// maxY = raw[2];
+		scaledValues = [ confidence ];
+		if ( confidence < confidenceMinGlobal, {
+			scaledValues = scaledValues ++ 0.dup(17 * 3);
+		},{
+			raw = raw.drop(3);
+			// raw[3..5].postln; // eyeL
+			17 do: { | i |
+				confidence = raw[ i * 3 + 2 ];
+				if ( confidence < confidenceMin, {
+					scaledValues = scaledValues ++ [ 0, 0, confidence ]
+				},{
+				scaledValues = scaledValues ++ [
+					raw[ i * 3 ].linlin(minX, maxX, 1.0, 0.0)
+					, raw[ i * 3 + 1 ].linlin(minY, maxY, 1.0, 0.0)
+					, confidence // raw[ i * 3 + 2 ]
+				]})};
+		});
+		// scaledValues[4..6].postln; // eyeL
 		// this.class.testSendOsc;
 		// forwardAddr.postln;
-		forwardAddr do: { | addr | addr.sendMsg('/minibee', id, *scaledValues) }
+		forwardAddr do: { | addr | addr.sendMsg('/poseperson', id, *scaledValues) }
 		^scaledValues do: { | val, i |
-			values[id - 1 * 3 + i] = val;
+			values[id - 1 * (17 * 3 + 1) + i] = val;
 			busses[i].set(val);
 		}
 	}
 
 	inputScaled { | scaledValues |
-		of.sendMsg('/minibee', id, *scaledValues);
+		of.sendMsg('/poseperson', id, *scaledValues);
 		^scaledValues do: { | val, i |
-			values[id - 1 * 3 + i] = val;
+			values[id - 1 * (17 * 3 + 1) + i] = val;
 			busses[i].set(val);
 		}
 	}
@@ -190,7 +225,7 @@ Minibee {
 		this.tr_.vlayout(
 			MultiSliderView()
 			.thumbSize_(5)
-			.size_(3 * 25)
+			.size_((17 * 3 + 1) * 2)
 			.addNotifier(this, \values, { | n |
 				n.listener.value_(values);
 			})
