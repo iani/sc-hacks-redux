@@ -1,0 +1,4 @@
+#+title: HelpSource - README
+
+This folder contains the documentaton source for sc-hacks in a format that is used by the built-in help system of SuperCollider.
+The files for this foldeer are written in =.org= format, and then exported to =.schelp= format using the exporter written by Martin Carlé.
