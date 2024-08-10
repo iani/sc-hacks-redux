@@ -1,0 +1,17 @@
+TITLE:: Notification
+CATEGORIES:: Libraries>sh-hacks>Observer_Pattern
+RELATED:: Classes>Control>NotificationCenter
+SUMMARY:: Notify depending objects of changes in the receiver
+DESCRIPTION:: 
+The Notification class enables one to add dependants to an object which are notiified when the object is sent the message.
+
+EMPHASIS::The next test involves using the refresh button - in italics::
+
+TELETYPE::changed::.
+
+Changed should be teletyped
+
+
+STRONG::RELOAD FUNKTIONIERT::
+
+Wrap up.
