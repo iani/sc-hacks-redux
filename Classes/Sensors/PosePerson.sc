@@ -118,21 +118,27 @@ PosePerson {
 		values = 0.dup(all.size * (17 * 3 + 1));
 		all do: _.getBusValues;
 	}
-
-	*getBusses { | i |
-		^all[i].busses;
-	}
-
-	*getBussesKr { | i |
-		^all[i].busses collect: { | b | In.kr(b.index) };
-	}
-
-	*getBussesAr { | i |
-		^all[i].busses collect: { | b | K2A.ar(In.kr(b.index)) };
-	}
 	*new { | id = 1 |
 		^this.newCopyArgs(id).init;
 	}
+
+	// ======================= BUSSES =======================
+	*at { | i = 0 | ^all[i] }
+	*bat { | i = 0 | ^this.at[i].busses }
+	*getBusses { | i = 0 |
+		^this.bat(i);
+	}
+
+	*bak { { | i = 0 | ^this.getBussesKr }
+	*getBussesKr { | i = 0 |
+		^this.bat(i) collect: { | b | In.kr(b.index) };
+	}
+
+	*bar { { | i = 0 | ^this.getBussesAr }
+	*getBussesAr { | i = 0 |
+		^this.bat(i) collect: { | b | K2A.ar(In.kr(b.index)) };
+	}
+
 
 	getBusValues {
 		var offset;
