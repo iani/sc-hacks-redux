@@ -1,0 +1,11 @@
+#+TITLE: Sensor Numbers
+
+(Checked on Thursday, October 19 at 17:30 pm:)
+
+JUN: 6, 7
+ASAYO 5, 8
+----
+Justine / Elli:
+
+JUSTINE: 5
+ELLI: 6

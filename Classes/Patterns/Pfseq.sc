@@ -7,7 +7,7 @@ Devise a Pattern that plays like a Pseq but creates a new array for the Pseq at 
 //:
 Pfseq((1..3), { | l, i | l.reverse.rotate(i) }, 5).asStream.nextN(12);
 //:
-EventPattern((dur: 0.15, degree: Pfseq((1..5) * 2, { | l, i | l.reverse.rotate(i) }, 200))).play;
+(dur: 0.1, degree: Pfseq((1..5) * 2, { | l, i | l.reverse.rotate(i) }, 200)) +> \test;
 //:
 */
 

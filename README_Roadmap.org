@@ -1518,3 +1518,34 @@ An other nice noise to have in SuperCollider is Worley noise aka cellular noise:
 
 #+end_quote
 
+* specialized Mediator Environments for triggers, beat arrays etc.
+:PROPERTIES:
+:DATE_DONE: [2022-10-21 Fri 12:14]
+:END:
+
+** kr synths playing impulse triggers into busses: \triggers
+** kr synths filtering triggers through beat arrays: \beats
+** buffers containing beat arrays: \beatbufs
+* specialized operators for triggers, beat arrays etc.
+:PROPERTIES:
+:DATE_DONE: [2022-10-21 Fri 12:25]
+:END:
+
+** Operations needing (!?) operators:
+
+*** SimpleNumber to Symbol: Start or set rate of trigger kr synth
+
+The synth should *both* write impulses to a bus *and* use SendReply to send OSC
+to lang at each beat.
+
+*** Array to Symbol: send array to beats buffer
+*** Symbol to Symbol: connect trigger synth to beat filtering synth
+*** NOTE: 2 ways to connect beat filtering synth to playing Synth or EventStream
+**** For Synths:
+***** hardwire it in the synth play func by naming the bus that should be read
+***** Write it as In.kr(\trig.kr(0)) and set the trig dynamically!
+**** For EventStreams: connect these to OSC message sent by beat synth
+
+** SimpleNumber || \symbol;
+Start or set rate of { Impulse.kr(SimpleNumber) } @>.triggers \symbol;
+** Array

@@ -1,0 +1,62 @@
+#+TITLE: 230908rehearsal Notes
+
+* Plan for today's session
+
+Scenes 1, 2 and 4.
+
+* Proposal for Izutsu introduction in interlude
+
+Prepare video in advance with Yoshiya and Asayo dialogue.  To introduce Izutsu.
+The video is projected, and then at the end Asayo ends the stage IRL.
+
+The video will be prepared here (in my absence) together with Yoshiya.
+
+* IMPORTANT : QUESTIONS TO ELEVSIS23 / Voudouri:
+
+Light. Cutting: "sourse four"  PROFILE SPOT LIGHT
+degree? 15%? 30%?
+
+* Ideas for video scenography (Vicky):
+
+Prerecord the video with Jun, and give it to Vicky to work with.
+Jun will bring his camera and we will record at the location during
+the week before the show.
+
+* Scene sound discussion + planning
+
+** 1. Introduction
+tone crossing - then opening noise clusters.
+** 2. Contact
+koorogi = crickets コオロギ蛩
+
+We checked preset 0 in file
+
+Source: Sat  9 Sep 2023 20:20:
+#+begin_src sclang
+/*presets for jun saved at 230909_200845*/
+
+//: (0) jun grainfroth bird_crickets
+//this is the template from mgrainfroth 230830_195041
+//The source is: 230803_195659_AsayoAsayo3code
+(
+'amp': [ 1.0, "Xyz(5, 0.2, 0.2, 1.5) + Xyz(6, 0.2, 0.2, 1.5) + Xyz(7, 0.2, 0.2, 1.5) + Xyz(8, 0.2, 0.2, 1.5)", 'on' ],
+'buf': 'bird_crickets',
+'endframe': 2451380,
+'playfunc': 'grainfroth',
+'pos': [ 0.74460431654676, "\\x5.sr", 'on' ],
+'startframe': 0,
+'trate': [ 0.65827338129496, "\\z5.sr", 'on' ],
+'vol': [ 0.26202059934786, "", 'off' ],
+)
+
+#+end_src
+
+TODO: (for me):
+1. Try DynKlank filtering
+2. Try modifying the grainfroth parameters, especially rate and grain duration and position.
+
+** 3. Solo - Jun
+** 4. Duet
+** 5. Image Projection
+** 6. Solo Asyo
+** 7. Ending

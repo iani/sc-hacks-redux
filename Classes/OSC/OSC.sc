@@ -7,6 +7,45 @@ OscGroupClient 139.162.184.97 22242 22246 22244 22245 <USERNAME> <USER_PASSWORD>
 
 OSC {
 	classvar >reportingFunc;
+	classvar <>enabled = true;
+
+	*enable { enabled = true }
+	*disable { enabled = false }
+
+	*filterServerMessages { | status = true |
+		Trace.filterServerMessages(status)
+	}
+
+	// 14 Dec 2022 14:06: Simulate reception of an osc message.
+	*respondTo { |  time, replyAddr, recvPort, msg |
+		if (enabled) {
+			// From earlier Main:recvOSCmessage:
+			// OSC.changed(msg[0], msg, time, replyAddr, recvPort);
+			this.changed(msg[0], msg, time, replyAddr, recvPort);
+		}
+	}
+
+	// Deprecated
+	*enableCodeEvaluation {
+		"OSC enableCodeEvaluation has been deprecated".postln;
+		"Use OscGroups enableCodeEvaluation instead".postln;
+		/*
+		this.add(\code, { | n, msg |
+			var code;
+			code = msg[1].asString;
+			if (code.isSafe) {
+				postf("========= Remote evaluation: ========= \n\(\n\%\n\)\n", code);
+				{	// permit window operations via remote evaluated code
+					code.interpret.postln;
+					OscGroups.changed(\evalCode, code);
+				}.defer;
+			}{
+				"WARNING: UNSAFE CODE RECEIVED!:".postln;
+				code.postln;
+			}
+		}, \codeEvaluation);
+		*/
+	}
 
 	*add { | message, function, key |
 		// message is the osc message to which the function is bound.
@@ -20,6 +59,32 @@ OSC {
 	*remove { | message, key |
 		(key ? message).removeNotifier(this, message.asOscMessage);
 	}
+
+	*forward { | message, address = 12345 |
+		if (address isKindOf: Integer) {
+			address = NetAddr("127.0.0.1", address)
+		};
+		if (address == LocalAddr()) {
+			^"OSC refuses to forward to local address".postln;
+		};
+		this.add(message, { | n, msg |
+			address.sendMsg(*msg);
+		}, address.asSymbol);
+	}
+
+	*unforward { | message, address = 12345 |
+		if (address isKindOf: Integer) {
+			address = NetAddr("127.0.0.1", address)
+		};
+		this.remove(message, address.asSymbol);
+	}
+
+	*addRaw { | message, function, key |
+		// Like add, without prepending / to message.
+		// For use with SendReply.
+		(key ? message).addNotifier(this, message, function);
+	}
+
 
 	*list {
 		var controllers;

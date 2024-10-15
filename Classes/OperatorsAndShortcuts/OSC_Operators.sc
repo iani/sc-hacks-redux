@@ -1,11 +1,14 @@
 /* 23 Feb 2022 08:01
 
-57110.trace;
+Trace messages matching a symbol, or whose reply-address matches a port number.
+
+57110.trace; // trace messages from the local server
 57110.untrace;
+
 */
 + Integer {
 
-	trace {
+	trace { // trace OSC messages whose replyAddr port matches me
 		Listener(OSC, { | model, msg, msgplusdata, time, replyAddr, recvPort  |
 			if (replyAddr.port == this) {
 				postln("Received: " + msgplusdata + " from " + replyAddr + " at time: " + time);
@@ -32,18 +35,21 @@
 	unforward { | netAddr |
 		Listener.remove(OSC, NetAddr.localAddr.asString.asSymbol);
 		postln("Stopped forwarding messages from port " + this + " to " + netAddr)
-
 	}
 
 }
 
 
 + Symbol {
-	trace {
-		this >>> { | ... args | args.postln; };
+	trace { // trace messages matching me
+		this >>>.trace { | ... args | args.postln; };
 	}
 
-	untrace { this <<< this }
+	traceChanges {
+		this addDependant: Trace;
+	}
+
+	untrace { this >>>.trace nil }
 
 	|>|  { | action, key |
 		// run an action when receiving osc message

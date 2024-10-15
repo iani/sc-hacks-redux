@@ -1,0 +1,95 @@
+#+TITLE: Design Interaction And Code Files
+
+Fri 14 Jul 2023 07:30
+
+* basic principles
+
+** SynthTemplates
+The synth templates for playing are stored in
+
+sc-hacks-redux/Classes/SynthTemplates.
+
+Thesee templates are loaded by class =SynthTemplate=.  This class stores all synthtemplates inside its classvar =templates=, as instances of SynthTemplate.
+
+Each SynthTemplate contains the =playfunc= for playing in the event (by =SoundBufferGui= ... or also ... ???). and the specs for initializing the environmnt to play it in, and for making a Gui to change these parameters before or during playing (see class =SoundParamGui=).
+
+A synth template file has 2 parts.
+
+*** Part 1: Classes involved in the synth template function
+Part 1 gives an array of the classes involved in the synthfunc of the synth template.  The system loades the specifications for the parameters used in these classes from the =.scd= files located in folder =sc-hacks-redux/Classes/OperatorsAndShortCuts/UGenFuncClasses/=
+
+An example of Part 1 looks like this:
+
+#+begin_src sclang
+[PlayBuf_, Freeze_];
+#+end_src
+
+
+
+The class SynthTemplates loads these files and stores the arrays of controlspecs which they create in a
+
+
+
+*** Part 2: The synth template function itself.
+
+** UGenFunctions and their parameter templates
+
+The UGenFunctions respond to the method ar by returning a function which can be played inside the enironment of a Mediator.   The functions contain controls which read from busses in the environment (=control.br= calls), and also use environment variables from the Mediator's environment to access values that customize the synth sound.
+
+The Ugen functions are stored in single .sc files inside =sc-hacks-redux/Classes/OperatorsAndShortCuts/UGenFuncClasses/=, where each
+
+In the same folder are also the template files that create the controlspecs for each UGenFuncClass in the folder . These are  =.scd= files with the same name as the UGenFunc class they belong to.
+The code of a spec template file creates the specs as an array, in the order in which they are to appear in the gui interface for controlling the Synth produced by the UGen, and using the =Symbol:ps= method to create them as =ControlSpec= instances storig the name of the parameter in instance variable \units.   Example of such a file:
+
+#+begin_src sclang
+[
+	\stretch.ps(0.01, 10, 1),
+	\shift.ps(-700, 700, 0)
+]
+#+end_src
+
+
+* Load and play principles
+
+Open a gui to select buffers and open guis from them:
+#+begin_src sclang
+BufferGui.gui;
+#+end_src
+
+Open a gui for the selected buffer by clicking on the button "open", or by typing enter in the ListView listing the buffers.
+
+The gui is opened by class =SoundBufferGui=.
+
+The
+
+
+BufferGui.new;
+
+SoundBufferGui
+
+** playing session files
+
+* Main classes and methods involved
+
+** BufferGui
+
+create list view with all loaded buffers, allowing user to create guis for any selected buffers.
+
+** SoundBufferGui
+
+Open a gui for a selected buffer, allow user to create selections from sections of it, and to audit them using any one of the UGen Functions in sc-hacks-redux/Classes/SynthTemplates.
+
+Also open SoundParamGui to tweak the parameters when playing the current selection.
+
+(Who saves the tweaked paramaters and extra code to files, and who reads these files )
+
+
+
+* template files
+** where they are located
+** creating code
+* saving sessions
+Save each editing session as a single code file, where each selection setting is a separate snippet.
+The file is saved in
+
+* creating session files

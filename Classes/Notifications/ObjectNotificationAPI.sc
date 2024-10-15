@@ -54,13 +54,23 @@ Transferred from sc-hacks.
         can listen to it notifying 'n_end', which is triggered through NodeWatcher
         and which is the same message that makes the Node remove all its Notifications.
     */
+	// Fixed  6 Dec 2022 17:55 - still needs watching and more testing
     addNotifier { | notifier, message, action |
         super.addNotifier(notifier, message, action);
         NodeWatcher.register(this);
-        this.addNotifierOneShot(this, 'n_end', {
-			// remove notifiers only after all notifications have been issued!
-			{ this.objectClosed; }.defer(0.1);
+		this.addDependant({ | me, message |
+			// args.postln;
+			// "somethingChanged".postln;
+			if (message == 'n_end') {
+				// "I ended".postln;
+				{ this.objectClosed; }.defer(0.1);
+			}
 		});
+		//     this.addNotifierOneShot(this, 'n_end', {
+		// 		// remove notifiers only after all notifications have been issued!
+		// 		// { this.objectClosed; }.defer(0.1);
+		// 		// "debuggging node addNotifier".postln;
+		// });
     }
 
 	onStart { | action, listener |
@@ -79,40 +89,4 @@ Transferred from sc-hacks.
 		NodeWatcher.register(this);
 		listener.addNotifierOneShot(this, \n_end, { action.(this) });
 	}	
-}
-
-+ View {
-	addNotifier { | notifier, message, action |
-		super.addNotifier(notifier, message, { | ... args |
-		// defer needed when called from OSC or other SystemClock based process
-			{ action.value(*args) }.defer
-		});
-		// release view when closed
-		this.onClose = { this.objectClosed };
-    }
-
-	addServerNotifier { | server, on = 1, off = 0 |
-		// Shortcut for server monitoring
-		server = server ?? { Server.default };
-		this.addNotifier(server, \counts, { | n |
-			n.listener.value = on;
-		});
-		this.addNotifier(server, \didQuit, { | n |
-			n.listener.value = off;
-		})
-	}
-
-	onServerCounts { | action, server |
-		server = server ?? { Server.default };
-		this.addNotifier(server, \counts, { | n |
-			action.(n.listener, server);
-		})
-	}
-	
-	onServerQuit { | action, server |
-		server = server ?? { Server.default };
-				this.addNotifier(server, \quit, { | n |
-			action.(n.listener, server);
-		})
-	}
 }

@@ -1,0 +1,72 @@
+#+TITLE: 06osc
+
+* The =OSC= class
+
+The =OSC= class broadcasts all incoming OSC messages to its dependants.
+
+* Enabling and disabling.
+
+** Enable OSC
+
+#+begin_src sclang
+OSC.enable
+#+end_src
+
+Forward all incoming OSC messages to dependants.
+
+** Disable OSC
+
+#+begin_src sclang
+OSC.disable
+#+end_src
+
+Do not forward OSC messages.
+
+** /=OSC= is enabled by default!/
+
+* Add an action to be run when receiving a message (=add=, =addRaw=)
+
+#+begin_src sclang
+OSC.add(\message, aFunction, \key);
+#+end_src
+
+Evaluate =aFunction= when receiving OSC message =\message=.  =\key= can be used to add different functions to perform when receiving the same message.
+
+By default, =\key= is the same as =\message=.
+
+*Note: this method converts messages to standard OSC format by prepending =/= if needed. If you want to listen to a message that has no initial =/=, then use method =addRaw=.
+
+#+begin_src sclang
+OSC.addRaw(\message, aFunction, \key);
+#+end_src
+
+* Remove an action from a message
+
+#+begin_src sclang
+OSC.remove(\message, \key);
+#+end_src
+
+Remove =aFunction= from OSC message =\message= and key =\key=. By default, =\key= is the same as =\message=.
+
+* Forward OSC messages matching a message to another address
+
+
+
+* Filtering
+
+* Implementation details
+The broadcasting is done in a line of code added to method =recvOSCmessage= of class Main:
+
+#+begin_src sclang
++ Main {
+    recvOSCmessage { arg time, replyAddr, recvPort, msg; // ... args;
+        // this method is called when an OSC message is received.
+        // Adding this to perform OSC.changed ... when enabled:
+        OSC.respondTo(time, replyAddr, recvPort, msg); // respond only when OSC is enabled
+        recvOSCfunc.value(time, replyAddr, msg);
+        prRecvOSCFunc.value(msg, time, replyAddr, recvPort); // same order as OSCFunc
+        OSCresponder.respond(time, replyAddr, msg);
+    }
+}
+#+end_src
+)

@@ -22,4 +22,21 @@
 			});
 		}, this);
 	}
+	notifyWhenReallyBooted {
+		this doWhenReallyBooted: { | server |
+			postln("server" + server + "will notify \booted");
+			server.changed(\booted)
+		}
+	}
+
+	addBootAction { | func |
+		// postln("adding notifier" + this + "to" + this);
+		// this.addNotifier(this, \booted, {
+		// 	postln("Yes. I booted. I will run:" + func);
+		// })
+		// this.addNotifier(this, \booted, func);
+		// OscGroups.addNotifier(OscGroups, \cmdperiod, func);
+		ServerTree.add(func, this);
+		if (this.serverRunning) { func.value };
+	}
 }

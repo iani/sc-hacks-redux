@@ -1,0 +1,96 @@
+#+TITLE: Osc Data Finding Values
+
+Find the minimum and maximum values in the arguments of a given osc message, from an archive read by OscData Reader.
+
+Here we give a concrete example based on data received from an M5StickPlus sensor from an interface programmed in arduino by Takumi Ikeda. (See: https://github.com/piperauritum/IMUOSC)
+
+*NOTE: The data for running the examples here are found in the present folder in file: [[oscdata.scd]]*
+
+* Part 1: Looking at '/ahrsdata'
+#+begin_src sclang
+OscDataReader.openDialog; // read data from one or more files
+~data = OscDataReader.allData; // store the data array for further work
+a = ~data select: { | i | i[1][0] === '/ahrsdata' }; // select entries with the desired message
+b = a collect: { | i | i[1][2..] }; // collect the values you want to inspect
+m = b.flat.maxItem;  // find the maximum value from all values
+n = b.flat.minItem;  // find the minimum value from all values
+
+// Alternative approach: Collect argument (variable) values in a sepate arrays:
+// collect the messages (ignore timestamps):
+c = a collect: { | i | i[1] }; // collect messages
+d = c.flop; // put message values in separate arrays
+~messages = d[0]; // message
+// In the following the variable names correspond to the meaning of each argument
+// as determined by the format of the message received.
+~id = d[1]; // sensor id
+~x = d[2]; // x dimension of sensor
+~y = d[3]; // y dimension of sensor
+~z = d[4]; // z dimension of sensor
+
+// Find the minimum and maximum values for each sensor axis:
+~xmax = ~x.maxItem;
+~xmin = ~x.minItem;
+~ymax = ~y.maxItem;
+~ymin = ~y.minItem;
+~zmax = ~z.maxItem;
+~zmin = ~z.minItem;
+
+// Post the minimum and maximum values for each variable:
+[
+	[\xmax, ~xmax, \xmin, ~xmin],
+	[\ymax, ~ymax, \xmin, ~ymin],
+	[\zmax, ~zmax, \zmin, ~zmin]
+] do: _.postln;
+#+end_src
+
+Result:
+
+#+begin_src sclang
+[ xmax, 57.503971099854, xmin, -75.813911437988 ]
+[ ymax, 95.675819396973, xmin, -81.688674926758 ]
+[ zmax, 72.078094482422, zmin, -88.754447937012 ]
+#+end_src
+
+* Part 2: Looking at '/accldata'
+#+begin_src sclang
+// OscDataReader.openDialog; // read data from one or more files
+// (Note: we assume that the data are still stored in OscDataReader from Part 1 above)
+// redo this if you want to make sure that ~data contains the original data:
+~data = OscDataReader.allData; // store the data array for further work
+
+// Alternative approach: Collect argument (variable) values in a sepate arrays:
+// collect the messages (ignore timestamps):
+a = ~data select: { | i | i[1][0] === '/accldata' }; // select entries with the desired message
+c = a collect: { | i | i[1] }; // collect messages
+d = c.flop; // put message values in separate arrays
+~messages = d[0]; // message
+// In the following the variable names correspond to the meaning of each argument
+// as determined by the format of the message received.
+~id = d[1]; // sensor id
+~x = d[2]; // x dimension of sensor
+~y = d[3]; // y dimension of sensor
+~z = d[4]; // z dimension of sensor
+
+// Find the minimum and maximum values for each sensor axis:
+~xmax = ~x.maxItem;
+~xmin = ~x.minItem;
+~ymax = ~y.maxItem;
+~ymin = ~y.minItem;
+~zmax = ~z.maxItem;
+~zmin = ~z.minItem;
+
+// Post the minimum and maximum values for each variable:
+[
+	[\xmax, ~xmax, \xmin, ~xmin],
+	[\ymax, ~ymax, \xmin, ~ymin],
+	[\zmax, ~zmax, \zmin, ~zmin]
+] do: _.postln;
+#+end_src
+
+Result:
+
+#+begin_src sclang
+[ xmax, 2.847900390625, xmin, -2.655029296875 ]
+[ ymax, 1.306396484375, xmin, -3.85498046875 ]
+[ zmax, 1.80224609375, zmin, -2.22021484375 ]
+#+end_src

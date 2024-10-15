@@ -31,8 +31,34 @@
 				Registry.put(\windowRects, this, key, topview.findWindow.bounds);
 			});
 			initFunc.(window, this);
+			// fix for making sure that we know when the window closes
+			// TODO: debug this: Why cannot we have a more direct way than listen to \objectClosed?
+			this.addNotifier(window, \objectClosed, { this.changed(\closed) });
 			window;
 		}).front;
+	}
+
+	vlayoutKey { | key ... widgets |
+		^this.window({ | w |
+			w.view.layout = VLayout(*widgets)
+		}, key)
+	}
+
+	hlayoutKey { | key ... widgets |
+		^this.window({ | w |
+			w.view.layout = HLayout(*widgets)
+		}, key);
+	}
+	vlayout { | ... widgets |
+		^this.window({ | w |
+			w.view.layout = VLayout(*widgets)
+		})
+	}
+
+	hlayout { | ... widgets |
+		^this.window({ | w |
+			w.view.layout = HLayout(*widgets)
+		})
 	}
 
 	// defers are done here, because Rect.tl... calls need to return
@@ -56,8 +82,12 @@
 	}
 
 	bounds_ { | rect, key = \default |
-		Registry.put(\windowRects, this, key, rect);
+		// Registry.put(\windowRects, this, key, rect);
+		// Do not overwrite previously existing bounds:
+		Registry(\windowRects, this, key, {rect});
 	}
+
+	getBounds { | key = \default | ^Registry.at(\windowRects, this, key) }
 
 	bounds { | key = \default |
 		^Registry(\windowRects, this, key, {

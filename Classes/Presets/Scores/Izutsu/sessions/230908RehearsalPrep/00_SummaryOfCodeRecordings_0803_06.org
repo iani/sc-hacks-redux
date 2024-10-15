@@ -1,0 +1,100 @@
+#+TITLE: Summary Of Code Recordings 230803, 230806
+
+_Summary of Code Recordings from 230803 and 230806_
+
+*NOTE: Code is from the old preset version that uses long control specs for ampctl and paramctl.*
+We ignore these and plan to substitute
+
+* Overview of both sessions: Playfuncs + Buffer combinations used
+
+| ! | buffer        | playfunc      |
+| 1 | bird_crickets | grainfroth    |
+| 2 | bird_crickets | grainecho     |
+| 3 | fones         | grainecho     |
+| 4 | crickets      | grainmagshift |
+#+TBLFM: $1=@#-1
+
+* buffer - playfunc summary 230803
+
+| ! | 0 | source                            | buffer        | playfunc   |
+| # | 1 | 230803_195659_JunAsayo3code       | bird_crickets | grainfroth |
+| # | 2 | 230803_202838_JunAsayo3code       | bird_crickets | grainfroth |
+| # | 3 | 230803_204306_JunAsayo3LONGcode a | bird_crickets | grainecho  |
+| # | 4 | 230803_204306_JunAsayo3LONGcode b | bird_crickets | grainecho  |
+| # | 5 | 230803_205743_JunAsayo3code       | bird_crickets | grainecho  |
+| # | 6 | 230803_210447_JunAsayo3code       | fones         | grainecho  |
+#+TBLFM: $2=@#-1
+
+** Details
+
+*** 230803_202838_JunAsayo3code
+
+**** Source
+#+begin_src sclang
+'tokyo'.envir play: ( 'selectionNum': 0, 'ampctl': [ 'tokyo', 'amp', 1, 'off', 0, 1, 'lin', \"x.lag(1).exp(500, 1000)\", \"(1 - z.lag(1)).exp(500, 1000)\", \"(x + y + z).lag(1).exp(500, 1000)\" ], 'startframe': 95000, 'trate': 0,
+  'pos': 0, 'player': 'tokyo', 'vol': 1, 'endframe': 2311673, 'buf': 'bird_crickets',
+  'paramctl': ( 'vol': [ 'tokyo', 'vol', 3, 'z', 0.05, 0.9, 'lin', \"x.lag(1).exp(500, 1000)\", \"(1 - z.lag(1)).exp(500, 1000)\", \"(x + y + z).lag(1).exp(500, 1000)\" ], 'trate': [ 'tokyo', 'trate', 4, 'x', 0.01, 0.2, 'lin', \"x.lag(1).exp(500, 1000)\", \"(1 - z.lag(1)).exp(500, 1000)\", \"(x + y + z).lag(1).exp(500, 1000)\" ], 'pos': [ 'tokyo', 'pos', 3, 'x', 0, 1, 'lin', \"x.lag(1).exp(500, 1000)\", \"(1 - z.lag(1)).exp(500, 1000)\", \"(x + y + z).lag(1).exp(500, 1000)\" ] ), 'playfunc': 'grainfroth' )
+#+end_src
+
+**** buffer: bird_crickets
+**** playfunc: grainfroth
+**** controls: Use control from newer versions tried out with Mary Randou and Yoshimitsu Yoshiya
+
+*** 230803_204306_JunAsayo3LONGcode
+
+**** Part 1
+***** Source
+
+#+begin_src sclang
+'tokyo'.envir play: ( 'vol': 1, 'endframe': 2311673, 'dur': 0.63013698630137, 'buf': 'bird_crickets',
+  'selectionNum': 0, 'startframe': 95000, 'rate': 0.13708385261356, 'playfunc': 'grainecho', 'trate': 0.15981735159817,
+  'pos': 0.97260273972603 )
+#+end_src
+***** buffer: bird_crickets
+***** playfunc: grainecho
+***** controls: Use control from newer versions tried out with Mary Randou and Yoshimitsu Yoshiya
+
+**** Part 2
+
+***** Source
+#+begin_src sclang
+'tokyo'.envir play: ( 'dur': 0.63013698630137, 'selectionNum': 0, 'ampctl': [ 'tokyo', 'amp', 1, 'off', 0, 1, 'lin', \"x.lag(1).exp(500, 1000)\", \"(1 - z.lag(1)).exp(500, 1000)\", \"(x + y + z).lag(1).exp(500, 1000)\" ], 'startframe': 95000,
+  'rate': 0.13708385261356, 'trate': 0.15981735159817, 'pos': 0.97260273972603, 'player': 'tokyo', 'vol': 0.58568420174725,
+  'endframe': 2311673, 'buf': 'bird_crickets', 'paramctl': ( 'rate': [ 'tokyo', 'rate', 4, 'x', 0.01, 1.2, 'lin', \"x.lag(1).exp(500, 1000)\", \"(1 - z.lag(1)).exp(500, 1000)\", \"(x + y + z).lag(1).exp(500, 1000)\" ], 'vol': [ 'tokyo', 'vol', 1, 'off', 0, 10, 'lin', \"x.lag(1).exp(500, 1000)\", \"(1 - z.lag(1)).exp(500, 1000)\", \"(x + y + z).lag(1).exp(500, 1000)\" ], 'dur': [ 'tokyo', 'dur', 3, 'x', 0, 1, 'lin', \"x.lag(1).exp(500, 1000)\", \"(1 - z.lag(1)).exp(500, 1000)\", \"(x + y + z).lag(1).exp(500, 1000)\" ], 'trate': [ 'tokyo', 'trate', 4, 'z', 0, 1, 'lin', \"x.lag(1).exp(500, 1000)\", \"(1 - z.lag(1)).exp(500, 1000)\", \"(x + y + z).lag(1).exp(500, 1000)\" ],
+  'pos': [ 'tokyo', 'pos', 3, 'z', 0, 1, 'lin', \"x.lag(1).exp(500, 1000)\", \"(1 - z.lag(1)).exp(500, 1000)\", \"(x + y + z).lag(1).exp(500, 1000)\" ] ), 'playfunc': 'grainecho' )
+#+end_src
+
+***** buffer: bird_crickets
+***** playfunc: grainecho
+***** controls: Use control from newer versions tried out with Mary Randou and Yoshimitsu Yoshiya
+*** 230803_195659_JunAsayo3code
+
+**** Source
+
+#+begin_src sclang
+'tokyo'.envir play: ( 'selectionNum': 0, 'ampctl': [ 'tokyo', 'amp', 1, 'off', 0, 1, 'lin', \"x.lag(1).exp(500, 1000)\", \"(1 - z.lag(1)).exp(500, 1000)\", \"(x + y + z).lag(1).exp(500, 1000)\" ], 'startframe': 551374, 'trate': 0.0,
+  'pos': 0.15525114155251, 'player': 'tokyo', 'vol': 1, 'endframe': 1750985, 'buf': 'bird_crickets',
+  'paramctl': ( 'vol': [ 'tokyo', 'vol', 3, 'z', 0, 0.9, 'lin', \"x.lag(1).exp(500, 1000)\", \"(1 - z.lag(1)).exp(500, 1000)\", \"(x + y + z).lag(1).exp(500, 1000)\" ], 'trate': [ 'tokyo', 'trate', 4, 'x', 0.1, 0.4, 'lin', \"x.lag(1).exp(500, 1000)\", \"(1 - z.lag(1)).exp(500, 1000)\", \"(x + y + z).lag(1).exp(500, 1000)\" ], 'pos': [ 'tokyo', 'pos', 3, 'x', 0, 1, 'lin', \"x.lag(1).exp(500, 1000)\", \"(1 - z.lag(1)).exp(500, 1000)\", \"(x + y + z).lag(1).exp(500, 1000)\" ] ), 'playfunc': 'grainfroth' )
+#+end_src
+
+**** buffer: bird_crickets
+**** playfunc: grainfroth
+**** controls: Use control from newer versions tried out with Mary Randou and Yoshimitsu Yoshiya
+
+* buffer - playfunc summary 230806
+
+| ! |  0 | source                           | buffer        | playfunc      |
+| # |  1 | 01_230806_155538_JunAsayo4code   | -             | -             |
+| # |  2 | 02_230806_160651_JunAsayo4code a | bird_crickets | grainfroth    |
+| # |  2 | 02_230806_160651_JunAsayo4code b | crickets      | grainmagshift |
+| # |  4 | 03_230806_161435_JunAsayo4code a | bird_crickets | grainfroth    |
+| # |  4 | 03_230806_161435_JunAsayo4code b | crickets      | grainmagshift |
+| # |  6 | 04_230806_162815_JunAsayo4code a | crickets      | grainmagshift |
+| # |  7 | 04_230806_162815_JunAsayo4code b | bird_crickets | grainfroth    |
+| # |  8 | 05_230806_164614_JunAsayo4code a | crickets      | grainmagshift |
+| # |  8 | 05_230806_164614_JunAsayo4code b | bird_crickets | grainfroth    |
+| # | 10 | 06_230806_165601_JunAsayo4code a | crickets      | grainmagshift |
+| # | 11 | 06_230806_165601_JunAsayo4code b | bird_crickets | grainfroth    |
+#+TBLFM: $2=@#-1
+
+** 230803_195659_JunAsayo3code: bird_crickets, grainfroth

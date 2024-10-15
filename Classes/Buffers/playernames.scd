@@ -1,0 +1,13 @@
+[
+	'tokyo',
+	'athens',
+	'corfu',
+	'yoshi',
+	'mary',
+	'natali',
+	'justine',
+	'jun',
+	'asayo',
+	'vicky',
+	'iani'
+];

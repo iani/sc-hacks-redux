@@ -1,0 +1,52 @@
+#+TITLE: 230921takekurabe Scenes
+
+* New scene draft 230830
+
+| ! | scene | YL        | YR        | ML              | MR              |
+|   |     1 | weddel    | columbia  | crickets        | fones           |
+|   |     2 | yang_bird | hanbaiki  | swallows        | noisebirdsclick |
+|   |     3 | yang_bird | yangdrums | hanbaiki        | fones           |
+|   |     4 | weddel    |           | noisebirdsclick | noisebirdsclick |
+
+Order of entry and dialogue per scene:
+
+* Scene 1
+1. Yoshimitsu columbia
+2. Yoshimitsu weddel
+3. Mary Crickets
+4. Mary Fones
+5. Dialogue between Mary and Yoshimitsu
+
+* Scene 2
+
+
+
+** Old Notes
+
+Total number of scenes: 4 scenes.  Scene 4 is a variation of scene 1
+
+Each scene lasts 7 min max.
+Total duration: 27 min max.
+
+All scenes use variations of grainfroth as main synth function.
+The buffers used are:
+
+*** Scene 1: Yoshimitsu: Weddel, Mary: noisebirdsclick
+*** Scene 2: Yoshimitsu: yang_bird, Mary: swallows / crickets
+*** Scene 3: Yoshimitsu: Weddel, Mary: swallows / fones
+*** Scene 4: Yoshimitsu: Weddel, Mary: noisebirdsclick
+
+* Proposed Modifications to New scene draft 230921
+
+Total number of scenes: 4 scenes.  Scene 4 is a variation of scene 1
+
+Each scene lasts 7 min max.
+Total duration: 27 min max.
+
+All scenes use variations of grainfroth as main synth function.
+The buffers used are:
+
+** Scene 1: Yoshimitsu: Weddel, Mary: noisebirdsclick
+** Scene 2: Yoshimitsu: yang_bird, Mary: swallows / crickets
+** Scene 3: Yoshimitsu: Weddel, Mary: swallows / fones
+** Scene 4: Yoshimitsu: Weddel, Mary: noisebirdsclick

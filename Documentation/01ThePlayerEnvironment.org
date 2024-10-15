@@ -1,0 +1,11 @@
+#+TITLE: 01the Player Environment
+
+=sc-hacks-redux= uses a special kind of Environment as current environment, which provides some useful functionality in playing and replacing synths and patterns and in accessing busses.  This environment is of class =Mediator=.
+
+#+begin_src sclang
+currentEnvironment;
+#+end_src
+
+#+begin_example
+-> <default>:[  ]
+#+end_example

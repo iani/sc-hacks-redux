@@ -12,6 +12,11 @@ array.sprandi becomes: Pub(Prand(array, inf)) etc.
 
 + Object {
 	pn { | repeats = inf | ^Pn(this, repeats); }
+	p1 { ^Pn(this, 1) }
+}
+
++ Pattern {
+	pdup { | n = 2 | ^Pdup(n, this) }
 }
 
 + SequenceableCollection {
@@ -26,7 +31,13 @@ array.sprandi becomes: Pub(Prand(array, inf)) etc.
     pser1 { | repeats = 1 | ^this.pser(repeats); }
 
 	pseries { | repeats = inf | ^Pseries(*this add: repeats) }
-	
+
+	prrand { | repeats = inf |
+		^Pfuncn({ this[0].rrand(this[1]) }, repeats)
+	}
+	pexprand { | repeats = inf |
+		^Pfuncn({ this[0].exprand(this[1]) }, repeats)
+	}
     prand { | repeats = inf | ^Prand(this, repeats); }
     prandi { | repeats = inf | ^this.prand(repeats); }
     prandn { | repeats = 1 | ^this.prand(repeats); }

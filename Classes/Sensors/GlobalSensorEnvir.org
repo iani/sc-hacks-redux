@@ -1,0 +1,126 @@
+#+TITLE: Global Sensor Envir
+
+* Summary:
+
+1. Define shortcut methods sensor: Symbol:ml, mw (maplin and mapexp) args: (min, max, param, player) (Done Wed 12 Jul 2023 16:21)
+2. Define shortcut methods Function:gt and lt (sensor, thresh, player, lagtime) (Done Wed 12 Jul 2023 16:21). Also added gtp and ltp methods that include playing to a player.
+3. Minibee should also sum all x,y,z inputs from each sensor and send them to bus xyz.
+4. Define shortcut method Function:xyzenv(sensorid, player, lag)
+
+* List of things to implement
+
+-------- Details --------
+---- Newer draft - modular system with methods.
+
+* { ugenfunc } ** 1.xyzenv +> \player
+
+Multiply the output of the ugenfunc with the output of the envelope created by Xyz(1) (see below!)
+
+Translates to:
+
+{ ugenfunc.value * 1.xyzenv } +> \player;
+
+Alternative shortcut:
+
+{ ugenfunc }.xyzenv(1, \player);
+
+* { ugenfunc } **>.x1 [thresh, lag] +> \player;
+
+Multiply the output of the ugenfunc to (\x1.sr > thresh).lag(lag) and play in player
+
+Translates to:
+
+{ ugenfunc.value *  (\x1.sr > thresh).lag(lag) } +> \player;
+
+* [ Simpler way { ugenfunc }.gt(\x1, thresh, lag, \player);
+
+{ ugenfunc }.gt(\x1, thresh, lag, \player);
+
+and
+
+{ ugenfunc }.lt(\x1, thresh, lag, \player);
+
+Note: the methods lt and gt are known to UGen but are free to use for Function.
+
+* Note: both of the above are easier when sums of all xyz triples are written to sensor busses.
+
+So from the earlier draft below, we keep just the 1 extra point:
+
+write the sums of the [x, y, z] values of the 12 ssensors to 12 busses:
+xyz1, xyz2 ... xyz12.
+
+This could be built into the Minbee class!
+
+* shortcuts for mapping sensor values to param values.
+
+Ingredients:
+- sensor name
+- range min
+- range max
+- type of mapping - linear or exponential
+- parameter to be mapped
+- player
+- environment
+
+  Current scheme - coding example:
+
+  { \x1.sr.lin(400, 8000) } @>.player \param;
+
+  Possible alternative shortcut:
+
+  \x1.maplin(400, 8000, \player, \param);
+
+  For exponential:
+
+  \x1.mapexp(400, 8000, \player, \param);
+
+---- Earlier draft:
+* concept
+
+Provide on-off mappings from all sensors in one environment,
+and methods from accessing them in any Synth function.
+Main implementation class: =SS=
+
+For each sensor, there are 3 mappings:
+
+- AmpSlopeXyz :: [class Xyz] Sum of Amplitudes of Slopes of x, y, z is greater than 0.5. Creates envelope for amp. See class =AmpSlopeXyz=
+- x (1-12) :: the x values of the sensor input on busses for sensors 1-12
+- z :: the z values of the sensor input on busses for sensors 1-12
+
+This makes 48 + 12 = 60 mappings (or control busses) for the 12 sensors available in the currently used 3 sets of 4 sensors each, as follows:
+
+- [\xyz1, \xyz2 ... \xyz12] (12 sensors)
+- [\x1a, \x1b, \z1a, \z1b] (4 control sets for sensor 1 x, z above and below thrshold)
+- [\x2a, \x2b, \z2a, \z2b] (4 control sets for sensor 2 x, z above and below thrshold)
+- ... 10 more sets for the remaining sensors 3-12.
+
+In all: 12 busses for xyz1-xyz12 and 4 x 12 = 48 busses for x1a, x1b, z1a, z1b 1-12 = 60 busses.
+
+Synth functions can use these busses by operators that multiply the output proxy output by the function with the value of the bus corresponding to to each
+
+The operators would be:
+
+<function> ** <sensor number> : multiplies with AmpSlopeXyz(sensor number);
+<function> >**.<sensorid> <lag>: multiplies with <sensorid>.br(lag) > thresh;
+<function> <**.<sensorid> <lag>: multiplies with <sensorid>.br(lag) < thresh;
+
+... where =thresh= is set by class SS as follows:
+
+SS.thresh(\x1a, 0.3);
+
+
+* Usage examples (templates in pseudo-code)
+
+{ SinOsc.ar(400, 0, 0.1).dup } **.1 Xyz +> \player
+
+{ SinOsc.ar(400, 0, 0.1).dup } >**.x1 0.5 +> \player
+
+To specify lag time, use array as argument:
+
+{ SinOsc.ar(400, 0, 0.1).dup } >**.x1 [0.5, 1.2] +> \player
+
+{ SinOsc.ar(400, 0, 0.1).dup } <**.z5 0.1 +> \player
+
+* Footnotes
+
+[fn:1]

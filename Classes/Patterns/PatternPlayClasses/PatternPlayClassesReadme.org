@@ -5,10 +5,16 @@ Classes to put inside the play key of a pattern when playing, in order to do var
 The play key is evaluated as function.  Example:
 #+begin_src sclang
 () +> \test;
-(degree: 1) ++> \test;
+(degree: 10) ++> \test;
 (play: { "hello world".postln; }) ++> \test;
 (play: { currentEnvironment.postln; }) ++> \test;
 #+end_src
+
+#+RESULTS:
+: () +> \test;
+: (degree: 10) ++> \test;
+: (play: { "hello world".postln; }) ++> \test;
+: (play: { currentEnvironment.postln; }) ++> \test;
 
 Instances of a class that are substituted for such a function the play key should respond to value.
 

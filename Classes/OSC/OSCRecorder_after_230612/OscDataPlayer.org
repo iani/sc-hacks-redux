@@ -1,0 +1,23 @@
+#+TITLE: Osc Data Player
+
+Tue 13 Jun 2023 07:46 - notes for new implementaton:
+
+* Class OscDataPlayer
+
+** Instance variables:
+
+*** Files - A FileList instance
+*** Messages - An array of messages red from file
+*** Settings - an array of settings specifying
+*** EventStream - Event stream playing the messages
+
+** Methods:
+*** gui
+create window.
+state related to user interaction can be kept in elements of the gui?  Examples of state:
+- play/stop,
+- playng status,
+- subselection of data such as index of first/last message for playing subranges, messages to filter,
+- Other customization of playback such as: loop or not, playing speed, etc.
+
+We may need another class here to handle gui interaction and deal with the above state plus further options of state.

@@ -3,45 +3,51 @@
 */
 
 + Event {
-	+> { | key, envir | ^this.playInEnvir(key, envir) }
 
-	playInEnvir { | key, envir |
-		var atKey, new;
-		Mediator.wrap({
-			atKey = currentEnvironment[key];
-			atKey.stop;
-			new = this.splay(key);
-			currentEnvironment[key] = new;
-		}, envir);
-		^new;
+	addEvent { | argEvent | // add all key-value pairs from argEvent to myself
+		argEvent keysValuesDo: { | key, value | this[key] = value }
 	}
 
-	splay { | key | ^EventStream(this).start; }
-
-	+>! { | key |
-		var new;
-		new = EventStream(this);
-		currentEnvironment.put(key, new);
-		^new;
-	}
-
-	++> { | key, envir |
-		var p;
-		Mediator.wrap({
-			p = currentEnvironment[key];
-			p ?? {
-				p = EventStream(this);
-				currentEnvironment.put(key, p);
+	pp { // prettyprint
+		^String.streamContents({ arg s;
+			s << "(\n";
+			this.keys.asArray.sort do: { | k |
+				s << "'" << k << "': ";
+				s << this[k].asCompileString;
+				s << ",\n"
 			};
-			currentEnvironment[key].setEvent(this);
-		}, envir);
+			s << ")";
+		})
 	}
 
-	@> { | beatKey |
-		beatKey.beat.addDependant(EventStream(this));
+	splay { | filter | ^EventStream(this, filter).start; }
+
+	getParent { if (this.parent.isNil) { ^defaultParentEvent } { ^this.parent }  }
+
+	// see OperatorFix240222.sc
+	// +> { | player, envir | ^this.pushPlayInEnvir(player, envir ? player, true) }
+
+	playInEnvir { | player, envir, start = true |
+		var atKey, new;
+		Mediator.pushWrap({
+			atKey = currentEnvironment[player];
+			atKey.stop;
+			new = EventStream(this);
+			if (start) { new.start };
+			currentEnvironment[player] = new;
+		}, envir ? player);
+		^new;
 	}
 
-	addBeat { | beatKey |
-		this @> (beatKey ? this);
+	playbuf {
+		^this filter: {
+			var buf;
+			buf = ~buf.next;
+			~instrument = [nil, \playbuf1, \playbuf2][buf.numChannels];
+			~bufnum = buf.bufnum;
+		}
+	}
+	filter { | function |
+		^EventStream(this, function);
 	}
 }

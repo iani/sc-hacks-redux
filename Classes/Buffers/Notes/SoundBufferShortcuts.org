@@ -1,0 +1,48 @@
+#+TITLE: Sound Buffer Shortcuts
+
+Tue 11 Jul 2023 03:27 - shortcuts to consider:
+
+Shortcut for specifying the playfunc (not having to put it in the envir as with **):
+
+\bufname @@.playfunc (parameter pairs ...)
+
+The envir + player names would default to the bufname!
+
+\crickets @@.playbuf (rate: 1, ... );
+
+This would translate to:
+
+\crickets **.crickets (playfunc: \playbuf, rate: 1, ...);
+
+Example:
+
+\fones @@.loopbuf (rate: 0.4, startpos: 0.16, loopdur: 0.35);
+
+The most timeconsuming part is entering the start - duration parameters.
+
+One way might be to create the code from the user selection on the soundfileview editor.
+This is feasible:
+
+The buffer name is static, being that of the sound buffer editer on the window.
+The playfunc is selected from the menu.
+The event is constructed from the templates to each of the shortcut functions used
+such as PlayBuf, DurEnv, MagAbove_, etc.
+Note: These templates are in the same folder as the ugen class definitions.
+(Classes/OperatorsAndShortcuts/UGenFuncClasses/)
+
+The resulting code might be something like:
+\crickets @@.<playfunc>
+(
+startpos: 4.2,
+dur: 2,
+rate: 1,
+trigger: 1,
+loop: 1,
+thresh: 400,
+... etc.
+)
+
+The code would be generated inside the editor as document, so one can use emacs keys for evaluating it (control-option-x).
+And one can also save it in one folder to keep the code of all the experiments.
+
+The shortctut key on the sound file view could be e for edit or g for go or generate.

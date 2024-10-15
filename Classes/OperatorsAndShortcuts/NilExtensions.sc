@@ -2,7 +2,7 @@
 
 */
 + Nil {
-	addEvent { | event, key |
+	mergeEvent { | event, key |
 		event +> key
 	}
 }

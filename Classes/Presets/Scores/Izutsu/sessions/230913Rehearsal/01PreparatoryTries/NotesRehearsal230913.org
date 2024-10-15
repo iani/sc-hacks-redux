@@ -1,0 +1,9 @@
+#+TITLE: Notes Rehearsal230913
+
+Granular material by scene
+
+
+| ! | scene        | algorithm     | sample        |
+|   | contact      | grainfroth    | bird-crickets |
+|   | solo asayo 1 | grainfroth    | crickets      |
+|   | second round | grainmagshift | crickets      |

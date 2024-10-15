@@ -1,0 +1,12 @@
+#+TITLE: Displaying OSC input
+
+* Display in GUI Window
+
+#+begin_src sclang
+OscMonitor.gui;
+#+end_src
+
+#+RESULTS:
+: OscMonitor.gui;
+
+* Display (postin) in post window

@@ -1,0 +1,16 @@
+#+title: Notification
+
+#+PROPERTY: header-args+ :eval no-export :noweb no-export
+#+PROPERTY: header-args:sclang+ :session none :tangle-flat
+#+KEYWORDS: Libraries>sh-hacks>Observer_Pattern
+#+RELATED: Classes>Control>NotificationCenter
+#+SUMMARY: Notify depending objects of changes in the receiver
+#+EXPORT_FILE_NAME: /Users/iani/Dev/SCdev/LibsByMe/sc-hacks-redux/HelpSource/Classes/Notification.schelp
+#+EXPORT_FILE_NAME_NOT: /Users/iani/Dev/SCdev/LibsByMe/sc-hacks-redux-gitquark/Quarks/DEPENDENCIES/notification/Quarks/notification/HelpSource/Classes/Notification.schelp
+      # + EXPORT_FILE_NAME:
+
+* Description :sc_description:
+
+The Notification class enables one to add dependants to an object which are notiified when the object is sent the message.
+
+*NOTE: This is a stub*

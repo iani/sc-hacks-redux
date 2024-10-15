@@ -3,7 +3,10 @@
 */
 
 + Synth {
-	setEvent { | event | // see Event ++>
+	setEvent { | event |
+		// send all key-value pairs in the event to the Synth as Synth Parameters
+		// For each value, get the next element - so this works with streams.
+		// see also Event ++>
 		var params;
 		event keysValuesDo: { | key, value |
 			params = params add: key;

@@ -1,0 +1,44 @@
+#+TITLE: Sound Buffer Gui
+
+Fri 14 Jul 2023 13:10
+
+* Keyboard Shortcuts
+
+** on the sound file view
+
+Shortcuts to move the start and end positions of the current selection:
+
+1, 2, 3, 4, 5: move beginning left by 1, 10, 1000, 10000
+6, 7, 8, 9, 0: move beginning right by 1, 10, 1000, 10000
+
+q, w, e, r, t: move end left by 1, 10, 1000, 10000
+y, u, i, o, p: move end right by 1, 10, 1000, 10000
+
+a, s, d, f, g: grow selection on both ends by 1, 10, 1000, 10000:
+h, j, k, l, ;: shrink selection on both ends by 1, 10, 1000, 10000
+
+z, x, c, v, b: move entire selection left by 1, 10, 1000, 10000
+n, m, ,, ., /: move entire selection right by 1, 10, 1000, 10000
+
+-: set selection to 0 (cancel selection)
+=: set selection to entire buffer.
+
+R : Jump to range slider
+Z : Toggle zoom to selection - entire buffer.
+
+** on the range slider (time zoom slider)
+
+1, 2, 3, 4, set zoom to -0.0001 ... 0.1 of previous zoom
+5 set zoom to 1 sbzoom
+6 toggleSelectionZoom
+7, 8, 9 0: set zoom to +0.1 ... 0.0001 of previous zoom
+q, w, e, r, t: scroll by -0.0001, -0.0001, -001, -0.01, -0.1
+y, u, i, o, p: scroll by 0.1, 0.01, 0.001, 0.0001
+
+<, > increase / degrease zoom frac by 0.1
+
+s: set current selection to zoom
+z, . set focus to signal (sound file) view.
+** on both the sound file view and the range slider
+
+<space> : toggle playing on-off

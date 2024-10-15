@@ -1,0 +1,1 @@
+PresetList.openPresetWithPlayer(\contactasayo, \asayo);

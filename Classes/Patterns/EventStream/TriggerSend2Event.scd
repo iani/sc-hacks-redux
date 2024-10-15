@@ -42,7 +42,7 @@
 (degree: 0, dur: 1) ++> \test;
 //:
 
-~test.addEvent((degree: 0, dur: 1));
+~test.mergeEvent((degree: 0, dur: 1));
 //:
 ~test.event;
 ~test.stream;
@@ -50,7 +50,7 @@
 ~test.getNextEvent.play;
 //:
 
-~test.addEvent((degree: 10, dur: 0.1));
+~test.mergeEvent((degree: 10, dur: 0.1));
 
 //: ======= new appproach
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -8,9 +8,17 @@ For sc-hacks-redux: playInEnvir.  Create synth, providing arguments from current
 */
 
 + Function {
-	play { arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args;
+	play { arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args, player, envir;
 		var def, synth, server, bytes, synthMsg;
+		// TODO: get outbus + targed from envir if provided!
+		// currentEnvironment.postln;
+		// postln("Function:play current environment is target:" + currentEnvironment);
+		// postln("Function:play  target is:" + ~target);
+
+		target ?? {  target = ~target; };
 		target = target.asTarget;
+		~outbus !? { outbus = ~outbus };
+		outbus = outbus.asAudioBus;
 		server = target.server;
 		if(server.serverRunning.not) {
 			("server '" ++ server.name ++ "' not running.").warn;
@@ -18,13 +26,22 @@ For sc-hacks-redux: playInEnvir.  Create synth, providing arguments from current
 			^Synth.basicNew(def.name, server);
 			// ^nil
 		};
+		// postln("Function play. fadeTime is: " + fadeTime);
 		def = this.asSynthDef(
 			fadeTime:fadeTime,
 			name: SystemSynthDefs.generateTempName
 		);
+		// enable storing of source code:
+		Function.changed(\player, envir, player, Main.elapsedTime,
+			format("% +>.% %", this.def.sourceCode, envir, player.asCompileString),
+			[def.allControlNames collect: _.name]
+		);
+
 		synth = Synth.basicNew(def.name, server);
-		// if notifications are enabled on the server,
-		// use the n_end signal to remove the temp synthdef
+		// debugging  3 May 2023 08:04
+		// NOTE: d_free is now run somewhere else in the system.
+		// THe code below is not needed and couses problems
+		// when playing/releaseing synths in overlapping intervals
 		if (server.notified) {
 			OSCFunc({
 				server.sendMsg(\d_free, def.name);
@@ -36,9 +53,4 @@ For sc-hacks-redux: playInEnvir.  Create synth, providing arguments from current
 		def.doSend(server, synthMsg);
 		^synth
 	}
-	/*
-	playInEnvir { | name | // synthFromEnvir? ????
-		^this.asSynthDef(fadeTime: ~fadeTime, name: name)//.synthFromEnvir;
-	}
-	*/
 }

@@ -1,11 +1,36 @@
 /*  9 Aug 2021 23:38
 Utility: Iterate an action on all files that match a search.
-
+PathName(Platform.userHomeDir).fullPath.size;
 
 */
 
-
 + String {
+	findRegexp1 { | regexp |
+		var found;
+		found = this.findRegexp(regexp).first;
+		if (found.size == 0) { ^"" } { ^found[1] }
+	}
+
+	pn { ^this.pathname  }
+	pathname { ^PathName(this) }
+	userRelative {
+		^"~" ++ this[PathName(Platform.userHomeDir).fullPath.size..]
+	}
+	stripInitialBlanks {
+		var b = 0; // blank
+		while { this[b] === $\n } {  b = b + 1 };
+		if (b == this.size) { ^this } { ^this[b..] }
+	}
+	header { // return the first line
+		var nonblank, nl;
+		nonblank = this.stripInitialBlanks;
+		nl = nonblank find: "\n";
+		nl ?? { ^nonblank };
+		^nonblank.copyRange(0, nl - 1);
+	}
+	interpretIn { | envir |
+		envir use: { this.interpret }
+	}
 	pathMatchDo { | action |
 		// perform action on each non-directory path that is matched by me
 		this.pathMatch.reject(_.isFolder).do(action.(_))
@@ -56,11 +81,22 @@ Utility: Iterate an action on all files that match a search.
 		}{
 			buffer = Buffer.readWithInfo(server, this);
 			buffer !? {
-				postf("Loaded buffer %, % channels, %\n",
-					name, buffer.numChannels, buffer.dur.formatTime);
-				Library.put(Buffer, name, buffer)
+				// postf("Loaded buffer %, % channels, %\n",
+				// 	name, buffer.numChannels, buffer.dur.formatTime);
+				Library.put(Buffer, name, buffer);
+				// "buffer issuing changed loaded".postln;
+				Buffer.changed(\loaded);
 			};
 		}
+	}
+
+	// alternative scheme storing buffers in Library
+	libraryLoadAudioFile {
+
+	}
+
+	numFolders {
+		^PathName(this).numFolders;
 	}
 }
 
@@ -71,9 +107,21 @@ Utility: Iterate an action on all files that match a search.
 		// return (folderName ++ "_" ++ fileNameWithoutExtension).asSymbol
 		var bufName;
 		bufName = this.fileNameWithoutExtension;
-		if (Library.at(Buffer, bufName.asSymbol).notNil) {
-			bufName = this.folderName ++ "_" ++ bufName;
-		};
+		// old scheme to be replaced by scheme with multiple dictionaries:
+		// if (Library.at(Buffer, bufName.asSymbol).notNil) {
+		// 	bufName = this.folderName ++ "_" ++ bufName;
+		// };
 		^bufName.asSymbol;
+	}
+
+	numFolders {
+		var numFolders = 1, but1;
+		but1 = fullPath.size - 1;
+		fullPath do: { | char, i |
+			if (i > 0 and: { i != but1 } and: { char.isPathSeparator }) {
+				numFolders = numFolders + 1;
+			};
+		};
+		^numFolders;
 	}
 }
