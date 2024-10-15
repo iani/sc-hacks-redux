@@ -14,6 +14,11 @@ PosePerson.getBussesAr(0) do: { | b | [b, b.rate].postln; }
 //: Test of K2A.ar linlin
 { SinOsc.ar(K2A.ar(LFSaw.kr(1).linlin(0, 1, 400, 4000), 0, 0.1)) }.play;
 
+//: test bus ar collection
+
+PosePerson.getBussesAr(0) collect: { | b | [b, b.rate]; }
+
+
 //:
 PosePerson.all[1].busses do: { | b | b.get.postln; };
 //:collect the values for 2 busses:
