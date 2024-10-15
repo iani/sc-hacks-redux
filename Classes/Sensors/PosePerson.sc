@@ -119,6 +119,17 @@ PosePerson {
 		all do: _.getBusValues;
 	}
 
+	*getBusses { | i |
+		^all[i].busses;
+	}
+
+	*getBussesKr { | i |
+		^all[i].busses collect: { | b | In.kr(b.index) };
+	}
+
+	*getBussesAr { | i |
+		^all[i].busses collect: { | b | K2A.ar(In.kr(b.index)) };
+	}
 	*new { | id = 1 |
 		^this.newCopyArgs(id).init;
 	}
