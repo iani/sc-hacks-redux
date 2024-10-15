@@ -13,13 +13,4 @@
 
 The Notification class enables one to add dependants to an object which are notiified when the object is sent the message.
 
-/The next test involves using the refresh button - in italics/
-
-=changed=.
-
-Changed should be teletyped
-
-
-*RELOAD FUNKTIONIERT*
-
-Wrap up.
+*NOTE: This is a stub*
