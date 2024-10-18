@@ -16,8 +16,8 @@ PosePerson {
 	// classvar <>min = -2048;
 	// classvar <>max = 2048;
 	classvar <>keypoints;
-	classvar <>confidenceMinGlobal = 0.7;
-	classvar <>confidenceMin = 0.9;
+	classvar <>confidenceMinGlobal = 0.0; // 0.7;
+	classvar <>confidenceMin = 0.0; // 0.9;
 	classvar <>forwardAddr;
 	classvar <of;
 	classvar <>verbose = false;
@@ -28,6 +28,8 @@ PosePerson {
 	var <busses;
 	var <>minX = 0, <>minY = 200;
 	var <>maxX = 640, <>maxY = 400;
+	var <globalConfidence; // global confidence buss per PosePerson
+	var <x, <y, <c; // individual x, y and confidence busses per PosePerson
 
 	*enableSmoothing { this.smoothEnabled = true }
 	*disableSmoothing { this.smoothEnabled = false }
@@ -121,24 +123,54 @@ PosePerson {
 	*new { | id = 1 |
 		^this.newCopyArgs(id).init;
 	}
+	*at { | i = 0 | ^all[i] }
 
 	// ======================= BUSSES =======================
-	*at { | i = 0 | ^all[i] }
-	*bat { | i = 0 | ^this.at[i].busses }
+	*b { | i = 0 | ^this.at(i).busses }
+	*x { | i = 0, b = 0 | ^this.at(i).x[b] }
+	*y { | i = 0, b = 0 | ^this.at(i).y[b] }
+	*c { | i = 0, b = 0 | ^this.at(i).c[b] }
+	*gc { | i = 0 | ^this.at(i).globalConfidence }
+
+	*kx { | i = 0, b = 0 | ^In.kr(this.at(i).x[b]) }
+	*ky { | i = 0, b = 0 | ^In.kr(this.at(i).y[b]) }
+	*kc { | i = 0, b = 0 | ^In.kr(this.at(i).c[b]) }
+	*kgc { | i = 0 | ^In.kr(this.at(i).globalConfidence) }
+
+	*ax { | i = 0, b = 0 | ^K2A.ar(In.kr(this.at(i).x[b])) }
+	*ay { | i = 0, b = 0 | ^K2A.ar(In.kr(this.at(i).y[b])) }
+	*ac { | i = 0, b = 0 | ^K2A.ar(In.kr(this.at(i).c[b])) }
+	*agc { | i = 0 | ^K2A.ar(In.kr(this.at(i).globalConfidence)) }
+
 	*getBusses { | i = 0 |
 		^this.bat(i);
 	}
 
-	*bak { { | i = 0 | ^this.getBussesKr }
+	*bak { | i = 0 | ^this.getBussesKr }
 	*getBussesKr { | i = 0 |
 		^this.bat(i) collect: { | b | In.kr(b.index) };
 	}
 
-	*bar { { | i = 0 | ^this.getBussesAr }
+	*bar { | i = 0 | ^this.getBussesAr(i) }
 	*getBussesAr { | i = 0 |
+		// postln("getBussesAr testing!!!!. testing this at!");
+		// this.at(0);
+		// postln("tested this.at");
+
+
 		^this.bat(i) collect: { | b | K2A.ar(In.kr(b.index)) };
 	}
 
+	// busses corresponding to x and y axes:
+	// *xat { | i = 0 |
+	// 	^this.at(i).clump(3).select({| x | x.size == 3})
+	// 	.collect({ | a | a[0].busses });
+	// }
+	// *yat { | i = 0 |
+	// 	^this.at(i).clump(3).select({| x | x.size == 3})
+	// 	.collect(| a | a[1].busses }
+
+	// ===============================================
 
 	getBusValues {
 		var offset;
@@ -154,11 +186,15 @@ PosePerson {
 	}
 
 	makeBusses {
+		var cache;
 		busses = [format("%C", id).asSymbol.sensorbus];
 		keypoints do: { | n | // n.postln;
 			busses = busses ++
 			[\x, \y, \c].collect{|s| format("%%%", id, n, s).asSymbol.sensorbus}
-		}
+		};
+		// store busses in variablee for access by kind.
+		globalConfidence = busses[0];
+		#x, y, c  = busses[1..].clump(3).flop;
 	}
 
 	*busses { ^all collect: _.busses }
@@ -201,7 +237,7 @@ PosePerson {
 		// raw.postln;
 		confidence = raw[0];
 		maxX = raw[1]; // this should become the principle
-		// maxY = raw[2];
+		maxY = raw[2];
 		scaledValues = [ confidence ];
 		if ( confidence < confidenceMinGlobal, {
 			scaledValues = scaledValues ++ 0.dup(17 * 3);
