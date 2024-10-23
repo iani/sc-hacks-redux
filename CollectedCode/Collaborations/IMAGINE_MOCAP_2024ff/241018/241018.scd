@@ -8,6 +8,12 @@
 	* (PosePerson.kc(0, 0) > 0.8) /// .lag(0.001)
 	// * (PosePerson.kgc(0, 0) > 0.8)
 } +> \x1;
+//: simple test WITH threshold - for testing 2 persons - crossing of person ids ...
+{
+	SinOsc.ar(PosePerson.ky(0, 10).linlin(0, 1, 400, 4000), 0, 0.1).dup
+	* (PosePerson.kc(0, 0) > 0.8) /// .lag(0.001)
+	// * (PosePerson.kgc(0, 0) > 0.8)
+} +> \x1;
 //:
 { SinOsc.ar(PosePerson.kx(0, 0).lag(2).linlin(0, 1, 400, 4000), 0, 0.1).dup } +> \x1;
 //: amp control
@@ -95,24 +101,43 @@
 		LFTri.ar(freq2, 0, amp2) * (PosePerson.kc(0, 9) > 0.8)
 	]
 } +> \x1;
+//: distance of  left and right wrists x from left and right shoulders x
+{
+	var
+	var nfreq, namp; // nose
+	var freq2, amp2; // which point?
+	nfreq = PosePerson.kx(0, 10).lag(0.02).linlin(0, 1, 400, 4000) * 0.8;
+	namp =  PosePerson.ky(0, 10).lag(0.1).linexp(0, 1, 0.001, 0.5);
+	freq2 = PosePerson.kx(0, 9).lag(0.02).linlin(0, 1, 400, 4000) * 1.2;
+	amp2 =  PosePerson.ky(0, 9).lag(0.1).linexp(0, 1, 0.001, 0.5);
+	[
+		SinOsc.ar(nfreq, 0, namp) * (PosePerson.kc(0, 10) > 0.8),
+		LFTri.ar(freq2, 0, amp2) * (PosePerson.kc(0, 9) > 0.8)
+	]
+} +> \x1;
 //: 4 points - left and right wrists + knees
 {
 	var lwfreq, lwamp; // left wrist
 	var rwfreq, rwamp; // right wrist
-	lwfreq = PosePerson.kx(0, 10).lag(0.02).linlin(0, 1, 400, 4000) * 0.8;
+	var lkfreq, lkamp; // left knee
+	var rkfreq, rkamp; // right knee
+	lwfreq = PosePerson.ky(0, 10).lag(0.02).linlin(0, 1, 400, 4000) * 0.8;
 	lwamp =  PosePerson.ky(0, 10).lag(0.1).linexp(0, 1, 0.1, 0.5);
-	rwfreq = PosePerson.kx(0, 9).lag(0.02).linlin(0, 1, 400, 4000) * 1.2;
+	rwfreq = PosePerson.ky(0, 9).lag(0.02).linlin(0, 1, 400, 4000) * 1.2;
 	rwamp =  PosePerson.ky(0, 9).lag(0.1).linexp(0, 1, 0.1, 0.5);
-	lkfreq = PosePerson.kx(0, 14).lag(0.02).linlin(0, 1, 400, 4000) * 0.8;
+	lkfreq = PosePerson.ky(0, 14).lag(0.02).linlin(0, 1, 400, 4000) * 0.8;
 	lkamp =  PosePerson.ky(0, 14).lag(0.1).linexp(0, 1, 0.1, 0.5);
-	rkfreq = PosePerson.kx(0, 13).lag(0.02).linlin(0, 1, 400, 4000) * 1.2;
+	rkfreq = PosePerson.ky(0, 13).lag(0.02).linlin(0, 1, 400, 4000) * 1.2;
 	rkamp =  PosePerson.ky(0, 13).lag(0.1).linexp(0, 1, 0.1, 0.5);
-	[
-		SinOsc.ar(lwfreq, 0, lwamp) * (PosePerson.kc(0, 10) > 0.8)
-		+ SinOsc.ar(rwfreq, 0, rwamp) * (PosePerson.kc(0, 14) > 0.8),
-		LFTri.ar(rkfreq, 0, rkamp) * (PosePerson.kc(0, 9) > 0.8)
-		+ LFTri.ar(lkfreq, 0, rkamp) * (PosePerson.kc(0, 13) > 0.8)
-	]
+
+	// SinOsc.ar(lwfreq, 0, lwamp) * (PosePerson.kc(0, 10) > 0.8)
+	// [
+	// 	SinOsc.ar(lwfreq, 0, lwamp) * (PosePerson.kc(0, 10) > 0.8)
+	// 	+ SinOsc.ar(rwfreq, 0, rwamp) * (PosePerson.kc(0, 14) > 0.8),
+		// LFTri.ar(rkfreq, 0, rkamp) * (PosePerson.kc(0, 9) > 0.8)
+	// 	+
+	LFTri.ar(lkfreq, 0, rkamp) * (PosePerson.kc(0, 13) > 0.8)
+	// ]
 } +> \x1;
 //:
 {
