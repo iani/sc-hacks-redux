@@ -1,10 +1,15 @@
 #+title: Guide Template
 
 * Installation
+* The Mediator Environment
+* Patterns and Synths
 * Operators
 * OSC
 * OSCGroups
 * Busses
 * Buffers
-* Patterns and Synths
+* Sensors
+* Scripts and Scores
+* OSC Data Recording
+* Presets
 * GUI Interfaces
