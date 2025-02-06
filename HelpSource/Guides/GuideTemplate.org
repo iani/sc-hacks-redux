@@ -1,0 +1,10 @@
+#+title: Guide Template
+
+* Installation
+* Operators
+* OSC
+* OSCGroups
+* Busses
+* Buffers
+* Patterns and Synths
+* GUI Interfaces
