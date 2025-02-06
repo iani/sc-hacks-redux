@@ -2,6 +2,7 @@
 
 * Installation
 * The Mediator Environment
+This is the main environment.
 * Patterns and Synths
 * Operators
 * OSC
