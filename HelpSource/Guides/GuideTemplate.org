@@ -2,10 +2,64 @@
 
 * Installation
 * The Mediator Environment
-This is the main environment.
-Push test 2
-* Patterns and Synths
+
+The Mediator is a variant of ProxySpace that uses a custom dispatch method for replacing the values of its environment variables.  It introduces custom behaviors for replacing synths and patterns, so that storing a synth or pattern in an environment variable automatically stops the previously running synth or pattern.
+
+Examples:
+
+* Patterns and Synths in Mediator Envionment
+* EventStream
+
+The EventStream class is an alternative to Pbind.  It is named EventStream because it is a Stream that produces Events.  It replaces the Event producing Routine (formally referred to as Event Stream) that is produced by Pbind.  This is because a Routine does not allow access to its closure variables, and therefore does not permit changing parts of the stream.
+
+
+
 * Operators
+** **>
+Function **> player, envir
+
+Use function to obtain durations and schedule the function with player and envir as arguments.
+
+** @
+
+** @@>
+** @>
+** &>
+
+<key> &>.<envir> value :
+
+Put value in key <key> of envir <envir>.
+Example:
+
+\freq &>.test 600
+
+Put value 600 in key \freq of Mediator \test
+
+
+** !!!
+** !!>
+** !!*
+** !+>
+** >>@
+** >>!
+** >>>
+** >>?
+** <@
+** <!
+** <<<
+** <+
+** <+@
+** <?>
+** --
+** +@>
+** +>
+** +>!
+** +>>
+** +><@>
+** ++>
+** +++
+** *>
+
 * OSC
 * OSCGroups
 * Busses

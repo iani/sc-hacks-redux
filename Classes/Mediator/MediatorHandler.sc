@@ -8,7 +8,6 @@ MediatorHandler {
 		currentValue = envir.at(key);
 		envir use: { currentValue.handleReplacement(newValue); };
 		// envir.changed(key, newValue);
-		envir.prPut(key, newValue
-		);
+		envir.prPut(key, newValue);
 	}
 }

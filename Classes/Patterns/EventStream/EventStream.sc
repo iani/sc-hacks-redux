@@ -95,7 +95,7 @@ EventStream {
 		stream use: filter;
 	}
 
-	asEvenStream { ^this }
+	asEventStream { ^this }
 
 	restart { // to make Symbol:start also work with Synths.
 		this start: nil; // being explicit ...
