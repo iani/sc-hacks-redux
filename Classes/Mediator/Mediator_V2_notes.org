@@ -1,0 +1,16 @@
+#+title: Mediator V2 Notes
+
+1. Add the ability for automatic setting of of control inputs or of mapping control inputs to busses in synths when a synth starts or when changing a value of aa key
+2. Add the ability to set key values to busses (and map the busses to synth control inputs), or to functions that process incoming input for mapping it or doing other stuff.
+
+3. Updates can be handled through the Notification mechanism.
+4. handleReplacement method can defined for functions (or an another type of object containing a function, such a new class "ValueMapper") to pass input values to the function, collect the resulting input and send it to the control value of any listening synths in the Mediator's environment.
+5. Functions for mapping/filtering values *must* be stored a new class ("ValueMapper"), in order to store the latest mapped value and used it as initial parameter argument value when starting new synths.
+
+   TODO: Start by reviewing the synth creation method currently used to play synths in Mediator.  Modify it to do following:
+
+   - Collect argument values that need to be used as [args ... ] to create the synth.
+   - As soon as the synth starts, map any controls to any existing busses of same name
+   - Register the synth with a notifier listening to Mediator changes to perform following tasks:
+     - when a value changes in the environment, set control values of the synth.
+     - when a new bus is stored, map corresponding control values of the synth.
