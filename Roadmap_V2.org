@@ -189,3 +189,10 @@ Consider merging the code of =Mediator:addSynth= to =Function:playInEnvir=
 Note: the method =pushPlayInEnvir= is there to perform push and then delegate the rest to =playInEnvir=.
 #+begin_src sclang
 ** =playInEnvir=
+=Function:playInEnvir= creates a synth from the function by sending it play.  It returns the newly created synth.
+** =Mediator:addSynth=
+=Mediator:addSynth= does 2 things:
+1. it adds the notifiers for setting the synth target and for updating synth controls outbus and out when these are set as keys in the Modifier.
+2. It calls =Synth:onEnd= on the synth, telling it to remove itself from the Mediator when it stops.
+
+This method can be incorporated into playInEnvir.

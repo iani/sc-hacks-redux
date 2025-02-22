@@ -14,11 +14,13 @@
 		^{ this.value * (\amp.br(~amp ? amp) min: lim) }
 	}
 
+	// New version, for sc-hacks v2
 	playInEnvir { | player, envir, target, outbus = 0, addAction = \addToHead |
 		var synth;
 		"Rebuilding playInEnvir".postln;
 		postln("arguments are" + player + envir + target + outbus + addAction);
 		// .play(target, outbus: 0, fadeTime: 0.02, addAction: 'addToHead', args, player, envir)
+		postln("The envir is" + envir + "asEnvir" + envir);
 		synth = this.play(target, outbus);
 		^synth;
 	}
