@@ -266,4 +266,13 @@ Mediator : EnvironmentRedirect {
 		argPlayer ?? { argPlayer = this.name; };
 		^envir[argPlayer].isPlaying;
 	}
+
+	////////////// V2 Extensions (250212ff) //////////////
+	synthArgs {
+		// create an arg array for making a new synth with values
+		// set from values in your keys.  The only values that add t
+		// hemselves are SimpleNumber, and later, the value of ValueAdapter.
+		var theArgs = [];
+
+	}
 }

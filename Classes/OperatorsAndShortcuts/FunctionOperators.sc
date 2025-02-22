@@ -15,6 +15,16 @@
 	}
 
 	playInEnvir { | player, envir, target, outbus = 0, addAction = \addToHead |
+		var synth;
+		"Rebuilding playInEnvir".postln;
+		postln("arguments are" + player + envir + target + outbus + addAction);
+		// .play(target, outbus: 0, fadeTime: 0.02, addAction: 'addToHead', args, player, envir)
+		synth = this.play(target, outbus);
+		^synth;
+	}
+
+	// This version is replaced in version 2 of the software.
+	playInEnvirV1 { | player, envir, target, outbus = 0, addAction = \addToHead |
 		// TODO: add arguments setting, bus mapping
 		var synth;
 		envir = envir ? player; // play in own envir, holding own busses
@@ -23,8 +33,6 @@
 			var fadeTime;
 			fadeTime = ~fadeTime ? 0.01; // allways make fade envelope: ensure the synth is releasable!
 			if (Server.default.serverRunning) {
-				// postln("playinEnvir envir:" + currentEnvironment);
-				// postln("playInEnvir fadeTime:" + ~fadeTime);
 				currentEnvironment.addSynth(player, synth = this.play(
 					target, outbus, fadeTime,
 					player: player, envir: envir,
@@ -34,7 +42,8 @@
 				Server.default.waitForBoot({
 					currentEnvironment.addSynth(player, synth = this.play(
 						target, outbus, fadeTime,
-						player: player, envir: envir
+						player: player, envir: envir,
+						addAction: addAction
 					));
 				})
 			}

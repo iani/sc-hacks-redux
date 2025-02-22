@@ -1,0 +1,191 @@
+#+title: Roadmap V2
+
+* Functionality extensions to add to playing functions:
+:PROPERTIES:
+:DATE_ENTERED: [2025-02-12 Wed 12:31]
+:END:
+
+*** Enable automatic setting or mapping of synth controls when keys are set in the Mediator
+*** Create synth with arg values from Mediator
+*** When synth is created, map args to busses from Mediator
+
+** Modifications to introduce
+
+*** Define synth making method using values from Mediator
+*** Add Notifications to synth for setting/mapping of args
+
+** Implementation code
+*** rewrite synth starting mechanism for Mediator.
+
+Use new method =Mediator:makeSynth(function)=. This method does the following:
+1. collects arguments from key value pairs
+2. calls function.play(...) with arguments collected from key value pairs, including array of function control input arguments, =target= and =addAction= values.
+3. adds onStart action to synth that does the following:
+   1. map busses
+   2. add notification to set values or map busses in response to key value changes
+4. adds onEnd action to:
+   1. remove key value change notification.
+   2. store nil in the Mediator slot (key) instead of the synth.
+*** Review operator(s) for playing funcs in Mediator, to use makeSynth.
+**** current state
+#+begin_src sclang
++ Function {
+   +> { | player, envir |
+    ^this.pushPlayInEnvir(player, envir ? player, true)
+   }
+}
+#+end_src
+
+Note: the method =pushPlayInEnvir= is there to perform push and then delegate the rest to =playInEnvir=.
+#+begin_src sclang
++ Object {
+	pushPlayInEnvir { | player, envir, target, outbus = 0 |
+		// "this is object pushPlayInEnvir".postln;
+		(envir ? player).push;
+		this.playInEnvir(player, envir, target, outbus);
+	}
+
+}
++ Function {
+	playInEnvir { | player, envir, target, outbus = 0, addAction = \addToHead |
+		// TODO: add arguments setting, bus mapping
+		var synth;
+		envir = envir ? player; // play in own envir, holding own busses
+		// postln("Function playInEnvir. envir:" + envir);
+		Mediator.wrap({
+			var fadeTime;
+			fadeTime = ~fadeTime ? 0.01; // allways make fade envelope: ensure the synth is releasable!
+			if (Server.default.serverRunning) {
+				currentEnvironment.addSynth(player, synth = this.play(
+					target, outbus, fadeTime,
+					player: player, envir: envir,
+					addAction: addAction
+				));
+			}{
+				Server.default.waitForBoot({
+					currentEnvironment.addSynth(player, synth = this.play(
+						target, outbus, fadeTime,
+						player: player, envir: envir,
+						addAction: addAction
+					));
+				})
+			}
+		}, envir);
+		^synth;
+	}
+}
+#+end_src
+
+**** Modifications planned
+Function:playInEnvir should be gradually rebuilt
+to implement the functionality described above.
+*** Cancel perhaps? : new method Mediator:withBootedServer
+
+Ensure server is booted before running some code.
+Methods such as Mediator:makeSynth should be called from within withBootedServer to ensure that the server is running.
+
+NOTE: This introduces some indirection and extra complexity in the code that may not be worth it. Cancel?
+
+*** new method: Mediator:synthArgs
+
+create an arg array for making a new synth with values set from values in your keys.  The only values that add themselves are SimpleNumber, and later, the value of ValueAdapter.
+
+*** new method: <various classes>:addSynthArgs
+
+polymorphism method to decide whether to add self to array when building args array for playing a function as synth.
+
+#+begin_src sclang
++ Object : {
+    addSynthArgs { | array, key |
+       ^array;
+	}
+}
+
++ SimpleNumber {
+    addSynthArgs { | array, key |
+       ^array ++ [key, this];
+	}
+}
+
++ ValueAdapter {
+   addSynthArgs { | array, key |
+       ^array ++ [key, value ? 0];
+	}
+}
+#+end_src
+
+**** new method:  Mediator:makeSynth (early version!)
+
+- collect synth arguments from own keys (method =synthArgs=)
+- guess target node from keys if present
+- guess add order from keys if present
+- call <function>.play(...) and include collected arguments and target and add order (\before, \after, etc. )
+
+Note: Function play arguments are:
+.play(target, outbus: 0, fadeTime: 0.02, addAction: 'addToHead', args, player, envir)
+
+Function:play is defined in:
+sc-hacks-redux/Classes/FunctionPlayer/SystemOverwrites/plusFunctionPlay.sc
+
+Review. Perhaps revert to native function play?
+
+*** FOR LATER: new method Mediator:func2Synth - long version
+This may be tried later.
+
+- make the synth definition.
+- get arguments from the synth definition
+- Construct arg array
+- Create synth with arg array
+- Add Notifiers to synth
+
+**** Code to modify
+
+#+begin_src sclang
+FunctionOperators.org : Function:playInEnvir(player, envir, target, outbus);
+#+end_src
+
+**** Current status: Use Function:play
+=Function:playInEnvir= creates a synth from the function by sending it play.  It returns the newly created synth.
+
+* Define ValueAdapter class to map incoming values with a function and store latest value for reuse by synths
+
+* Extend MediatorHandler to handle ValueAdapter, Busses and other stuff
+
+* Operator review
+:PROPERTIES:
+:DATE_ENTERED: [2025-02-12 Wed 11:23]
+:END:
+
+- [ ] Review all operators.
+- [ ] Remove unused or superfluous operators
+- [ ] Possibly change some operators. Maintain backward compatibility if possible
+* Method review
+** =pushPlayInEnvir=
+Note: the method =pushPlayInEnvir= is there to perform push and then delegate the rest to =playInEnvir=.
+#+begin_src sclang
+** =playInEnvir=
+
+=Function:playInEnvir= creates a synth from the function by sending it play.  It returns the newly created synth.
+
+Consider merging the code of =Mediator:addSynth= to =Function:playInEnvir=
+
+** =Mediator:addSynth=
+
+
+* Define ValueAdapter class to map incoming values with a function and store latest value for reuse by synths
+
+* Extend MediatorHandler to handle ValueAdapter, Busses and other stuff
+
+* Operator review
+:PROPERTIES:
+:DATE_ENTERED: [2025-02-12 Wed 11:23]
+:END:
+
+- [ ] Review all operators.
+- [ ] Remove unused or superfluous operators
+- [ ] Possibly change some operators. Maintain backward compatibility if possible
+* Method review
+** =pushPlayInEnvir=
+Note: the method =pushPlayInEnvir= is there to perform push and then delegate the rest to =playInEnvir=.
+#+begin_src sclang
+** =playInEnvir=
