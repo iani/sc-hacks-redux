@@ -151,27 +151,6 @@ FunctionOperators.org : Function:playInEnvir(player, envir, target, outbus);
 
 * Extend MediatorHandler to handle ValueAdapter, Busses and other stuff
 
-* Operator review
-:PROPERTIES:
-:DATE_ENTERED: [2025-02-12 Wed 11:23]
-:END:
-
-- [ ] Review all operators.
-- [ ] Remove unused or superfluous operators
-- [ ] Possibly change some operators. Maintain backward compatibility if possible
-* Method review
-** =pushPlayInEnvir=
-Note: the method =pushPlayInEnvir= is there to perform push and then delegate the rest to =playInEnvir=.
-#+begin_src sclang
-** =playInEnvir=
-
-=Function:playInEnvir= creates a synth from the function by sending it play.  It returns the newly created synth.
-
-Consider merging the code of =Mediator:addSynth= to =Function:playInEnvir=
-
-** =Mediator:addSynth=
-
-
 * Define ValueAdapter class to map incoming values with a function and store latest value for reuse by synths
 
 * Extend MediatorHandler to handle ValueAdapter, Busses and other stuff
@@ -187,7 +166,17 @@ Consider merging the code of =Mediator:addSynth= to =Function:playInEnvir=
 * Method review
 ** =pushPlayInEnvir=
 Note: the method =pushPlayInEnvir= is there to perform push and then delegate the rest to =playInEnvir=.
-#+begin_src sclang
+** =playInEnvir=
+
+=Function:playInEnvir= creates a synth from the function by sending it play.  It returns the newly created synth.
+
+Consider merging the code of =Mediator:addSynth= to =Function:playInEnvir=
+
+** =Mediator:addSynth=
+
+** =pushPlayInEnvir=
+Note: the method =pushPlayInEnvir= is there to perform push and then delegate the rest to =playInEnvir=.
+
 ** =playInEnvir=
 =Function:playInEnvir= creates a synth from the function by sending it play.  It returns the newly created synth.
 ** =Mediator:addSynth=

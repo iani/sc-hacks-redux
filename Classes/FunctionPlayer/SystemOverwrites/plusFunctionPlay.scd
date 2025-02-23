@@ -1,16 +1,20 @@
-/* 24 May 2021 15:59
+/*
+Disabled for v2, on Sat 22 Feb 2025 17:10
+
+24 May 2021 15:59
 For using OSCGroups:
 Make Function:play work even if server is not running.
 If server not running, return dummy synth to store in Mediator.
 
 For sc-hacks-redux: playInEnvir.  Create synth, providing arguments from currentEnvironment.
 
+
 */
 
 + Function {
 	play { arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args, player, envir;
 		var def, synth, server, bytes, synthMsg;
-		// TODO: get outbus + targed from envir if provided!
+		// TODO: get outbus + targed from envi  if provided!
 		// currentEnvironment.postln;
 		// postln("Function:play current environment is target:" + currentEnvironment);
 		// postln("Function:play  target is:" + ~target);
@@ -41,7 +45,7 @@ For sc-hacks-redux: playInEnvir.  Create synth, providing arguments from current
 		// debugging  3 May 2023 08:04
 		// NOTE: d_free is now run somewhere else in the system.
 		// THe code below is not needed and couses problems
-		// when playing/releaseing synths in overlapping intervals
+		// when playing/releasing synths in overlapping intervals
 		if (server.notified) {
 			OSCFunc({
 				server.sendMsg(\d_free, def.name);

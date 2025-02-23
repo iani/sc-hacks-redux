@@ -152,7 +152,7 @@ Mediator : EnvironmentRedirect {
 	}
 	prPut { | key, obj |
 		envir.put (key, obj);
-		this.changed(key, obj);
+		this.changed(\key, key, obj);
 	}
 
 	set { | synthkey, param, value |
@@ -236,6 +236,8 @@ Mediator : EnvironmentRedirect {
 		}, envir ? player);
 	}
 
+	// Note: In v2 this method will become obsolete
+	// its contents are delegated to Synth:playInEnvir
 	addSynth { | key, synth |
 		// postln("Mediator add synth, playing?" + this[key]);
 		this[key] = synth;

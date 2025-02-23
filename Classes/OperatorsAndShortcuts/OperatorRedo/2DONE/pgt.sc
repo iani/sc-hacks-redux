@@ -34,7 +34,7 @@
 + Function {
 		+> { | player, envir |
 			// "This is Function+>ugenfunc!!!!!!!".postln;
-			^this.pushPlayInEnvir(player, envir ? player, true)
+			^this.pushPlayInEnvir(player, envir ? player)
 		}
 	// older version:
 		// See OperatorFix240222.sc

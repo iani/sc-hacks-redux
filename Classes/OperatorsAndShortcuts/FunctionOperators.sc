@@ -15,13 +15,37 @@
 	}
 
 	// New version, for sc-hacks v2
-	playInEnvir { | player, envir, target, outbus = 0, addAction = \addToHead |
+	playInEnvir { | player, envir |
+		// player + envir are passed on by +> operator.
+		// all other values are inferred from the environment.
 		var synth;
-		"Rebuilding playInEnvir".postln;
-		postln("arguments are" + player + envir + target + outbus + addAction);
-		// .play(target, outbus: 0, fadeTime: 0.02, addAction: 'addToHead', args, player, envir)
-		postln("The envir is" + envir + "asEnvir" + envir);
-		synth = this.play(target, outbus);
+		// "Rebuilding playInEnvir".postln;
+		// postln("arguments are" + player + envir);
+		// postln("The envir is" + envir + "asEnvir" + envir.envir);
+		// !!!!!!!! .play(target, outbus: 0, fadeTime: 0.02, addAction: 'addToHead', args) !!!!!!
+		envir = envir.envir;
+		synth = this.play(
+			envir[\target] ? Server.default,
+			envir[\outbus] ? 0,
+			envir[\fadeTime] ? 0.02,
+			envir[\addAction] ? \addToHead
+		);
+		synth onStart: {
+			postln("Synth started:" + synth);
+			synth.addNotifier(envir, \key, { | n, key, value |
+				postln("envir" + envir[\mediator] + "changed key:" + key);
+				value.updateSynth(key, synth);
+			});
+		};
+		synth onEnd: {
+			postln("Synth ended:" + synth);
+			if (envir[player] === synth) {
+				envir.put(player, nil);
+				Mediator.changed(\ended, player);
+				synth changed: \ended;
+			}
+		};
+		envir.put(player, synth);
 		^synth;
 	}
 
