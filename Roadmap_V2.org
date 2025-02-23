@@ -155,6 +155,11 @@ FunctionOperators.org : Function:playInEnvir(player, envir, target, outbus);
 
 * Extend MediatorHandler to handle ValueAdapter, Busses and other stuff
 
+* Move notifier addition onStart/onEnd from playinEnvir to Synth
+To enable playing with Synth(new);
+Write method for starting synths inside a Mediator,
+with Synth(\synthname).
+These will need to use arguments from keys of Mediator...
 * Operator review
 :PROPERTIES:
 :DATE_ENTERED: [2025-02-12 Wed 11:23]

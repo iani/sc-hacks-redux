@@ -28,17 +28,31 @@
 			envir[\target] ? Server.default,
 			envir[\outbus] ? 0,
 			envir[\fadeTime] ? 0.02,
-			envir[\addAction] ? \addToHead
+			envir[\addAction] ? \addToHead,
+			envir.synthArgs
 		);
 		synth onStart: {
-			postln("Synth started:" + synth);
-			synth.addNotifier(envir, \key, { | n, key, value |
-				postln("envir" + envir[\mediator] + "changed key:" + key);
-				value.updateSynth(key, synth);
-			});
+		// map any existing busses of the Mediator to controls
+			envir keysValuesDo: { | key, val |
+				if (val isKindOf: Bus) {
+					synth.map(key, val);
+					// postln("Mapped synth" + synth + "at key" + key + "to bus" + val);
+				}
+			}
 		};
+		synth.addNotifier(envir, \key, { | n, key, value |
+			// postln("envir" + envir[\mediator] + "changed key:" + key);
+			value.updateSynth(key, synth); // map or set control at key
+		});
+		// Emitted by Bus:HandleReplacement when bus.
+		// Unmap the bus that was removed.
+		synth.addNotifier(envir, \busfree, { | n, key, bus |
+			postln("envir" + envir[\mediator] + "freed bus at:" + key);
+			// unmap by setting to latest values from the bus.
+			bus.get({ | vals | synth.setn(key, vals) });
+		});
 		synth onEnd: {
-			postln("Synth ended:" + synth);
+			// postln("Synth ended:" + synth);
 			if (envir[player] === synth) {
 				envir.put(player, nil);
 				Mediator.changed(\ended, player);

@@ -236,8 +236,9 @@ Mediator : EnvironmentRedirect {
 		}, envir ? player);
 	}
 
-	// Note: In v2 this method will become obsolete
+	// Note: In v2 this method is obsolete
 	// its contents are delegated to Synth:playInEnvir
+	/*
 	addSynth { | key, synth |
 		// postln("Mediator add synth, playing?" + this[key]);
 		this[key] = synth;
@@ -263,6 +264,7 @@ Mediator : EnvironmentRedirect {
 		};
 		^synth;
 	}
+	*/
 
 	isPlaying { | argPlayer |
 		argPlayer ?? { argPlayer = this.name; };
@@ -275,6 +277,9 @@ Mediator : EnvironmentRedirect {
 		// set from values in your keys.  The only values that add t
 		// hemselves are SimpleNumber, and later, the value of ValueAdapter.
 		var theArgs = [];
-
+		this keysValuesDo: { | key, val |
+			theArgs = theArgs ++ val.synthArgs(key);
+		};
+		^theArgs;
 	}
 }

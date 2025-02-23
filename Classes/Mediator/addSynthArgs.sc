@@ -5,19 +5,19 @@ Add value to argument array only if applicable.
 */
 
 + Object {
-    addSynthArgs { | array, key |
-       ^array;
+    synthArgs { | key |
+       ^[];
 	}
 }
 
 + SimpleNumber {
-    addSynthArgs { | array, key |
-       ^array ++ [key, this];
+    synthArgs { | key |
+       ^[key, this];
 	}
 }
 
 + ValueAdapter {
-   addSynthArgs { | array, key |
-       ^array ++ [key, value ? 0];
+   synthArgs { | key |
+       ^[key, value ? 0];
 	}
 }
