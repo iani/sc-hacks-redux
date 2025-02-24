@@ -1,0 +1,36 @@
+#+title: 02 Operators
+* Operator overview (short list)
+
+** **>
+** &>
+** @
+** @@>
+** @>
+** !!!
+** !!>
+** !!*
+** !+>
+** >>@
+** >>!
+** >>>
+** >>?
+** <@
+** <!
+** <==
+** <<<
+** <+
+** <+@
+** <?>
+** --
+** +@>
+** +> Playing objects as Synths or EventStreams (quasi Patterns)
+** +>!
+** +>>
+** +><@>
+** ++>
+** +++
+** *>
+
+* Operators grouped by functionality category
+
+** Playing objects as Synths or EventStreams (quasi Patterns)

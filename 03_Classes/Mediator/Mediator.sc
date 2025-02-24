@@ -115,7 +115,12 @@ Mediator : EnvironmentRedirect {
 		stream << " ]" ;
 	}
 
-	*initClass { StartUp add: { this.push; } }
+	*initClass {
+		StartUp add: {
+			this.push;  // push default as currentEnvironment
+			this.pushTopEnvir; // push default as topEnvironment
+		}
+	}
 
 	*mergeEnvir {
 		// merge currentEnvironment and then push
@@ -131,7 +136,9 @@ Mediator : EnvironmentRedirect {
 		}
 	}
 
-	*push { this.default.push }
+	*push { this.default.push; }
+	*pushTopEnvir { topEnvironment = this.default }
+
 	push { // get rid of warning
 		if(currentEnvironment !== this) {
 			Environment.push(this)
@@ -274,8 +281,8 @@ Mediator : EnvironmentRedirect {
 	////////////// V2 Extensions (250212ff) //////////////
 	synthArgs {
 		// create an arg array for making a new synth with values
-		// set from values in your keys.  The only values that add t
-		// hemselves are SimpleNumber, and later, the value of ValueAdapter.
+		// set from values in your keys.  The only values that add
+		// themselves are SimpleNumber, and later, the var value of ValueAdapter.
 		var theArgs = [];
 		this keysValuesDo: { | key, val |
 			theArgs = theArgs ++ val.synthArgs(key);

@@ -190,3 +190,20 @@ Note: the method =pushPlayInEnvir= is there to perform push and then delegate th
 2. It calls =Synth:onEnd= on the synth, telling it to remove itself from the Mediator when it stops.
 
 This method can be incorporated into playInEnvir.
+* New Features (planned)
+** Mediator GUI
+:PROPERTIES:
+:DATE_ENTERED: [2025-02-23 Sun 13:22]
+:END:
+
+*** Simple form:
+
+- One window with a separate subpane for each mediator.
+- Each mediator pane is vertially split into 2 views:
+  - Left view: list view of keys in mediator
+    Right view: Details of the value of the selected key.
+
+** Mediator web publish
+:PROPERTIES:
+:DATE_ENTERED: [2025-02-23 Sun 13:23]
+:END:

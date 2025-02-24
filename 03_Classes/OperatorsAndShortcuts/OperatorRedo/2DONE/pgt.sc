@@ -23,11 +23,14 @@
 	}
 }
 
+// Mon 24 Feb 2025 01:41 V2:
+// Keeping this as one may want to construct an event
+// stream and play it (instead of writing an Event).
 + EventStream {
 		+> { | player, envir |
 			// "This is EventStream+>ugenfunc!!!!!!!".postln;
-			^this.pushPlayInEnvir(player, envir ? player, true) }
-
+		^this.pushPlayInEnvir(player, envir ? player, true)
+		}
 }
 
 // FunctionOperators.sc      Function-+>
@@ -55,7 +58,7 @@
 				// currentEnvironment[player].playNext;
 				// postln("debugging Nil+>. player is:" + currentEnvironment[player]);
 				// currentEnvironment.postln;
-				currentEnvironment[player].free;
+				currentEnvironment[player] release: (~fadeTime ? 0.02);
 			},
 			envir ? player
 		)
