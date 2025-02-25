@@ -1,24 +1,22 @@
-//Fri 23 Feb 2024 09:21
-// EventOperators.sc
-// SymbolOperators.sc
+//V2 revisit on Tue 25 Feb 2025 14:52
+
+// Event ++> should restart
+// Event +> should modify.
+// Note: In the case of Event and EventStream:
+// If an EventStream is already playing, it should *not*
+// be restarted.  It should be modified instead.
+// This is to avoid inadvertently restarting EventStreams
+// when copy-pasting a line previously addressing the
+// same player in order to modify it.
+
 
 + Event {
-	++> { | key, envir |
-		// Set all key-value pairs of the receiver to the object at key/envir
-		// If object is EventStream: set keys of the Event.
-		// Else if object is Synth, set all parameters corresponding to the keys
-		Mediator.setEvent(this, key, envir);
-		// var p;
-		// Mediator.wrap({
-		// 	p = currentEnvironment[key];
-		// 	p ?? {
-		// 		p = EventStream(this);
-		// 		currentEnvironment.put(key, p);
-		// 	};
-		// 	// EventSream and Synth handle this differently:
-		// 	currentEnvironment[key].setEvent(this);
-		// }, envir);
+	++> { | player, envir |
+		// force start playing new Event as EventStream
+		// transferred here from +> on Tue 25 Feb 2025 14:56
+		^this.pushPlayInEnvir(player, envir ? player, true)
 	}
+
 }
 
 + Symbol {

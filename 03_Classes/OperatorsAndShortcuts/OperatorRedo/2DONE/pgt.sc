@@ -15,11 +15,33 @@
 		^ugenfunc.ar(this) } // play as input to other ugen
 }
 
+// Event ++> should restart
+// Event +> should modify.
+// Note: In the case of Event and EventStream:
+// If an EventStream is already playing, it should *not*
+// be restarted.  It should be modified instead.
+// This is to avoid inadvertently restarting EventStreams
+// when copy-pasting a line previously addressing the
+// same player in order to modify it.
+
 + Event {
 
 	+> { | player, envir |
-		// "This is Event+>ugenfunc!!!!!!!".postln;
-		^this.pushPlayInEnvir(player, envir ? player, true)
+		// transferred here from +> on Tue 25 Feb 2025 14:56
+		// Set all key-value pairs of the receiver to the object at key/envir
+		// If object is EventStream: set keys of the Event.
+		// Else if object is Synth, set all parameters corresponding to the keys
+		Mediator.setEvent(this, player, envir);
+		// var p;
+		// Mediator.wrap({
+		// 	p = currentEnvironment[key];
+		// 	p ?? {
+		// 		p = EventStream(this);
+		// 		currentEnvironment.put(key, p);
+		// 	};
+		// 	// EventSream and Synth handle this differently:
+		// 	currentEnvironment[key].setEvent(this);
+		// }, envir);
 	}
 }
 
@@ -36,19 +58,8 @@
 // FunctionOperators.sc      Function-+>
 + Function {
 		+> { | player, envir |
-			// "This is Function+>ugenfunc!!!!!!!".postln;
 			^this.pushPlayInEnvir(player, envir ? player)
-		}
-	// older version:
-		// See OperatorFix240222.sc
-	// +> { | player, envir |
-	// 	^this.pushPlayInEnvir(player, envir);
-	// }
-
-
 }
-
-// SymbolOperators.sc        Nil-+>
 
 + Nil {
 	+> { | player, envir |

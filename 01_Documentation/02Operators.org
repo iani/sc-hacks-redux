@@ -34,3 +34,13 @@
 * Operators grouped by functionality category
 
 ** Playing objects as Synths or EventStreams (quasi Patterns)
+*** +>
+<Function> +>.envir \player
+<Event> +>.envir \player
+nil +>.envir \player
+<EventStream> +>.envir \player
+
+Note: In the case of Event and EventStream:
+If an EventStream is already playing, it should *not* be restarted.  It should be modified instead.  This is to avoid inadvertently restarting EventStreams when copy-pasting a line previously addressing the same player in order to modify it.
+
+*** Related to +> : ++>, +>! !+>
