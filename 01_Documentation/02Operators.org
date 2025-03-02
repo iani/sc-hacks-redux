@@ -27,7 +27,7 @@
 ** +>!
 ** +>>
 ** +><@>
-** ++>
+** ++> (cancelled) moved to: !>
 ** +++
 ** *>
 
@@ -35,12 +35,18 @@
 
 ** Playing objects as Synths or EventStreams (quasi Patterns)
 *** +>
-<Function> +>.envir \player
-<Event> +>.envir \player
-nil +>.envir \player
-<EventStream> +>.envir \player
+**** Part 1: playing receiver in a player.
+***** <Function> +>.envir \player
+***** <Event> +>.envir \player
+***** nil +>.envir \player
+***** <EventStream> +>.envir \player
 
 Note: In the case of Event and EventStream:
 If an EventStream is already playing, it should *not* be restarted.  It should be modified instead.  This is to avoid inadvertently restarting EventStreams when copy-pasting a line previously addressing the same player in order to modify it.
-
+**** Part 2: passing receiver as data to argument
+***** <Array> +> ugenfunc
+***** <UGen> +> ugenfunc
+***** <SimpleNumber> +> param, envir
+***** <Symbol> +> player, envir
 *** Related to +> : ++>, +>! !+>
+**** ++>

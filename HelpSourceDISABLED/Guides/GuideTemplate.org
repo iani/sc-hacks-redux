@@ -1,5 +1,7 @@
 #+title: Guide Template
 
+#+PROPERTY: header-args :session none
+
 * Installation
 * The Mediator Environment
 
@@ -12,7 +14,9 @@ Examples:
 
 The EventStream class is an alternative to Pbind.  It is named EventStream because it is a Stream that produces Events.  It replaces the Event producing Routine (formally referred to as Event Stream) that is produced by Pbind.  This is because a Routine does not allow access to its closure variables, and therefore does not permit changing parts of the stream.
 
-
+#+begin_src sclang
+\default +> \test;
+#+end_src
 
 * Operators
 ** **>
@@ -31,10 +35,29 @@ Use function to obtain durations and schedule the function with player and envir
 Put value in key <key> of envir <envir>.
 Example:
 
+#+begin_src sclang
 \freq &>.test 600
+#+end_src
+
+#+RESULTS:
+: nil
 
 Put value 600 in key \freq of Mediator \test
 
+#+begin_src sclang :session none
+1 + 1;
+#+end_src
+
+#+RESULTS:
+: 2
+
+
+#+begin_src sclang
+1 + 1;
+#+end_src
+
+#+RESULTS:
+: 2
 
 ** !!!
 ** !!>

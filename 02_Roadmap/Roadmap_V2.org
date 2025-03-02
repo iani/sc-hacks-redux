@@ -165,9 +165,12 @@ These will need to use arguments from keys of Mediator...
 :DATE_ENTERED: [2025-02-12 Wed 11:23]
 :END:
 
+- [X] Check Function:+>, Event+>, Event!> for consistency:
+  - [X] Ensure that Synths stop when starting EventStreams
 - [ ] Review all operators.
 - [ ] Remove unused or superfluous operators
 - [ ] Possibly change some operators. Maintain backward compatibility if possible
+
 * Method review
 ** =pushPlayInEnvir=
 Note: the method =pushPlayInEnvir= is there to perform push and then delegate the rest to =playInEnvir=.
@@ -184,12 +187,12 @@ Note: the method =pushPlayInEnvir= is there to perform push and then delegate th
 
 ** =playInEnvir=
 =Function:playInEnvir= creates a synth from the function by sending it play.  It returns the newly created synth.
-** =Mediator:addSynth=
-=Mediator:addSynth= does 2 things:
-1. it adds the notifiers for setting the synth target and for updating synth controls outbus and out when these are set as keys in the Modifier.
-2. It calls =Synth:onEnd= on the synth, telling it to remove itself from the Mediator when it stops.
-
-This method can be incorporated into playInEnvir.
+** =Mediator:makeSynth=
+=makeSynth= creates and returns a Synth from either a Function or a Symbol.  It does this in 2 steps:
+1. Create the by one of the methods =Mediator:funcPlay= or =Mediator:symPlay= depending on whether the first argument to =makeSynth= is a Function or a Symbol.
+2. Add the notifiers for setting or mapping synth controls.
+3. Calls =Synth:onEnd= on the synth, telling it to remove itself from the Mediator when it stops.
+*** Which methods use =Mediator:makeSynth=?
 * New Features (planned)
 ** Mediator GUI
 :PROPERTIES:

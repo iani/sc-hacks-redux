@@ -1,0 +1,16 @@
+#+title: OSC
+
+#+PROPERTY: header-args+ :eval no-export :noweb no-export
+#+PROPERTY: header-args:sclang+ :session none :tangle-flat
+#+KEYWORDS: Libraries>sh-hacks>OSC
+#+RELATED: Classes>OSC>OscMonitor
+#+SUMMARY: Notify depending objects of changes in the receiver
+#+EXPORT_FILE_NAME: /Users/iani/Dev/SCdev/LibsByMe/sc-hacks-redux/HelpSource/Classes/OSC.schelp
+#+EXPORT_FILE_NAME_NOT: /Users/iani/Dev/SCdev/LibsByMe/sc-hacks-redux-gitquark/Quarks/DEPENDENCIES/notification/Quarks/notification/HelpSource/Classes/Notification.schelp
+      # + EXPORT_FILE_NAME:
+
+* Description :sc_description:
+
+The OSC class enables one to add actions related to sending and receiving osc messages.
+
+*NOTE: This is a stub*

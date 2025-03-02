@@ -8,6 +8,7 @@ Load an scd file located in the same folder as your class definition.
 	pushPlayInEnvir { | player, envir, target, outbus = 0 |
 		// "this is object pushPlayInEnvir".postln;
 		(envir ? player).push;
+		postln("pushPlayInEnvir this" + this);
 		this.playInEnvir(player, envir, target, outbus);
 	}
 

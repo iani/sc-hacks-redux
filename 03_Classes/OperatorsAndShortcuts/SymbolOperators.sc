@@ -102,6 +102,8 @@
 
 	envir { ^Mediator.at(this) }
 
+	// todo: move to Mediator:makSynth in order to share
+	// code with Function:playInEnvir
 	playInEnvir { | player, envir |
 		var synth;
 		envir = envir ? player;
@@ -112,6 +114,8 @@
 			);
 			if (Server.default.serverRunning) {
 				currentEnvironment.addSynth(player,
+					// todo: collect args from envir
+					// see
 					synth = Synth(this, target: ~target.asTarget));
 			}{
 				Server.default.waitForBoot({

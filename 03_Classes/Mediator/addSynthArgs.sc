@@ -16,8 +16,10 @@ Add value to argument array only if applicable.
 	}
 }
 
+/*
 + ValueAdapter {
    synthArgs { | key |
        ^[key, value ? 0];
 	}
 }
+*/

@@ -105,6 +105,12 @@ EventStream {
 		this.makeRoutine(quant);
 	}
 
+	startIfNotRunning { | quant |
+		// silent version of start. Used in +>
+		if (this.isRunning) { ^this };
+		this.makeRoutine(quant);
+	}
+
 	makeRoutine { | quant |
 		var nextEvent;
 		CmdPeriod add: this;

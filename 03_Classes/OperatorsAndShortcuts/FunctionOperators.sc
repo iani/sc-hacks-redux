@@ -14,15 +14,13 @@
 		^{ this.value * (\amp.br(~amp ? amp) min: lim) }
 	}
 
-	// New version, for sc-hacks v2
+	// New version, for sc-hacks v2 Thu 27 Feb 2025 07:48
+	// todo: move to Mediator:makeSynth in order to share
+	// code with Function:playInEnvir
 	playInEnvir { | player, envir |
 		// player + envir are passed on by +> operator.
 		// all other values are inferred from the environment.
 		var synth;
-		// "Rebuilding playInEnvir".postln;
-		// postln("arguments are" + player + envir);
-		// postln("The envir is" + envir + "asEnvir" + envir.envir);
-		// !!!!!!!! .play(target, outbus: 0, fadeTime: 0.02, addAction: 'addToHead', args) !!!!!!
 		envir = envir.envir;
 		synth = this.play(
 			envir[\target] ? Server.default,
@@ -44,7 +42,7 @@
 			// postln("envir" + envir[\mediator] + "changed key:" + key);
 			value.updateSynth(key, synth); // map or set control at key
 		});
-		// Emitted by Bus:HandleReplacement when bus.
+		// Emitted by Bus:HandleReplacement when bus is stored.
 		// Unmap the bus that was removed.
 		synth.addNotifier(envir, \busfree, { | n, key, bus |
 			postln("envir" + envir[\mediator] + "freed bus at:" + key);

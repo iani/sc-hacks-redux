@@ -9,74 +9,98 @@
 
 // ~/Dev/SCdev/LibsByMe/sc-hacks-redux/Classes/OperatorsAndShortcuts/SystemOverwrites/ArrayUGenShortcuts.sc
 
-+ Array {
-	+> { | ugenfunc |
-		// "This is Array+>ugenfunc!!!!!!!".postln;
-		^ugenfunc.ar(this) } // play as input to other ugen
-}
-
-// Event ++> should restart
-// Event +> should modify.
-// Note: In the case of Event and EventStream:
-// If an EventStream is already playing, it should *not*
-// be restarted.  It should be modified instead.
-// This is to avoid inadvertently restarting EventStreams
-// when copy-pasting a line previously addressing the
-// same player in order to modify it.
-
 + Event {
-
+	// TODO: Merge this code with EventStream:+>
 	+> { | player, envir |
-		// transferred here from +> on Tue 25 Feb 2025 14:56
-		// Set all key-value pairs of the receiver to the object at key/envir
-		// If object is EventStream: set keys of the Event.
-		// Else if object is Synth, set all parameters corresponding to the keys
-		Mediator.setEvent(this, player, envir);
-		// var p;
-		// Mediator.wrap({
-		// 	p = currentEnvironment[key];
-		// 	p ?? {
-		// 		p = EventStream(this);
-		// 		currentEnvironment.put(key, p);
-		// 	};
-		// 	// EventSream and Synth handle this differently:
-		// 	currentEnvironment[key].setEvent(this);
-		// }, envir);
+		// merge into player EventStream if exists.
+		// else start new EventStream
+		var previous;
+		previous = envir.envir[player];
+		// if EventStream already exists, then merge current Event into it.
+		if (previous isKindOf: EventStream) {
+			previous mergeEvent: this;
+			previous.startIfNotRunning; //
+			^previous;
+		};
+		// Else start new EventStream
+		^this.pushPlayInEnvir(player, envir ? player, true)
 	}
 }
 
-// Mon 24 Feb 2025 01:41 V2:
-// Keeping this as one may want to construct an event
-// stream and play it (instead of writing an Event).
+// What is a good way to make the +> operator have the same
+// code for Event and Event stream, without copy-pasting the code?
 + EventStream {
-		+> { | player, envir |
-			// "This is EventStream+>ugenfunc!!!!!!!".postln;
+	+> { | player, envir |
+		// merge into player EventStream if exists.
+		// else start new EventStream
+		var previous;
+		previous = envir.envir[player];
+		if (previous isKindOf: EventStream) {
+			previous mergeEvent: this;
+			previous.startIfNotRunning; //
+			^previous;
+		};
 		^this.pushPlayInEnvir(player, envir ? player, true)
-		}
+	}
 }
 
-// FunctionOperators.sc      Function-+>
 + Function {
 		+> { | player, envir |
+			// "This is Function+>ugenfunc!!!!!!!".postln;
 			^this.pushPlayInEnvir(player, envir ? player)
+		}
+	// older version:
+		// See OperatorFix240222.sc
+	// +> { | player, envir |
+	// 	^this.pushPlayInEnvir(player, envir);
+	// }
+
+
 }
 
 + Nil {
+	// TODO: Review!
 	+> { | player, envir |
+		player = envir.envir[player];
+		player.stop;
+		// cannot put nil in an environment at a key:
+		// envir[player] = nil;
+	}
+	// old version:
+	/*	+> { | player, envir |
 		// "This is Nil+>player, envir!!!!!!!".postln;
 		Mediator.wrap(
 			{
 				// currentEnvironment[player].playNext;
 				// postln("debugging Nil+>. player is:" + currentEnvironment[player]);
 				// currentEnvironment.postln;
-				currentEnvironment[player] release: (~fadeTime ? 0.02);
+				currentEnvironment[player].free;
 			},
 			envir ? player
 		)
 	}
+	*/
 }
 
-// SimpleNumberOperators.sc  SimpleNumber-+>
+/*============================================================
+	Ad-hoc use. Needs review.
+*/
+
+// UGen and Array +> operator is useful for using
+// ugenfuncs as templates inside other ugenfuncs.
+// See class SynthTemplate !!!
+
++ UGen {
+	+> { | ugenfunc |
+		^ugenfunc.ar(this) } // play as input to other ugen
+}
+
++ Array {
+	+> { | ugenfunc |
+		// assume that this is an Array of outputProxy
+		^ugenfunc.ar(this) } // play as input to other ugen
+}
+
 + SimpleNumber {
 	+> { | param, envir |
 		// "This is SimpleNumber+>player, envir!!!!!!!".postln;
@@ -86,8 +110,8 @@
 		envir.envir.put(param, this);
 	}
 }
-// SymbolOperators.sc        Symbol-+>
 
+// Play symbol as name of SynthDef. Synth(this);
 + Symbol {
 	+> { | player, envir |
 		// 240224: Hack for setting instrument key in events.
@@ -97,12 +121,4 @@
 			^this.pushPlayInEnvir(player, envir);
 		}
     }
-}
-// UGenShortcuts.sc          UGen-+>
-
-+ UGen {
-
-	+> { | ugenfunc |
-		// "This is Symbol+>ugenfunc !!!!!!!".postln;
-		^ugenfunc.ar(this) } // play as input to other ugen
 }

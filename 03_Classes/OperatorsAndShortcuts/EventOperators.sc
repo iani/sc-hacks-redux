@@ -29,6 +29,7 @@
 
 	playInEnvir { | player, envir, start = true |
 		var atKey, new;
+		// "Debugging Event:playInEnvir".postln;
 		Mediator.pushWrap({
 			atKey = currentEnvironment[player];
 			atKey.stop;

@@ -38,6 +38,9 @@ Mediator : EnvironmentRedirect {
 		envir.play; // return self! to be able to stop or do other stuff
 	}
 
+	//: TODO: V2: Review this method and its usage.
+	// It is used by Preset to play with SynthTemplates,
+	// but it should be explained further for future use.
 	play { | argEvent |
 		// play within own event as environment, and setting the player.
 		// used by SoundFileEvents, SoundFileEvent for playing
@@ -243,35 +246,75 @@ Mediator : EnvironmentRedirect {
 		}, envir ? player);
 	}
 
-	// Note: In v2 this method is obsolete
-	// its contents are delegated to Synth:playInEnvir
-	/*
-	addSynth { | key, synth |
-		// postln("Mediator add synth, playing?" + this[key]);
-		this[key] = synth;
-		synth.addNotifier(this, \target, { | n, target |
-			// "my target has changed".postln;
-			n.listener.moveToHead(target.asTarget);
+	// TODO: Combine code of Symbol/Function:playInEnvir,
+	// and adapt to work in Mediator.
+	makeSynth { | funcOrSymbol, player, envir |
+		// player + envir are passed on by +> operator.
+		// all other values are inferred from the environment.
+		var synth;
+		synth = switch (funcOrSymbol.class,
+			Function, { this.funcPlay(funcOrSymbol, envir)},
+			Symbol, { this.symPlay(funcOrSymbol, envir); },
+			{
+				postln("attempt to play unplayable object" + funcOrSymbol);
+			}
+		);
+		synth onStart: {
+		// map any existing busses of the Mediator to controls
+			envir keysValuesDo: { | key, val |
+				if (val isKindOf: Bus) {
+					synth.map(key, val);
+					// postln("Mapped synth" + synth + "at key" + key + "to bus" + val);
+				}
+			}
+		};
+		synth.addNotifier(envir, \key, { | n, key, value |
+			// postln("envir" + envir[\mediator] + "changed key:" + key);
+			value.updateSynth(key, synth); // map or set control at key
 		});
-		synth.addNotifier(this, \outbus, { | n, outbus |
-			// postln("testing how to treat outbus. input is:" + outbus);
-			synth.set(\outbus, outbus);
-			synth.set(\out, outbus);
-		});
-		synth.addNotifier(this, \out, { | n, outbus |
-			// postln("testing how to treat outbus. input is:" + outbus);
-			synth.set(\outbus, outbus);
-			synth.set(\out, outbus);
+		// Emitted by Bus:HandleReplacement when bus is stored.
+		// Unmap the bus that was removed.
+		synth.addNotifier(envir, \busfree, { | n, key, bus |
+			postln("envir" + envir[\mediator] + "freed bus at:" + key);
+			// unmap by setting to latest values from the bus.
+			bus.get({ | vals | synth.setn(key, vals) });
 		});
 		synth onEnd: {
-			// only remove if it has not been replaced by something new:
-			if (this[key] === synth) { this[key] = nil };
-			this.class.changed(\ended, name, key);
-			synth changed: \ended;
+			// postln("Synth ended:" + synth);
+			if (envir[player] === synth) {
+				envir.put(player, nil);
+				Mediator.changed(\ended, player);
+				synth changed: \ended;
+			}
 		};
+		envir.put(player, synth);
 		^synth;
 	}
-	*/
+
+	// TODO: Do we need the envir argument if this is running inside the Mediator as envir?
+	funcPlay { | function, envir |
+		// create and return a synth by function.play,
+		// obtain arguments to play from envir.
+		^function.play(
+			envir[\target] ? Server.default,
+			envir[\outbus] ? 0,
+			envir[\fadeTime] ? 0.02,
+			envir[\addAction] ? \addToHead,
+			envir.synthArgs
+		);
+	}
+
+	// TODO: Do we need the envir argument if this is running inside the Mediator as envir?
+	symPlay { | symbol, envir |
+		// create and return a synth by Synth.new(sym),
+		// obtain arguments from envir.
+		^Synth(
+			symbol,
+			envir.synthArgs ++ [\fadeTime, envir[\fadeTime] ? 0.02],
+			envir[\target] ? Server.default,
+			envir[\addAction] ? \addToHead,
+		)
+	}
 
 	isPlaying { | argPlayer |
 		argPlayer ?? { argPlayer = this.name; };
