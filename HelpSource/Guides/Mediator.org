@@ -1,0 +1,16 @@
+#+title: Mediator
+# Code needed here is:
+# title:: Mediator
+# categories:: sc-hacks-redux, Environment
+# summary:: Environment for playing synths and event patterns
+
+* Introduction
+# Code needed here is:
+# section:: Introduction
+
+Mediator is an Environment that helps in the creation of Synths and EventStreams that are stores in it. It provides a number of features that are useful for handling the data associated with Synths and EventStreams, as follows:
+
+- When a Synth or EventStream is stored in a key of the Mediator, any Synth or EventStream previously stored in that key is stopped.  This prevents Synths or EventStreams from becoming inaccessible while playing.
+- Numeric values stored in keys of this environment are automatically used as arguments in the creation of Synths, and are used to set controls of Synths that are already running.
+- Buses stored in keys are automatically mapped to corresponding controls in Synths running in the environment.
+

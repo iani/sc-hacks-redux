@@ -1,0 +1,53 @@
+#+title: MediatorGui
+
+* Header
+# The header should export the following items in schelp format:
+# CLASS::MediatorGui
+# categories::sc-hacks-redux>gui
+# summary:: Create a window all current Mediators in a ListView, and the keys of the Mediator currently selected in that ListView.
+# see also: Mediator
+
+Create a window for viewing the contents of a Mediators' environment.
+
+See also: Mediator class.
+
+* Description :sc_description:
+
+This class does not have any subclasses. It a draft for developing a more functional Gui for Mediators.
+
+* Class methods :sc_classmethods:
+# This section should be in schelp section CASSMETHODS:: Like this:
+# CLASSMETHODS::
+
+** new(mediator)
+# The schelp code required here is:
+# method::new
+# Create a MediatorGui window for mediator named by the argument. If such a window already exists, bring it to the front.
+# argument::symbol
+# The name of the mediator to display in the GUI.
+
+Create a MediatorGui window for the mediator named by the argument. If such a window already exists, bring it to the front. The argument =mediator= must be a symbol.
+
+* Instance methods :sc_instancemethods:
+# Code required here is:
+# INSTANCEMETHODS::
+
+** init
+# Code required here is:
+# method::init
+Internal method. Add self as mediator to dependent.  Enable updates when the mediator changes.
+
+** update(mediator, key, value)
+# Code required here is:
+# method::update
+# argument::mediator
+# the mediator that changed
+#
+# argument::keys
+# Symbol. The key that changed
+#
+# argument::value
+# The value that changed.
+
+This method is called when the mediator changes. It calls =\changed= on the MediatorGui.  In response to this, the GUI window, if it is open, updates its contents.
+

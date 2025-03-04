@@ -6,7 +6,7 @@ MediatorGui {
 	var <mediator;
 
 	*new { | mediator |
-		mediator = mediator ?? { Mediator.default; };
+		mediator = mediator.envir;
 		^Registry(this, mediator, {
 			var instance;
 			instance = this.newCopyArgs(mediator).init;
