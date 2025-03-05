@@ -2,13 +2,13 @@ TITLE:: MediatorGui
 CATEGORIES:: Libraries>scHacks
 RELATED:: Classes/Mediator
 SUMMARY:: Create a window for viewing the contents of a Mediators' environment.
-DESCRIPTION:: 
+DESCRIPTION::
 This class does not have any subclasses. It a draft for developing a more functional Gui for Mediators.
-CLASSMETHODS:: 
+CLASSMETHODS::
 METHOD:: new
 ARGUMENT:: mediator
 Create a MediatorGui window for the mediator named by the argument. If such a window already exists, bring it to the front. The argument TELETYPE::mediator:: must be a symbol.
-INSTANCEMETHODS:: 
+INSTANCEMETHODS::
 METHOD:: init
 Internal method. Add self as mediator to dependent.  Enable updates when the mediator changes.
 METHOD:: update

@@ -1,0 +1,3 @@
+#+title: Help Categories
+
+Categories to include in the help files for sc-hacks-redux.

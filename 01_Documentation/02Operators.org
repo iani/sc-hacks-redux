@@ -37,6 +37,7 @@
 *** +>
 **** Part 1: playing receiver in a player.
 ***** <Function> +>.envir \player
+Create a Synth by sending =play= to =<Function>=. Use keys with numeric values as
 ***** <Event> +>.envir \player
 ***** nil +>.envir \player
 ***** <EventStream> +>.envir \player

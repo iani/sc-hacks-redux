@@ -1,0 +1,4 @@
+#+title: List Of Classes And Methods By File
+
+This list of Classes and Methods is made by scanning all files so far.
+Next to each Class or Class Extension there is the category for the corresponding help file.

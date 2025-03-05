@@ -1,0 +1,276 @@
+TITLE:: Event Stream
+TITLE:: EventStream
+summary:: (put short description here)
+categories:: sc-hacks
+related:: Classes/SomeRelatedClass, Reference/SomeRelatedStuff, etc.
+
+DESCRIPTION::
+(put long description here)
+
+
+CLASSMETHODS::
+
+METHOD:: new
+(describe method here)
+
+ARGUMENT:: event
+(describe argument here)
+
+ARGUMENT:: filter
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+
+INSTANCEMETHODS::
+
+METHOD:: removeTrigger
+(describe method here)
+
+ARGUMENT:: message
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: event
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: getNextEvent
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: isPlayer
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: asEventStream
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: init
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: addSubEvent
+(describe method here)
+
+ARGUMENT:: subEvent
+(describe argument here)
+
+ARGUMENT:: key
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: stop
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: routine
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: cmdPeriod
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: stopped
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: doOnCmdPeriod
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: restart
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: startIfNotRunning
+(describe method here)
+
+ARGUMENT:: quant
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: oscTrigger
+(describe method here)
+
+ARGUMENT:: message
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: isPlaying
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: +>
+(describe method here)
+
+ARGUMENT:: player
+(describe argument here)
+
+ARGUMENT:: envir
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: stream
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: playAndNotify
+(describe method here)
+
+ARGUMENT:: inEvent
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: !>
+(describe method here)
+
+ARGUMENT:: player
+(describe argument here)
+
+ARGUMENT:: envir
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: start
+(describe method here)
+
+ARGUMENT:: quant
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: playNext
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: makeRoutine
+(describe method here)
+
+ARGUMENT:: quant
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: reset
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: setEvent
+(describe method here)
+
+ARGUMENT:: inEvent
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: mergeEvent
+(describe method here)
+
+ARGUMENT:: inEvent
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: isRunning
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: free
+(describe method here)
+
+ARGUMENT:: varName
+(describe argument here)
+
+ARGUMENT:: key
+(describe argument here)
+
+ARGUMENT:: func
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: filter
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: makeStream
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: set
+(describe method here)
+
+ARGUMENT:: param
+(describe argument here)
+
+ARGUMENT:: value
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: playInEnvir
+(describe method here)
+
+ARGUMENT:: player
+(describe argument here)
+
+ARGUMENT:: envir
+(describe argument here)
+
+ARGUMENT:: start
+(describe argument here)
+
+returns:: (describe returnvalue here)
+EXAMPLES::
+
+This section will contain several subsections with examples.
+subsection:: Example 1
+
+This is subsection 1 example 1
+
+code::
+(some example code)
+::
+subsection:: Example 2
+
+This is subsection 2 example 2. It was coded as org-babel block.
+
+CODE::
+["this", "is"].blah("an org babel block export");
+::
+subsection:: Example 3
+
+
+This is subsection 3 example 3. It was coded as org-babel block.
+
+CODE::
+postln("Now we are testing line breaks from the exporter.");
+::
