@@ -1,12 +1,55 @@
-#+title: MediatorGui
-#+O2M: yes
-Call ~org-dblock-update~ on the block below or update all dynamic blocks with the prefix ~C-u~:
-#+BEGIN: ox-sc-insert-setupfile
-#+SETUPFILE: /Users/iani/.config/emacs/.local/straight/build-29.1/ox-sc/ox-sc-setupfile_SC-help.org
-#+END:
-#+PROPERTY: header-args+ :eval no-export :noweb no-export
-#+PROPERTY: header-args:sclang+ :session none :tangle-flat
+#+title: Help For Help
+
+* COMMENT Header
+# The header should export the following items in schelp format:
+# CLASS::MediatorGui
+# categories::sc-hacks-redux>gui
+# summary:: Create a window all current Mediators in a ListView, and the keys of the Mediator currently selected in that ListView.
+# see also: Mediator
+
+Create a window for viewing the contents of a Mediators' environment.
+
+See also: Mediator class.
+
+Note: This file was edited to test export.
+
+# Export settings such as file name usw.
+* Exporting the header of the file:
+
+Create a subtree modeled after the subtree below.
+The subtree must contain the following properties, which export the header of the schelp file:
+
+The following line generates the Categories line in the schelp file:
+:EXPORT_KEYWORDS: Libraries>scHacks
+
+The following line says which sections will be exported.  Sections that have the tag =classHELP= will be exported
+:EXPORT_SELECT_TAGS: classHELP
+
+This property sets the directory where the schelp file will be exported.
+:o2m_EXPORT_DIR: (catdir (prop "prop_dir") "HelpSource" "Classes")
+the property (prop "prop_dir") is defined in the header of the file to export, as follows:
 #+PROPERTY: prop_dir "../../"
+
+:EXPORT_TITLE: MediatorGui
+This generates a header line
+TITLE:: MediatorGui
+at the beginning of the file.
+This should be the class name.
+
+:EXPORT_FILE_NAME: MediatorGui
+This is the main body of the file name to be generated for exporting.  SO the file will be here:
+"MediatorGui.schelp"
+
+:EXPORT_KEYWORDS: Libraries>scHacks
+This generates a line like this:
+categories:: Libraries>scHacks
+
+:EXPORT_RELATED: Classes/Mediator
+This generates:
+related:: Classes/Mediator
+
+:ID:       20250305T115430.380763
+System generated. The user does not need to write this line.
 
 * o2m exports
 :PROPERTIES:
@@ -28,6 +71,7 @@ Call ~org-dblock-update~ on the block below or update all dynamic blocks with th
 :EXPORT_SUMMARY: Create a window for viewing the contents of a Mediators' environment.
 :ID:       20250305T115430.380763
 :END:
+
 [[elisp:(find-file (expand-file-name (cdf (prop "prop_dir") "HelpSource" "Classes" "MediatorGui.schelp")))][MediatorGui.schelp]]
 
 [[scHELP:Reference/SCDocSyntax][scHelp(byHand) for Reference/SCDocSyntax]]
@@ -36,25 +80,10 @@ Call ~org-dblock-update~ on the block below or update all dynamic blocks with th
   SCDoc.indexAllDocuments
 #+end_src
 
-
-* COMMENT Header
-# The header should export the following items in schelp format:
-# CLASS::MediatorGui
-# categories::sc-hacks-redux>gui
-# summary:: Create a window all current Mediators in a ListView, and the keys of the Mediator currently selected in that ListView.
-# see also: Mediator
-
-Create a window for viewing the contents of a Mediators' environment.
-
-See also: Mediator class.
-
-Note: This file was edited to test export.
-
 * Description :classHELP:sc_description:
-
+# This generates a description:: schelp header and exports the text contained in the present subtree underneath.
 This class does not have any subclasses. It a draft for developing a more functional Gui for Mediators.
-
-* Class methods of MediatorGui  :classHELP:sc_classmethods:
+* Class methods of MediatorGui -- heading contents is ignored :classHELP:sc_classmethods:
 # This section should be in schelp section CASSMETHODS:: Like this:
 # CLASSMETHODS::
 
@@ -70,15 +99,15 @@ Create a MediatorGui window for the mediator named by the argument. If such a wi
 *** mediator                                                                             :sc_argument:
 Create a MediatorGui window for the mediator named by the argument. If such a window already exists, bring it to the front. The argument =mediator= must be a symbol.
 
-* Instance methods  :classHELP:sc_instancemethods:
+* Instance methods -- heading contents is ignored :classHELP:sc_instancemethods:
 # Code required here is:
 # INSTANCEMETHODS::
 
-** init :sc_method:
+** init                                                                                     :sc_method:
 Internal method. Add self as mediator to dependent.  Enable updates when the mediator changes.
 
 ** COMMENT update(mediator, key, value)
-** update :sc_method:
+** update                                                                                   :sc_method:
 This method is called when the mediator changes. It calls =\changed= on the MediatorGui.  In response to this, the GUI window, if it is open, updates its contents.
 *** mediator                                                                             :sc_argument:
 the mediator that changed
@@ -86,3 +115,8 @@ the mediator that changed
 Symbol. The key that changed
 *** value                                                                                :sc_argument:
 The value that changed.
+
+* Available tags:
+
+#+tags: classHELP(C) refHELP(R) guideHELP(G) tutorHELP(T) overHELP(O) otherHELP(o)
+#+tags: { sc_section(s) sc_subsection(b) sc_description(D) sc_classmethods(c) sc_instancemethods(i) sc_copymethod(y) sc_METHOD(M) sc_method(m) sc_private(p) sc_examples(e) sc_argument(a) sc_returns(r) sc_discussion(d) }
