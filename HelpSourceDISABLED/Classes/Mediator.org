@@ -1,0 +1,52 @@
+#+title: Mediator
+# Code needed here is:
+# title:: Mediator
+# categories:: sc-hacks-redux, Environment
+# summary:: Environment for playing synths and event patterns
+
+#+O2M: yes
+Call ~org-dblock-update~ on the block below or update all dynamic blocks with the prefix ~C-u~:
+#+BEGIN: ox-sc-insert-setupfile
+#+SETUPFILE: /home/mc/Git.gitSCM/Emacs/doom.gitSCM/.local/straight/build-29.4/ox-sc/ox-sc-setupfile_SC-help.org
+#+END:
+#+PROPERTY: header-args+ :eval no-export :noweb no-export
+#+PROPERTY: header-args:sclang+ :session none :tangle-flat
+#+PROPERTY: prop_dir "../../"
+
+* o2m exports
+:PROPERTIES:
+:EXPORT_OPTIONS: d:nil
+:END:
+** o2m SC-help exports
+:PROPERTIES:
+:o2m_SETUPFILE: (ox-sc-setupfile)
+:o2m_SELECT_BACKENDS: SC-help
+:END:
+*** Mediator class help                                                                          :o2m:
+:PROPERTIES:
+:o2m_EXPORT_DIR: (catdir (prop "prop_dir") "HelpSource" "Classes")
+:EXPORT_TITLE: Mediator
+:EXPORT_FILE_NAME: Mediator
+:EXPORT_SELECT_TAGS: classHELP
+:EXPORT_KEYWORDS: Libraries>scHacks
+:EXPORT_RELATED: Classes/EnvironmentRedirect Classes/Synth
+:EXPORT_SUMMARY: Mediator is an Environment that helps in the creation of Synths and EventStreams.
+:ID:       20250305T112145.537385
+:END:
+[[elisp:(find-file (expand-file-name (cdf (prop "prop_dir") "HelpSource" "Classes" "Mediator.schelp")))][Mediator.schelp]]
+
+[[scHELP:Reference/SCDocSyntax][scHelp(byHand) for Reference/SCDocSyntax]]
+
+#+begin_src sclang :results silent
+  SCDoc.indexAllDocuments
+#+end_src
+
+
+* Introduction                                                                :classHELP:sc_description:
+
+Mediator is an Environment that helps in the creation of Synths and EventStreams that are stores in it. It provides a number of features that are useful for handling the data associated with Synths and EventStreams, as follows:
+
+- When a Synth or EventStream is stored in a key of the Mediator, any Synth or EventStream previously stored in that key is stopped.  This prevents Synths or EventStreams from becoming inaccessible while playing.
+- Numeric values stored in keys of this environment are automatically used as arguments in the creation of Synths, and are used to set controls of Synths that are already running.
+- Buses stored in keys are automatically mapped to corresponding controls in Synths running in the environment.
+

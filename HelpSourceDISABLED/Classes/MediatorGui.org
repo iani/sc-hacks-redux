@@ -1,0 +1,86 @@
+#+title: MediatorGui
+#+O2M: yes
+Call ~org-dblock-update~ on the block below or update all dynamic blocks with the prefix ~C-u~:
+#+BEGIN: ox-sc-insert-setupfile
+#+SETUPFILE: /home/mc/Git.gitSCM/Emacs/doom.gitSCM/.local/straight/build-29.4/ox-sc/ox-sc-setupfile_SC-help.org
+#+END:
+#+PROPERTY: header-args+ :eval no-export :noweb no-export
+#+PROPERTY: header-args:sclang+ :session none :tangle-flat
+#+PROPERTY: prop_dir "../../"
+
+* o2m exports
+:PROPERTIES:
+:EXPORT_OPTIONS: d:nil
+:END:
+** o2m SC-help exports
+:PROPERTIES:
+:o2m_SETUPFILE: (ox-sc-setupfile)
+:o2m_SELECT_BACKENDS: SC-help
+:END:
+*** Mediator class help                                                                          :o2m:
+:PROPERTIES:
+:o2m_EXPORT_DIR: (catdir (prop "prop_dir") "HelpSource" "Classes")
+:EXPORT_TITLE: MediatorGui
+:EXPORT_FILE_NAME: MediatorGui
+:EXPORT_SELECT_TAGS: classHELP
+:EXPORT_KEYWORDS: Libraries>scHacks
+:EXPORT_RELATED: Classes/Mediator
+:EXPORT_SUMMARY: Create a window for viewing the contents of a Mediators' environment.
+:ID:       20250305T115430.380763
+:END:
+[[elisp:(find-file (expand-file-name (cdf (prop "prop_dir") "HelpSource" "Classes" "MediatorGui.schelp")))][MediatorGui.schelp]]
+
+[[scHELP:Reference/SCDocSyntax][scHelp(byHand) for Reference/SCDocSyntax]]
+
+#+begin_src sclang :results silent
+  SCDoc.indexAllDocuments
+#+end_src
+
+
+* COMMENT Header
+# The header should export the following items in schelp format:
+# CLASS::MediatorGui
+# categories::sc-hacks-redux>gui
+# summary:: Create a window all current Mediators in a ListView, and the keys of the Mediator currently selected in that ListView.
+# see also: Mediator
+
+Create a window for viewing the contents of a Mediators' environment.
+
+See also: Mediator class.
+
+* Description                                                                 :classHELP:sc_description:
+
+This class does not have any subclasses. It a draft for developing a more functional Gui for Mediators.
+
+* Class methods of MediatorGui -- heading contents is ignored                :classHELP:sc_classmethods:
+# This section should be in schelp section CASSMETHODS:: Like this:
+# CLASSMETHODS::
+
+** COMMENT new(mediator)
+# The schelp code required here is:
+# method::new
+# Create a MediatorGui window for mediator named by the argument. If such a window already exists, bring it to the front.
+# argument::symbol
+# The name of the mediator to display in the GUI.
+
+Create a MediatorGui window for the mediator named by the argument. If such a window already exists, bring it to the front. The argument =mediator= must be a symbol.
+** new                                                                            :classHELP:sc_METHOD:
+*** mediator                                                                             :sc_argument:
+Create a MediatorGui window for the mediator named by the argument. If such a window already exists, bring it to the front. The argument =mediator= must be a symbol.
+
+* Instance methods -- heading contents is ignored                         :classHELP:sc_instancemethods:
+# Code required here is:
+# INSTANCEMETHODS::
+
+** init                                                                                     :sc_method:
+Internal method. Add self as mediator to dependent.  Enable updates when the mediator changes.
+
+** COMMENT update(mediator, key, value)
+** update                                                                                   :sc_method:
+This method is called when the mediator changes. It calls =\changed= on the MediatorGui.  In response to this, the GUI window, if it is open, updates its contents.
+*** mediator                                                                             :sc_argument:
+the mediator that changed
+*** keys                                                                                 :sc_argument:
+Symbol. The key that changed
+*** value                                                                                :sc_argument:
+The value that changed.

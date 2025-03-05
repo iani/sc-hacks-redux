@@ -1,0 +1,21 @@
+TITLE:: MediatorGui
+CATEGORIES:: Libraries>scHacks
+RELATED:: Classes/Mediator
+SUMMARY:: Create a window for viewing the contents of a Mediators' environment.
+DESCRIPTION:: 
+This class does not have any subclasses. It a draft for developing a more functional Gui for Mediators.
+CLASSMETHODS:: 
+METHOD:: new
+ARGUMENT:: mediator
+Create a MediatorGui window for the mediator named by the argument. If such a window already exists, bring it to the front. The argument TELETYPE::mediator:: must be a symbol.
+INSTANCEMETHODS:: 
+METHOD:: init
+Internal method. Add self as mediator to dependent.  Enable updates when the mediator changes.
+METHOD:: update
+This method is called when the mediator changes. It calls TELETYPE::\changed:: on the MediatorGui.  In response to this, the GUI window, if it is open, updates its contents.
+ARGUMENT:: mediator
+the mediator that changed
+ARGUMENT:: keys
+Symbol. The key that changed
+ARGUMENT:: value
+The value that changed.

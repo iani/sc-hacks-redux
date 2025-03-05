@@ -1,0 +1,12 @@
+TITLE:: Mediator
+CATEGORIES:: Libraries>scHacks
+RELATED:: Classes/EnvironmentRedirect, Classes/Synth
+SUMMARY:: Mediator is an Environment that helps in the creation of Synths and EventStreams.
+DESCRIPTION:: 
+Mediator is an Environment that helps in the creation of Synths and EventStreams that are stores in it. It provides a number of features that are useful for handling the data associated with Synths and EventStreams, as follows:
+
+LIST::
+## When a Synth or EventStream is stored in a key of the Mediator, any Synth or EventStream previously stored in that key is stopped.  This prevents Synths or EventStreams from becoming inaccessible while playing.
+## Numeric values stored in keys of this environment are automatically used as arguments in the creation of Synths, and are used to set controls of Synths that are already running.
+## Buses stored in keys are automatically mapped to corresponding controls in Synths running in the environment.
+::
