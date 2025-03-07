@@ -27,7 +27,7 @@
 + Bus {
 	// when a bus is replaced, synths should unmap any controls mapped to it
 	handleReplacement { | newValue, envir, key |
-		postln("Bus" + this + "Handling replacement for key:" + key);
+		// postln("Bus" + this + "Handling replacement for key:" + key);
 		envir.changed(\busfree, key, this);
 	}
 }
