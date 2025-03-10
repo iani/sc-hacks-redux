@@ -1,0 +1,50 @@
+#+title: Plus Collection Symcollect
+
+# TODO: Write code for exporting this as schelp,
+# so that it is included in the help page of
+# Collection class.
+
+* Example 1
+#+begin_src sclang
+[\freq, \amp].symcollect({ | i, freq, amp |
+	[freq, amp]
+}, 2);
+#+end_src
+
+* Example 2
+
+Create synths using the symbols as controls
+
+#+begin_src sclang
+a = [\freq, \amp].symcollect({ | i, freq, amp |
+	{ SinOsc.ar(freq.kr(500 + 100.rand).dup) * 0.1 }.play;
+}, 2);
+#+end_src
+
+Test setting the control parameters:
+
+#+begin_src sclang
+{
+	a = [\freq, \amp].symcollect({ | i, freq, amp |
+		{ SinOsc.ar(freq.kr(500 + 100.rand).dup) * 0.1 }.play;
+	}, 2);
+	1.wait;
+	a[0].set(\freq1, 400);
+	1.wait;
+	a[1].set(\freq2, 500);
+}.fork
+#+end_src
+
+* Example 3
+
+Create a single synth using the symbols as controls
+
+#+begin_src sclang
+{
+	var subsynths;
+	subsynths = [\freq, \amp].symcollect({ | i, freq, amp |
+		SinOsc.ar(freq.kr(500 + 100.rand)) * amp.kr(0.1);
+	}, 2);
+	subsynths.mix;
+}.play;
+#+end_src

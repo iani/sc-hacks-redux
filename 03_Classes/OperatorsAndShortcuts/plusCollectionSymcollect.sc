@@ -15,6 +15,8 @@ a = {
 a.set(\freq1, 4000);
 */
 
+// older version:
+/*
 + Collection {
 	symcollect { | function /* ... ids  */ |
 		var ids;
@@ -25,6 +27,19 @@ a.set(\freq1, 4000);
 				(id ++ (i + 1)).asSymbol
 			};
 			function.(element, i, *symbols)
+		}
+	}
+}
+*/
++ Collection {
+	symcollect { | function, repeats = 1 |
+		// generate symbols and collect
+		^(1..repeats) collect: { | i |
+			var symbols;
+			symbols = this collect: { | id |
+				(id ++ i).asSymbol
+			};
+			function.(i, *symbols)
 		}
 	}
 }
