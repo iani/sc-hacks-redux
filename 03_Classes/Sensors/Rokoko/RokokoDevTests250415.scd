@@ -3,6 +3,9 @@ Create a Rokoko instance using this date as timestamp in the name.
 Start the instance listening to incoming '/rokoko/' OSC messages.
 Create an OscData gui with data obtained from a folder chosen by the user,
 via FileDialog.
+	============== IMPORTANT: Rokoko data are found in this repository:
+	https://github.com/iani/osc_data_240510ff.git
+	=============== !!!!!!!!!!!!!!!!! ================
 Note: Once the folder is chosen, it is saved in userAppSupportDir,
 	under the name of the Rokoko instance.
 	Rokoko instance will read the data from the saved path if available.
