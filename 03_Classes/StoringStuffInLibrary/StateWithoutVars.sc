@@ -11,7 +11,7 @@ See discussion in https://github.com/iani/sc-hacks-redux/blob/master/README.org
 		var new;
 		new = this.atLibKey(key);
 		new ?? {
-			new = this.new(key).init(*args);
+			new = this.new(key).init(key, *args);
 			Library.global.put(this, key, new);
 			this.changed(\fromLib, key, *args);
 		};

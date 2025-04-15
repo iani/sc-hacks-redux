@@ -9,12 +9,10 @@
 // rightUpLeg, rightLeg, rightFoot, rightToe, rightToeEnd ]
 //
 
-RokokoActor {
-	// Left
+RokokoActorOld {
 	var hip, spine, chest, neck, head;
 	var leftShoulder, leftUpperArm, leftLowerArm, leftHand, rightShoulder;
 	var rightUpperArm, rightLowerArm, rightHand, leftUpLeg;
 	var leftLeg, leftFoot, leftToe, leftToeEnd;
 	var rightUpLeg, rightLeg, rightFoot, rightToe, rightToeEnd;
-	// right
 }

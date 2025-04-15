@@ -1,0 +1,89 @@
+//: 月 14  4 2025 19:47
+//: Receive data messages from Rokoko suit and write the values into busses.
+//: How many busses and channels per Rokoko actor?
+/*
+~numChans = 23 * 7 = 161
+A 5 actor scenne would have:
+ 23 * 7 * 5
+805 channels
+
+Server.default.options.numControlBusChannels
+
+Max number of actors:
+16384 / 161 = 101.76397515528 actors
+Max Number of actors if including additional 161 output busses per actor:
+16384 / 161 / 2 = 50.88198757764
+
+*/
+
+Rokoko : Singleton {
+	var <name; // name of Rokoko instance
+	var envir; // the environment holding all actors
+	var <>recvMsg = '/rokoko/'; // expect data from Rokoko at this message
+	var <>sendMsg = \rokokoOut; // send messages to Godot with this message
+
+	// return an instance named after today's date
+	*atDate { | date |
+		date ?? { date = Date.localtime.format("%y%m%d"); };
+		^this.named(("rokoko" ++ date).asSymbol);
+	}
+
+	init { | argName ... args |
+		// postln("initing Rokoko" + name + "with args" + args);
+		name = argName;
+	}
+
+	envir { ^envir ?? { envir = () } }
+
+	enable {
+		postln("enabling" + this + "named" + name);
+		recvMsg.addAction({ | ... data |
+			postln("Rokoko" + name + "received data");
+		}, name);
+	}
+
+	disable {
+		postln("disabling" + this + "named" + name);
+		recvMsg.removeOSC(name)
+	}
+
+	oscDataGui { // get path of data folder from user (if not already known)
+		// store path under your name as filename.
+		// open an OscData gui with these paths
+		Paths.doGetPath({ | p, paths |
+			OscData(paths).gui;
+		}, name);
+	}
+
+	getEnvir {
+
+	}
+
+	makeBusses {
+
+	}
+
+	/*
+	*openPlayer { | argKey = \rokoko |
+		PathAction({ | p, paths |
+			"-----------------".postln;
+			postln("path" + p);
+			"================== PATHS:".postln;
+			paths do: _.postln;
+			postln("paths size" + paths.size);
+			// OscData(paths).gui;
+		}, argKey);
+	}
+	*/
+	*openPlayer { | argKey = \rokoko |
+		var dataRef;
+		Paths.doGetPath({ | p, paths |
+			dataRef = Ref(OscData(paths).gui)
+		}, argKey);
+		^dataRef;
+	}
+
+	*resetPath { | argKey = \rokoko |
+		Paths.resetPath(argKey);
+	}
+}

@@ -67,6 +67,7 @@ OscData {
 	*new { | paths |
 		^this.newCopyArgs(paths).init;
 	}
+
 	cloneCode {
 		^this.class.newCopyArgs(paths, sourceStrings,
 			parsedEntries.copyRange(timeline.minIndex, timeline.maxIndex)
