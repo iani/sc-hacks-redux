@@ -82,7 +82,8 @@ Simplenumber @> \symbol // set bus to number
 		// get envirName from currentEnvironment (if needed):
 		envirName = envirName ?? { currentEnvironment.name ?? { ~mediator } };
 		envir = Mediator.at(envirName);
-		bus = envir.busses.at(this);
+		// bus = envir.busses.at(this);
+		bus = envir[this];
 		if (bus.isNil) {
 			bus = Bus.perform(rate, server, numchans);
 			{
@@ -94,6 +95,7 @@ Simplenumber @> \symbol // set bus to number
 		}{
 			val !? { bus.set(val) };
 		};
+		envir[this] = bus;
 		^bus;
 	}
 

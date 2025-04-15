@@ -128,8 +128,8 @@ OscData {
 		timesMessages = [times, messages].flop;
 	}
 
-	makeTimeline { | argTimes | timeline =
-		Timeline(this).setOnsets(argTimes);
+	makeTimeline { | argTimes |
+		timeline = Timeline(this).setOnsets(argTimes);
 	}
 	convertTimes {
 		times = times - times.first;
@@ -253,7 +253,16 @@ OscData {
 				.font_(Font("Monaco", 12))
 				.selectionMode_(\contiguous)
 				.selectionAction_({ | me |
-					this.changed(\scrollItem, me.value);
+					var selection;
+					this.changed(\scrollItem, me, me.value, me.selection);
+					selection = me.selection;
+					if (selection.size > 1) {
+						minIndex = selection.minItem;
+						maxIndex = selection.maxItem;
+					}{  // do not reset selection unless it is a range
+						// minIndex = 0;
+						// maxIndex = parsedEntries.size - 1;
+					};
 				})
 				// .enterKeyAction_({ | me |
 				// 	"enterKeyAction for indexList".postln;
@@ -355,7 +364,7 @@ OscData {
 				CheckBox().string_("Play")
 				.maxWidth_(50)
 				.action_({ | me |
-					if (me.value) { this.start; } { this.stop; };
+					if (me.value) { this.playSelection; } { this.stop; };
 				})
 				.addNotifier(this, \playing, { | n, status |
 		 			n.listener.value = status;
@@ -500,6 +509,7 @@ OscData {
 		this.addNotifier(stream, \stopped, { this.changed(\playing, false) });
 
 	}
+
 	makeStreamEvent {
 		postln("Making stream for" + this.name);
 		this.stream = ( // convert times to dt
@@ -555,7 +565,7 @@ OscData {
 		this.changed(\progress, 0);
 	}
 
-	stop { stream.stop; progressRoutine.stop; }
+	stop { stream.stop; progressRoutine.stop; stream = nil; }
 
 	export {
 		if (this.hasMessages) {
@@ -638,5 +648,38 @@ OscData {
 
 	debug {
 		this.selectedMessages.postln;
+	}
+
+	playSelection {
+		if (minIndex.isNil) {
+			minIndex = 0;
+			maxIndex = parsedEntries.size - 1;
+		};
+		this.playSegment(minIndex, maxIndex);
+	}
+
+	playSegment { | from = 0, to = 10, rate = 1 |
+		stream !? { ^"Already playing. Skipping this.".postln; };
+		rate = rate.clip(0.1, 100);
+		from = from.clip(0, parsedEntries.size - 1).asInteger;
+		to = to.clip(0, parsedEntries.size - 1).asInteger;
+		stream = {
+			var prevTime, entry, dt, message;
+			prevTime = parsedEntries[from][0];
+			(from..to) do: { | t, i |
+				entry = parsedEntries[t];
+				dt = (entry[0] - prevTime).abs * rate;
+				// dt.postln.wait;
+				dt.wait;
+				prevTime = entry[0];
+				// entry[1].interpret.postln;
+				message = entry[1].interpret;
+				oscgroupsAddr.sendMsg(*message);
+				localAddr.sendMsg(*message);
+				this.changed(\item, t);
+			};
+			stream = nil;
+			this.changed(\playing, false);
+		}.fork;
 	}
 }

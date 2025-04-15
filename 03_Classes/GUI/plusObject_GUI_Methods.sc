@@ -55,6 +55,13 @@
 		})
 	}
 
+	vlayoutRect { | rect ... widgets |
+		rect ?? { rect = Rect(0, 0, 800, 400) }
+		^this.window({ | w |
+			w.view.layout = VLayout(*widgets)
+		}, rect: rect);
+	}
+
 	hlayout { | ... widgets |
 		^this.window({ | w |
 			w.view.layout = HLayout(*widgets)
