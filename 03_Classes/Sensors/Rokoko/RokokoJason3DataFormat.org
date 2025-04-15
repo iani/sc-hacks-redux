@@ -1,0 +1,54 @@
+#+title: Rokoko Jason3data Format
+
+From: https://support.rokoko.com/hc/en-us/articles/4410416376977-Custom-Streaming
+
+#+begin_example
+{
+      version: 3,
+      fps: 60,
+      scene: {
+            timestamp: 0,
+      actors: [
+      {
+            name: "Dimitris", //arbitary size
+            color: {r, g, b}, // bytes
+            meta: {
+                  hasGloves: true, //Indicates if fingers are controlled
+                  hasLeftGlove: true,
+                  hasRightGlove: true,
+                  hasBody: true, //Indicates if body is controlled
+                  hasFace: true //Indicates if face is controlled
+            }
+            // physical proportions of the actor
+            dimensions: {
+                        totalHeight: 180,
+                        hipHeight: 100,
+                        // ... more information about the body that might be interesting
+                        // for retargetting to custom characters
+            }
+            body: { // optional section
+                  hip: {
+                        position {x: 0, y: 0, z: 0} // Y-up, Z-forward
+                        rotation {x: 0, y: 0, z: 0, w: 1} // quaternion
+                  },
+                  spine: {...}
+            },
+            face: { // optional section
+                  leftEyeBlink: 0, // 0-100
+                  ...
+            }
+           },
+            {...}
+      ],
+      props: [
+      {
+            name: "Box1",
+            color: {r, g, b} // bytes
+            type: 0/1/2 // 0: box, 1: stick, 2: camera
+            position: {x: 0, y: 0, z: 0}, // Y-up, Z-forward
+            rotation: {x: 0, y: 0, z: 0, w: 1}, // quaternion
+       },
+      ]
+    }
+}
+#+end_example

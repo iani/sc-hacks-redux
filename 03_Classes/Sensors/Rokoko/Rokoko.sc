@@ -18,7 +18,7 @@ Max Number of actors if including additional 161 output busses per actor:
 
 Rokoko : Singleton {
 	var <name; // name of Rokoko instance
-	var envir; // the environment holding all actors
+	var <envir; // the environment holding all actors
 	var <>recvMsg = '/rokoko/'; // expect data from Rokoko at this message
 	var <>sendMsg = \rokokoOut; // send messages to Godot with this message
 
@@ -31,15 +31,34 @@ Rokoko : Singleton {
 	init { | argName ... args |
 		// postln("initing Rokoko" + name + "with args" + args);
 		name = argName;
+		envir = name.envir;
 	}
-
-	envir { ^envir ?? { envir = () } }
 
 	enable {
 		postln("enabling" + this + "named" + name);
-		recvMsg.addAction({ | ... data |
-			postln("Rokoko" + name + "received data");
+		recvMsg.addAction({ | n, data, time |
+			var actorName, joints, actor;
+			actorName = data[2].asSymbol;
+			actor = this.getActor(actorName);
+			// postln("Actor:" + actor + "name" + actor.name + "envir" + actor.envir);
+			joints = data[3..].clump(8);
+			// joints.flop.first.postln;
+			joints do: actor.setJoint(_);
 		}, name);
+	}
+
+	getActor { | actorName |
+		var actor;
+		actor = envir[actorName];
+		actor ?? {
+			actor = Actor(actorName, name);
+			envir[actorName] = actor;
+		};
+		^actor;
+	}
+
+	actors {
+		^envir.values.select({ | a | a isKindOf: Actor }).asArray;
 	}
 
 	disable {
