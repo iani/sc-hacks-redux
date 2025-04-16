@@ -25,9 +25,9 @@ Rokoko : Singleton {
 	//	*new { | name = \rokoko | ^this.named(name); }
 
 	// return an instance named after today's date
-	*atDate { | date |
+	*atDate { | postfix = \rokoko, date |
 		date ?? { date = Date.localtime.format("%y%m%d"); };
-		^this.named(("rokoko" ++ date).asSymbol);
+		^this.named((date ++ postfix).asSymbol);
 	}
 
 	init { | argName ... args |
@@ -39,15 +39,12 @@ Rokoko : Singleton {
 	enable {
 		postln("enabling" + this + "named" + name);
 		recvMsg.addAction({ | n, data, time |
-			var actorName, joints, actor;
-			actorName = data[2].asSymbol;
-			actor = this.getActor(actorName);
-			// postln("Actor:" + actor + "name" + actor.name + "envir" + actor.envir);
-			joints = data[3..].clump(8);
-			// joints.flop.first.postln;
-			// joints do: actor.setJoint(_);
-			joints.collect({ | j | j.first }).asCompileString.postln;
+			this.receiveOsc(data);
 		}, name);
+	}
+
+	receiveOsc { | data |
+		this.getActor(data[2].asSymbol).writeDataToBus(data);
 	}
 
 	getActor { | actorName |

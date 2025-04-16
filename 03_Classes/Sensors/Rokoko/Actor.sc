@@ -13,8 +13,9 @@ Actor {
 	var <envirName; // unique name for each actor in each scene.
 	// used to create the envir of the actor
 	var <envir; // a Mediator storing the actor and all its joints
-	var <bus; // holds all joint variable control values in 161 channels,
+	var <inbus; // holds all joint variable control values in 161 channels,
 	// set at once from OSC input, for efficiency.
+	var <outbus; // same as inbus, but for sending controls to Godot
 	var <joints; // dictionary of individual joints by name
 	*new { | name = \defaultActor, scene = \defaultScene |
 		ServerBoot add: { this.makeBuses };
@@ -24,7 +25,7 @@ Actor {
 	init {
 		envirName = (name ++ "_" ++ scene).asSymbol;
 		this.makeEnvir;
-		this.makeGlobalBus;
+		this.makeGlobalBuses;
 		this.makeJoints;
 	}
 
@@ -33,11 +34,14 @@ Actor {
 		envir[\actor] = this; // store self as actor in envir;
 	}
 
-	makeGlobalBus {
+	makeGlobalBuses {
 		// make the global bus + the individual joint buses;
-		bus !? { bus.free; };
-		bus = Bus.control(Server.default, numControls);
-		envir[\bus] = bus;
+		inbus !? { inbus.free; };
+		inbus = Bus.control(Server.default, numControls);
+		envir[\inbus] = inbus;
+		outbus !? { outbus.free; };
+		outbus = Bus.control(Server.default, numControls);
+		envir[\outbus] = outbus;
 	}
 
 	makeJoints {
@@ -45,9 +49,9 @@ Actor {
 		Joint.makeJointsFor(this) do: { | j | joints[j.name] = j; };
 	}
 
-	setGlobalBus { | data |
-		// set global bus values from data received from OSC
-
+	writeDataToBus { | data |
+		// postln("writing joint data" + data[3..].clump(8).flop.first);
+		inbus.setn(data[3..].clump(8).collect({|j| j[1..]}).flat);
 	}
 
 	printOn { | stream |

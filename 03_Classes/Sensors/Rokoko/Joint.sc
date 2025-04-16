@@ -44,16 +44,20 @@ Joint {
 
 	makeBusses {
 		// create the individual busses and store them in ector's envir
-		var busNames, globalIndex, envir;
-		globalIndex = actor.bus.index;
+		var busNames, globalIndex, globalOutIndex, envir;
+		globalIndex = actor.inbus.index;
 		jointIndex = jointNames.indexOf(name) * 7;
+		globalOutIndex = actor.outbus.index;
 		envir = actor.envir;
 		busNames = varNames collect: { | bn | (name ++ bn).asSymbol };
 		// postln("global Index" + globalIndex, "my index" + jointIndex);
 		busNames do: { | n, i |
-			var localIndex;
+			var localIndex, localOutIndex;
 			localIndex = globalIndex + jointIndex + i;
+			localOutIndex = globalOutIndex + jointIndex + i;
 			envir[n] = Bus(\control, Server.default, localIndex, 1);
+			envir[(n ++ "out").asSymbol] =
+			Bus(\control, Server.default, localOutIndex, 1);
 			/*
 			postln(
 				"name:" + n +

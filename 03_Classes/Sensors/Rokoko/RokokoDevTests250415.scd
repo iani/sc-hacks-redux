@@ -10,6 +10,22 @@ Note: Once the folder is chosen, it is saved in userAppSupportDir,
 	under the name of the Rokoko instance.
 	Rokoko instance will read the data from the saved path if available.
 */
+//========== creating Rokoko instances ==========
+//: ========== create an instance with a custom name  ==========
+Rokoko.named(\x); // create Rokoko with custom name \x
+//: ========== create an instance with today's date stamp YYMMDDrokoko as name  ==========
+Rokoko.atDate;
+//: Custom postfix to date:
+// ========== create an instance with today's date stamp YYMMDDtest as name  ==========
+Rokoko.atDate(\test);
+
+//:------------------------------------------------------------
+//: Playing rokoko with recorded data
+//: enabling osc reception on an instance of Rokoko:
+Rokoko.atDate.enable;
+//: opening an osc data gui for playback
+Rokoko.atDate.oscDataGui;
+//: enabling and opening gui in one statement
 Rokoko.atDate.enable.oscDataGui;
 // Once the OscData gui is open, click the play Checkbox to send some
 // data to the Rokoko instance.
@@ -37,5 +53,8 @@ a.at(\headx); // access the bus of a joint variable
 a[\headz]; // same as a.at(\headz)
 a.at(\heady);
 a.at(\hipx);
-a[\hipy];
+a[\hipy];    // input bus for hip y joint
+a[\hipyout]; // output bus for hip y joint
 a[\hip];
+//:
+Server.default.scope;
