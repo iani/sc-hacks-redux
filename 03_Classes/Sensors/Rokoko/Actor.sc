@@ -35,7 +35,7 @@ Actor {
 	}
 
 	makeGlobalBuses {
-		// make the global bus + the individual joint buses;
+		// make the global input and output bus buses;
 		inbus !? { inbus.free; };
 		inbus = Bus.control(Server.default, numControls);
 		envir[\inbus] = inbus;
@@ -44,14 +44,14 @@ Actor {
 		envir[\outbus] = outbus;
 	}
 
-	makeJoints {
+	makeJoints { // make the joints (and their buses)
 		joints = ();
 		Joint.makeJointsFor(this) do: { | j | joints[j.name] = j; };
 	}
 
 	writeDataToBus { | data |
 		// postln("writing joint data" + data[3..].clump(8).flop.first);
-		inbus.setn(data[3..].clump(8).collect({|j| j[1..]}).flat);
+		inbus.setn(Rokoko getControlValues: data);
 	}
 
 	printOn { | stream |

@@ -66,20 +66,20 @@ Rokoko : Singleton {
 		recvMsg.removeOSC(name)
 	}
 
-	oscDataGui { // get path of data folder from user (if not already known)
+	oscDataGui {  | oscDataRef | this.oscData(oscDataRef, true); }
+
+	oscData { | oscDataRef, makeGui = false |
+		// get path of data folder from user (if not already known)
 		// store path under your name as filename.
 		// open an OscData gui with these paths
+		// store OscData instance in oscDataRef for further processing;
 		Paths.doGetPath({ | p, paths |
-			OscData(paths).gui;
+			var oscdata;
+			oscdata = OscData(paths);
+			oscDataRef ?? { oscDataRef = Ref() };
+			oscDataRef.value = oscdata;
+			if (makeGui) { oscdata.gui };
 		}, name);
-	}
-
-	getEnvir {
-
-	}
-
-	makeBusses {
-
 	}
 
 	/*
@@ -104,6 +104,12 @@ Rokoko : Singleton {
 
 	*resetPath { | argKey = \rokoko |
 		Paths.resetPath(argKey);
+	}
+
+	*getControlValues { | data |
+		/// get control values from data
+		/// also used to collect data for processing in sclang
+		^data[3..].clump(8).collect({|j| j[1..]}).flat
 	}
 
 	printOn { | stream |

@@ -56,5 +56,48 @@ a.at(\hipx);
 a[\hipy];    // input bus for hip y joint
 a[\hipyout]; // output bus for hip y joint
 a[\hip];
+//:============================================================
+//:Getting the OscData instance created by Rokoko, to process the data in sclang
+//:1. using Rokoko directly, with a ref.
+d = Ref(); // Ref is needed because oscDataGui is asynchronous.
+Rokoko.atDate.oscDataGui(d);
+//: Ref is needed because oscDataGui is asynchronous.
+d.value;
+//:2. Using RokokoData
+d = RokokoData.atDate;
+// Avoid chaining oscdata to atDate or named, because instance creation is asynchronous
+o = d.oscdata;
+d.gui;
+//: Exploring oscdata from Rokoko offline
+// Presupposes having read the data previously with RokokoData.atDate or RokokoData.named(...)
+~data = RokokoData.atDate.oscdata.parsedEntries;
+~times = ~data.flop.first;
+~entries = ~data.flop[1];
+~entries.first.class;
+~entries.first.interpret;
 //:
-Server.default.scope;
+~rdata = RokokoData.atDate;
+~rdata.times;
+~rdata.entries;
+~rdata.controlValues;
+~rdata.controlValues.first;
+~rdata.controlValues[1];
+~rdata.controlValues.first - ~rdata.controlValues[1];
+(~rdata.controlValues.first - ~rdata.controlValues[1]).abs.maxItem;
+(~rdata.controlValues.first - ~rdata.controlValues[1]).abs.minItem;
+~rdata.controlValues.first.plot;
+~rdata.controlValues[0].plot;
+~rdata.controlValues[1].plot;
+
+~rdata.controlValues[..10].plot;
+(0..9).collect({ Array.rand(100, -1.0, 1.0) }).plot;
+~rdata.play; // play back.
+~rdata.splay; // play back and open control scope to watch.
+//:
+Actor.numControls;
+//: Debugging
+b = Bus(\control, 0, Server.default, Actor.numControls);
+b.set(1);
+c = Bus.control;
+c.set(1);
+d = Bus(\control, Server.default, 0, 1);
