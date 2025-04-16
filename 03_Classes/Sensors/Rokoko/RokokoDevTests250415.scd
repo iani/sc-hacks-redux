@@ -1,5 +1,6 @@
 /* 火 15  4 2025 19:59
 
+============== IMPORTANT: Rokoko data are found in this repository:
 Get the OSC data recordings from this repository:
 
 https://github.com/iani/osc_data_240510ff.git

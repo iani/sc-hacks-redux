@@ -48,8 +48,8 @@ OscDataScore : OscData {
 	}
 
 	sendItemAsOsc { | string | // OscDataScore prepends '/code' here
-		localAddr.sendMsg('/code', string);
-		oscgroupsAddr.sendMsg('/code', string);
+		// localAddr.sendMsg('/code', string);
+		// oscgroupsAddr.sendMsg('/code', string);
 	}
 
 	formatTimeIndex { | t, i | // include header comments
