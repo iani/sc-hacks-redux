@@ -22,6 +22,8 @@ Rokoko : Singleton {
 	var <>recvMsg = '/rokoko/'; // expect data from Rokoko at this message
 	var <>sendMsg = \rokokoOut; // send messages to Godot with this message
 
+	//	*new { | name = \rokoko | ^this.named(name); }
+
 	// return an instance named after today's date
 	*atDate { | date |
 		date ?? { date = Date.localtime.format("%y%m%d"); };
@@ -43,7 +45,8 @@ Rokoko : Singleton {
 			// postln("Actor:" + actor + "name" + actor.name + "envir" + actor.envir);
 			joints = data[3..].clump(8);
 			// joints.flop.first.postln;
-			joints do: actor.setJoint(_);
+			// joints do: actor.setJoint(_);
+			joints.collect({ | j | j.first }).asCompileString.postln;
 		}, name);
 	}
 
@@ -104,5 +107,12 @@ Rokoko : Singleton {
 
 	*resetPath { | argKey = \rokoko |
 		Paths.resetPath(argKey);
+	}
+
+	printOn { | stream |
+		if (stream.atLimit) { ^this };
+		stream << this.class.name << "<" ;
+		stream << name.asString;
+		stream << ">" ;
 	}
 }

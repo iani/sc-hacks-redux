@@ -2,20 +2,30 @@
 // hold the buses for writing all data from an actor wearing Rokoko
 // tracker suit. Provide methods for writing + reading parts of the data,
 // Provide interface for adding behaviors.
+/* joint names as sent by Rokoko OSC are:
+[ 'hip', 'spine', 'chest', 'neck', 'head', 'leftShoulder', 'leftUpperArm', 'leftLowerArm', 'leftHand', 'rightShoulder', 'rightUpperArm', 'rightLowerArm', 'rightHand', 'leftUpLeg', 'leftLeg', 'leftFoot', 'leftToe', 'leftToeEnd', 'rightUpLeg', 'rightLeg', 'rightFoot', 'rightToe', 'rightToeEnd' ]
+*/
 
 Actor {
+	classvar <>numControls = 161; // 23 * 7
 	var <name; // the name of this actor
 	var <scene; // the name of the scene containing the actor
 	var <envirName; // unique name for each actor in each scene.
 	// used to create the envir of the actor
 	var <envir; // a Mediator storing the actor and all its joints
+	var <bus; // holds all joint variable control values in 161 channels,
+	// set at once from OSC input, for efficiency.
+	var <joints; // dictionary of individual joints by name
 	*new { | name = \defaultActor, scene = \defaultScene |
+		ServerBoot add: { this.makeBuses };
 		^this.newCopyArgs(name.asSymbol, scene.asSymbol).init;
 	}
 
 	init {
 		envirName = (name ++ "_" ++ scene).asSymbol;
 		this.makeEnvir;
+		this.makeGlobalBus;
+		this.makeJoints;
 	}
 
 	makeEnvir {
@@ -23,12 +33,21 @@ Actor {
 		envir[\actor] = this; // store self as actor in envir;
 	}
 
-	setJoint { | data |
-		// postln("Actor" + name + "Makes joint" + data[0]);
-		// var jointName, joint;
-		// jointName = data[0].asSymbol;
-		// joint = joints[jointName];
-		// joint ?? { joint = Joint(data, joints); };
+	makeGlobalBus {
+		// make the global bus + the individual joint buses;
+		bus !? { bus.free; };
+		bus = Bus.control(Server.default, numControls);
+		envir[\bus] = bus;
+	}
+
+	makeJoints {
+		joints = ();
+		Joint.makeJointsFor(this) do: { | j | joints[j.name] = j; };
+	}
+
+	setGlobalBus { | data |
+		// set global bus values from data received from OSC
+
 	}
 
 	printOn { | stream |
@@ -37,4 +56,6 @@ Actor {
 		stream << name.asString;
 		stream << ">" ;
 	}
+
+	at { | argKey | ^envir.at(argKey) }
 }

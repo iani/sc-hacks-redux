@@ -9,6 +9,7 @@ OSCRecorder3.rootDir = "/tmp/";
 
 OSCRecorder3 {
 	classvar <rootFolder = "OSCData", <subFolder = "", <sessionStamp;
+	classvar <>sessionName = "";
 	classvar <>fileHeader = "", <data;
 	classvar <>rootDir;
 	classvar <>maxItems = 1000; // Keep files small!
@@ -202,7 +203,7 @@ OSCRecorder3 {
 
 	*makeDailySubfolderTimestamp {
 		sessionStamp = Date.localtime.stamp;
-		subFolder = Date.getDate.dayStamp;
+		subFolder = Date.getDate.dayStamp ++ sessionName;
 	}
 
 	*disable {

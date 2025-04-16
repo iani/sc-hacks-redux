@@ -21,3 +21,21 @@ Rokoko.atDate.actors;
 Rokoko.atDate.actors.first.inspect;
 // Obtain the array of joints in the first actor:
 Rokoko.atDate.actors.first.joints;
+//:========== Creating Rokoko instances with different names:
+Rokoko.atDate; // create name from today's timestamp
+Rokoko.atDate.name; // test the above
+Rokoko.named(\x); // create Rokoko with custom name
+Rokoko.named(\x).name; // test the above
+//:============================================================
+// Actor tests
+a = Actor();
+a.envir;
+a.at(\actor); // same as a[\actor];
+a[\actor];
+a.at(\head); // access a joint
+a.at(\headx); // access the bus of a joint variable
+a[\headz]; // same as a.at(\headz)
+a.at(\heady);
+a.at(\hipx);
+a[\hipy];
+a[\hip];
