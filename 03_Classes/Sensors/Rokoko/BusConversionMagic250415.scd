@@ -34,4 +34,10 @@ r.stop;
 //:8. Output synth signals to the individual busses
 { Out.kr(~amp, LFPulse.kr(2).range(0.0, 0.1).lag(0.2)) }.play;
 { Out.kr(~freq, LFNoise1.kr(1.5).range(100, 1000)) }.play;
-//:
+//:	playBuses { | oscaddr, message = \rokoko, ... buses |
+
+		{
+
+		}.play;
+
+	}

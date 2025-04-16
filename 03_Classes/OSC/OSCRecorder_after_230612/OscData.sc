@@ -1,7 +1,6 @@
 /* 20 Jun 2023 14:29
 Redo of OscDataReader
 */
-
 OscData {
 	var <paths;
 	var <sourceStrings;
@@ -14,7 +13,7 @@ OscData {
 	var <times, <messages; // times and messages obtained from parsedEntries
 	// ============= Store state from user selection for simpler updates ==============
 	var <timeline; // handle onsets and durations!
-	var <oscgroupsAddr; // 11 used by sendItemAsOsc
+	var <>sendAddr; // 11 used by sendItemAsOsc
 	var <localAddr; // 10 used by sendItemAsOsc
 	// TODO: Cleanup many of these, below - that are no longer used.
 	var <selectedMinTime = 0; // 1
@@ -92,7 +91,7 @@ OscData {
 		this.makeMessages;
 		localAddr = NetAddr.localAddr;
 		OscGroups.enable(verbose: false);
-		oscgroupsAddr = OscGroups.sendAddress;
+		sendAddr = OscGroups.sendAddress;
 		// remake player stream when selection changes:
 		this.addNotifier(this, \selection, {
 			if (this.isPlaying.not) { { this.makeStream }.fork };
@@ -443,7 +442,7 @@ OscData {
 		var msg;
 		msg = string.interpret;
 		localAddr.sendMsg(*msg);
-		oscgroupsAddr.sendMsg(*msg);
+		sendAddr.sendMsg(*msg);
 	}
 	findNextCode {
 		var theSelectedMessages, found, index;
@@ -659,7 +658,8 @@ OscData {
 		this.playSegment(minIndex, maxIndex);
 	}
 
-	playSegment { | from = 0, to = 10, rate = 1 |
+	playSegment { | from = 0, to, rate = 1 |
+		to ?? { to = parsedEntries.size - 1 };
 		stream !? { ^"Already playing. Skipping this.".postln; };
 		rate = rate.clip(0.1, 100);
 		from = from.clip(0, parsedEntries.size - 1).asInteger;
@@ -675,7 +675,7 @@ OscData {
 				prevTime = entry[0];
 				// entry[1].interpret.postln;
 				message = entry[1].interpret;
-				oscgroupsAddr.sendMsg(*message);
+				sendAddr.sendMsg(*message);
 				localAddr.sendMsg(*message);
 				this.changed(\item, t);
 			};

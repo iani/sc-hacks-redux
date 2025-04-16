@@ -1,4 +1,9 @@
 /* 火 15  4 2025 19:59
+
+Get the OSC data recordings from this repository:
+
+https://github.com/iani/osc_data_240510ff.git
+
 Create a Rokoko instance using this date as timestamp in the name.
 Start the instance listening to incoming '/rokoko/' OSC messages.
 Create an OscData gui with data obtained from a folder chosen by the user,
@@ -18,11 +23,35 @@ Rokoko.atDate;
 //: Custom postfix to date:
 // ========== create an instance with today's date stamp YYMMDDtest as name  ==========
 Rokoko.atDate(\test);
-
 //:------------------------------------------------------------
 //: Playing rokoko with recorded data
 //: enabling osc reception on an instance of Rokoko:
 Rokoko.atDate.enable;
+Rokoko.atDate.name;
+Rokoko.atDate(\iani).name;
+Rokoko.named(\x).name;
+Rokoko.named(\x).oscDataGui;
+Rokoko.named(\z).oscDataGui;
+Rokoko.named(\z).oscDataGui;
+//:
+Rokoko.atDate;
+Rokoko.atDate.name;
+Rokoko.atDate.name.push;
+Rokoko.atDate.envir.keys;
+Rokoko.atDate.envir['Baubo'];
+Rokoko.atDate.envir['Baubo'].envir;
+Rokoko.atDate.envir['Baubo'].envir.push;
+
+Rokoko.atDate.envir['Baubo'].envir.keys.asArray;
+
+~rightUpLegz
+~leftFoot;
+~outbus;
+~inbus;
+currentEnvironment.keys.asArray;
+currentEnvironment.keys.asArray;
+Rokoko.atDate.
+//:
 //: opening an osc data gui for playback
 Rokoko.atDate.oscDataGui;
 //: enabling and opening gui in one statement
@@ -69,6 +98,13 @@ d = RokokoData.atDate;
 o = d.oscdata;
 d.gui;
 //: Exploring oscdata from Rokoko offline
+~rd = RokokoData.atDate;
+~rd.name;
+~od = RokokoData.atDate.oscdata;
+~od.gui;
+~od.playSegment; // play back entire data
+~od.playSegment(0, 10, 5);
+~od.playSegment(30, 0, 5);
 // Presupposes having read the data previously with RokokoData.atDate or RokokoData.named(...)
 ~data = RokokoData.atDate.oscdata.parsedEntries;
 ~times = ~data.flop.first;

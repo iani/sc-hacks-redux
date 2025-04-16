@@ -5,6 +5,7 @@
 RokokoData : Singleton {
 	var <name; // name of Rokoko instance
 	var <oscdata; // oscdata instance
+	var controlValues; // all control values as nested numerical array
 	var <routine; // playback routine
 	*atDate { | postfix = \rokoko, date |
 		date ?? { date = Date.localtime.format("%y%m%d"); };
@@ -22,9 +23,11 @@ RokokoData : Singleton {
 	times { ^this.data.flop.first }
 	entries { ^this.data.flop[1] }
 	controlValues {
-		^this.entries collect: { | e |
-			Rokoko.getControlValues(e.interpret)
-		};
+		^controlValues ?? {
+			controlValues =	this.entries collect: { | e |
+				Rokoko.getControlValues(e.interpret)
+			};
+		}
 	}
 
 	splay { | outbus = 0 |
