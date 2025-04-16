@@ -61,4 +61,5 @@ Actor {
 	}
 
 	at { | argKey | ^envir.at(argKey) }
+	push { envir.push; }
 }

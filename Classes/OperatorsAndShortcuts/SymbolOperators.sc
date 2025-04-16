@@ -229,6 +229,19 @@
 
 	//
 
+	lowcap { // convert to low cap first letter
+		// for accessing with ~ as Environment Variable
+		var string, initial;
+		string = this.asString;
+		initial = string[0];
+		if (initial.isUpper) {
+			string[0] = initial.toLower;
+			^string.asSymbol;
+		}{
+			^this;
+		}
+
+	}
 	push {
 		^Mediator.fromLib(this).push;
 	}
@@ -242,6 +255,7 @@
 	}
 
 	stream { } // evstream?
+
 
 	get { ^this.bus.get }
 	index { ^this.bus.index }

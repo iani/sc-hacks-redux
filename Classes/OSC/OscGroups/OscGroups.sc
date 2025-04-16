@@ -233,10 +233,12 @@ OscGroups {
 	// *sendAddress { ^sendAddress ?? { sendAddress = this.makeSendAddress } }
 
 	*makeSendAddress { | verbose |
-		sendAddress = NetAddr("127.0.0.1", oscSendPort);
+		sendAddress = this.defaultSendAddress;
 		if (verbose) { postf("OscGroups set OSC send port to: %\n", oscSendPort); }
 		^sendAddress;
 	}
+
+	*defaultSendAddress { ^NetAddr("127.0.0.1", oscSendPort); }
 
 	*askLocalUser { "OscGroups askLocalUser method disabled" }
 
