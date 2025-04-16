@@ -26,8 +26,8 @@ Joint {
 		'hi', 'sp', 'ch', 'ne', 'he',
 		'ls', 'lu', 'lo', 'la',
 		'rs', 'ru', 'ro', 'ra',
-		'lul', 'lg', 'lf', 'lt', 'le',
-		'rul', 'rg', 'rf', 'rt', 're'
+		'lul', 'll', 'lf', 'lt', 'lte',
+		'rul', 'rl', 'rf', 'rt', 'rte'
 	]
 	*/
 
