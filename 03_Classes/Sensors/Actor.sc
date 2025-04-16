@@ -50,7 +50,6 @@ Actor {
 	}
 
 	writeDataToBus { | data |
-		// postln("writing joint data" + data[3..].clump(8).flop.first);
 		inbus.setn(Rokoko getControlValues: data);
 	}
 
