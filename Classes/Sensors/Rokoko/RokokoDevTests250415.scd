@@ -29,6 +29,12 @@ Rokoko.atDate(\test);
 //: enabling osc reception on an instance of Rokoko:
 Rokoko.atDate.enable;
 Rokoko.atDate.oscDataGui;
+Rokoko.atDate.push;
+~baubo.push;
+~actor;
+~hip;
+currentEnvironment.keys.asArray do: _.postln;
+currentEnvironment.keys.size;
 Rokoko.atDate.name;
 Rokoko.atDate(\iani).name;
 Rokoko.named(\x).name;

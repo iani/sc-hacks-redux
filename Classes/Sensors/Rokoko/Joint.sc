@@ -21,17 +21,15 @@ Joint {
 		'rightUpLeg', 'rightLeg', 'rightFoot', 'rightToe', 'rightToeEnd'
 	];
 
-	/*
 	classvar <>shortJointNames = #[
 		'hi', 'sp', 'ch', 'ne', 'he',
-		'ls', 'lu', 'lo', 'la',
-		'rs', 'ru', 'ro', 'ra',
+		'ls', 'lu', 'lo', 'lh',
+		'rs', 'ru', 'ro', 'rh',
 		'lul', 'll', 'lf', 'lt', 'lte',
 		'rul', 'rl', 'rf', 'rt', 'rte'
-	]
-	*/
+	];
 
-	classvar varNames = #[\x, \y, \z, \rx, \ry, \rz, \rw];
+	classvar <>varNames = #[\x, \y, \z, \rx, \ry, \rz, \rw];
 	var <actor, <name, <jointIndex;
 
 	*makeJointsFor { | actor | // make all joints for actor
@@ -44,29 +42,28 @@ Joint {
 
 	makeBusses {
 		// create the individual busses and store them in ector's envir
-		var busNames, globalIndex, globalOutIndex, envir;
-		globalIndex = actor.inbus.index;
+		var busNames, shortBusNames, globalIndex, globalOutIndex, envir;
 		jointIndex = jointNames.indexOf(name) * 7;
+		globalIndex = actor.inbus.index;
 		globalOutIndex = actor.outbus.index;
 		envir = actor.envir;
-		busNames = varNames collect: { | bn | (name ++ bn).asSymbol };
-		// postln("global Index" + globalIndex, "my index" + jointIndex);
+		busNames = jointNames collect: { | bn | (name ++ bn).asSymbol };
+		shortBusNames = shortJointNames collect: { | bn | (name ++ bn).asSymbol };
 		busNames do: { | n, i |
-			var localIndex, localOutIndex;
+			var localIndex, localOutIndex, inBus, outBus;
 			localIndex = globalIndex + jointIndex + i;
 			localOutIndex = globalOutIndex + jointIndex + i;
-			envir[n] = Bus(\control, Server.default, localIndex, 1);
-			envir[(n ++ "out").asSymbol] =
-			Bus(\control, Server.default, localOutIndex, 1);
-			/*
-			postln(
-				"name:" + n +
-				"joint index" + jointIndex +
-				"var index" + i
-				+ "local index" + localIndex
-			);
-			*/
+			inBus = Bus(\control, localIndex, 1, Server.default);
+			outBus = Bus(\control, localOutIndex, 1, Server.default);
+			envir[n.asSymbol] = inBus;
+			envir[shortBusNames[i].asSymbol] = inBus;
+			envir[(n ++ "out").asSymbol] = outBus;
+			envir[(shortBusNames[i] ++ "out").asSymbol] = outBus;
 		}
+	}
+
+	makeBussesRedo {
+
 	}
 
 	storeInEnvir { actor.envir[name] = this }
@@ -79,7 +76,12 @@ Joint {
 	}
 
 	envir { ^actor.envir }
-
+	printOn { | stream |
+		if (stream.atLimit) { ^this };
+		stream << this.class.name << "<" ;
+		stream << name.asString;
+		stream << ">" ;
+	}
 	// busses are set globally by actor for efficiency
 	// See Actor.setBus
 	/*
