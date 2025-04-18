@@ -4,6 +4,10 @@ Suggested by Julian Rohrhuber 28 Nov 2022 23:43 JST
 */
 
 + String {
+	isSafe { ^true }
+	// Recommended by Julian Rohrhuber before MetaXenakis Marathon 2022.
+	// Disabled here for speed.
+	/*
 	isSafe {
 	// code from OpenObject avoidTheWorst method
 	^this.find("unixCmd").isNil
@@ -12,4 +16,5 @@ Suggested by Julian Rohrhuber 28 Nov 2022 23:43 JST
 	and: { this.find("Pipe").isNil }
 	and: { this.find("Public").isNil }
 	}
+	*/
 }

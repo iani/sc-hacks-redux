@@ -80,8 +80,9 @@ OscGroups {
 	*activateCodeMessage { | verbose = true |
 		if (verbose) { postln("activating code message:" + codeMessage); };
 		OSC.add(codeMessage, { | n, msg |
-			var code;
+			var code, senderId;
 			code = msg[1].asString;
+			senderId = (msg[2] ? \unknown).asSymbol;
 			if (code.isSafe) {
 				postf("========= Remote evaluation: ========= \n\(\n\%\n\)\n", code);
 				{	// permit window operations via remote evaluated code
@@ -90,8 +91,9 @@ OscGroups {
 						msg[2].getEnvir.use { code.interpret.postln; }
 
 					*/
-					code.interpret.postln;
-					this.changed(\evalCode, code);
+					// postln("Received code from user:" + senderId);
+					senderId.envir use: { code.interpret.postln; };
+					this.changed(\evalCode, code, senderId);
 				}.defer;
 			}{
 				"WARNING: UNSAFE CODE RECEIVED!:".postln;
