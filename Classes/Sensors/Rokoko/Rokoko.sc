@@ -77,13 +77,16 @@ Rokoko : Singleton {
 		// store path under your name as filename.
 		// open an OscData gui with these paths
 		// store OscData instance in oscDataRef for further processing;
+		var data;
 		Paths.doGetPath({ | p, paths |
 			var oscdata;
 			oscdata = OscData(paths);
 			oscDataRef ?? { oscDataRef = Ref() };
 			oscDataRef.value = oscdata;
 			if (makeGui) { oscdata.gui };
+			data = oscdata;
 		}, name);
+		^data
 	}
 
 	push { envir.push }

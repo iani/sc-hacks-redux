@@ -26,6 +26,7 @@ OscGroups {
 	classvar <>localUser = \localuser; // TODO: delete this if it is not used!!!
 	classvar localAddress;
 	classvar <>notifyCodeSending = false;
+	classvar <>userId;
 
 	*initClass {
 		// NOTE: always notify code evaluations to the system -
@@ -37,9 +38,35 @@ OscGroups {
 				code;
 			};
 			localAddress = NetAddr.localAddr;
+			this.getUserIdFromFile;
 			this.activateCodeMessage;
 		}
 	}
+
+	// *userId { ^userId ?? { userId = this.makeUserId }; }
+
+	*getUserIdFromFile {
+		"OscGroups reading UserId from file".postln;
+		this.userIdPath.postln;
+	}
+	*userIdPath {
+		^Paths.makePathLocation(Paths.baseDirectory +/+ "oscGroups_" ++ this.userName)
+	}
+
+	*userName { ^Platform.userHomeDir.fileName }
+
+	*readUserId {
+
+	}
+
+	*writeUserId {
+
+	}
+
+	*makeUserId {
+		^this.userName ++ "_" ++ Date.getDate.stamp ++ "_" ++ 1000.rand.asString
+	}
+
 
 	*activateCodeMessage { | verbose = true |
 		if (verbose) { postln("activating code message:" + codeMessage); };
@@ -49,6 +76,11 @@ OscGroups {
 			if (code.isSafe) {
 				postf("========= Remote evaluation: ========= \n\(\n\%\n\)\n", code);
 				{	// permit window operations via remote evaluated code
+					// postln("extra arg" + msg[2]);
+					/*
+						msg[2].getEnvir.use { code.interpret.postln; }
+
+					*/
 					code.interpret.postln;
 					this.changed(\evalCode, code);
 				}.defer;
@@ -187,6 +219,7 @@ OscGroups {
 		// send evaluated code to sendAddress using oscMessage and adding localUser
 		this.addNotifier(Interpreter, \code, { | n, code |
 			this.changed(\localcode, code); // OSCRecorder records the code here.
+			// this.changed(\localcode, code, userID); // OSCRecorder records the code here.
 			if (notifyCodeSending) {
 				postln("sending message" + codeMessage + "and code"
 					+ code + "to address " + sendAddress);

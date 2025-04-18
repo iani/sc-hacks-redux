@@ -38,11 +38,28 @@ Paths {
 		});
 	}
 
+	*getPathFromKey { | key, default = "" |
+		var path, returnValue;
+		path = this.makePathLocation(key);
+		if (File.exists(path)) {
+			returnValue = File.readAllString(path);
+		}{
+			returnValue = default;
+			this.savePath(returnValue, path);
+		};
+		^returnValue;
+	}
+
+
 	*savePathAndDo { | path, pathLocation, action |
+		this.savePath(path, pathLocation);
+		this.doAction(action, path);
+	}
+
+	*savePath { | path, pathLocation |
 		File.use(pathLocation, "w", { | f |
 			f.write(path.standardizePath)
 		});
-		this.doAction(action, path);
 	}
 
 	*makePathLocation { | argKey |
@@ -84,7 +101,9 @@ Paths {
 
 	*runStartupFiles {
 		(this.startupFolder +/+ "blah.scd").entriesMatchingExtension do: { | p |
+			postln(">>>>>>>>>> Loading startup file:" + p.fileName + ">>>>>>>>>>");
 			p.load;
+			postln("<<<<<<<<<< Loaded startup file:" + p.fileName + "<<<<<<<<<<");
 		}
 	}
 	*addStartupFileAtDate { | string, date |

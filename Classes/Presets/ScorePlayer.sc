@@ -35,12 +35,12 @@ ScorePlayer {
 	stop { "ScorePlayer:stop!".postln; this.score.stop; }
 	prepare { // delay reading score until displaying.
 		path = this.makePath;
-		postln("ScorePlayer:readScore. name:" + name);
-		postln("Path:" + path);
-		postln("File exists?" + (File exists: path));
+		// postln("ScorePlayer:readScore. name:" + name);
+		// postln("Path:" + path);
+		// postln("File exists?" + (File exists: path));
 		if (File.exists(path).not) {
-			postln("Could not find path:\n" ++ path);
-			"Using default score path instead".postln;
+			// postln("Could not find path:\n" ++ path);
+			// "Using default score path instead".postln;
 			path = this.defaultPath;
 		};
 		// this.score; // doublechecking maybe needed here
@@ -53,7 +53,7 @@ ScorePlayer {
 
 	makePath { | argName |
 		// postln("Testing ScorePlayer:makePath");
-		^Scores.scorePath(argName ? name).postln;
+		^Scores.scorePath(argName ? name) // .postln;
 	}
 
 	defaultPath { ^this.makePath("default") }
