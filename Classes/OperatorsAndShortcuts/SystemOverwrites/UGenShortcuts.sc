@@ -85,6 +85,8 @@
 
 	decay { | dt = 0.25 | ^Decay.kr(this, dt) }
 
+	decay2 { | attack = 0.1, decay = 0.5 | ^Decay2.kr(this, attack, decay) }
+
 	perctr { | attackTime=0.01, releaseTime=1.0, level=1.0, curve = -4.0, gate = 1 |
 		^Env.perc(attackTime, releaseTime, level, curve).kr(doneAction: 0, gate: this)
 	}

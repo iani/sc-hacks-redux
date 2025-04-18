@@ -41,19 +41,25 @@ Paths {
 	*getPathFromKey { | key, default = "" |
 		var path, returnValue;
 		path = this.makePathLocation(key);
-		if (File.exists(path)) {
-			returnValue = File.readAllString(path);
+		// postln("The path is:" + path);
+		// postln("the filename is" + path.fileName);
+		if (File.exists(path) and: {
+			(returnValue = File.readAllString(path)).size > 0;
+		}) {
 		}{
 			returnValue = default;
-			this.savePath(returnValue, path);
+			File.use(path, "w", { | f | f write: default.asString });
 		};
-		^returnValue;
+ 		^returnValue;
 	}
-
 
 	*savePathAndDo { | path, pathLocation, action |
 		this.savePath(path, pathLocation);
 		this.doAction(action, path);
+	}
+
+	*saveAtKey { | key, string = "" |
+		File.use(this.makePathLocation(key), "w", { | f | f write: string.asString });
 	}
 
 	*savePath { | path, pathLocation |

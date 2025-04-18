@@ -26,7 +26,7 @@ OscGroups {
 	classvar <>localUser = \localuser; // TODO: delete this if it is not used!!!
 	classvar localAddress;
 	classvar <>notifyCodeSending = false;
-	classvar <>userId;
+	classvar userId;
 
 	*initClass {
 		// NOTE: always notify code evaluations to the system -
@@ -45,10 +45,19 @@ OscGroups {
 
 	// *userId { ^userId ?? { userId = this.makeUserId }; }
 
-	*getUserIdFromFile {
-		"OscGroups reading UserId from file".postln;
-		this.userIdPath.postln;
+	*userId { ^userId ?? { userId = this.getUserIdFromFile } }
+	*userId_ { | argUserId |
+		userId = argUserId.asSymbol;
+		Paths.saveAtKey(this.userIdPathKey, userId);
+		postln("Saved userId" + userId + "to file" + this.userIdPath.fileName);
 	}
+
+	*getUserIdFromFile {
+		^userId = Paths.getPathFromKey(this.userIdPathKey, this.makeUserId);
+	}
+
+	*userIdPathKey { ^("oscGroups_" ++ this.userName).asSymbol; }
+
 	*userIdPath {
 		^Paths.makePathLocation(Paths.baseDirectory +/+ "oscGroups_" ++ this.userName)
 	}
@@ -64,7 +73,7 @@ OscGroups {
 	}
 
 	*makeUserId {
-		^this.userName ++ "_" ++ Date.getDate.stamp ++ "_" ++ 1000.rand.asString
+		^(this.userName ++ "_" ++ Date.getDate.stamp ++ "_" ++ 1000.rand.asString).asSymbol;
 	}
 
 
