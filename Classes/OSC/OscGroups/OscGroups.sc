@@ -26,7 +26,7 @@ OscGroups {
 	classvar <>localUser = \localuser; // TODO: delete this if it is not used!!!
 	classvar localAddress;
 	classvar <>notifyCodeSending = false;
-	classvar userId;
+	// classvar <userId; // id of local user
 
 	*initClass {
 		// NOTE: always notify code evaluations to the system -
@@ -34,48 +34,16 @@ OscGroups {
 		StartUp add: {
 			thisProcess.interpreter.preProcessor = { | code |
 				// Interpreter.changed(\code, code);
-				Interpreter.changed(\code, code);
+				Interpreter.changed(\code, code, User.localId);
 				code;
 			};
 			localAddress = NetAddr.localAddr;
-			this.getUserIdFromFile;
+			// this.getUserId;
 			this.activateCodeMessage;
 		}
 	}
 
-	// *userId { ^userId ?? { userId = this.makeUserId }; }
-
-	*userId { ^userId ?? { userId = this.getUserIdFromFile } }
-	*userId_ { | argUserId |
-		userId = argUserId.asSymbol;
-		Paths.saveAtKey(this.userIdPathKey, userId);
-		postln("Saved userId" + userId + "to file" + this.userIdPath.fileName);
-	}
-
-	*getUserIdFromFile {
-		^userId = Paths.getPathFromKey(this.userIdPathKey, this.makeUserId);
-	}
-
-	*userIdPathKey { ^("oscGroups_" ++ this.userName).asSymbol; }
-
-	*userIdPath {
-		^Paths.makePathLocation(Paths.baseDirectory +/+ "oscGroups_" ++ this.userName)
-	}
-
-	*userName { ^Platform.userHomeDir.fileName }
-
-	*readUserId {
-
-	}
-
-	*writeUserId {
-
-	}
-
-	*makeUserId {
-		^(this.userName ++ "_" ++ Date.getDate.stamp ++ "_" ++ 1000.rand.asString).asSymbol;
-	}
-
+	// *getUserId { userId = User.id }
 
 	*activateCodeMessage { | verbose = true |
 		if (verbose) { postln("activating code message:" + codeMessage); };
@@ -93,6 +61,8 @@ OscGroups {
 					*/
 					// postln("Received code from user:" + senderId);
 					senderId.envir use: { code.interpret.postln; };
+					// TODO: This should become:
+					// User(senderId) use: { code.interpret.postln; };
 					this.changed(\evalCode, code, senderId);
 				}.defer;
 			}{
@@ -398,4 +368,6 @@ OscGroups {
 			this.changed(\status);
 		});
 	}
+
+	*userId { ^User.id }
 }

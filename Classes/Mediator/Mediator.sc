@@ -144,6 +144,7 @@ Mediator : EnvironmentRedirect {
 
 	push { // get rid of warning
 		if(currentEnvironment !== this) {
+			// postln("Will call push on:" + this);
 			Environment.push(this)
 		} // { "this environment is already current".warn }
 	}

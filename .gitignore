@@ -3,3 +3,7 @@
 *.log
 tmp/
 1
+.projectile-cache.eld
+*/.projectile-cache.eld
+
+*-cache.eld
