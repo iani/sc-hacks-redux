@@ -4,7 +4,8 @@
 
 + Symbol {
 	// DRAFT! "ur": User Rate. Create gui view for setting the bus.
-	*ur { | spec = \amp, envir = \default |
+	userEnvir { ^User(this).envir }
+	*ur { | spec = \amp, envir = \default | // WHAT IS THIS?????
 		spec = spec.asSpec;
 		^HLayout(
 			StaticText().string_(this),
@@ -81,7 +82,6 @@
 	//=================================================================
 	//=================================================================
 
-	asEnvir { ^Mediator.at(this) } // doubtful synonym?
 	asPlayer { ^this.at(nil) }
 
 	// ================================================================
@@ -94,13 +94,21 @@
 
 	player { | envir |
 		var player;
-		Mediator.wrap({
+		Mediator.wrap({ // should be Mediator.use?
 			player = currentEnvironment[this];
 		}, envir ? this);
 		^player;
 	}
 
-	envir { ^Mediator.at(this) }
+	asEnvir { ^this.envir } // doubtful synonym?
+
+	envir { | id |
+		// get envir named this from User named id
+		var user;
+		if (id.isNil) { user = User.local } { user = User named: id };
+		^user envir: this;
+		// ^Mediator.at(this)
+	}
 
 	// todo: move to Mediator:makSynth in order to share
 	// code with Function:playInEnvir

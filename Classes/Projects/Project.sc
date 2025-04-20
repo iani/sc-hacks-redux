@@ -27,7 +27,7 @@ one of the above lists selects the that item
 and shows its name on the selected project or selected
 file / folder button.
 
-Clcking on the selected project makes that project the current projecet.
+Clcking on the selected project makes that project the current project.
 Clicking on the selected file/folder button executes the corresponding file(s)
 
 */
@@ -40,6 +40,7 @@ Project {
 	classvar <userSelectedProject = false;
 
 	*initClass {
+		/*
 		StartUp add: {
 			Server.default doWhenReallyBooted:  { | server |
 		 		this.loadGlobalBuffers;
@@ -61,6 +62,7 @@ Project {
 				Library.put(Buffer, nil);
 			};
 	 	}
+		*/
 	}
 
 	*getProjects {

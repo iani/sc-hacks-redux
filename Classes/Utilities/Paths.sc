@@ -41,13 +41,13 @@ Paths {
 	*getPathFromKey { | key, default = "" |
 		var path, returnValue;
 		path = this.makePathLocation(key);
-		// postln("The path is:" + path);
-		// postln("the filename is" + path.fileName);
+		postln("Looking for file" + path.fileName);
 		if (File.exists(path) and: {
 			(returnValue = File.readAllString(path)).size > 0;
 		}) {
+			"File was found and read.  Skipping writing".postln;
 		}{
-			returnValue = default;
+			"File was not found. saving default to path.".postln;
 			File.use(path, "w", { | f | f write: default.asString });
 		};
  		^returnValue;

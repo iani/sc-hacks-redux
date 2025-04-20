@@ -34,7 +34,8 @@ OscGroups {
 		StartUp add: {
 			thisProcess.interpreter.preProcessor = { | code |
 				// Interpreter.changed(\code, code);
-				Interpreter.changed(\code, code, User.localId);
+				// Interpreter.changed(\code, code, User.localId);
+				// User forward: code;
 				code;
 			};
 			localAddress = NetAddr.localAddr;
@@ -42,6 +43,8 @@ OscGroups {
 			this.activateCodeMessage;
 		}
 	}
+
+	*forward { | code, userId | sendAddress.sendMsg(codeMessage, code, userId) }
 
 	// *getUserId { userId = User.id }
 
