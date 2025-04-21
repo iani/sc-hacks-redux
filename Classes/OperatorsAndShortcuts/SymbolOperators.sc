@@ -252,13 +252,10 @@
 	}
 	push { | userName |
 		// push Mediator named this as envir of user userId;
-		// var user, envir;
-		// userId ?? { userId = User.localId };
-		// user = User(userId);
-		// envir = user.envir(this);
-		// ^envir;
 		^User.push(userName, this);
 	}
+
+	pop { User pop: this }
 
 	synth { | func, key |
 		var envir, defName;
@@ -316,6 +313,7 @@
 
 + Nil {
 	envir { ^currentEnvironment }
+	pop { ^User.localId.pop }
 	// see OperatorFix240222.sc
 	// +> { | player, envir |
 	// 	Mediator.wrap(

@@ -2,7 +2,7 @@
 // Enable private Environments for multiple users on OscGroups
 
 User {
-	classvar all, <stack;
+	classvar all;
 	classvar <localId; // local id
 	classvar <currentEvaluator; // user who sent message to evaluate.
 	// The local user will not push a User environment if the request
@@ -13,8 +13,7 @@ User {
 	// var <stack; // environment stack; -
 	var envirs; // private envirs
 	var <document;
-
-	stack { ^stack } // make stack available from User instances
+	var <stack;
 
 	*initClass {
 		StartUp add: {
@@ -24,13 +23,12 @@ User {
 			// from a preprogrammed function:
 			// Document.initClass; DO NOT DO THIS!
 			var localUser, currentEnvir;
-			stack = Stack();
 			localId = (this.readUserId ?? { this.makeDefaultId }).asSymbol;
 			localUser = this.new(localId);
 			this.all[localId] = localUser;
 			currentEvaluator = localId;
 			currentEnvir = localUser.envir;
-			stack push: currentEnvir;
+			localUser.stack push: currentEnvir;
 			currentEnvir.push;
 			this.push(localId, localId);
 			thisProcess.interpreter.preProcessor = { | code |
@@ -64,6 +62,8 @@ User {
 		envir[\user] = this;
 		envirs = ();
 		envirs[id] = envir;
+		stack = Stack();
+		stack push: envir;
 	}
 
 	*localEnvir { ^this.local.localEnvir }
@@ -200,7 +200,9 @@ User {
 		^theEnvir;
 	}
 
-	*pop { this.new(currentEvaluator).pop }
+	*pop { | argId |
+		^this.new(argId ? currentEvaluator).pop
+	}
 
 	pop {
 		var newEnvir;
