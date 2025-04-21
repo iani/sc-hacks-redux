@@ -2,20 +2,29 @@
 // Enable private Environments for multiple users on OscGroups
 
 User {
-	classvar all;
+	classvar all, <stack;
 	classvar <localId; // local id
+	classvar <currentEvaluator; // user who sent message to evaluate.
+	// The local user will not push a User environment if the request
+	// to do so was received from a remote user.
 	var <id; // this (possibly remote) user's id.
 	var envir; // currentEnvironment
-	var <stack; // environment stack;
+	// var <stack; // environment stack; -
 	var envirs; // private envirs
+	var <document;
 
+	stack { ^stack }
 	*initClass {
 		StartUp add: {
 			// Following only runs when evaluating code manually from the user
 			// on a document.
 			// It does not run when aString.interpret is called
 			// from a preprogrammed function:
-			this.getLocalUser;
+			// Document.initClass; DO NOT DO THIS!
+			stack = Stack();
+			localId = (this.readUserId ?? { this.makeDefaultId }).asSymbol;
+			this.all[localId] = this.new(localId);
+			Mediator.push;
 			thisProcess.interpreter.preProcessor = { | code |
 				this.forward(code, localId);
 				code;
@@ -23,18 +32,11 @@ User {
 		}
 	}
 
-	// *local { ^this.localUser }
-	// *localUser { ^this.all[localId] }
 	*local { ^this.all[localId] }
-	// add { | id | ^this.class.at(id) } // enable syntax User[symbol]
+
 	*named { | argId |
 		argId ?? { argId = localId };
 		^this.all.at(argId) ?? { this.new(argId); }; // stores in all!
-	}
-
-	*getLocalUser {
-		localId = (this.readUserId ?? { this.makeDefaultId }).asSymbol;
-		this.all[localId] = this.new(localId);
 	}
 
 	*readUserId {
@@ -66,6 +68,7 @@ User {
 		// save localId to file.
 		// Paths.saveAtKey(this.idFromSystem, localId);
 		this.writeUserId;
+		currentEvaluator = localId;
 	}
 
 	*writeUserId {
@@ -78,11 +81,16 @@ User {
 	*forward { | code | OscGroups.forward(code, localId); }
 
 	*run { | code, argId |
+		currentEvaluator = argId ? localId;
 		this.use({
 			postf("========= user % runs: ========= \n\(\n\%\n\)\n", argId, code);
 			code.asString.interpret.postln;
 		}, argId ? localId);
+		currentEvaluator = localId;
 	}
+
+	evaluatorIsLocal { ^this.class.evaluatorIsLocal }
+	*evaluatorIsLocal { ^currentEvaluator === localId; }
 
 	*use { | func, argId |
 		this.new(argId.asSymbol).use(func);
@@ -93,11 +101,41 @@ User {
 		argId = (argId ? localId).asSymbol;
 		new = this.all[argId];
 		new ?? {
-			new = this.newCopyArgs(argId, argId.envir, Stack(), ());
+			new = this.newCopyArgs(argId, argId.envir, ());
+			// at recompile Document.allDocuments is nil;
+			// could not find how to force initialization of that
+			// so I just defer !for the first time only!:
+			if (Document.allDocuments.size == 0) {
+				{ new.makeDocumentIfNeeded; }.defer(1);
+			}{
+				new.makeDocumentIfNeeded;
+			};
 			all[argId] = new;
 		};
 		^new;
 	}
+
+	makeDocumentIfNeeded {
+		var theDoc;
+		theDoc = this.getDocument;
+		if (theDoc.isNil) {
+			// "The doc is nil. I will make a new one".postln;
+			document = Document.new(id.asString);
+		}{
+			// "the doc exists. I will do nothing".postln;
+		}
+	}
+
+	getDocument {
+		var documents;
+		documents = Document.allDocuments;
+		document = documents detect: { | d | d.name.asSymbol === id };
+		// postln("Found Document:" + document);
+		^document;
+	}
+
+	*showDocument { this.local.showDocument }
+	showDocument { document.front }
 
 	use { | func | envir use: func; }
 
@@ -119,13 +157,74 @@ User {
 	*all { ^all ?? { all = () } }
 
 	// ========== push - pop ==========
+	// Operate on own envir
+	// Push envir in local environemnt, but without sending to
+	// OscGroups: Prevent setting the currentEnvironment of other user
 	*push { | userName, envirName |
 		userName ?? { userName = this.localId };
-		this.new(userName.asSymbol).push(envirName.asSymbol);
+		^this.new(userName).push(envirName);
+	}
+
+	push { | envirName |
+		var theEnvir;
+		// should not push if this was received from remote user
+		currentEvaluator ?? { currentEvaluator = localId };
+		postln("checking push of local user" + localId + "vs. remote id"
+			+ currentEvaluator
+		);
+		if (this.evaluatorIsLocal) {
+			"Now doing locally requested push".postln;
+			envirName = envirName ? id;
+			theEnvir = this.envirs[envirName];
+			postln("Preparing to push" + theEnvir);
+			if (theEnvir.isNil) {
+				postln("Creating and storing new envir" + theEnvir);
+				theEnvir = this envir: envirName;
+				if (currentEnvironment === theEnvir) {
+					"Skipping push of currentEnvironment on itself".postln;
+				}{
+					postln("now pushing:" + theEnvir);
+					theEnvir.push;
+					stack push: theEnvir;
+				};
+				postln("I now pushed" + theEnvir);
+			}
+		}{
+			"not pushing because received remotely".postln;
+		};
+		^theEnvir ? currentEnvironment;
 	}
 
 	*pop { | userName |
-		this.new(userName.asSymbol).pop;
+		var theUser;
+		// "User:pop is not complete. results may be unexpected.".postln;
+		if (userName.notNil) {
+			theUser = userName.asSymbol;
+		}{
+			theUser = currentEnvironment[\user];
+		};
+		this.new(theUser).pop;
+	}
+
+	*currentUser {
+		^currentEnvironment[\user];
+	}
+	pop {
+		postln("popping from user" + this);
+		// "pop not implemented".postln;
+		if (this.evaluatorIsLocal) {
+			if (stack.isEmpty.not) {
+				postln("popping" + currentEnvironment);
+				currentEnvironment.pop;
+				// push next mediator from stack
+				stack.pop;
+				stack.top.push;
+			}{
+				postln("The stack is empty. Keeping currentEnvironment.")
+			}
+		}{
+			postln("Refusing to pop for remote user:" + id);
+		}
 	}
 
 	printOn { | stream |

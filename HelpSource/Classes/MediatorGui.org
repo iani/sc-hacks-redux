@@ -1,6 +1,6 @@
 #+title: MediatorGui
 
-* Header
+* Header :sc_description:
 # The header should export the following items in schelp format:
 # CLASS::MediatorGui
 # categories::sc-hacks-redux>gui

@@ -250,7 +250,7 @@
 		}
 
 	}
-	push {
+	push { | userId |
 		^Mediator.fromLib(this).push;
 	}
 

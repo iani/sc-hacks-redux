@@ -52,10 +52,13 @@
 
 	// returns a list of all the files in the folder represented by this path.
 	// whose extension is the same as the extension of the receiver.
-	entriesMatchingExtension {
-		var n;
-		n = PathName(this);
-		^(n.pathOnly +/+ "*." ++ n.extension).pathMatch;
+
+	entriesMatchingScd { ^this entriesMatchingExtension: "scd" }
+	entriesMatchingWav { ^this entriesMatchingExtension: "wav" }
+	entriesMatchingWAV { ^this entriesMatchingExtension: "WAV" }
+
+	entriesMatchingExtension { | extension = "scd" |
+		^(this +/+ "*." ++ extension).pathMatch;
 	}
 
     // folders { ^PathName(this).folders }

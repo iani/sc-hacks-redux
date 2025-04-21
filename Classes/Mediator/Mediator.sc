@@ -120,8 +120,8 @@ Mediator : EnvironmentRedirect {
 
 	*initClass {
 		StartUp add: {
-			this.push;  // push default as currentEnvironment
-			this.pushTopEnvir; // push default as topEnvironment
+			// this.push;  // push default as currentEnvironment
+			// this.pushTopEnvir; // push default as topEnvironment
 		}
 	}
 
@@ -139,17 +139,27 @@ Mediator : EnvironmentRedirect {
 		}
 	}
 
+	*pop { this.default.pop }
+	*default {
+		// User.getLocalUser;
+		^default ?? { default = User.local.envir }
+	}
+
 	*push { this.default.push; }
 	*pushTopEnvir { topEnvironment = this.default }
-
 	push { // get rid of warning
 		if(currentEnvironment !== this) {
 			// postln("Will call push on:" + this);
 			Environment.push(this)
 		} // { "this environment is already current".warn }
 	}
-	*pop { this.default.pop }
-	*default { ^default ?? { default = this.fromLib(\default) } }
+	// *pop { | userId |
+	// userId ?? { userId = User.userId }; // default User id
+	// User pop: userId;
+	// }
+
+	user { if (this[\user] isKindOf: User) { ^this[\user] } { ^User.local }}
+
 	/* // this changed is now in Class:fromLib
 	*fromLib { | key |
 		this.changed(\envir, key);

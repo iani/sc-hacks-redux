@@ -4,11 +4,10 @@
 Paths {
 
 	*initClass {
-		StartUp add: {
-			this.makeBaseDirectory;
-			this.runStartupFiles;
-		};
+		StartUp add: { this.init; };
 	}
+
+	*init { this.makeBaseDirectory; }
 
 	*makeBaseDirectory {
 		if (File.exists(this.baseDirectory).not) {
@@ -103,30 +102,4 @@ Paths {
 		};
 		^dict;
 	}
-	// Utilities
-
-	*runStartupFiles {
-		(this.startupFolder +/+ "blah.scd").entriesMatchingExtension do: { | p |
-			postln(">>>>>>>>>> Loading startup file:" + p.fileName + ">>>>>>>>>>");
-			p.load;
-			postln("<<<<<<<<<< Loaded startup file:" + p.fileName + "<<<<<<<<<<");
-		}
-	}
-	*addStartupFileAtDate { | string, date |
-		var startupFolder;
-		startupFolder = this.startupFolder;
-		date ?? { date = Date.getDate.dayStamp };
-		if (File.exists(startupFolder).not) {
-			File mkdir: startupFolder;
-			{
-				File.use(
-					startupFolder +/+ date + ".scd"
-					"w",
-					{ | f | f write: string }
-				)
-			}.defer(1)
-		}
-	}
-
-	*startupFolder { ^Platform.userConfigDir +/+ "startup" }
 }

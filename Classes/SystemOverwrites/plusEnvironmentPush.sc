@@ -1,5 +1,5 @@
-// 土 19  4 2025 02:11
-// May not be needed
+// 日 20  4 2025 11:32
+// How / when do we prevent pushing when requested by a remote user?
 /*
 + Environment {
 	*push { arg envir;

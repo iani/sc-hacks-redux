@@ -16,7 +16,6 @@ OscGroups {
 	classvar <sendAddress, <localAddress;
 	classvar <>verbose = false, <enabled = false;
 	classvar <codeMessage = '/code';
-
 	*initClass {
 		StartUp add: {
 			this.makeLocalAddress;
@@ -31,7 +30,7 @@ OscGroups {
 	*forward { | code, userId |
 		if (enabled) {
 			postln("Osc forwards code from user" + userId);
-			sendAddress.sendMsg(codeMessage, code, userId)
+			sendAddress.sendMsg(codeMessage, code, userId);
 		};
 	}
 
@@ -45,12 +44,14 @@ OscGroups {
 
 	*enable {
 		enabled = true;
-		OSC.add(codeMessage, { | n, msg | User.run(msg[1].asString, msg[2]);});
+		OSC.add(codeMessage, { | n, msg |
+			User.run(msg[1].asString, msg[2]);
+
+		});
 	}
 
 	*disable {
 		enabled = false;
 		OSC remove: codeMessage;
 	}
-
 }
