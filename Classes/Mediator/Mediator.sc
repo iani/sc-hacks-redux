@@ -20,7 +20,7 @@ Mediator : EnvironmentRedirect {
 		^this.newCopyArgs( // experimental: Use Event instead of Environment
 				envir ?? { this.makeEnvir },
 				nil, name
-			).dispatch = MediatorHandler();
+			).init.dispatch = MediatorHandler();
 	}
 
 	init { | ... args |

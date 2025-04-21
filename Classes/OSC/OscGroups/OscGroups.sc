@@ -46,7 +46,6 @@ OscGroups {
 		enabled = true;
 		OSC.add(codeMessage, { | n, msg |
 			User.run(msg[1].asString, msg[2]);
-
 		});
 	}
 

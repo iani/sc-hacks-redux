@@ -250,8 +250,14 @@
 		}
 
 	}
-	push { | userId |
-		^Mediator.fromLib(this).push;
+	push { | userName |
+		// push Mediator named this as envir of user userId;
+		// var user, envir;
+		// userId ?? { userId = User.localId };
+		// user = User(userId);
+		// envir = user.envir(this);
+		// ^envir;
+		^User.push(userName, this);
 	}
 
 	synth { | func, key |

@@ -19,6 +19,7 @@ Stack {
 	}
 
 	top { ^(stack ? []).last }
+	size { ^stack.size }
 	isEmpty { ^stack.size == 0 }
 	reset { this.clear }
 	clear { stack = nil }

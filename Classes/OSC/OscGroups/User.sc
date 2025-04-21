@@ -8,12 +8,14 @@ User {
 	// The local user will not push a User environment if the request
 	// to do so was received from a remote user.
 	var <id; // this (possibly remote) user's id.
-	var envir; // currentEnvironment
+	var envir; // currentEnvironment of this user
+	// envir of local user must always be identical to currentEnvironment
 	// var <stack; // environment stack; -
 	var envirs; // private envirs
 	var <document;
 
-	stack { ^stack }
+	stack { ^stack } // make stack available from User instances
+
 	*initClass {
 		StartUp add: {
 			// Following only runs when evaluating code manually from the user
@@ -21,10 +23,16 @@ User {
 			// It does not run when aString.interpret is called
 			// from a preprogrammed function:
 			// Document.initClass; DO NOT DO THIS!
+			var localUser, currentEnvir;
 			stack = Stack();
 			localId = (this.readUserId ?? { this.makeDefaultId }).asSymbol;
-			this.all[localId] = this.new(localId);
-			Mediator.push;
+			localUser = this.new(localId);
+			this.all[localId] = localUser;
+			currentEvaluator = localId;
+			currentEnvir = localUser.envir;
+			stack push: currentEnvir;
+			currentEnvir.push;
+			this.push(localId, localId);
 			thisProcess.interpreter.preProcessor = { | code |
 				this.forward(code, localId);
 				code;
@@ -32,6 +40,34 @@ User {
 		}
 	}
 
+	*new { | argId |
+		var new;
+		argId = (argId ? localId).asSymbol;
+		new = this.all[argId];
+		new ?? {
+			new = this.newCopyArgs(argId).init;
+			// at recompile Document.allDocuments is nil;
+			// could not find how to force initialization of that
+			// so I just defer !for the first time only!:
+			if (Document.allDocuments.size == 0) {
+				{ new.makeDocumentIfNeeded; }.defer(1);
+			}{
+				new.makeDocumentIfNeeded;
+			};
+			all[argId] = new;
+		};
+		^new;
+	}
+
+	init {
+		envir = Mediator(id);
+		envir[\user] = this;
+		envirs = ();
+		envirs[id] = envir;
+	}
+
+	*localEnvir { ^this.local.localEnvir }
+	localEnvir { ^envirs[id] }
 	*local { ^this.all[localId] }
 
 	*named { | argId |
@@ -91,29 +127,13 @@ User {
 
 	evaluatorIsLocal { ^this.class.evaluatorIsLocal }
 	*evaluatorIsLocal { ^currentEvaluator === localId; }
+	// user of the currentEnvironment in the local machine:
+	*currentUser { ^currentEnvironment[\user]; }
 
-	*use { | func, argId |
-		this.new(argId.asSymbol).use(func);
-	}
-
-	*new { | argId |
-		var new;
-		argId = (argId ? localId).asSymbol;
-		new = this.all[argId];
-		new ?? {
-			new = this.newCopyArgs(argId, argId.envir, ());
-			// at recompile Document.allDocuments is nil;
-			// could not find how to force initialization of that
-			// so I just defer !for the first time only!:
-			if (Document.allDocuments.size == 0) {
-				{ new.makeDocumentIfNeeded; }.defer(1);
-			}{
-				new.makeDocumentIfNeeded;
-			};
-			all[argId] = new;
-		};
-		^new;
-	}
+	// Evaluate code received via OscGroups inside the current
+	// environment of the user who sent it.
+	*use { | func, argId | this.new(argId.asSymbol).use(func); }
+	use { | func | envir use: func; }
 
 	makeDocumentIfNeeded {
 		var theDoc;
@@ -137,7 +157,6 @@ User {
 	*showDocument { this.local.showDocument }
 	showDocument { document.front }
 
-	use { | func | envir use: func; }
 
 	envir { | argId |
 		var result;
@@ -157,74 +176,54 @@ User {
 	*all { ^all ?? { all = () } }
 
 	// ========== push - pop ==========
-	// Operate on own envir
-	// Push envir in local environemnt, but without sending to
-	// OscGroups: Prevent setting the currentEnvironment of other user
+	// push / pop changes the envir of the user who sent it.
+	// If the user is local, then also set currentEnvironment to the
+	// result environment of the push or pop.
 	*push { | userName, envirName |
-		userName ?? { userName = this.localId };
+		userName ?? { userName = currentEvaluator };
 		^this.new(userName).push(envirName);
 	}
 
 	push { | envirName |
 		var theEnvir;
-		// should not push if this was received from remote user
-		currentEvaluator ?? { currentEvaluator = localId };
-		postln("checking push of local user" + localId + "vs. remote id"
-			+ currentEvaluator
-		);
+		theEnvir = this envir: envirName;
+		if (envir === theEnvir) {
+			postln("!!!! Envir" + theEnvir.name + "is already current. I will not push.");
+			^theEnvir;
+		};
+		envir = theEnvir;
 		if (this.evaluatorIsLocal) {
-			"Now doing locally requested push".postln;
-			envirName = envirName ? id;
-			theEnvir = this.envirs[envirName];
-			postln("Preparing to push" + theEnvir);
-			if (theEnvir.isNil) {
-				postln("Creating and storing new envir" + theEnvir);
-				theEnvir = this envir: envirName;
-				if (currentEnvironment === theEnvir) {
-					"Skipping push of currentEnvironment on itself".postln;
-				}{
-					postln("now pushing:" + theEnvir);
-					theEnvir.push;
-					stack push: theEnvir;
-				};
-				postln("I now pushed" + theEnvir);
-			}
-		}{
-			"not pushing because received remotely".postln;
+			stack push: theEnvir;
+			theEnvir.push;
+			postln("currentEnvironment is now" + currentEnvironment);
 		};
-		^theEnvir ? currentEnvironment;
+		^theEnvir;
 	}
 
-	*pop { | userName |
-		var theUser;
-		// "User:pop is not complete. results may be unexpected.".postln;
-		if (userName.notNil) {
-			theUser = userName.asSymbol;
-		}{
-			theUser = currentEnvironment[\user];
-		};
-		this.new(theUser).pop;
-	}
+	*pop { this.new(currentEvaluator).pop }
 
-	*currentUser {
-		^currentEnvironment[\user];
-	}
 	pop {
-		postln("popping from user" + this);
-		// "pop not implemented".postln;
-		if (this.evaluatorIsLocal) {
-			if (stack.isEmpty.not) {
-				postln("popping" + currentEnvironment);
-				currentEnvironment.pop;
-				// push next mediator from stack
-				stack.pop;
-				stack.top.push;
-			}{
-				postln("The stack is empty. Keeping currentEnvironment.")
-			}
+		var newEnvir;
+		if (stack.size == 1) { // always keep the bottom of the stack
+			newEnvir = stack.top;
+			postln("stack size 1. top stack is:" + newEnvir);
 		}{
-			postln("Refusing to pop for remote user:" + id);
-		}
+			stack.pop;
+			newEnvir = stack.top;
+			// postln("popped new stack is" + newEnvir);
+		};
+		// postln("envir:" + envir.name + "newEnvir" + newEnvir.name);
+		if (envir === newEnvir) {
+			"Avoided pop on the same environment".postln;
+			^envir;
+		};
+		envir = newEnvir;
+		postln("new envir for user" + id + "is" + envir.name);
+		if (this.evaluatorIsLocal) {
+			envir.push;
+			postln("popped to currentEnvironment:" + currentEnvironment);
+		};
+		^envir;
 	}
 
 	printOn { | stream |
