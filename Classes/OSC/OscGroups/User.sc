@@ -11,8 +11,8 @@ User {
 	classvar <sessionPath;
 	var <id; // this (possibly remote) user's id.
 	var envir; // currentEnvironment of this user
-	var envirs; // private envirs
-	var document;
+	var envirs; // user evaluates code only within one of these private envirs
+	var document, <file;
 	var <stack;
 	var <isActive = false;
 
@@ -24,9 +24,11 @@ User {
 	*doEnable { | argSessionName |
 		var currentEnvir;
 		localId = (this.readUserId ?? { this.makeDefaultId }).asSymbol;
+		argSessionName ?? { sessionName = argSessionName };
+		this.makeSessionFolder(argSessionName);
 		localUser = this.new(localId);
+		localUser.activate; // !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		this.all[localId] = localUser;
-		localUser.document; // make local user document aforehand
 		currentEvaluator = localId;
 		currentEnvir = localUser.envir;
 		localUser.stack push: currentEnvir;
@@ -39,7 +41,6 @@ User {
 		};
 		enabled = true;
 		OscGroups.enable;
-		this.makeSessionFolder(argSessionName ? sessionName);
 		"Enabled User class".postln;
 	}
 
@@ -52,9 +53,54 @@ User {
 	}
 
 	*makeSessionFolderPath { | argSessionName = "session" |
-		sessionName = argSessionName;
 		^Platform.userAppSupportDir +/+ "Sessions" +/+
-		(Date.localtime.stamp ++ sessionName);
+		(Date.localtime.stamp ++ argSessionName);
+	}
+
+	activate {
+		this.makeDocumentAndFile;
+		isActive = true;
+	}
+
+	makeDocumentAndFile { // make document and file for recording session code.
+		this.makeFile;     // ALWAYS make new file for recording user code
+		this.document; // create document for this user only if not already existent
+		// Both document and file record the same code.
+		// I use a file because I could not find how to save
+		// code from a ScelDocument (EMACS IDE) on sclang shutdown
+	}
+
+	makeFile {
+		if (file.notNil) { ^file };
+		^file = File(this.filePath, "w").write(this.documentHeader);
+	}
+
+	filePath { ^sessionPath +/+ id.asString ++ ".scd"; }
+
+	documentHeader {
+		^format("//Document for % created at %\n", id, Date.getDate.stamp);
+	}
+
+	document { ^document ?? { document = this.getDocument; }; }
+
+	getDocument {
+		var documents;
+		documents = Document.allDocuments;
+		document = documents detect: { | d | d.name.asSymbol === id };
+		document ?? {
+			postln("Making document for User" + id);
+			document = Document.new(id.asString);
+			document.string_(this.documentHeader);
+		};
+		^document;
+	}
+
+
+	*showDocument { | argId | this.new(argId ? localId).showDocument }
+	showDocument { this.document.front }
+
+	*initClass { // Close all session files on shutdown;
+		ShutDown add: { this.disable };
 	}
 
 	*disable {
@@ -65,37 +111,49 @@ User {
 	*doDisable {
 		thisProcess.interpreter.preProcessor = nil;
 		Environment().push;
-		enabled = true;
+		enabled = false;
 		OscGroups.disable;
 		this.saveSession;
 		"Disabled User class".postln;
 	}
 
-
 	*saveSession { // save all user documents into session folder
-		sessionPath.postln;
-		postln("I will save all user documents to folder:", sessionPath.fileName);
-		this.all do: _.saveDocument;
+		if (sessionPath.isNil) {
+			"No session has been created. Returning without saving.".postln;
+			^"Run User.enable to create a session".postln;
+		};
+		postln("I will save all user documents to folder:" + sessionPath.fileName);
+		this.all do: _.saveSessionFile;
 	}
 
-	saveDocument {
-		var theDocument;
-
+	saveSessionFile {
+		file !? {
+			postln("Saving session file for" + id);
+			file.close;
+		}
 	}
 
-	saveAndCloseDocument {
+	saveDocumentBuggy {
 		var foundDoc;
 		foundDoc = this.findDocument;
 		foundDoc ?? { ^nil }; // No document to save. Exit silently
+		postln("Saving" + id + "on:\n" ++ this.documentPath);
 		File.use(this.documentPath, "w", { | f |
-			f.write(foundDoc.text);
+			f.write(foundDoc.currentString);
+			// f.write(foundDoc.text);
 		});
 		postln("Saved document for User:" + this);
 	}
 
+	documentText {
+		var foundDoc;
+		foundDoc = this.findDocument;
+		foundDoc ?? { ^nil }; // No document to save. Exit silently
+		foundDoc.text.postln;
+	}
 
-	documentPath {
-
+	saveAndCloseDocument {
+		this.saveDocument;
 	}
 
 	findDocument { // find document if it exists in user or in IDE
@@ -104,16 +162,19 @@ User {
 		^Document.allDocuments detect: { | d | d.name.asSymbol === id };
 	}
 
-
-
 	*activate { | ... argUsers |
 		if (argUsers.size == 0) { argUsers = this.allUserKeys; };
-		argUsers do: _.activate;
+		argUsers do: { | u | this.new(u).activate };
 	}
 
 	*deactivate { | ... argUsers |
 		if (argUsers.size == 0) { argUsers = this.allUserKeys; };
-		argUsers do: _.deactivate;
+		argUsers do: { | u | this.new(u).deActivate };
+	}
+
+	deActivate {
+
+		isActive = false;
 	}
 
 	*activeUsers {
@@ -217,14 +278,13 @@ User {
 	}
 
 	code2doc { | code |
-		// postln("This is code2doc. Will get document for" + id);
-		this.document.string_(
-			format(
-				"//:[%] % % %\n%\n",
-				Main.elapsedTime, id, envir.name, Date.localtime.stamp, code
-			),
-			1, 10000
+		var codeEntry;
+		codeEntry = format(
+			"//:[%] % % %\n%\n",
+			Main.elapsedTime, id, envir.name, Date.localtime.stamp, code
 		);
+		this.document.string_(codeEntry, 1, 1000000);
+		file.write(codeEntry)
 	}
 
 	evaluatorIsLocal { ^this.class.evaluatorIsLocal }
@@ -236,25 +296,6 @@ User {
 	// environment of the user who sent it.
 	*use { | func, argId | this.new(argId.asSymbol).use(func); }
 	use { | func | envir use: func; }
-
-	document { ^document ?? { document = this.getDocument; }; }
-
-	getDocument {
-		var documents;
-		documents = Document.allDocuments;
-		document = documents detect: { | d | d.name.asSymbol === id };
-		document ?? {
-			postln("Making document for User" + id);
-			document = Document.new(id.asString);
-			document.string_(
-				format("//Document for % created at %\n", id, Date.getDate.stamp);
-			)
-		};
-		^document;
-	}
-
-	*showDocument { | argId | this.new(argId ? localId).showDocument }
-	showDocument { this.document.front }
 
 	envir { | argId |
 		var result;
@@ -279,30 +320,76 @@ User {
 	// result environment of the push or pop.
 	*push { | userName, envirName |
 		userName ?? { userName = currentEvaluator };
-		^this.new(userName).push(envirName);
+		// activate when pushing to track further changes in this user.
+		^this.new(userName).activate.push(envirName);
 	}
 
+	/*
+TODO:
+		when push is done in response to code from remote user,
+		then currentEnvironment SHOULD NOT BE SET.
+		This is because the local user wants to continue in their own
+		currentEnvironment.
+
+		When push is done in response to code from local user,
+		then currentEnvironment SHOULD !!!!!!!!!!! BE SET!!!!!!
+		This is because for the local user, push means changing
+		currentEnvironment.
+
+IMPORTANT:
+		Local code evaluation (Interpreter.interpret) is always
+		in currentEnvironment, according to native SCLang definition of
+		Interpreter.
+
+		Remote code evaluation should happen ... ???
+
+TODO: Check that the present User code actually works as described above!
+
+	*/
 	push { | envirName |
-		var theEnvir;
-		theEnvir = this envir: envirName;
-		if (envir === theEnvir) {
-			postln("!!!! Envir" + theEnvir.name + "is already current. I will not push.");
-			^theEnvir;
+		if (this.evaluatorIsLocal) { // old code!!! - check it above.
+			^this.pushLocal(this envir: envirName);
+		}{
+			^this.pushRemote(this envir: envirName);
 		};
-		envir = theEnvir;
-		if (this.evaluatorIsLocal) {
-			stack push: theEnvir;
-			theEnvir.push;
-			postln("currentEnvironment is now" + currentEnvironment);
+
+	}
+
+	pushLocal { | argEnvir |
+		if (currentEnvironment === argEnvir) {
+			postln("environment" + argEnvir.name + "is already current.");
+			"Will not push.".postln;
+		}{
+			argEnvir.push; // makes this currentEnvironment;
+			stack push: argEnvir;
 		};
-		^theEnvir;
+		envir = argEnvir; // do this in any case!
+		^envir;
+	}
+
+	pushRemote { | argEnvir | // do not touch currentEnvironment
+		if (envir === argEnvir) {
+			postln("envir" + argEnvir.name + "of" + this + "is already current.");
+			"Will not push.".postln;
+		}{
+			stack push: argEnvir;
+			envir = argEnvir;
+		}
+		^envir;
 	}
 
 	*pop { | argId |
 		^this.new(argId ? currentEvaluator).pop
 	}
 
+	// TODO: Like with push: only local-evaluations change
+	// currentEnvironment. remote evaluations only change users's envir.
 	pop {
+
+
+	}
+
+	popLocal { | argEnvir |
 		var newEnvir;
 		if (stack.size == 1) { // always keep the bottom of the stack
 			newEnvir = stack.top;
@@ -324,6 +411,10 @@ User {
 			postln("popped to currentEnvironment:" + currentEnvironment);
 		};
 		^envir;
+	}
+
+	popRemote { | argEnvir |
+
 	}
 
 	printOn { | stream |
