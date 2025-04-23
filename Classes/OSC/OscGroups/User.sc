@@ -16,13 +16,30 @@ User {
 	var <stack;
 	var <isActive = false;
 
-	*enable { | argSessionName = "session" |
-		if (enabled) { ^"User class is already enabled.".postln; };
+
+	*enable { | argSessionName = "session", waitTime ... users |
+		// if waitTime is given, defer the enabling by wait seconds (default: 3).
+		// Use this to enable User from a startup script.
+		// This ensures that startup scripts loaded locally will not be
+		// forwarded to other users.
+		// if users are given, then activate them.
+		if (enabled) { "User class is already enabled.".postln; ^this; };
+		postln("Enabling User session" + argSessionName + "with users" + users);
+		waitTime !? {
+			postln("Deferring User enable by" + waitTime + "seconds");
+			{
+				this.doEnable(argSessionName);
+				this.activate(*users);
+			} defer: waitTime;
+			^this;
+		};
 		this.doEnable(argSessionName);
+		this.activate(*users);
 	}
 
 	*doEnable { | argSessionName |
 		var currentEnvir;
+		postln("\n===== Enabling User session" + argSessionName + "=====\n");
 		localId = (this.readUserId ?? { this.makeDefaultId }).asSymbol;
 		argSessionName ?? { sessionName = argSessionName };
 		this.makeSessionFolder(argSessionName);
@@ -41,7 +58,8 @@ User {
 		};
 		enabled = true;
 		OscGroups.enable;
-		"Enabled User class".postln;
+		postln("Enabled User class for session" + argSessionName);
+		postln("Session folder is:" + sessionPath);
 	}
 
 	*makeSessionFolder { | argSessionName |
@@ -55,6 +73,11 @@ User {
 	*makeSessionFolderPath { | argSessionName = "session" |
 		^Platform.userAppSupportDir +/+ "Sessions" +/+
 		(Date.localtime.stamp ++ argSessionName);
+	}
+
+	*activate { | ... argUsers |
+		if (argUsers.size == 0) { argUsers = this.allUserKeys; };
+		argUsers do: { | u | this.new(u).activate };
 	}
 
 	activate {
@@ -87,10 +110,12 @@ User {
 		var documents;
 		documents = Document.allDocuments;
 		document = documents detect: { | d | d.name.asSymbol === id };
-		document ?? {
+		if (document.isNil) {
 			postln("Making document for User" + id);
 			document = Document.new(id.asString);
 			document.string_(this.documentHeader);
+		}{
+			postln("Returning existing user document" + id);
 		};
 		^document;
 	}
@@ -162,11 +187,6 @@ User {
 		^Document.allDocuments detect: { | d | d.name.asSymbol === id };
 	}
 
-	*activate { | ... argUsers |
-		if (argUsers.size == 0) { argUsers = this.allUserKeys; };
-		argUsers do: { | u | this.new(u).activate };
-	}
-
 	*deactivate { | ... argUsers |
 		if (argUsers.size == 0) { argUsers = this.allUserKeys; };
 		argUsers do: { | u | this.new(u).deActivate };
@@ -203,7 +223,7 @@ User {
 			all[argId] = new;
 			postln("Created new User:" + new);
 		}{
-			postln("Returning already existing User:" + new);
+			// postln("Returning already existing User:" + new);
 		};
 		^new;
 	}
@@ -272,7 +292,7 @@ User {
 	}
 
 	interpret { | code |
-		postf("========= user % runs: ========= \n\(\n\%\n\)\n", id, code);
+		postf("========= user % at envir % runs: ========= \n\(\n\%\n\)\n", id, envir.name, code);
 		this.code2doc(code);
 		envir use: { code.interpret.postln; };
 	}
@@ -298,15 +318,30 @@ User {
 	use { | func | envir use: func; }
 
 	envir { | argId |
+		// Return envir named argId from this users' envirs
+		// If argId is nil, return the current envir (or the default envir!)
+		// Do NOT set envir! (Other methods do that.)
 		var result;
-		// postln("envir on" + this + "with arg" + argId);
-		argId = argId ? id;
+		argId ?? { ^this.currentEnvir; };
 		result = this.envirs[argId];
 		result ?? {
 			result = Mediator(argId);
+			result[\user] = this;
 			envirs[argId] = result;
 		};
-		result[\user] = this;
+		^result;
+	}
+
+	currentEnvir { ^envir ?? { envir = this.defaultEnvir }; }
+
+	defaultEnvir {
+		var result;
+		result = this.envirs[id];
+		result ?? {
+			result = Mediator(id);
+			result[\user] = this;
+			envirs[id] = result;
+		};
 		^result;
 	}
 
@@ -324,8 +359,7 @@ User {
 		^this.new(userName).activate.push(envirName);
 	}
 
-	/*
-TODO:
+	/*  IMPORTANT:
 		when push is done in response to code from remote user,
 		then currentEnvironment SHOULD NOT BE SET.
 		This is because the local user wants to continue in their own
@@ -336,7 +370,7 @@ TODO:
 		This is because for the local user, push means changing
 		currentEnvironment.
 
-IMPORTANT:
+		IMPORTANT:
 		Local code evaluation (Interpreter.interpret) is always
 		in currentEnvironment, according to native SCLang definition of
 		Interpreter.
@@ -346,6 +380,7 @@ IMPORTANT:
 TODO: Check that the present User code actually works as described above!
 
 	*/
+	postEnvir { postln("envir of" + id + "is" + envir.name ); }
 	push { | envirName |
 		if (this.evaluatorIsLocal) { // old code!!! - check it above.
 			^this.pushLocal(this envir: envirName);
@@ -368,53 +403,55 @@ TODO: Check that the present User code actually works as described above!
 	}
 
 	pushRemote { | argEnvir | // do not touch currentEnvironment
+		postln("User: <" ++ id ++ "> runs pushRemote: <" ++ argEnvir.name ++ ">");
+		postln("User: <" ++ id ++ "> envir is <" ++ envir.name ++ "> and new envir is <" ++ argEnvir.name ++ ">");
+		// postln("The two envirs are equal?" + (argEnvir === envir));
+		if (argEnvir === envir) {
+			"The envirs are equal. I will not push".postln;
+		}{
+			"The envirs are different. I will push".postln;
+		};
+
 		if (envir === argEnvir) {
 			postln("envir" + argEnvir.name + "of" + this + "is already current.");
 			"Will not push.".postln;
 		}{
+			postln("pushing envir <" ++ argEnvir.name ++ "> for user <" ++ id ++ ">");
 			stack push: argEnvir;
+			postln("I am now setting envir to the new argEnvir:" + argEnvir.name);
 			envir = argEnvir;
-		}
+			postln("argEnvir received was" + argEnvir.name + "and after pushing the envir is" + envir.name);
+		};
 		^envir;
 	}
 
-	*pop { | argId |
-		^this.new(argId ? currentEvaluator).pop
+	*pop { | argUserId | // pop environment from any User, or currentEvaluator
+		^this.new(argUserId ? currentEvaluator).pop
 	}
 
-	// TODO: Like with push: only local-evaluations change
-	// currentEnvironment. remote evaluations only change users's envir.
+	// Like with push: Local-evaluations DO change currentEnvironment.
+	// Remote evaluations DO NOT change currentEnvironment.
 	pop {
-
-
-	}
-
-	popLocal { | argEnvir |
-		var newEnvir;
-		if (stack.size == 1) { // always keep the bottom of the stack
-			newEnvir = stack.top;
-			postln("stack size 1. top stack is:" + newEnvir);
+		if (this.evaluatorIsLocal) { // old code!!! - check it above.
+			^this.popLocal;
 		}{
-			stack.pop;
-			newEnvir = stack.top;
-			// postln("popped new stack is" + newEnvir);
+			^this.popRemote;
 		};
-		// postln("envir:" + envir.name + "newEnvir" + newEnvir.name);
-		if (envir === newEnvir) {
-			"Avoided pop on the same environment".postln;
-			^envir;
-		};
-		envir = newEnvir;
-		postln("new envir for user" + id + "is" + envir.name);
-		if (this.evaluatorIsLocal) {
-			envir.push;
-			postln("popped to currentEnvironment:" + currentEnvironment);
-		};
-		^envir;
 	}
 
-	popRemote { | argEnvir |
+	popLocal { // pop remote + set currenEnvironment to new envir.
+		this.popRemote.push; // push popped user envir to local currentEnvironment
+	}
 
+	popRemote {
+		// always keep the bottom of the stack
+		if (stack.size == 1) {  // do not pop. return top of stack
+			postln("Stack size 1. Pop does nothing and returns stack top:" + stack.top.name);
+		}{ // pop and return pop of stack.
+			stack.pop;
+			postln("Popped. New top of stack is" + stack.top.name);
+		};
+		^envir = stack.top;
 	}
 
 	printOn { | stream |

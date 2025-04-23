@@ -19,3 +19,6 @@ d = Document.allDocuments.detect({ | d | d.name.asSymbol === \iani }) ?? { Docum
 d.string;
 d.close;
 d.promptToSave
+Platform.ideName;
+//
+d = Document.allDocuments.detect({ | d | d.name.asSymbol === \auco }) ?? { Document("iani") };

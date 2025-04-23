@@ -29,7 +29,7 @@ OscGroups {
 
 	*forward { | code, userId |
 		if (enabled) {
-			postln("Osc forwards code from user" + userId);
+			postln("     ----- Osc forwards code from user" + userId + "-----");
 			sendAddress.sendMsg(codeMessage, code, userId);
 		};
 	}
