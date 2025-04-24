@@ -1,6 +1,5 @@
 // Old prFlat - for porting
 + String {
-
 	flat {
 		if (FlattenString.mode) {
 			^this.prDoFlatten

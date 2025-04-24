@@ -2,7 +2,7 @@
 // Customize the behavior of String:prFlat
 
 FlattenString {
-	classvar <mode = false;
+	classvar <>mode = false;
 
 	*yes {  mode = true }
 	*no { mode = false }

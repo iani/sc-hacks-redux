@@ -2,10 +2,11 @@
 //: Per default, ...
 /*
 
-Ο νοών νοείτω …..
+Ο νοών νοείτω …
+
 分かる者は分かれ...
 
-If you want the method =flat= to behave like in classic SC Class library, in other words to flatten strings into character arrays like this:
+If you want the method =flat= to behave like in classic SC Class Library, in other words to flatten strings into character arrays like this:
 
 =["abc", "def"].flat=
 
@@ -20,7 +21,6 @@ and (example 2)
 makes:
 
 =[ $a, $b, $c, $d, $e, $f, $x, $y, $z, 123 ]=
-
 
 then you should put this in your startup.scd file:
 
@@ -40,13 +40,22 @@ and (example 2)
 
 makes:
 
-[ "abc", "def", "xyz", 123 ]
+=[ "abc", "def", "xyz", 123 ]=
 
-Ο νοών νοείτω …..
+Ο νοών νοείτω …
+
 分かる者は分かれ...
 
 */
 //: EXAMPLES:
+
+// The strings will flatten to chraracters if FlattenString.yes has been called:
+["asdfasdf", "drexit", ["blergeh", "quindriah"], ["more", "stuff"]].flat;
+// To avoid flattening strings to chraracters independently of FlattenString state,
+// use method flatWholeStrings (on Arrays):
+["asdfasdf", "drexit", ["blergeh", "quindriah"], ["more", "stuff"]].flatWholeStrings;
+
+//:
 FlattenString.mode; // per default: false.  Meaning DO NOT FLATTEN STRINGS
 //:
 FlattenString.no;

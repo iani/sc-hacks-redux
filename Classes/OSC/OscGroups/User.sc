@@ -109,7 +109,8 @@ User {
 	getDocument {
 		var documents;
 		documents = Document.allDocuments;
-		document = documents detect: { | d | d.name.asSymbol === id };
+		// document = documents detect: { | d | d.name.asSymbol === id };
+		document = documents detect: { | d | d.title.asSymbol === id };
 		if (document.isNil) {
 			postln("Making document for User" + id);
 			document = Document.new(id.asString);

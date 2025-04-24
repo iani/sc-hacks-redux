@@ -8,4 +8,13 @@
 		};
 		^array;
 	}
+
+	flatWholeStrings {
+		var mode, result;
+		mode = FlattenString.mode;
+		FlattenString.no;
+		result = this.flat;
+		if (FlattenString.mode){FlattenString.yes;}{ FlattenString.no };
+		^result;
+	}
 }
