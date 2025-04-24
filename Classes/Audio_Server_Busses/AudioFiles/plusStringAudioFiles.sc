@@ -6,6 +6,7 @@
 		if (types.size == 0) {
 			types = ["aiff", "aif", "wav", "WAV"];
 		};
-		^types.collect({ | type | (this +/+ format("*.%", type)).pathMatch }).prDoNotFlatten;
+		^types.collect({ | type | (this +/+ format("*.%", type)).pathMatch })
+		.flatWholeStrings;
 	}
 }
