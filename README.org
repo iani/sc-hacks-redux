@@ -1,5 +1,46 @@
 #+TITLE: Sc-Hacks-redux
 
+Ο νοών νοείτω …..
+
+If you want the method =flat= to behave like in classic SC Class library, in other words to flatten strings into character arrays like this:
+
+=["abc", "def"].flat=
+
+makes:
+
+=[ $a, $b, $c, $d, $e, $f ]=
+
+and (example 2)
+
+=["abc", "def", ["xyz", 123]].flat=
+
+makes:
+
+ [ $a, $b, $c, $d, $e, $f, $x, $y, $z, 123 ]
+
+
+then you should put this in your startup.scd file:
+
+FlattenString.yes;
+
+Otherwise, per default this library will *not* flatten strings into characters. In other words:
+
+=["abc", "def"].flat=
+
+makes:
+
+=[ "abc", "def" ]=
+
+and (example 2)
+
+=["abc", "def", ["xyz", 123]].flat=
+
+makes:
+
+[ "abc", "def", "xyz", 123 ]
+
+Ο νοών νοείτω …..
+
 * About
 This library provides utilities for live coding in SuperCollider, including a way to share code over the network using OscGroups by Ross Bencina.
 

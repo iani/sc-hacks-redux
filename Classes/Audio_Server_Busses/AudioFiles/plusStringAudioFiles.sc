@@ -2,10 +2,6 @@
 
 */
 + String {
-	prFlat { | list |
-		^list add: this
-	}
-
 	audioFiles { | ... types |
 		if (types.size == 0) {
 			types = ["aiff", "aif", "wav", "WAV"];
