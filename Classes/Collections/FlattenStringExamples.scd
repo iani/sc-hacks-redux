@@ -3,6 +3,7 @@
 /*
 
 Ο νοών νοείτω …..
+分かる者は分かれ...
 
 If you want the method =flat= to behave like in classic SC Class library, in other words to flatten strings into character arrays like this:
 
@@ -18,12 +19,12 @@ and (example 2)
 
 makes:
 
- [ $a, $b, $c, $d, $e, $f, $x, $y, $z, 123 ]
+=[ $a, $b, $c, $d, $e, $f, $x, $y, $z, 123 ]=
 
 
 then you should put this in your startup.scd file:
 
-FlattenString.yes;
+=FlattenString.yes;=
 
 Otherwise, per default this library will *not* flatten strings into characters. In other words:
 
@@ -42,6 +43,7 @@ makes:
 [ "abc", "def", "xyz", 123 ]
 
 Ο νοών νοείτω …..
+分かる者は分かれ...
 
 */
 //: EXAMPLES:
