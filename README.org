@@ -21,10 +21,9 @@ makes:
 
  =[ $a, $b, $c, $d, $e, $f, $x, $y, $z, 123 ]=
 
-
 then you should put this in your startup.scd file:
 
-FlattenString.yes;
+=FlattenString.yes;=
 
 Otherwise, per default this library will *not* flatten strings into characters. In other words:
 
@@ -41,6 +40,10 @@ and (example 2)
 makes:
 
 =[ "abc", "def", "xyz", 123 ]=
+
+You can switch flattening of strings behavior off by running:
+
+=FlattenString.no=
 
 ------
 
