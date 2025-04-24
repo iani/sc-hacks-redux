@@ -42,6 +42,12 @@ makes:
 
 =[ "abc", "def", "xyz", 123 ]=
 
+------
+
+To avoid flattening strings to chraracters independently of FlattenString state use method flatWholeStrings (on Arrays):
+
+=["abc", "def", ["gh", "ij"], ["kl", "mn"]].flatWholeStrings;=
+
 Ο νοών νοείτω …
 
 分かる者は分かれ...
