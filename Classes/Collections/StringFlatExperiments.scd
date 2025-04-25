@@ -2,3 +2,5 @@
 // Customize the behavior of String:prFlat
 
 ["abc", "def"].flat;
+//:
+["abc", "def"].strFlat;

@@ -1,9 +1,48 @@
 #+TITLE: Sc-Hacks-redux
 
+* Setup Instructions for Networked Live Coding sessions via OscGroups:
+
+1. Get your user name on the computer that you are going to use for the jamming session.  This is usually the name of your home folder.
+2. Add or substitute (change) your user name to the list of users in the following statement, after the number =5=:
+
+#+begin_src sclang
+User.enable("the_sun_rising", 5, \iani, \geodia, \vasilis, \cosma, \peny);
+#+end_src
+
+The above starts a session named "the_sun_rising", 5 seconds after system startup or language recompile, and adds (and activates) the users named =\iani, \geodia, \vasilis, \cosma, \peny=.  It creates a document for each user which stores the statements evaluated by each user locally or remoterly. It also opens a =<user>.scd= file for each user in the folder =/Sessions/<timestamp>sessionname/= under the User Application Support Folder of SuperCollider.
+
 * Caveat emptor
 Ο νοών νοείτω …
 
 分かる者は分かれ...
+
+This library changes the prFlat method of String so as to prevent taking strings apart into single characters, when calling =flat= on arrays that contain strings.  In other words:
+
+=["abc", "def"].flat=
+
+returns:
+
+=["abc", "def"]=
+
+instead of:
+
+=[ $a, $b, $c, $d, $e, $f ]=
+
+To change this to the default behavior of flat (return characters instead of strings) evaluate the following statement:
+
+=FlattenString.yes;=
+
+To change back to returning strings instead of characters, evaluate the following statement:
+
+=FlattenString.no;=
+
+*The default is =FlattenString.no=*
+
+The following methos for array specify flattening / non-flattening explicitly, independently from the current setting of =FlattenString=:
+
+There are extra methods for Array to
+
+** Details and example
 
 If you want the method =flat= to behave like in classic SC Class Library, in other words to flatten strings into character arrays like this:
 
