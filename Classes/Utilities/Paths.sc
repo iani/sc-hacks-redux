@@ -25,11 +25,12 @@ Paths {
 			path = File.readAllString(pathLocation);
 			this.doAction(action, path)
 		}{
-			this.getPathFromUser(pathLocation, action);
+			this.getPathFromUser(pathLocation, action, argKey);
 		}
 	}
 
-	*getPathFromUser { | pathLocation, action |
+	*getPathFromUser { | pathLocation, action, argKey |
+		postln("Please select a path from the FileDialog for" + argKey);
 		FileDialog({ | p |
 			p = p.first;
 			this.savePathAndDo(p, pathLocation, action);

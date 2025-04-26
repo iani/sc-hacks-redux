@@ -1,0 +1,5 @@
+#+title: Readme
+
+A SuperCollider project that analyzes movement data from wearable sensors worn by dancers. The system evaluates movement gestures in terms of human expression, character, and personality traits.
+
+This library was incorporated from a folder found in the home directory of the author of sc-hacks-redux on April 25, 2025 at 5:59am.  The folder has no reference to any authors nore could the original library foun through an online search.  The library is incorporated into sc-hacks-redux, and interfaces are made to read data from OscData format.

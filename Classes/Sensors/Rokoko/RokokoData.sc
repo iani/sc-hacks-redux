@@ -5,6 +5,8 @@
 RokokoData : Singleton {
 	var <name; // name of Rokoko instance
 	var <oscdata; // oscdata instance
+	var times; // times from oscdata
+	var dtimes; // dt from times
 	var controlValues; // all control values as nested numerical array
 	var <routine; // playback routine
 	*atDate { | postfix = \rokoko, date |
@@ -13,14 +15,17 @@ RokokoData : Singleton {
 	}
 
 	init {
+		// {  "INITING".postln } ! 10;
 		Paths.doGetPath({ | p, paths |
+			postln("p" + p);
+			postln("paths" + p.entriesMatchingExtension);
 			oscdata = OscData(paths);
 		}, name)
 	}
 
 	gui { oscdata.gui; }
 	data { ^oscdata.parsedEntries }
-	times { ^this.data.flop.first }
+	times { ^times ?? { this.data.flop.first } }
 	entries { ^this.data.flop[1] }
 	controlValues {
 		^controlValues ?? {

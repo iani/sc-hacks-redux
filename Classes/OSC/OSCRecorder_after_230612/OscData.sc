@@ -33,6 +33,16 @@ OscData {
 	comments { ^header ? "" } // unused
 	comments_ { | s | header = s } // unused
 
+	*loadPaths { | key = \oscdata |
+		Paths.doGetPath({ | p, paths |
+			var new;
+			paths do: _.postln;
+			new = this.new(paths);
+			new.postln;
+			new gui: key;
+		}, key)
+	}
+
 	*fromPathDialog {
 		{ | p |
 			this.fromPath(p.first).gui
@@ -90,7 +100,7 @@ OscData {
 		this.readSource;
 		this.makeMessages;
 		localAddr = NetAddr.localAddr;
-		OscGroups.enable(verbose: false);
+		OscGroups.enable;
 		sendAddr = OscGroups.sendAddress;
 		// remake player stream when selection changes:
 		this.addNotifier(this, \selection, {

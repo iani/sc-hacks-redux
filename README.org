@@ -2,6 +2,7 @@
 
 * Setup Instructions for Networked Live Coding sessions via OscGroups:
 
+** Starting a session and setting up users
 1. Get your user name on the computer that you are going to use for the jamming session.  This is usually the name of your home folder.
 2. Add or substitute (change) your user name to the list of users in the following statement, after the number =5=:
 
@@ -10,6 +11,21 @@ User.enable("the_sun_rising", 5, \iani, \geodia, \vasilis, \cosma, \peny);
 #+end_src
 
 The above starts a session named "the_sun_rising", 5 seconds after system startup or language recompile, and adds (and activates) the users named =\iani, \geodia, \vasilis, \cosma, \peny=.  It creates a document for each user which stores the statements evaluated by each user locally or remoterly. It also opens a =<user>.scd= file for each user in the folder =/Sessions/<timestamp>sessionname/= under the User Application Support Folder of SuperCollider.
+
+** Pushing and popping Environments.
+
+In this version, every user works on their own environment.  For example, tf you store a value in an environment variable =~x=, this will be available in your currentEnvironment, but the currentEnvironments of the remote users remain unaffected.  If you want to switch currentEnvironment by pushing and popping you should use =\enivname.push= (for push) and =User.pop= or =nil.pop= (for pop). Exeamples:
+
+#+begin_src sclang
+currentEnvironment; // initially your default home environment
+~homeVar = "my home" // store something in your home environment
+\x.push; // push a new environment.
+~homeVar; // homeVar is nil in the new environment.
+nil.pop; // pop new environment and return to home environment
+~homeVar; // homeVar has the value stored previously.
+#+end_src
+
+To verify how this works, try storing values in different environment variables in different environments and moving between them with push and pop.
 
 * Caveat emptor
 Ο νοών νοείτω …

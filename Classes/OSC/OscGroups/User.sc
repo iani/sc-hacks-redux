@@ -421,7 +421,8 @@ TODO: Check that the present User code actually works as described above!
 			stack push: argEnvir;
 			postln("I am now setting envir to the new argEnvir:" + argEnvir.name);
 			envir = argEnvir;
-			postln("argEnvir received was" + argEnvir.name + "and after pushing the envir is" + envir.name);
+			postln("argEnvir received was" + argEnvir.name +
+				"and after pushing the envir is" + envir.name);
 		};
 		^envir;
 	}

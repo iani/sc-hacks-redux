@@ -58,7 +58,7 @@
 	entriesMatchingWAV { ^this entriesMatchingExtension: "WAV" }
 
 	entriesMatchingExtension { | extension = "scd" |
-		^(this +/+ "*." ++ extension).pathMatch;
+		^(this.pathOnly +/+ "*." ++ extension).pathMatch;
 	}
 
     // folders { ^PathName(this).folders }

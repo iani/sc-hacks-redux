@@ -73,7 +73,7 @@ ScriptPaths : Paths {
 	}
 
 	*startupFolder {
-		^Platform.userConfigDir +/+ startupFolder
+		^Platform.userConfigDir +/+ startupFolder +/+ "";
 	}
 
 	*setScriptFolder {
