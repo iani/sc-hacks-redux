@@ -42,6 +42,7 @@ DataParser {
 	}
 
 	// Normalize data to 0-1 range
+	// 月 28  4 2025 13:51
 	// IZ Rewriting this because original was broken (see below)
 	*normalizeData { |data|
 		var times, values, numColumns;

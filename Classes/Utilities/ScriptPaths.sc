@@ -8,7 +8,7 @@ ScriptPaths : Paths {
 	*initClass {
 		StartUp add: {
 			this.init;
-			this.startupFolder.postln;
+			// this.startupFolder.postln;
 		};
 	}
 
@@ -50,10 +50,23 @@ ScriptPaths : Paths {
 	// Utilities
 	*runStartupFiles {
 		this.startupFolder.entriesMatchingScd do: { | p |
-			postln(">>>>>>>>>> ScriptPaths loading startup file:" + p.fileName + ">>>>>>>>>>");
-			p.load;
-			postln("<<<<<<<<<< ScriptPaths loaded startup file:" + p.fileName + "<<<<<<<<<<");
+			var fn, dt;
+			postln("!>>>>>>>>>> ScriptPaths checking startup file:" + p.fileName + ">>>>>>>>>>");
+			#dt, fn = p.fileNameWithoutExtension.split($.);
+			if (fn.isNil) {
+				this doLoad: p;
+			}{
+				postln("---- Deferring load by" + dt + "seconds");
+				{ this doLoad: p } defer: dt.interpret;
+			};
+			postln("!<<<<<<<<<< ScriptPaths checked startup file:" + p.fileName + "<<<<<<<<<<");
 		}
+	}
+
+	*doLoad { | argPath |
+		postln(">>>>>>>>>> ScriptPaths loading startup file:" + argPath.fileName + ">>>>>>>>>>");
+		argPath.load;
+		postln("<<<<<<<<<< ScriptPaths loaded startup file:" + argPath.fileName + "<<<<<<<<<<");
 	}
 
 	*addStartupFileAtDate { | string, date |

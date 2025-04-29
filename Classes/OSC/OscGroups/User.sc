@@ -1,6 +1,22 @@
 // 土 19  4 2025 02:30
 // Enable private Environments for multiple users on OscGroups
+// Fix again. 日 27  4 2025 12:34:
+// Things to fix:
+// 1. Create and use the users prescribed by arguments to enable, and
+// find localId from system user name and DO NOT create a timestamped user
+// 2. Files for users should be created and written.  Correct error:
+// nil - file not found / cannot open file
+// 3. Evaluations from remote user should not run inside the currentEnvironment
+// of the local user.  Instead, they should strictly run inside the
+// environment of the remote user that sent the remote code.
 
+// ======= Important modification 日 27  4 2025 12:36 =======
+// User no longer uses OscGroups class to send/receive/run code messages
+// Instead, all OSC code sending/receiving/evaluation is handled by the
+// User class itself.
+// User uses a different message for sending/receiving/evaluating code,
+// so that it will be entirely seprate from the mechanism of OscGroups.
+// OscGroups remains in its original version.
 User {
 	classvar all;
 	classvar <localId; // local id
@@ -9,13 +25,15 @@ User {
 	classvar <enabled = false;
 	classvar <sessionName;
 	classvar <sessionPath;
+	classvar <oscSendPort = 22244, <oscRecvPort = 22245;
+	classvar <sendAddress;
+	classvar <codeMessage = '/c';
 	var <id; // this (possibly remote) user's id.
 	var envir; // currentEnvironment of this user
 	var envirs; // user evaluates code only within one of these private envirs
 	var document, <file;
 	var <stack;
 	var <isActive = false;
-
 
 	*enable { | argSessionName = "session", waitTime ... users |
 		// if waitTime is given, defer the enabling by wait seconds (default: 3).
@@ -47,19 +65,46 @@ User {
 		localUser.activate; // !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		this.all[localId] = localUser;
 		currentEvaluator = localId;
-		currentEnvir = localUser.envir;
+		// currentEnvir = localUser.envir;
 		localUser.stack push: currentEnvir;
 		currentEnvir.push;
 		this.push(localId, localId);
+		enabled = true;
+		// OscGroups.enable;
+		this.oscSendPort = oscSendPort; // create sendAddress
+		this.oscRecvPort = 22245;
 		thisProcess.interpreter.preProcessor = { | code |
 			localUser.code2doc(code);
-			this.forward(code, localId);
+			// this.forward(code, localId);
+			// OscGroups.sendAddress.sendMsg(codeMessage, code, localId);
+			this.sendCode(code);
 			code;
 		};
-		enabled = true;
-		OscGroups.enable;
+		OSC.add(codeMessage, { | n, msg |
+			User.run(msg[1].asString, msg[2]);
+		});
 		postln("Enabled User class for session" + argSessionName);
 		postln("Session folder is:" + sessionPath);
+	}
+
+	*sendCode { | argCode |
+		sendAddress.sendMsg(codeMessage, argCode, localId);
+	}
+
+	*oscSendPort_ { | argPort = 22244 |
+		oscSendPort = argPort;
+		sendAddress = NetAddr("127.0.0.1", oscSendPort);
+	}
+
+	*oscRecvPort_ { | argPort = 22245 |
+		var didOpen = false;
+		oscRecvPort = argPort;
+		didOpen = thisProcess openUDPPort: oscRecvPort;
+		if (didOpen) {
+			postln("User successfully opened port" + argPort + "for listening");
+		}{
+			postln("User COULD NOT open port" + argPort + "for listening");
+		}
 	}
 
 	*makeSessionFolder { | argSessionName |
@@ -94,8 +139,17 @@ User {
 	}
 
 	makeFile {
+		var thePath;
 		if (file.notNil) { ^file };
-		^file = File(this.filePath, "w").write(this.documentHeader);
+		thePath = this.filePath;
+		postln("User" + id + "Made path" + thePath);
+		postln("Filename is" + thePath.fileName);
+		postln("The folder is" + thePath.pathOnly);
+
+		// ^file = File.use(this.filePath, "w", { | f | f.write(this.documentHeader); });
+		file = File(thePath, "w");
+		file.write(this.documentHeader) ;
+		^file;
 	}
 
 	filePath { ^sessionPath +/+ id.asString ++ ".scd"; }
@@ -264,20 +318,21 @@ User {
 			++ "_" ++ 1000.rand.asString).asSymbol;
 	}
 
-	*localId_ { | argId |
+	*localId_ { | argId, writeId = true |
 		argId = argId.asSymbol;
 		// ! replace User instance in all from old id to new id.
 		this.all[localId] = nil; // remove old user instance if present
 		this.new(argId);  // create new user and store it in all
 		localId = argId;  // set new localId;
-		this.writeUserId; // save new localId to file.
+		if (writeId) { this.writeUserId }; // optionally save new localId to file.
 		currentEvaluator = localId; // default evaluator to new local argId
+		postln("Debugging localId_. argId was" + argId + "localId is" + localId);
 	}
 
 	*writeUserId {
 		var path;
 		path = this.makePathLocation;
-		File.use(path, "w", { | f | f.write(localId.asString)});
+		// File.use(path, "w", { | f | f.write(localId.asString)});
 	}
 
 	// send to oscgroups, marking the sender as localId
@@ -304,8 +359,11 @@ User {
 			"//:[%] % % %\n%\n",
 			Main.elapsedTime, id, envir.name, Date.localtime.stamp, code
 		);
-		this.document.string_(codeEntry, 1, 1000000);
-		file.write(codeEntry)
+		// 100000000:
+		// -- ScIDE (qt) Documents append AT END OF DOCUMENT
+		// -- EMACS (scel) Documents append AT POINT
+		this.document.string_(codeEntry, 100000000);
+		file !? { file.write(codeEntry) };
 	}
 
 	evaluatorIsLocal { ^this.class.evaluatorIsLocal }

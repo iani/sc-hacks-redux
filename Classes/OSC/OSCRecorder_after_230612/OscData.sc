@@ -1,6 +1,7 @@
 /* 20 Jun 2023 14:29
 Redo of OscDataReader
 */
+
 OscData {
 	var <paths;
 	var <sourceStrings;
@@ -13,7 +14,7 @@ OscData {
 	var <times, <messages; // times and messages obtained from parsedEntries
 	// ============= Store state from user selection for simpler updates ==============
 	var <timeline; // handle onsets and durations!
-	var <>sendAddr; // 11 used by sendItemAsOsc
+	var <oscgroupsAddr; // 11 used by sendItemAsOsc
 	var <localAddr; // 10 used by sendItemAsOsc
 	// TODO: Cleanup many of these, below - that are no longer used.
 	var <selectedMinTime = 0; // 1
@@ -32,16 +33,6 @@ OscData {
 
 	comments { ^header ? "" } // unused
 	comments_ { | s | header = s } // unused
-
-	*loadPaths { | key = \oscdata |
-		Paths.doGetPath({ | p, paths |
-			var new;
-			paths do: _.postln;
-			new = this.new(paths);
-			new.postln;
-			new gui: key;
-		}, key)
-	}
 
 	*fromPathDialog {
 		{ | p |
@@ -76,7 +67,6 @@ OscData {
 	*new { | paths |
 		^this.newCopyArgs(paths).init;
 	}
-
 	cloneCode {
 		^this.class.newCopyArgs(paths, sourceStrings,
 			parsedEntries.copyRange(timeline.minIndex, timeline.maxIndex)
@@ -100,8 +90,8 @@ OscData {
 		this.readSource;
 		this.makeMessages;
 		localAddr = NetAddr.localAddr;
-		OscGroups.enable;
-		sendAddr = OscGroups.sendAddress;
+		OscGroups.enable(verbose: false);
+		oscgroupsAddr = OscGroups.sendAddress;
 		// remake player stream when selection changes:
 		this.addNotifier(this, \selection, {
 			if (this.isPlaying.not) { { this.makeStream }.fork };
@@ -138,8 +128,8 @@ OscData {
 		timesMessages = [times, messages].flop;
 	}
 
-	makeTimeline { | argTimes |
-		timeline = Timeline(this).setOnsets(argTimes);
+	makeTimeline { | argTimes | timeline =
+		Timeline(this).setOnsets(argTimes);
 	}
 	convertTimes {
 		times = times - times.first;
@@ -263,16 +253,7 @@ OscData {
 				.font_(Font("Monaco", 12))
 				.selectionMode_(\contiguous)
 				.selectionAction_({ | me |
-					var selection;
-					this.changed(\scrollItem, me, me.value, me.selection);
-					selection = me.selection;
-					if (selection.size > 1) {
-						minIndex = selection.minItem;
-						maxIndex = selection.maxItem;
-					}{  // do not reset selection unless it is a range
-						// minIndex = 0;
-						// maxIndex = parsedEntries.size - 1;
-					};
+					this.changed(\scrollItem, me.value);
 				})
 				// .enterKeyAction_({ | me |
 				// 	"enterKeyAction for indexList".postln;
@@ -374,7 +355,7 @@ OscData {
 				CheckBox().string_("Play")
 				.maxWidth_(50)
 				.action_({ | me |
-					if (me.value) { this.playSelection; } { this.stop; };
+					if (me.value) { this.start; } { this.stop; };
 				})
 				.addNotifier(this, \playing, { | n, status |
 		 			n.listener.value = status;
@@ -452,7 +433,7 @@ OscData {
 		var msg;
 		msg = string.interpret;
 		localAddr.sendMsg(*msg);
-		sendAddr.sendMsg(*msg);
+		oscgroupsAddr.sendMsg(*msg);
 	}
 	findNextCode {
 		var theSelectedMessages, found, index;
@@ -519,7 +500,6 @@ OscData {
 		this.addNotifier(stream, \stopped, { this.changed(\playing, false) });
 
 	}
-
 	makeStreamEvent {
 		postln("Making stream for" + this.name);
 		this.stream = ( // convert times to dt
@@ -575,7 +555,7 @@ OscData {
 		this.changed(\progress, 0);
 	}
 
-	stop { stream.stop; progressRoutine.stop; stream = nil; }
+	stop { stream.stop; progressRoutine.stop; }
 
 	export {
 		if (this.hasMessages) {
@@ -658,39 +638,5 @@ OscData {
 
 	debug {
 		this.selectedMessages.postln;
-	}
-
-	playSelection {
-		if (minIndex.isNil) {
-			minIndex = 0;
-			maxIndex = parsedEntries.size - 1;
-		};
-		this.playSegment(minIndex, maxIndex);
-	}
-
-	playSegment { | from = 0, to, rate = 1 |
-		to ?? { to = parsedEntries.size - 1 };
-		stream !? { ^"Already playing. Skipping this.".postln; };
-		rate = rate.clip(0.1, 100);
-		from = from.clip(0, parsedEntries.size - 1).asInteger;
-		to = to.clip(0, parsedEntries.size - 1).asInteger;
-		stream = {
-			var prevTime, entry, dt, message;
-			prevTime = parsedEntries[from][0];
-			(from..to) do: { | t, i |
-				entry = parsedEntries[t];
-				dt = (entry[0] - prevTime).abs * rate;
-				// dt.postln.wait;
-				dt.wait;
-				prevTime = entry[0];
-				// entry[1].interpret.postln;
-				message = entry[1].interpret;
-				sendAddr.sendMsg(*message);
-				localAddr.sendMsg(*message);
-				this.changed(\item, t);
-			};
-			stream = nil;
-			this.changed(\playing, false);
-		}.fork;
 	}
 }
