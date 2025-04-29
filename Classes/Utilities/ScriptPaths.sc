@@ -19,7 +19,7 @@ ScriptPaths : Paths {
 
 	*baseDirectory { ^Platform.userAppSupportDir +/+ scriptFolder; }
 
-	*load { | key | ^this.loadFile.key }
+	*load { | key | ^this loadFile: key }
 
 	*loadFile { | key |
 		var path;

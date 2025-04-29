@@ -74,13 +74,7 @@ User {
 		// this.oscSendPort = oscSendPort; // create sendAddress
 		this.makeSendAddress;
 		this.openRecvUDPPort;
-		thisProcess.interpreter.preProcessor = { | code |
-			localUser.code2doc(code);
-			// this.forward(code, localId);
-			// OscGroups.sendAddress.sendMsg(codeMessage, code, localId);
-			this.sendCode(code);
-			code;
-		};
+		this.enableCodeForwarding;
 		OSC.add(codeMessage, { | n, msg |
 			User.run(msg[1].asString, msg[2]);
 		});
@@ -88,7 +82,27 @@ User {
 		postln("Session folder is:" + sessionPath);
 	}
 
-	*sendCode { | argCode |
+	*enableCodeForwarding {
+		thisProcess.interpreter.preProcessor = { | code |
+			localUser.code2doc(code);
+			// this.forward(code, localId);
+			// OscGroups.sendAddress.sendMsg(codeMessage, code, localId);
+			this.sendCode(code);
+			code;
+		};
+	}
+
+	*disableCodeForwarding {
+		thisProcess.interpreter.preProcessor = { | code |
+			localUser.code2doc(code);
+			// this.forward(code, localId);
+			// OscGroups.sendAddress.sendMsg(codeMessage, code, localId);
+			// this.sendCode(code);
+			code;
+		}
+	}
+
+	*sendCode { | argCode | // send code manually, for tests
 		sendAddress.sendMsg(codeMessage, argCode, localId);
 	}
 
@@ -528,5 +542,14 @@ TODO: Check that the present User code actually works as described above!
 		stream << this.class.name << "<" ;
 		stream << id.asString;
 		stream << ">" ;
+	}
+
+	*load { | argPath |
+		// load a file without forwarding the code to other users.
+		var result;
+		this.disableCodeForwarding;
+		result = argPath.load;
+		this.enableCodeForwarding;
+		^result;
 	}
 }

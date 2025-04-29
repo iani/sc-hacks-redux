@@ -1,0 +1,23 @@
+#+title: Notes250426
+
+* Performer Roles
+** Giorgos: keimeno: Type the text. Typed text is displayed and keystrokes are sonified
+** Vasilis Ichos
+** Penny Ichos kai foni
+** Kosmas Eikona video
+** Iannis: Synodeia ichou: Play back AI recitation of poem, with distortion and other effects.
+* Performance Instructions
+** Loading the synthetic poem recitation audio buffers
+1. Put the 4 folders with the audio buffers in a folder on your disk.
+   Say, folder named "TSR_voices".
+2. In the same folder, "TSR_voices", copy the two files "load_voices_scd" and "00RUN_THIS_TO_LOAD_THE_BUFFERS.scd"
+3. To load the buffers, boot the server first.
+4. Loading the bufffers: Run the script stored in file "00RUN_THIS_TO_LOAD_THE_BUFFERS.scd" (5 lines of code).
+   This opens a FileDialog to let you select the script to run for loading the buffers.
+   Select the file "load_voices.scd" from inside the folder containing the 4 voice files folder. The path to this file is stored inside the "Paths" folder in your user app support dir. The next time you run 00RUN_THIS_TO_LOAD_THE_BUFFERS.scd, it will load the file "load_voices.scd" from the previously stored path, without asking where it is.
+5. The buffers will be stored in environment variables on the parent environment of Mediator. This means, they will be available in any environment used by User during the session.
+   The variable names are constructed from the first word of each verse, plus the number of the folder from which they were loaded.  For example, the buffer for the first verse is in 4 versions named =busy1=, =busy2=, =busy3=, =busy4=. There are 4 x 30 buffers, 4 buffers for each of the 30 verses of the poem.  The names of the buffers (without the numbers of the versions) are:
+
+   #+begin_src sclang
+   incipits = [\busy, \whyDost, \through, \must, \saucy, \late, \go, \call, \love, \nor, \thy, \whyShouldst, \i, \but, \if, \look, \whether, \be, \ask, \and, \shes, \nothing, \princes, \all, \thou, \in, \thine, \to, \shine, \this]
+   #+end_src
