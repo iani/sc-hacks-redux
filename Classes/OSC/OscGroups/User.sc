@@ -327,7 +327,7 @@ User {
 	*readUserId {
 	 	var path;
 		path = this.makePathLocation;
-		if (File.exists(path)) { ^File.readAllString(path)  }{ ^nil }
+		if (File.exists(path)) { ^File.readAllString(path) }{ ^nil }
 	}
 
 	*makePathLocation { | argId |
@@ -337,8 +337,11 @@ User {
 	*systemUserName { ^Platform.userHomeDir.fileName }
 
 	*makeDefaultId {
-		^(this.systemUserName ++ "_" ++ Date.getDate.stamp
-			++ "_" ++ 1000.rand.asString).asSymbol;
+		// do not use this because it requires the user to edit a file:
+		// ^(this.systemUserName ++ "_" ++ Date.getDate.stamp
+		// 	++ "_" ++ 1000.rand.asString).asSymbol;
+		// Instead, use the simpler version:
+		^this.systemUserName.asSymbol;
 	}
 
 	*localId_ { | argId, writeId = true |
