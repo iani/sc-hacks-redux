@@ -71,8 +71,9 @@ User {
 		this.push(localId, localId);
 		enabled = true;
 		// OscGroups.enable;
-		this.oscSendPort = oscSendPort; // create sendAddress
-		this.oscRecvPort = 22245;
+		// this.oscSendPort = oscSendPort; // create sendAddress
+		this.makeSendAddress;
+		this.openRecvUDPPort;
 		thisProcess.interpreter.preProcessor = { | code |
 			localUser.code2doc(code);
 			// this.forward(code, localId);
@@ -93,17 +94,25 @@ User {
 
 	*oscSendPort_ { | argPort = 22244 |
 		oscSendPort = argPort;
+		this.makeSendAddress;
+	}
+
+	*makeSendAddress {
 		sendAddress = NetAddr("127.0.0.1", oscSendPort);
 	}
 
 	*oscRecvPort_ { | argPort = 22245 |
-		var didOpen = false;
 		oscRecvPort = argPort;
+		this.openRecvUDPPort;
+	}
+
+	*openRecvUDPPort {
+		var didOpen = false;
 		didOpen = thisProcess openUDPPort: oscRecvPort;
 		if (didOpen) {
-			postln("User successfully opened port" + argPort + "for listening");
+			postln("User successfully opened port" + oscRecvPort + "for listening");
 		}{
-			postln("User COULD NOT open port" + argPort + "for listening");
+			postln("User COULD NOT open port" + oscRecvPort + "for listening");
 		}
 	}
 
