@@ -3,6 +3,9 @@
 // These methods will be further refined and developed in the
 // next days.
 
+// EXPERIMENTAL
+// May be replaced by code inside TheSunRising class
+
 + Symbol {
 	// get the buffer named after yourself,
 	// and play it in environment variable named from prefix + yourself.
@@ -15,7 +18,7 @@
 				BufRateScale.kr(buf) *
 				\rate.kr((currentEnvironment[(this ++ "rate").asSymbol] ? 1)),
 				trigger: t_trigger,
-				startPos: \start
+				startPos: \start,
 				loop: \loop.kr(1),
 				doneAction: 2
 			).dup

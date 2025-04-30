@@ -28,6 +28,7 @@ User {
 	classvar <oscSendPort = 22244, <oscRecvPort = 22245;
 	classvar <sendAddress;
 	classvar <codeMessage = '/c';
+	classvar <>verbose = false;
 	var <id; // this (possibly remote) user's id.
 	var envir; // currentEnvironment of this user
 	var envirs; // user evaluates code only within one of these private envirs
@@ -43,16 +44,16 @@ User {
 		// if users are given, then activate them.
 		if (enabled) { "User class is already enabled.".postln; ^this; };
 		postln("Enabling User session" + argSessionName + "with users" + users);
-		waitTime !? {
+		if (waitTime.notNil) {
 			postln("Deferring User enable by" + waitTime + "seconds");
 			{
 				this.doEnable(argSessionName);
 				this.activate(*users);
 			} defer: waitTime;
-			^this;
+		}{
+			this.doEnable(argSessionName);
+			this.activate(*users);
 		};
-		this.doEnable(argSessionName);
-		this.activate(*users);
 	}
 
 	*doEnable { | argSessionName |
@@ -82,6 +83,7 @@ User {
 		postln("Session folder is:" + sessionPath);
 	}
 
+	enableCodeForwarding { this.class.enableCodeForwarding }
 	*enableCodeForwarding {
 		thisProcess.interpreter.preProcessor = { | code |
 			localUser.code2doc(code);
@@ -92,6 +94,7 @@ User {
 		};
 	}
 
+	disableCodeForwarding { this.class.disableCodeForwarding }
 	*disableCodeForwarding {
 		thisProcess.interpreter.preProcessor = { | code |
 			localUser.code2doc(code);
@@ -102,7 +105,18 @@ User {
 		}
 	}
 
-	*sendCode { | argCode | // send code manually, for tests
+	*interpretSend { | argCode |
+		// When interpreting code from inside an action Function of a View,
+		// The code is NOT sent to OscGroups. The interpreter preprocessor function
+		// is NOT run.  Therefore, use the present function to
+		// run code + send it to other users from any View on a GUI window.
+		argCode.interpret;
+		this.sendCode(argCode);
+	}
+
+	*sendCode { | argCode | // when active, send code before interpreting
+		// also for sending code manually, for tests
+		if (verbose) { postln("user" + localId + "sending code to OscGroups.") };
 		sendAddress.sendMsg(codeMessage, argCode, localId);
 	}
 
@@ -144,13 +158,19 @@ User {
 	}
 
 	*activate { | ... argUsers |
+		postln("\nActivating Users:" + argUsers ++"\n");
 		if (argUsers.size == 0) { argUsers = this.allUserKeys; };
 		argUsers do: { | u | this.new(u).activate };
 	}
 
 	activate {
+		if (isActive) {
+			postln("User" + id + "is active. Skipping activate.");
+			^this;
+		};
 		this.makeDocumentAndFile;
 		isActive = true;
+		this.loadStartupFiles;
 	}
 
 	makeDocumentAndFile { // make document and file for recording session code.
@@ -165,7 +185,7 @@ User {
 		var thePath;
 		if (file.notNil) { ^file };
 		thePath = this.filePath;
-		postln("User" + id + "Made path" + thePath);
+		postln("User" + id + "made path" + thePath);
 		postln("Filename is" + thePath.fileName);
 		postln("The folder is" + thePath.pathOnly);
 
@@ -198,6 +218,23 @@ User {
 		^document;
 	}
 
+	loadStartupFiles { 	// from Platform:loadStartupFiles
+		this.startupFiles do: { | afile |
+			afile = afile.standardizePath;
+			if (File.exists(afile)) {
+				postln(
+					"--- Loading startup file"
+					+ afile.fileName + "for user" + id
+				);
+				this load: afile;
+			};
+		}
+	}
+
+	startupFiles {
+		^(Platform.userAppSupportDir +/+ "Users" +/+ id +/+ "*.scd").pathMatch
+		// ^[]; // disable for now
+	}
 
 	*showDocument { | argId | this.new(argId ? localId).showDocument }
 	showDocument { this.document.front }
@@ -441,7 +478,9 @@ User {
 	*push { | userName, envirName |
 		userName ?? { userName = currentEvaluator };
 		// activate when pushing to track further changes in this user.
-		^this.new(userName).activate.push(envirName);
+		// ^this.new(userName).activate.push(envirName);
+		// ACTIVATE ONLY WHEN REQUESTED EXPLICITLY
+		^this.new(userName).push(envirName);
 	}
 
 	/*  IMPORTANT:
@@ -547,11 +586,22 @@ TODO: Check that the present User code actually works as described above!
 		stream << ">" ;
 	}
 
-	*load { | argPath |
+	*load { | argPath, argEnvir |
+		// load a file without forwarding the code to other users.
+		^localUser.load(argPath, argEnvir);
+	}
+
+	load { | argPath, argEnvir |
 		// load a file without forwarding the code to other users.
 		var result;
 		this.disableCodeForwarding;
-		result = argPath.load;
+		postln(
+			"--- Loading file"
+			+ argPath.fileName + "for user" + id
+		);
+		postln("The environment I will use is:" + envir);
+		// Load  in rrgEnvir or in this User's current envir.
+		(argEnvir ? envir) use: { result = argPath.load; };
 		this.enableCodeForwarding;
 		^result;
 	}
