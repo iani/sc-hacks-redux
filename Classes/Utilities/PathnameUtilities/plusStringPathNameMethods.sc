@@ -14,11 +14,11 @@
 		}
 	}
 	scroot { ^PathName.scroot }
-    fileName { ^PathName(this).fileName }
-    fileNameWithoutExtension { ^PathName(this).fileNameWithoutExtension }
-    extension { ^PathName(this).extension }
-    pathOnly { ^PathName(this).pathOnly }
-    folder { ^this.pathOnly }
+	fileName { ^PathName(this).fileName }
+	fileNameWithoutExtension { ^PathName(this).fileNameWithoutExtension }
+	extension { ^PathName(this).extension }
+	pathOnly { ^PathName(this).pathOnly }
+	folder { ^this.pathOnly }
 	lastColonIndex { ^PathName(this).lastColonIndex }
 	up { ^this.superFolder }
 	superFolder {
@@ -28,20 +28,20 @@
 		if (up.size == 0) { ^"/" } { ^up }
 	}
 
-    isAbsolutePath { ^PathName(this).isAbsolutePath }
-    isRelativePath { ^PathName(this).isRelativePath }
-    asRelativePath { | relativeTo | ^PathName(this).asRelativePath(relativeTo) }
-    folderName { ^PathName(this).folderName }
+	isAbsolutePath { ^PathName(this).isAbsolutePath }
+	isRelativePath { ^PathName(this).isRelativePath }
+	asRelativePath { | relativeTo | ^PathName(this).asRelativePath(relativeTo) }
+	folderName { ^PathName(this).folderName }
 	// !!!!! this causes seggmentation faul!!!!!!!!!!
-    // fullPath { ^PathName(this).fullPath } // WHY ????????
-    entries {
+	// fullPath { ^PathName(this).fullPath } // WHY ????????
+	entries {
 		if (this.isFolder) {
 			^PathName(this).entries
 		}{
 			^PathName(this.folder).entries
 		}
 	}
-    // files { ^PathName(this).files }
+	// files { ^PathName(this).files }
 	files {
 		if (this.isFolder) {
 			^PathName(this).files
@@ -61,7 +61,7 @@
 		^(this.pathOnly +/+ "*." ++ extension).pathMatch;
 	}
 
-    // folders { ^PathName(this).folders }
+	// folders { ^PathName(this).folders }
 	folders {
 		if (this.isFolder) {
 			^PathName(this).folders
@@ -70,9 +70,9 @@
 		}
 	}
 
-    isFile { ^PathName(this).isFile }
-    isFolder { ^PathName(this).isFolder }
-    filesDo { | func |
+	isFile { ^PathName(this).isFile }
+	isFolder { ^PathName(this).isFolder }
+	filesDo { | func |
 		PathName(this).filesDo(func)
 	}
 	allFolders {

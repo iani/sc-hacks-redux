@@ -3,8 +3,9 @@
 
 + Symbol {
 
-	!!! { | func | ^this use: func }
+	!!! { | object | this putGlobal: object }
 
+	// !!! { | func | ^this use: func }
 	use { | func | // evaluate func in this Mediator
 		// var envir, result;
 		// postln("debugging symbol use");

@@ -226,7 +226,7 @@ User {
 					"--- Loading startup file"
 					+ afile.fileName + "for user" + id
 				);
-				this load: afile;
+				this load: afile;// load file locally!!!
 			};
 		}
 	}
