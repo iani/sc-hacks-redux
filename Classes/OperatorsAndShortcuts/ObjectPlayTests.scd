@@ -8,7 +8,7 @@
 ~x.release;
 \x play: { SinOsc.ar(100 rrand: 1000, 0, 0.05).dup };
 \x.stop;
-\x.stopp;
+// \x.stopp; // no longer needed
 \x play: 1;
 \x play: [1, 2, 3];
 \x play: nil;
@@ -51,3 +51,28 @@ b = EventStream((degree: 2));
 b.start;
 //:
 TempoClock.default.tempo = 0.25;
+//:===== Using tempoclock and merging event with Symbol:play ======
+~clock = TempoClock(0.5).permanent_(true);
+~quant = 1;
+\e1 play: (degree: (1..10).prand);
+\e1 play: (dur: 0.1);
+\e1 play: (degree: (1..10).palindrome.pseq);
+\e1 play: (degree: (-1..-10).palindrome.pseq);
+\e1 play: (degree: (2 * (1..10)).palindrome.pseq);
+\e1 play: (dur: 0.21);
+\e1 play: (dur: 0.05);
+
+\e1.clear;
+\x.clear;
+1.clear;
+nil.clear;
+//:========== test EventStream:clear ===========
+\c play: (degree: 4);
+\c.doclear;
+\c.play;
+
+~c;
+~c.play;
+~c.start;
+~c respondsTo: \start;
+~c respondsTo: \play;

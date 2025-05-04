@@ -309,7 +309,7 @@
 
 + Nil {
 	envir { ^currentEnvironment }
-	pop { ^User.localId.pop }
+	// pop { ^User.localId.pop }
 	// see OperatorFix240222.sc
 	// +> { | player, envir |
 	// 	Mediator.wrap(

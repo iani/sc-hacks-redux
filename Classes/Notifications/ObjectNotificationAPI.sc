@@ -71,7 +71,7 @@ Transferred from sc-hacks.
 		// 		// { this.objectClosed; }.defer(0.1);
 		// 		// "debuggging node addNotifier".postln;
 		// });
-    }
+	}
 
 	onStart { | action, listener |
 		if (this.isPlaying) { ^action.(this) };
@@ -88,18 +88,5 @@ Transferred from sc-hacks.
 		listener = listener ? { this }; // DO NOT CHANGE THIS!
 		NodeWatcher.register(this);
 		listener.addNotifierOneShot(this, \n_end, { action.(this) });
-	}
-
-	register { | listener = \nodeWatcher |
-		NodeWatcher.register(this);
-		listener.addNotifierOneShot(this, \n_go, {
-			this.isPlaying = true;
-			listener.changed(\started);
-		});
-		listener.addNotifierOneShot(this, \n_end, {
-			this.isPlaying = false;
-			listener.changed(\stopped);
-		});
-
 	}
 }

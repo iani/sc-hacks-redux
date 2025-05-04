@@ -3,7 +3,7 @@
 
 + Symbol {
 
-	!!! { | object | this putGlobal: object }
+	!!! { | object | this putGlobal: object; ^object }
 
 	// !!! { | func | ^this use: func }
 	use { | func | // evaluate func in this Mediator

@@ -30,7 +30,7 @@
 
 	isAbsolutePath { ^PathName(this).isAbsolutePath }
 	isRelativePath { ^PathName(this).isRelativePath }
-	asRelativePath { | relativeTo | ^PathName(this).asRelativePath(relativeTo) }
+	// asRelativePath { | relativeTo | ^PathName(this).asRelativePath(relativeTo) }
 	folderName { ^PathName(this).folderName }
 	// !!!!! this causes seggmentation faul!!!!!!!!!!
 	// fullPath { ^PathName(this).fullPath } // WHY ????????
@@ -83,7 +83,7 @@
 	// +/+ { | path | ^(PathName(this) +/+ path).fullPath } // already exists
 	noEndNumbers { ^PathName(this).noEndNumbers }
 	nextName { ^PathName(this).nextName }
-	absolutePath { ^PathName(this).absolutePath }
+	// absolutePath { ^PathName(this).absolutePath }
 	deepFiles {
 		^PathName(this).deepFiles
 

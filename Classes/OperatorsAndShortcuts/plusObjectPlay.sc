@@ -17,10 +17,10 @@
 		// - But we handle EventStream merging here for simplicity.
 		var stored;
 		stored = currentEnvironment[this];
-		if (stored isKindOf: EventStream and: {
-		args[0] isKindOf: Event }) {
-			stored mergeEvent: args[0];
-			// This should be modified to start on quantized beat:
+		if (stored isKindOf: EventStream) {
+			if (args[0] isKindOf: Event) { stored mergeEvent: args[0]; };
+			// Starts on quantized beat if ~clock and ~quant are set
+			// in currentEnvironment:
 			if (stored.isPlaying.not) { stored.start };
 			// avoid stopping the EventStream that runs. Do not store!
 			^this;
@@ -35,8 +35,41 @@
 		^Mediator.at(this).play(playFunc, event);
 	}
 
-	// Symbol:stop cannot be redefined. Why?
-	stopp { currentEnvironment[this].free; } // EventStream.stop also locked
+	storeEventStream { | event | // stops previously playing synths or patterns
+		// and stores a new EventStream without playing it.
+		currentEnvironment[this] = EventStream(event);
+	}
+
+	set { | event |
+		// set keys i.e. merge, but do not start
+		// if object previously stored is not EventStrem, create an empty one.
+		var receiver;
+		receiver = currentEnvironment[this];
+		if (receiver.isKindOf(EventStream).not) {
+			receiver = EventStream(());
+			currentEnvironment[this] = receiver;
+		};
+		receiver mergeEvent: event;
+	}
+
+	// ============= SHORTCUTS: =============
+	instr { | instrument = \bf |
+		this.set((instrument: instrument));
+	}
+
+	playBuf { | buf, instrument = \bf |
+		buf ?? {
+			buf = BaBufs.all.keys.asArray.first;
+			postln("Setting buffer to" + buf);
+		};
+		this.instr set: (buf: BaBufs.all[buf]);
+	}
+
+	// ============= NOTE: =============
+	// Symbol:stop is redefined in SystemOverwrites/plusSystemOverwrites.sc
+	// stopp { currentEnvironment[this].free; } // EventStream.stop also locked
+	// Clear EventStream: Remove all keys from its event
+	// doclear { currentEnvironment[this].clear } // clear not overwriteable?
 }
 
 + Nil {

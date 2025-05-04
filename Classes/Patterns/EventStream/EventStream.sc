@@ -100,8 +100,13 @@ EventStream {
 	restart { // to make Symbol:start also work with Synths.
 		this start: nil; // being explicit ...
 	}
+
+	play { | quant | this start: quant }
 	start { | quant |
 		if (this.isRunning) { ^postf("% is running. will not restart it\n", this) };
+		// if (Server.default.serverRunning.not) {
+		// 	"====== Boot the server to play sound from EventStream".postln;
+		// };
 		this.makeRoutine(quant);
 	}
 
@@ -173,8 +178,8 @@ EventStream {
 	isRunning { ^this.isPlaying }
 	isPlaying { ^routine.notNil }
 
-
 	setEvent { | inEvent | // merge + start event. name
+		// TODO: This method name is misleading. Correct?
 		this mergeEvent: inEvent;
 		if (this.isRunning.not) { this.start; };
 	}
@@ -195,6 +200,8 @@ EventStream {
 	set { | param, value | // compatibility with <+
 		this.mergeEvent(().put(param, value))
 	}
+
+	clear { event = () }
 
 	oscTrigger { | message | message >>> { this.playNext } }
 	removeTrigger { | message |
