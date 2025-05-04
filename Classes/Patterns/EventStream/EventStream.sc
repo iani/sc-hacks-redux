@@ -112,8 +112,14 @@ EventStream {
 	}
 
 	makeRoutine { | quant |
-		var nextEvent;
+		var nextEvent, clock;
 		CmdPeriod add: this;
+		clock = event[\clock] ?? {
+			currentEnvironment[\clock]  ? TempoClock.default;
+		};
+		quant ?? {
+			quant = event[quant] ?? currentEnvironment[\quant]
+		};
 		routine = {
 			this.changed(\started);
 			while {
@@ -126,8 +132,10 @@ EventStream {
 			routine = nil;
 			this.reset;
 		}.fork( // synchronize start
-			event[\clock] ? TempoClock.default,
-			quant ?? { event[\quant] }
+			// event[\clock] ? TempoClock.default,
+			// quant ?? { event[\quant] }
+			clock,
+			quant
 		);
 	}
 
@@ -166,12 +174,12 @@ EventStream {
 	isPlaying { ^routine.notNil }
 
 
-	setEvent { | inEvent |
+	setEvent { | inEvent | // merge + start event. name
 		this mergeEvent: inEvent;
 		if (this.isRunning.not) { this.start; };
 	}
 
-	// suggestion T.M: method name should be: mergeEvent?
+	// suggestion Thor Magnusson: method name should be: mergeEvent
 	mergeEvent { | inEvent |
 		inEvent keysValuesDo: { | key, value |
 			event[key] = value;

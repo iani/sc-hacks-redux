@@ -2,20 +2,9 @@
 // See also Symbol:play in SymbolOperators.sc
 
 + Object {
-	play { | args |
-		^this.playArgs(args);
-	}
-	playArgs { | args |
-		// return args to be stored in envir by Symbol:play
-		// ^args;
-		// postln("playArgs receiver" + this + "args" + args);
-		// postln("playOrMerge arg0" + args[0] + "restargs" + args[1..]);
-		^args[0].playOrMerge(args[1..]);
-	}
-	playOrMerge { | args |
-		^this
-		// ^args[0]
-	}
+	play { | args | ^this.playArgs(args); }
+	playArgs { | args | ^args[0].playOrMerge(args[1..]); }
+	playOrMerge { | args | ^this } // remove this?
 }
 
 + Symbol {
@@ -24,6 +13,18 @@
 		// If key previously contains a Synth, release it.
 		// If it contains an EventStream, merge it or replace it
 		// Store the result in the new at currenEnvironment.
+		// Mediator stops EventStream when it is replaced - which is ok
+		// - But we handle EventStream merging here for simplicity.
+		var stored;
+		stored = currentEnvironment[this];
+		if (stored isKindOf: EventStream and: {
+		args[0] isKindOf: Event }) {
+			stored mergeEvent: args[0];
+			// This should be modified to start on quantized beat:
+			if (stored.isPlaying.not) { stored.start };
+			// avoid stopping the EventStream that runs. Do not store!
+			^this;
+		};
 		currentEnvironment[this] = currentEnvironment[this].playArgs(args);
 	}
 	play2 { | playFunc, event |
@@ -33,38 +34,37 @@
 		// Use this	 only in v1 of this libary
 		^Mediator.at(this).play(playFunc, event);
 	}
+
+	// Symbol:stop cannot be redefined. Why?
+	stopp { currentEnvironment[this].free; } // EventStream.stop also locked
 }
 
 + Nil {
-	// playArgs { | args | ^args; }
-	playOrMerge { | args |
-		^args[0]
-	}
+	playOrMerge { | args | ^args[0] }
 }
 
 + Synth {
 	playArgs { | args |
 		if (this.isPlaying) { this release: (~fadeTime ? 0.1); };
-		// postln("Synth released" + this + "now will play" + args[0]
-		// + "withArgs" + args[1..]);
 		^args[0].playArgs(args[1..]);
 	}
+	stop { this release: (~fadeTime ? 0.1) }
 }
 
-+ EventStream {
++ Event { // REVIEW: these methods can be scrapped ?
+	playOrMerge { | args |
+		// postln("Event playOrMerge. Receiver:" + this);
+		// postln("Event playOrMerge. args:" + args);
+		^EventStream(this).start;
+	}
 	playArgs { | args |
-		postln("TO be done:" + this + "will play" + args);
+		// postln("Event playargs. Receiver:" + this);
+		// postln("Event playArgs. args:" + args);
+		^EventStream(this).start;
 	}
 }
 
 + Function {
-	playArgs { | args |
-		// postln("Function playargs. Receiver" + this + "args" + args);
-		^this.play(*args).register;
-	}
-	playOrMerge { | args |
-		// postln("Function" + this + "received these args:" + args);
-		// TODO: Review this to add more options for merging with other objects
-		^this.play(*args).register;
-	}
+	playArgs { | args | ^this.play(*args).register; }
+	playOrMerge { | args | ^this.play(*args).register; } // remove this?
 }
