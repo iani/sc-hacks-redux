@@ -17,8 +17,10 @@
 		{ player isKindOf: Function } { this.playFunction(player, args) }
 		{ player isKindOf: Event } { this.playEvent(player, args) }
 		{ player isKindOf: Symbol } { this.playSymbol(player, args) }
-		{ postln("symbol" + this + "can't play object of class" + player.class) };
-		// currentEnvironment[this] = currentEnvironment[this].playArgs(args);
+		{
+			postln("Playing:" + currentEnvironment[this]);
+			currentEnvironment[this].play;
+		};
 	}
 
 	playFunction { | player, args |
@@ -49,25 +51,48 @@
 		).register;
 	}
 
-	play2 { | playFunc, event |
-		// THIS IS OLD play METHOD OF V1, USED TO PLAY SynthTemplate
-		// See Mediator play.
-		// play playfunc in event envir of Mediator named by receiver
-		// Use this	 only in v1 of this libary
-		^Mediator.at(this).play(playFunc, event);
+	set { | ... args |
+		var player;
+		player = currentEnvironment[this];
+		case
+		{ player isKindOf: Synth } { this.setSynth(player, args) }
+		{ player isKindOf: EventStream } { this.setEventStream(player, args) }
+		// { player.isNil } { "caught ja".postln; }
+		{ player.isNil } {
+			player = EventStream(());
+			player mergeEvent: args.args2event;
+			// this.setEventStream(player, args);
+			currentEnvironment[this] = player;
+		}
+		{
+			postln("symbol" + this + "can't set object of class" + player.class);
+			"I will replace the object stored with the new arguments".postln;
+			currentEnvironment[this].stop(currentEnvironment[\fadeTime] ? 0.1);
+			if (args.size == 1) { args = args[0] };
+			currentEnvironment[this] = args;
+		}
 	}
 
-	set { | event |
-		// set keys i.e. merge, but do not start
-		// if object previously stored is not EventStrem, create an empty one.
-		var receiver;
-		receiver = currentEnvironment[this];
-		if (receiver.isKindOf(EventStream).not) {
-			receiver = EventStream(());
-			currentEnvironment[this] = receiver;
+	setEventStream { | estream, args |
+		var arg0, event;
+		arg0 = args[0];
+		case
+		{ arg0 isKindOf: Event }{ event = arg0; }
+		{ arg0 isKindOf: Array }{ event = arg0.asEvent; }
+		{ arg0 isKindOf: Symbol }{ event = args.asEvent; }
+		{
+			postln(
+				"I can;t deal with first argument of type" + arg0.class
+			);
+			event = ();
 		};
-		receiver mergeEvent: event;
+		estream mergeEvent: event;
 	}
+
+	setSynth { | synth, args | synth.set(*args); }
+
+	// NOTE: Symbol:clear and stop are defined in plusSystemOverWrites.sc
+	// in folder SystemOverwrites.
 
 	// ============= SHORTCUTS: =============
 	instr { | instrument = \bf |
@@ -84,6 +109,14 @@
 
 	// ============= NOTE: =============
 	// Symbol:stop, clear are redefined in SystemOverwrites/plusSystemOverwrites.sc
+	// ================= OLD STUFF ================
+	play2 { | playFunc, event |
+		// THIS IS OLD play METHOD OF V1, USED TO PLAY SynthTemplate
+		// See Mediator play.
+		// play playfunc in event envir of Mediator named by receiver
+		// Use this	 only in v1 of this libary
+		^Mediator.at(this).play(playFunc, event);
+	}
 }
 
 + Synth {
@@ -93,5 +126,24 @@
 	}
 	stop {
 		if (this.isPlaying) { this release: (~fadeTime ? 0.1) }
+	}
+}
+
++ Array {
+	args2event {
+		var arg0, event;
+		arg0 = this[0];
+		case
+		{ arg0 isKindOf: Event }{ event = arg0; }
+		{ arg0 isKindOf: Array }{ event = arg0.asEvent; }
+		{ arg0 isKindOf: Symbol }{ event = this.asEvent; }
+		{
+			postln(
+				"I can;t deal with first argument of type" + arg0.class;
+				"Returning empty event".postln;
+			);
+			event = ();
+		};
+		^event;
 	}
 }
