@@ -35,6 +35,7 @@ User {
 	var document, <file;
 	var <stack;
 	var <isActive = false;
+	var <makeDocument = false;
 
 	*enable { | argSessionName = "session", waitTime ... users |
 		// if waitTime is given, defer the enabling by wait seconds (default: 3).
@@ -54,6 +55,21 @@ User {
 			this.doEnable(argSessionName);
 			this.activate(*users);
 		};
+	}
+
+	*makeDocumentsForLocalUser { | argId = \iani |
+		"\n========= User.makeDocumentsForLocalUser was CALLED =========\n".postln;
+		this doAfterActivate: {
+			if (argId === localId) {
+				postln("\nI will make documents for users:" + this.allUserKeys +"\n");
+				this.allUserKeys do: { | k | this.all[k].makeDocument = true; };
+			}
+		}
+	}
+	*doAfterActivate { | action |
+		this.addDependant({ | who, what |
+			if (what === \activated) { action.value }
+		});
 	}
 
 	*doEnable { | argSessionName |
@@ -81,6 +97,7 @@ User {
 		});
 		postln("Enabled User class for session" + argSessionName);
 		postln("Session folder is:" + sessionPath);
+		this.changed(\enabled);
 	}
 
 	enableCodeForwarding { this.class.enableCodeForwarding }
@@ -160,7 +177,8 @@ User {
 	*activate { | ... argUsers |
 		postln("\nActivating Users:" + argUsers ++"\n");
 		if (argUsers.size == 0) { argUsers = this.allUserKeys; };
-		argUsers do: { | u | this.new(u).activate };
+		argUsers do: { | u | this.new(u.asArray[0]).activate(u.asArray[1]) };
+		this.changed(\activated);
 	}
 
 	activate {
@@ -203,8 +221,14 @@ User {
 
 	document { ^document ?? { document = this.getDocument; }; }
 
+	makeDocument_ { | bool |
+		makeDocument = bool;
+		if (bool) { this.getDocument };
+	}
+
 	getDocument {
 		var documents;
+		if (makeDocument.not) { ^nil }; // skip making document
 		documents = Document.allDocuments;
 		// document = documents detect: { | d | d.name.asSymbol === id };
 		document = documents detect: { | d | d.title.asSymbol === id };
@@ -289,7 +313,7 @@ User {
 		var foundDoc;
 		foundDoc = this.findDocument;
 		foundDoc ?? { ^nil }; // No document to save. Exit silently
-		foundDoc.text.postln;
+		// foundDoc.text.postln;
 	}
 
 	saveAndCloseDocument {
@@ -304,13 +328,10 @@ User {
 
 	*deactivate { | ... argUsers |
 		if (argUsers.size == 0) { argUsers = this.allUserKeys; };
-		argUsers do: { | u | this.new(u).deActivate };
+		argUsers do: { | u | this.new(u).deactivate };
 	}
 
-	deActivate {
-
-		isActive = false;
-	}
+	deactivate { isActive = false; }
 
 	*activeUsers {
 		^this.all.select({|u| u.isActive}).collect(_.id).asArray.sort;
@@ -425,7 +446,7 @@ User {
 		// 100000000:
 		// -- ScIDE (qt) Documents append AT END OF DOCUMENT
 		// -- EMACS (scel) Documents append AT POINT
-		this.document.string_(codeEntry, 100000000);
+		if (makeDocument) { this.document.string_(codeEntry, 100000000); };
 		file !? { file.write(codeEntry) };
 	}
 

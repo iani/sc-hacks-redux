@@ -8,36 +8,53 @@
 }
 
 + Symbol {
-	play { | ... args |
+	play { | player ... args |
 		// Play something at key in currentEnvironment.
 		// If key previously contains a Synth, release it.
 		// If it contains an EventStream, merge it or replace it
 		// Store the result in the new at currenEnvironment.
-		// Mediator stops EventStream when it is replaced - which is ok
-		// - But we handle EventStream merging here for simplicity.
-		var stored;
-		stored = currentEnvironment[this];
-		if (stored isKindOf: EventStream) {
-			if (args[0] isKindOf: Event) { stored mergeEvent: args[0]; };
-			// Starts on quantized beat if ~clock and ~quant are set
-			// in currentEnvironment:
-			if (stored.isPlaying.not) { stored.start };
-			// avoid stopping the EventStream that runs. Do not store!
-			^this;
-		};
-		currentEnvironment[this] = currentEnvironment[this].playArgs(args);
+		case
+		{ player isKindOf: Function } { this.playFunction(player, args) }
+		{ player isKindOf: Event } { this.playEvent(player, args) }
+		{ player isKindOf: Symbol } { this.playSymbol(player, args) }
+		{ postln("symbol" + this + "can't play object of class" + player.class) };
+		// currentEnvironment[this] = currentEnvironment[this].playArgs(args);
 	}
+
+	playFunction { | player, args |
+		currentEnvironment[this].stop(currentEnvironment[\fadeTime] ? 0.1);
+		currentEnvironment[this] = player.play(*args);
+	}
+
+	playEvent { | event, args |
+		var prev;
+		prev = currentEnvironment[this];
+		if (prev isKindOf: EventStream) {
+			prev mergeEvent: event;
+			if (prev.isPlaying.not) { prev.start; };
+		}{
+			prev.stop(currentEnvironment[\fadeTime] ? 0.1);
+			prev = EventStream(event);
+			currentEnvironment[this] = prev;
+			prev.start;
+		};
+	}
+
+	playSymbol { | player, args |
+		var target, addAction;
+		#args, target, addAction = args;
+		currentEnvironment[this].stop(currentEnvironment[\fadeTime] ? 0.1);
+		currentEnvironment[this] = Synth(
+			player, args, target, addAction ? \addToHead
+		).register;
+	}
+
 	play2 { | playFunc, event |
 		// THIS IS OLD play METHOD OF V1, USED TO PLAY SynthTemplate
 		// See Mediator play.
-		// play playfunc in event envir of Mediator named by me
+		// play playfunc in event envir of Mediator named by receiver
 		// Use this	 only in v1 of this libary
 		^Mediator.at(this).play(playFunc, event);
-	}
-
-	storeEventStream { | event | // stops previously playing synths or patterns
-		// and stores a new EventStream without playing it.
-		currentEnvironment[this] = EventStream(event);
 	}
 
 	set { | event |
@@ -66,14 +83,7 @@
 	}
 
 	// ============= NOTE: =============
-	// Symbol:stop is redefined in SystemOverwrites/plusSystemOverwrites.sc
-	// stopp { currentEnvironment[this].free; } // EventStream.stop also locked
-	// Clear EventStream: Remove all keys from its event
-	// doclear { currentEnvironment[this].clear } // clear not overwriteable?
-}
-
-+ Nil {
-	playOrMerge { | args | ^args[0] }
+	// Symbol:stop, clear are redefined in SystemOverwrites/plusSystemOverwrites.sc
 }
 
 + Synth {
@@ -81,23 +91,7 @@
 		if (this.isPlaying) { this release: (~fadeTime ? 0.1); };
 		^args[0].playArgs(args[1..]);
 	}
-	stop { this release: (~fadeTime ? 0.1) }
-}
-
-+ Event { // REVIEW: these methods can be scrapped ?
-	playOrMerge { | args |
-		// postln("Event playOrMerge. Receiver:" + this);
-		// postln("Event playOrMerge. args:" + args);
-		^EventStream(this).start;
+	stop {
+		if (this.isPlaying) { this release: (~fadeTime ? 0.1) }
 	}
-	playArgs { | args |
-		// postln("Event playargs. Receiver:" + this);
-		// postln("Event playArgs. args:" + args);
-		^EventStream(this).start;
-	}
-}
-
-+ Function {
-	playArgs { | args | ^this.play(*args).register; }
-	playOrMerge { | args | ^this.play(*args).register; } // remove this?
 }

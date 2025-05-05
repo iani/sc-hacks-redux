@@ -14,7 +14,10 @@ Mediator : EnvironmentRedirect {
 	*global {// experimental: Use Event instead of Environment
 		^global ?? { global = Event() }
 	}
-	*putGlobal { | key, object | this.global.put(key, object) }
+	*putGlobal { | key, object |
+		this.global.put(key, object);
+		this.changed(key, object);
+	}
 
 	*new { | name, envir |
 		^this.newCopyArgs( // experimental: Use Event instead of Environment

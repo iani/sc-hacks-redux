@@ -206,5 +206,6 @@ EventStream {
 	oscTrigger { | message | message >>> { this.playNext } }
 	removeTrigger { | message |
 		postln("removing trigger for" + message);
-		message >>> nil }
+		message >>> nil
+	}
 }
