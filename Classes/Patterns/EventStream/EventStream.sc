@@ -201,7 +201,7 @@ EventStream {
 		this.mergeEvent(().put(param, value))
 	}
 
-	clear { event = () }
+	clear { event = (); stream = () }
 
 	oscTrigger { | message | message >>> { this.playNext } }
 	removeTrigger { | message |

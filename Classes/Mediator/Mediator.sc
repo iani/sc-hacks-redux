@@ -4,11 +4,13 @@ in its keys. Setting the value of an environment variable in this environment wi
 to guarante that any patterns or synths will stop playing when the reference to them from an environment variable is lost.
 
 See README.
+
+月  5  5 2025 15:53: Adding stacks
 */
 
 Mediator : EnvironmentRedirect {
 	classvar default, global;
-	var <name, busses;
+	var <name, <actions;
 
 	*allKeys { ^this.all.keys.asArray.sort }
 	*global {// experimental: Use Event instead of Environment
@@ -31,6 +33,7 @@ Mediator : EnvironmentRedirect {
 		// Symbol:bin, br etc.
 		// Store name instead of this to maintain postability
 		envir[\mediator] = name;
+		actions = IdentityDictionary();
 	}
 
 	pf { | playfunc |
@@ -76,7 +79,7 @@ Mediator : EnvironmentRedirect {
 	}
 	clear {
 		this.free;
-		this.freeBusses;
+		// this.freeBusses; // TODO: this.freeActions
 		this.makeEnvir;
 	}
 
@@ -100,12 +103,15 @@ Mediator : EnvironmentRedirect {
 			if (s isKindOf: Synth) { s.free };
 		}
 	}
+	// TODO: this.freeActions
+	freeActions {
 
-	fb { this.freeBusses }
-	freeBusses {
-		busses do: _.free;
-		this.makeBusDict;
 	}
+	// fb { this.freeBusses }
+	// freeBusses {
+	// 	busses do: _.free;
+	// 	this.makeBusDict;
+	// }
 
 	playPrototypeBroken { | argPlayFunc, argEvent |
 		argPlayFunc !? { envir[\play] = argPlayFunc; };
@@ -185,11 +191,11 @@ Mediator : EnvironmentRedirect {
 		if (synth isKindOf: Synth) { synth.set(param, value) }
 	}
 
-	setBusses { | keysvalues |
-		keysvalues keysValuesDo: { | key, value |
-			envir[key] = value;
-		};
-	}
+	// setBusses { | keysvalues |
+	// 	keysvalues keysValuesDo: { | key, value |
+	// 		envir[key] = value;
+	// 	};
+	// }
 
 	*all { ^Library.at(this) }
 
@@ -217,8 +223,8 @@ Mediator : EnvironmentRedirect {
 		^this.wrap(func, envirName, true);// use: func;
 	}
 
-	busses { ^busses ?? { this.makeBusDict } }
-	makeBusDict { ^busses = IdentityDictionary(); }
+	// busses { ^busses ?? { this.makeBusDict } }
+	// makeBusDict { ^busses = IdentityDictionary(); }
 
 	playerGui { // TODO: IMPLEMENT THIS.
 		/* List with all players.
@@ -334,7 +340,18 @@ Mediator : EnvironmentRedirect {
 		argPlayer ?? { argPlayer = this.name; };
 		^envir[argPlayer].isPlaying;
 	}
-
+	// V2 extension (月  5  5 2025 23:42 ff)
+	// record actions for recall
+	storeAction { | key, type, player, args |
+		postln("storeAction not implemented." + key + type + player + args);
+		// var stack;
+		// stack = actions[key];
+		// stack ?? { stack = ActionStack(); actions[key] = stack; };
+		// stack push: Action(name, key, type, player, args);
+	}
+}
+// REJECTED:
+/*
 	////////////// V2 Extensions (250212ff) //////////////
 	synthArgs {
 		// create an arg array for making a new synth with values
@@ -346,4 +363,4 @@ Mediator : EnvironmentRedirect {
 		};
 		^theArgs;
 	}
-}
+*/

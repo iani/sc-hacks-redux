@@ -1,26 +1,109 @@
 //: 日  4  5 2025 06:38
 // See also Symbol:play in SymbolOperators.sc
 
-+ Object {
-	play { | args | ^this.playArgs(args); }
-	playArgs { | args | ^args[0].playOrMerge(args[1..]); }
-	playOrMerge { | args | ^this } // remove this?
-}
-
 + Symbol {
+	// TODO: create synth or pattern templates without starting them: ndef, pdef
+	ndef { | source, args, target, addAction = \addToHead, outbus = 0, fadeTime = 0.02 |
+		// postln("experimental: store a synth player in" + this);
+		// NOTE: Templates are unique by name. Calling Template(name) returns
+		// the same instance if previously stored. so only the args
+		switch (source.class,
+			Symbol, {
+				var new, old, oldIsPlaying;
+				new = NodeTemplate(this, source, args, target, addAction);
+				old = currentEnvironment[this];
+				oldIsPlaying = old.isPlaying;
+				(old === new).not.if {
+					old.stop;
+					currentEnvironment[this] = new;
+					if (oldIsPlaying) { new.play };
+				};
+				^new;
+			},
+			Function, {
+				var new, old, oldIsPlaying;
+				new = FunctionNodeTemplate(
+					this, source, args, target, addAction, outbus, fadeTime
+				);
+				old = currentEnvironment[this];
+				oldIsPlaying = old.isPlaying;
+				(old === new).not.if {
+					old.stop;
+					currentEnvironment[this] = new;
+					if (oldIsPlaying) { new.play };
+				};
+				^new;
+			},
+			Nil, { // if no source is given, then set args
+				^this.set(
+					args, target, addAction = \addToHead, outbus = 0, fadeTime = 0.02
+				)
+			},
+			{ // TODO: finish and debug this
+				var new;
+				postln("WARNING: Creating generic PlayerTemplate for a" + source.class);
+				new = PlayerTemplate(this, source);
+				currentEnvironment[this] = new;
+				^new;
+			}
+		)
+	}
+
+	pdef { | source |
+		// postln("experimental: storee a pattern player in" + this);
+		var new, old, oldIsPlaying;
+		new = PatternTemplate(this).mergeEnvir(source ?? { () });
+		old = currentEnvironment[this];
+		oldIsPlaying = old.isPlaying;
+		(old === new).not.if {
+			old.stop;
+			currentEnvironment[this] = new;
+			if (oldIsPlaying) { new.play };
+		}
+		^new;
+	}
+
 	play { | player ... args |
 		// Play something at key in currentEnvironment.
 		// If key previously contains a Synth, release it.
 		// If it contains an EventStream, merge it or replace it
 		// Store the result in the new at currenEnvironment.
 		case
-		{ player isKindOf: Function } { this.playFunction(player, args) }
-		{ player isKindOf: Event } { this.playEvent(player, args) }
-		{ player isKindOf: Symbol } { this.playSymbol(player, args) }
+		{ currentEnvironment[this] === nil } {
+			^this.ndef(player ?? {{Silent.ar}}, *args).play;
+		}
+		{ player isKindOf: Function } {
+			var old, new;
+			old = currentEnvironment[this];
+			new = this.ndef(player, *args);
+			(old === new).not.if { old.stop };
+			if (new.isPlaying.not) { { new.play }.defer(0.1); }
+			// this causes duplicates. could not determine cause:
+			// if (new.isPlaying.not) { new.play; } // this causes duplicates!
+		}
+		// { player isKindOf: Symbol } { ^this.ndef(player, *args).play }
+		{ player isKindOf: Symbol }{
+			var old, new;
+			old = currentEnvironment[this];
+			new = this.ndef(player, *args);
+			(old === new).not.if { old.stop };
+			if (new.isPlaying.not) { { new.play }.defer(0.1); }
+			// this causes duplicates. could not determine cause:
+			// if (whatever.isPlaying.not) { whatever.play; }
+		}
+		{ player isKindOf: Nil } { ^currentEnvironment[this].play;}
+		{ player isKindOf: Event } {
+			this.pdef(player, args).play
+		}
 		{
+			// this breaks things in most cases.
+			// Unpredictable stuff is stored in environment
 			postln("Playing:" + currentEnvironment[this]);
-			currentEnvironment[this].play;
+			player = currentEnvironment[this].play; // PlayerTemplate!
+			currentEnvironment[this] = player;
 		};
+		// TODO: maybe different types should store differently?
+		// currentEnvironment.storeAction(this, \play, player, args);
 	}
 
 	playFunction { | player, args |
@@ -51,17 +134,24 @@
 		).register;
 	}
 
+	playTemplate { | player, args |
+
+	}
+
 	set { | ... args |
 		var player;
 		player = currentEnvironment[this];
 		case
 		{ player isKindOf: Synth } { this.setSynth(player, args) }
 		{ player isKindOf: EventStream } { this.setEventStream(player, args) }
-		// { player.isNil } { "caught ja".postln; }
-		{ player.isNil } {
-			player = EventStream(());
-			player mergeEvent: args.args2event;
-			// this.setEventStream(player, args);
+		{ player.isNil } { // choose template type from args types
+			var firstArg;
+			firstArg = args[0];
+			case
+			{ firstArg isKindOf: Symbol } { player = NodeTemplate(this, *args) }
+			{ firstArg isKindOf: Function } { player = NodeTemplate(this, *args) }
+			{ firstArg isKindOf: Event } { player = PatternTemplate(this, *args) }
+			{ player = PlayerTemplate(this, *args) }; // generic
 			currentEnvironment[this] = player;
 		}
 		{
@@ -70,7 +160,8 @@
 			currentEnvironment[this].stop(currentEnvironment[\fadeTime] ? 0.1);
 			if (args.size == 1) { args = args[0] };
 			currentEnvironment[this] = args;
-		}
+		};
+		currentEnvironment.storeAction(this, \set, player, args);
 	}
 
 	setEventStream { | estream, args |
@@ -82,8 +173,9 @@
 		{ arg0 isKindOf: Symbol }{ event = args.asEvent; }
 		{
 			postln(
-				"I can;t deal with first argument of type" + arg0.class
+				"I cannot deal with first argument of type" + arg0.class;
 			);
+			"Merging empty event to current stream".postln;
 			event = ();
 		};
 		estream mergeEvent: event;
@@ -147,3 +239,11 @@
 		^event;
 	}
 }
+
+/* // DISCARDED 火  6  5 2025 06:28
++ Object {
+	play { | args | ^this.playArgs(args); }
+	playArgs { | args | ^args[0].playOrMerge(args[1..]); }
+	playOrMerge { | args | ^this } // remove this?
+}
+*/

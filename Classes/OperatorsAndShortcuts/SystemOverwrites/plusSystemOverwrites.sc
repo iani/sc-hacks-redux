@@ -30,13 +30,15 @@ WARNING: Extension in '/Users/iani/Library/Application Support/SuperCollider/Ext
 	}
 }
 
-+ Symbol {
-		// Symbol:stop must be overwritten in SystemOverWrites folder
-		// Otherwise the compiler will not overwrite this method
-	stop { currentEnvironment[this].stop; }
-	clear {
-		postln("clear: stored an empty stream on" + this);
-		this.stop; // first stop previous contents to prevent runaway orphans
-		this storeEventStream: ();
++ Symbol { // stop Node/Function/Pattern Template stored at my address
+		// Symbol:stop, clear must be overwritten in SystemOverWrites folder
+		// Otherwise the compiler will not overwrite these methods
+	stop {
+		// postln("performing symbol stop for" + this);
+		// postln("sending stop to" + currentEnvironment[this]);
+		currentEnvironment[this].stop;
+	}
+	clear { // clear Node/Function/Pattern Template stored at my address
+		currentEnvironment[this].clear;
 	}
 }
