@@ -165,26 +165,16 @@
 		var player;
 		player = currentEnvironment[this];
 		case
+		{ player isKindOf: PlayerTemplate } { player.set(*args) }
 		{ player isKindOf: Synth } { this.setSynth(player, args) }
 		{ player isKindOf: EventStream } { this.setEventStream(player, args) }
 		{ player.isNil } { // choose template type from args types
-			var firstArg;
-			firstArg = args[0];
-			case
-			{ firstArg isKindOf: Symbol } { player = NodeTemplate(this, *args) }
-			{ firstArg isKindOf: Function } { player = NodeTemplate(this, *args) }
-			{ firstArg isKindOf: Event } { player = PatternTemplate(this, *args) }
-			{ player = PlayerTemplate(this, *args) }; // generic
-			currentEnvironment[this] = player;
+			if (args.size = 1) {
+				currentEnvironment[this] = args.first;
+			}{
+				currentEnvironment[this] = args;
+			}
 		}
-		{
-			postln("symbol" + this + "can't set object of class" + player.class);
-			"I will replace the object stored with the new arguments".postln;
-			currentEnvironment[this].stop(currentEnvironment[\fadeTime] ? 0.1);
-			if (args.size == 1) { args = args[0] };
-			currentEnvironment[this] = args;
-		};
-		currentEnvironment.storeAction(this, \set, player, args);
 	}
 
 	setEventStream { | estream, args |

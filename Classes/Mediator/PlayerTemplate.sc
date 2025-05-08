@@ -5,7 +5,7 @@ PlayerTemplate : NamedSingleton2 { // neutral.  source specifies default behavio
 	classvar permanent; // any instances added here will restart after CmdPeriod
 	var <>source;
 	var <process; // the running process of this player. A Synth or EventStream.
-	var <argDict; // accumulate arg settings
+	var argDict; // accumulate arg settings
 	// in FunctionNodeTemplate, and NodeTemplate
 	init { | argSource |
 		source = argSource ?? { this.defaultSource };
@@ -13,6 +13,7 @@ PlayerTemplate : NamedSingleton2 { // neutral.  source specifies default behavio
 
 	defaultSource { ^\default }
 	defaultArgs { ^Array.new }
+	argDict { ^argDict ?? { argDict = () } }
 
 	printOn { | stream |
 		if (stream.atLimit) { ^this };
@@ -136,10 +137,16 @@ NodeTemplate : PlayerTemplate { // for synths
 	clear { args = []; }
 
 	set { | ... newArgs |
-
+		if (newArgs[0] isKindOf: Event) {
+			newArgs = newArgs[0]
+		};
+		args = (argDict ?? { argDict = (); }) mergeArgs: newArgs;
+		this.updateProcessControls;
 	}
 
-	updateProcessControls { this.isPlaying.if { process.set(*this.synthArgs); } }
+	updateProcessControls {
+		this.isPlaying.if { process.set(*this.synthArgs); }
+	}
 	synthArgs { ^args } // FunctionNode adds outbus, fadeTime
 
 	outbus { ^argDict[\out] ? 0 }
@@ -198,12 +205,23 @@ FunctionNodeTemplate : NodeTemplate { // for synths
 		// 	+ "addAction" + addAction + "args" + this.getArgs;
 		// );
 		// ^this;
+		this.fixOutAndFadeTime;
 		^process = source.play(
 			target, outbus, fadeTime, addAction, this.getArgs
 		).register;
 	}
 
-	synthArgs { ^args ++ [out: outbus, fadeTime: fadeTime] }
+	fixOutAndFadeTime {
+		this.argDict[\out].notNil { outbus = argDict[\out] };
+		this.argDict[\fadeTime].notNil { fadeTime = argDict[\fadeTime] };
+	}
+
+	synthArgs {
+		argDict ?? { argDict = () };
+		argDict[\out] ?? { argDict[\out] = outbus ? 0 };
+		argDict[\fadeTime] ?? { argDict[fadeTime] = fadeTime ? 0.02 };
+		^argDict.keys.asArray.collect({ | key | [key, argDict[key]] }).flat;
+	}
 
 	getParametersFrom { | old |
 		old !? {
@@ -211,9 +229,6 @@ FunctionNodeTemplate : NodeTemplate { // for synths
 		outbus = old.outbus ? 0;
 		fadeTime = old.fadeTime ? 0.01;
 		};
-		// postln("FunctionNodeTemplate:getParametersFrom out" + outbus
-		// 	+ "fadeTime" + fadeTime
-		// )
 	}
 }
 
