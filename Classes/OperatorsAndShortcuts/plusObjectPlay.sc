@@ -3,7 +3,7 @@
 
 + Symbol {
 	// arguments as expected from all types of Templates
-	ndef { | source, args, target, addAction = \addToHead, outbus = 0, fadeTime = 0.02 |
+	ndef { | source, args, target, addAction = \addToHead, outbus, fadeTime = 0.02 |
 		switch (source.class,
 			Symbol, {
 				var new, old, oldIsPlaying;
@@ -12,6 +12,7 @@
 				oldIsPlaying = old.isPlaying;
 				(old === new).not.if {
 					old.stop;
+					// new getParametersFrom: old;
 					currentEnvironment[this] = new;
 					if (oldIsPlaying) { new.play };
 				};
@@ -25,8 +26,11 @@
 				);
 				old = currentEnvironment[this];
 				oldIsPlaying = old.isPlaying;
-				(old === new).not.if {
+				(old === new).if {
+					old.updateProcessControls;
+				} {
 					old.stop;
+					// new getParametersFrom: old;
 					currentEnvironment[this] = new;
 					if (oldIsPlaying) { new.play };
 				};
@@ -99,7 +103,6 @@
 			// this causes duplicates. could not determine cause:
 			// if (new.isPlaying.not) { new.play; } // this causes duplicates!
 		}
-		// { player isKindOf: Symbol } { ^this.ndef(player, *args).play }
 		{ source isKindOf: Symbol }{
 			var old, new;
 			old = currentEnvironment[this];

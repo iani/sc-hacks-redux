@@ -52,6 +52,11 @@ PlayerTemplate : NamedSingleton2 { // neutral.  source specifies default behavio
 		// synth when a new source is set. (Even if it is the same...)
 		// if (newValue === this) {} { this.stop; };
 	}
+
+	getParametersFrom { | old |
+		postln("impementation for" + this + "getParametersFrom:" + old +"pending");
+
+	}
 }
 
 NodeTemplate : PlayerTemplate { // for synths
@@ -71,69 +76,41 @@ NodeTemplate : PlayerTemplate { // for synths
 		source = argSource;
 		target = argTarget.asTarget;
 		addAction = argAddAction;
-		// postln("Checking args before merging. argDict is:" + argDict + "args are:" + args);
 		args = (argDict ?? { argDict = (); }) mergeArgs: argArgs;
-		// postln("Checking args AFTER merging. argDict is:" + argDict + "args are:" + args);
-		// if (this.isPlaying) { this.stop; this.play; };
 		(this.isPlaying and: sourceHasChanged).if {
 			this.prStop;
 			this.prPlay;
-			// "Will restart in 1".postln;
-			// { this.play; }.defer(0.5);
 		}{
-			// postln("Checking args before resending. args are:\n" ++ args);
-			this.resendArgs;
+			this.updateProcessControls;
 		}
 	}
 	sourceHasChanged { | argSource |
 		var prevdef, thisdef;
-		// postln("confirming: this is compareSources of class: NodeTemplate");
-		prevdef = source; // .def.sourceCode;
-		thisdef = argSource; // (argSource ?? { {"x"} }).def.sourceCode;
-		// "---------".postln;
-		// ("prevdef: " + prevdef).postln;
-		// "---------".postln;
-		// ("thisdef: " + thisdef).postln;
-		// postln("-------- thisdef == prevdef?" + (thisdef == prevdef));
-		// postln("debugging sourceHasChanged NodeTemplate. has it changed?" + (thisdef == prevdef).not);
+		prevdef = source;
+		thisdef = argSource;
 		^(thisdef == prevdef).not
 	}
 
-	resendArgs {
-		// TODO: FunctionNodeTemplate may want to send outbus and fadeTime, too!
-		// postln("resend args for" + this + "args are" + args);
-		if (this.isPlaying) { process.set(*args) }
-	}
 
 	play { // do not return Synth. Return self.
-		// this.isPlaying.if { ^process } { ^this.prPlay }
-		this.isPlaying.if { process } { this.prPlay }
+		this.isPlaying.if { this.updateProcessControls; }
+		{this.prPlay}
 	}
-
 	prPlay { ^process = Synth(source, args, target, addAction).register; }
-
-	stop {
-		// postln("Stopping:" + this);
-		// postln("Is it playing?" + this.isPlaying);
-		// this.isPlaying.if { "I will stop".postln } { "I will not stop".postln; };
-		this.isPlaying.if { this.prStop };
-	}
-
+	stop { this.isPlaying.if { this.prStop }; }
 	prStop { process.stop }
+	 // empty arguments  // NOTE: keep argDict? What for?
+	clear { args = []; }
 
-	clear { // empty arguments
-		args = []; // NOTE: keep argDict? What for?
+	set { | ... newArgs |
+
 	}
-	updateProcessControls {
-		this.isPlaying.if {
-			process.set(*args);
-			// this.moveSynth;
-		}
-	}
+
+	updateProcessControls { this.isPlaying.if { process.set(*this.synthArgs); } }
+	synthArgs { ^args } // FunctionNode adds outbus, fadeTime
 
 	// TODO: move synth to new position of addAction and new target if needed
 	// moveSynth {  }
-
 }
 
 FunctionNodeTemplate : NodeTemplate { // for synths
@@ -141,65 +118,45 @@ FunctionNodeTemplate : NodeTemplate { // for synths
 	// Function:play, because placing args at the end is dumb.
 	// the order here is chosen on purpose
 	// Copying from Synth:play and adding outbuss and fadeTime last!
-	var <outbus = 0, <fadeTime = 0.02;
-	// original:
-	// play { arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args;
-	// from compiled sc-hacks-redux (may be the same!)
-	// play { arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args;
+	var <outbus, <fadeTime = 0.02;
 	// TODO: Resolve this outbus vs out inconsistency in Function:asDef
     defaultSource {
-		// "defaultSource of FunctionNodeTemplate creates a function".postln;
-		^{ | outbus = 0, freq = 400, amp = 0.1 |
+		^{ | freq = 400, amp = 0.1 |
 			SinOsc.ar(freq, 0, amp).dup;
 		}
 	}
 	init { | argSource, argArgs, argTarget, argAddAction = \addToHead,
-		argOutbus = 0, argFadeTime = 0.01 |
-		postln(
-			"argSource" + argSource + "argArgs" + argArgs
-			+ argTarget + argTarget + "argOutbus" + argOutbus + "argFadeTime" + argFadeTime
-		);
+		argOutbus, argFadeTime = 0.01 |
+		argDict ?? { argDict = () };
 		if (argSource.isNil) { ^this }; // ignore empty sources
-		// postln("CHecking restart. argsource != source:" + (argSource != source));
-		// postln("this.isPlaying:" + this.isPlaying);
-		// postln("argsource is different + this is playing" + ((argSource != source) and: { this.isPlaying }));
-		// restart = (argSource != source) and: { this.isPlaying };
-		outbus = argOutbus;
+		if (argOutbus.isNil) {
+			args = (argDict ?? { argDict = (); }) mergeArgs: argArgs;
+			if (argDict[\out].isNil) {
+				outbus = argOutbus ? 0;
+				argDict[\out] = outbus;
+			}{
+				outbus = argDict[\out]
+			}
+		}{
+			outbus = argOutbus;
+			argDict[\out] = outbus;
+		};
 		fadeTime = argFadeTime;
 		super.init(argSource, argArgs, argTarget, argAddAction);
 		// source = argSource ?? { this.defaultSource };
 	}
 	sourceHasChanged { | argSource |
 		var prevdef, thisdef;
-		// postln("confirming: this is compareSources of class: FunctionTemplate");
 		prevdef = source.def.sourceCode;
 		thisdef = argSource.def.sourceCode;
-		// "---------".postln;
-		// prevdef.postln;
-		// "---------".postln;
-		// thisdef.postln;
-		// postln("-------- thisdef == prevdef?" + (thisdef == prevdef));
-		// postln("debugging sourceHasChanged FunctionNodeTemplate. has it changed?" + (thisdef == prevdef).not);
 		^(thisdef == prevdef).not
 	}
-	// play {
-	// 	this.isPlaying.if { ^process } { ^this.prPlay }
-	// }
 
 	prPlay {
 		^process = source.play(target, outbus, fadeTime, addAction, args).register;
 	}
 
-	// updateProcessControls {
-		// super.updateProcessControls;
-		// TODO: Implement these
-		// this.setOutbus;
-		// this.setFadeTime;
-	// }
-
-	// TODO: Implement these
-	// setOutbus {}
-	// setFadeTime {}
+	synthArgs { ^args ++ [out: outbus, fadeTime: fadeTime] }
 }
 
 
