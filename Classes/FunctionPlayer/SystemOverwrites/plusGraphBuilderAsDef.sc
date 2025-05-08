@@ -17,7 +17,7 @@
 	// store rate to free control rate synths
 	*wrapOut { arg name, func, rates, prependArgs, outClass=\Out, fadeTime;
 		// postln("This is GraphBuilder:wrapOut. fadeTime is:" + fadeTime);
-		^SynthDef.new(name, { arg i_out=0;
+		^SynthDef.new(name, { arg out=0;
 			var result, rate, env;
 			result = SynthDef.wrap(func, rates, prependArgs).asUGenInput;
 			rate = result.rate;
@@ -37,7 +37,7 @@
 				};
 				outClass = outClass.asClass;
 				outClass.replaceZeroesWithSilence(result.asArray);
-				outClass.multiNewList([rate, i_out]++result)
+				outClass.multiNewList([rate, out]++result)
 			}
 		})
 	}

@@ -155,6 +155,10 @@ FunctionNodeTemplate : NodeTemplate { // for synths
 	}
 	init { | argSource, argArgs, argTarget, argAddAction = \addToHead,
 		argOutbus = 0, argFadeTime = 0.01 |
+		postln(
+			"argSource" + argSource + "argArgs" + argArgs
+			+ argTarget + argTarget + "argOutbus" + argOutbus + "argFadeTime" + argFadeTime
+		);
 		if (argSource.isNil) { ^this }; // ignore empty sources
 		// postln("CHecking restart. argsource != source:" + (argSource != source));
 		// postln("this.isPlaying:" + this.isPlaying);

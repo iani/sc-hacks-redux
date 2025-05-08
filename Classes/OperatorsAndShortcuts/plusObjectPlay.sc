@@ -2,11 +2,8 @@
 // See also Symbol:play in SymbolOperators.sc
 
 + Symbol {
-	// TODO: create synth or pattern templates without starting them: ndef, pdef
+	// arguments as expected from all types of Templates
 	ndef { | source, args, target, addAction = \addToHead, outbus = 0, fadeTime = 0.02 |
-		// postln("experimental: store a synth player in" + this);
-		// NOTE: Templates are unique by name. Calling Template(name) returns
-		// the same instance if previously stored. so only the args
 		switch (source.class,
 			Symbol, {
 				var new, old, oldIsPlaying;
@@ -22,6 +19,7 @@
 			},
 			Function, {
 				var new, old, oldIsPlaying;
+				old = currentEnvironment[this];
 				new = FunctionNodeTemplate(
 					this, source, args, target, addAction, outbus, fadeTime
 				);
@@ -34,10 +32,23 @@
 				};
 				^new;
 			},
-			Nil, { // if no source is given, then set args
-				^this.set(
-					args, target, addAction = \addToHead, outbus = 0, fadeTime = 0.02
-				)
+			Nil, { // if no source is given, then return NodeTemplate - or make one
+				var player;
+				player = currentEnvironment[this];
+				player.isKindOf(NodeTemplate).if {
+					^player;
+				}{
+					var isPlaying;
+					isPlaying = player.isPlaying;
+					player.stop;
+					source = { Silent.ar };
+					player = FunctionNodeTemplate(
+						this, source, args, target, addAction, outbus, fadeTime
+					);
+					currentEnvironment[this] = player;
+					if (isPlaying) { { player.start }.defer(0.1) }
+					^player;
+				}
 			},
 			{ // TODO: finish and debug this
 				var new;
@@ -63,44 +74,51 @@
 		^new;
 	}
 
-	play { | player ... args |
+	// accept args to pass to ndef
+	play { | source, args, target, addAction = \addToHead, outbus = 0, fadeTime = 0.02 |
 		// Play something at key in currentEnvironment.
 		// If key previously contains a Synth, release it.
 		// If it contains an EventStream, merge it or replace it
 		// Store the result in the new at currenEnvironment.
 		case
 		{ currentEnvironment[this] === nil } {
-			^this.ndef(player ?? {{Silent.ar}}, *args).play;
+			^this.ndef(
+				source ?? {{Silent.ar}},
+				args, target, addAction, outbus, fadeTime
+			).play;
 		}
-		{ player isKindOf: Function } {
+		{ source isKindOf: Function } {
 			var old, new;
 			old = currentEnvironment[this];
-			new = this.ndef(player, *args);
+			new = this.ndef(
+				source ?? {{Silent.ar}},
+				args, target, addAction, outbus, fadeTime
+			).play;
 			(old === new).not.if { old.stop };
 			if (new.isPlaying.not) { { new.play }.defer(0.1); }
 			// this causes duplicates. could not determine cause:
 			// if (new.isPlaying.not) { new.play; } // this causes duplicates!
 		}
 		// { player isKindOf: Symbol } { ^this.ndef(player, *args).play }
-		{ player isKindOf: Symbol }{
+		{ source isKindOf: Symbol }{
 			var old, new;
 			old = currentEnvironment[this];
-			new = this.ndef(player, *args);
+			new = this.ndef(source, *args);
 			(old === new).not.if { old.stop };
 			if (new.isPlaying.not) { { new.play }.defer(0.1); }
 			// this causes duplicates. could not determine cause:
 			// if (whatever.isPlaying.not) { whatever.play; }
 		}
-		{ player isKindOf: Nil } { ^currentEnvironment[this].play;}
-		{ player isKindOf: Event } {
-			this.pdef(player, args).play
+		{ source isKindOf: Nil } { ^currentEnvironment[this].play;}
+		{ source isKindOf: Event } {
+			this.pdef(source, args).play
 		}
 		{
 			// this breaks things in most cases.
 			// Unpredictable stuff is stored in environment
 			postln("Playing:" + currentEnvironment[this]);
-			player = currentEnvironment[this].play; // PlayerTemplate!
-			currentEnvironment[this] = player;
+			source = currentEnvironment[this].play; // PlayerTemplate!
+			currentEnvironment[this] = source;
 		};
 		// TODO: maybe different types should store differently?
 		// currentEnvironment.storeAction(this, \play, player, args);
