@@ -3,11 +3,17 @@
 
 Stack {
 	var <>maxSize = 1000000;
+	var <>verbose = false;
 	var <stack;
+	*new { | maxSize = 1000000, verbose = false |
+		^this.newCopyArgs(maxSize, verbose);
+	}
 	push { | something |
 		stack = stack add: something;
 		if (stack.size > maxSize) {
+			verbose.if {
 			"Stack overflow. Discarding bottom element of stack".postln;
+			};
 			stack = stack[1..];
 		} // keep stack size finite
 	}
