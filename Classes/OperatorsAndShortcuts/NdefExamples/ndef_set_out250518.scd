@@ -1,6 +1,12 @@
 \x.ndef({ | amp = 0.1 | WhiteNoise.ar(amp)}, outbus: 1);
 \x.play;
+\x.set(\out, 0);
+\x.set(\out, 1);
+\x.set(\amp, 0.1);
 
+~x.argDict;
+
+\x.set(\out, 0);
 \x.ndef({ | amp = 0.1 | WhiteNoise.ar(amp)}, outbus: 0);
 
 ~x.outbus;
