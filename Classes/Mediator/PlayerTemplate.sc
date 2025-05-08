@@ -54,29 +54,59 @@ PlayerTemplate : NamedSingleton2 { // neutral.  source specifies default behavio
 	}
 
 	getParametersFrom { | old |
-		postln("impementation for" + this + "getParametersFrom:" + old +"pending");
+		// Get extra parameters from previous template
+		// Do not overwrite parameters created by your args!
+		// "========= GETTING PARAMETERS =========".postln;
+		var newp, oldp;
+		if (old.isNil) {
+			^this;
+		};
+		newp = argDict ?? { argDict = () };
+		oldp = old.argDict;
+		// postln("Getting parameters. new" + newp + "old" + oldp);
+		oldp keysValuesDo: { | key, value |
+			// newp[key] ?? { newp[key] = value }
+			 newp[key] = value;
+		};
+		if (old isKindOf: FunctionNodeTemplate) {
+			argDict[\out] = old.outbus;
+			argDict[\fadeTime] = old.fadeTime;
+		};
+		// postln("NodeTemplate:getParametersFrom out" + argDict[\out]
+		// 	+ "fadeTime" + argDict[\fadeTime]
+		// )
+		// postln("AFTER Getting parameters. my argDict is" + argDict);
+	}
 
+	parameters { ^argDict ?? { () } }
+	getArgs {
+		^this.parameters.keys.asArray.sort.collect({ | key |
+			[key, argDict[key]]
+		}).flat;
 	}
 }
 
 NodeTemplate : PlayerTemplate { // for synths
 	var <args, <target, <addAction = \addToHead;
-	// var sourceHistory; // for checking if source has changed and must restart;
 	defaultSource { ^\default }
 
-	init { | argSource, argArgs, argTarget, argAddAction = \addToHead |
+	init { | argSource, old, argArgs, argTarget, argAddAction = \addToHead |
 		var sourceHasChanged;
-		// TODO: Revisit this: what to do when previous source or new source are nil???
-		// ????????????????????????????????????????????????????????
-		// TODO: if source is nil, play silent synth.
+		// postln("NodeTemplate:init argSource is" + argSource);
 		source ?? { source = this.defaultSource };
-		// TODO: empty source means play silence, or update args????
 		argSource ?? { argSource = this.defaultSource };
 		sourceHasChanged = this.sourceHasChanged(argSource);
 		source = argSource;
+		// postln("NodeTemplate:init SOURCE!!! is" + source);
 		target = argTarget.asTarget;
 		addAction = argAddAction;
+		// first get parameters from older instance,
+		// then merge the arguments in your dict.
+		this getParametersFrom: old;
 		args = (argDict ?? { argDict = (); }) mergeArgs: argArgs;
+		// "\n\nDEBUGGING MERGED ARGS!".postln;
+		// postln("The argDict after merging is:" + argDict);
+		// "\n\n".postln;
 		(this.isPlaying and: sourceHasChanged).if {
 			this.prStop;
 			this.prPlay;
@@ -94,9 +124,12 @@ NodeTemplate : PlayerTemplate { // for synths
 
 	play { // do not return Synth. Return self.
 		this.isPlaying.if { this.updateProcessControls; }
-		{this.prPlay}
+		{ this.prPlay }
 	}
-	prPlay { ^process = Synth(source, args, target, addAction).register; }
+	prPlay {
+		^process = Synth(source, this.getArgs, target, addAction).register;
+	}
+
 	stop { this.isPlaying.if { this.prStop }; }
 	prStop { process.stop }
 	 // empty arguments  // NOTE: keep argDict? What for?
@@ -109,6 +142,8 @@ NodeTemplate : PlayerTemplate { // for synths
 	updateProcessControls { this.isPlaying.if { process.set(*this.synthArgs); } }
 	synthArgs { ^args } // FunctionNode adds outbus, fadeTime
 
+	outbus { ^argDict[\out] ? 0 }
+	fadeTime { ^argDict[\fadeTime] ? 0.02 }
 	// TODO: move synth to new position of addAction and new target if needed
 	// moveSynth {  }
 }
@@ -125,25 +160,29 @@ FunctionNodeTemplate : NodeTemplate { // for synths
 			SinOsc.ar(freq, 0, amp).dup;
 		}
 	}
-	init { | argSource, argArgs, argTarget, argAddAction = \addToHead,
+	init { | argSource, old, argArgs, argTarget, argAddAction = \addToHead,
 		argOutbus, argFadeTime = 0.01 |
 		argDict ?? { argDict = () };
-		if (argSource.isNil) { ^this }; // ignore empty sources
-		if (argOutbus.isNil) {
-			args = (argDict ?? { argDict = (); }) mergeArgs: argArgs;
-			if (argDict[\out].isNil) {
-				outbus = argOutbus ? 0;
-				argDict[\out] = outbus;
-			}{
-				outbus = argDict[\out]
-			}
-		}{
+		if (argSource.isNil) { // ignore empty sources
+			postln("WARNING: trying to init FunctionNodeTemplate" + name +
+			"with source nil.\nABORTING")
+			^this
+		};
+		super.init(argSource, old, argArgs, argTarget, argAddAction);
+		// reconcile outbus with out
+		// NOTE: This is for compatibility with Function:play
+		if (argOutbus.notNil) {
 			outbus = argOutbus;
 			argDict[\out] = outbus;
+		}{
+			outbus = argDict[\out] ? 0;
 		};
-		fadeTime = argFadeTime;
-		super.init(argSource, argArgs, argTarget, argAddAction);
-		// source = argSource ?? { this.defaultSource };
+		if (argFadeTime.notNil) {
+			fadeTime = argFadeTime;
+			argDict[\fadeTime] = argFadeTime;
+		}{
+			fadeTime = argDict[\fadeTime] ? 0.02;
+		}
 	}
 	sourceHasChanged { | argSource |
 		var prevdef, thisdef;
@@ -153,18 +192,38 @@ FunctionNodeTemplate : NodeTemplate { // for synths
 	}
 
 	prPlay {
-		^process = source.play(target, outbus, fadeTime, addAction, args).register;
+		// "Debugging FunctionNodeTemplate.play".postln;
+		// postln("source" + source + "target" + target
+		// 	+ "outbus" + outbus + "fadeTime" + fadeTime
+		// 	+ "addAction" + addAction + "args" + this.getArgs;
+		// );
+		// ^this;
+		^process = source.play(
+			target, outbus, fadeTime, addAction, this.getArgs
+		).register;
 	}
 
 	synthArgs { ^args ++ [out: outbus, fadeTime: fadeTime] }
+
+	getParametersFrom { | old |
+		old !? {
+		super getParametersFrom: old;
+		outbus = old.outbus ? 0;
+		fadeTime = old.fadeTime ? 0.01;
+		};
+		// postln("FunctionNodeTemplate:getParametersFrom out" + outbus
+		// 	+ "fadeTime" + fadeTime
+		// )
+	}
 }
 
-
+// NOTE: The internal code is independent from that of NodeTemplate,
+// but keeping it as subclass for consistency with \symbol.ndef etc.
 PatternTemplate : PlayerTemplate { // for EventStreams
 
 	init { | argSource | // argSource rarely used
 		// Symbol:pdef does the merging with mergeEnvir.
-		var sourceHasChanged;
+		// var sourceHasChanged;
 		// initialise an empty stream upon creation.
 		source ?? { source = this.defaultSource };
 		process = source;

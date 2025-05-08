@@ -4,17 +4,32 @@
 + Symbol {
 	// arguments as expected from all types of Templates
 	ndef { | source, args, target, addAction = \addToHead, outbus, fadeTime = 0.02 |
+		// postln("debugging ndef");
 		switch (source.class,
 			Symbol, {
 				var new, old, oldIsPlaying;
-				new = NodeTemplate(this, source, args, target, addAction);
+				// "this is ndef symbol".postln;
 				old = currentEnvironment[this];
+				new = NodeTemplate(this, source, old, args, target, addAction);
 				oldIsPlaying = old.isPlaying;
+				// postln("OLd is" + old + "old is playing is" + oldIsPlaying);
 				(old === new).not.if {
-					old.stop;
+					// "This is new and I should stop old and start new".postln;
+					// This is now done internally at init method:
 					// new getParametersFrom: old;
+					old.stop;
 					currentEnvironment[this] = new;
-					if (oldIsPlaying) { new.play };
+					// "I am checking if old is playing".postln;
+					// postln("old is playing is" + oldIsPlaying);
+					if (oldIsPlaying) {
+						// "now I run new.play".postln;
+						// postln("new is" + new);
+						// postln("new source is" + new.source);
+						// postln("new play args are" + new.getArgs);
+						new.play;
+					}{
+						// "I did not run new.play".postln;
+					};
 				};
 				^new;
 			},
@@ -22,37 +37,33 @@
 				var new, old, oldIsPlaying;
 				old = currentEnvironment[this];
 				new = FunctionNodeTemplate(
-					this, source, args, target, addAction, outbus, fadeTime
+					this, source, old, args, target, addAction, outbus, fadeTime
 				);
-				old = currentEnvironment[this];
 				oldIsPlaying = old.isPlaying;
+				// "\n========= CHECKING OLD VS NEW ORDER ============".postln;
+				// postln("old is" + old);
+				// postln("new is" + new);
+				// postln("old params are" + old.getArgs);
+				// postln("new params are" + new.getArgs);
+
 				(old === new).if {
 					old.updateProcessControls;
 				} {
-					old.stop;
+					// This is now done internally at init method:
 					// new getParametersFrom: old;
+					old.stop;
 					currentEnvironment[this] = new;
 					if (oldIsPlaying) { new.play };
 				};
 				^new;
 			},
-			Nil, { // if no source is given, then return NodeTemplate - or make one
-				var player;
-				player = currentEnvironment[this];
-				player.isKindOf(NodeTemplate).if {
-					^player;
-				}{
-					var isPlaying;
-					isPlaying = player.isPlaying;
-					player.stop;
-					source = { Silent.ar };
-					player = FunctionNodeTemplate(
-						this, source, args, target, addAction, outbus, fadeTime
-					);
-					currentEnvironment[this] = player;
-					if (isPlaying) { { player.start }.defer(0.1) }
-					^player;
-				}
+			Nil, {
+				var old, new;
+				old = currentEnvironment[this];
+				if (old isKindOf: PlayerTemplate) { ^old };
+				new = this.ndef({ Silent.ar });
+				currentEnvironment[this] = new;
+				^new;
 			},
 			{ // TODO: finish and debug this
 				var new;
@@ -85,19 +96,11 @@
 		// If it contains an EventStream, merge it or replace it
 		// Store the result in the new at currenEnvironment.
 		case
-		{ currentEnvironment[this] === nil } {
-			^this.ndef(
-				source ?? {{Silent.ar}},
-				args, target, addAction, outbus, fadeTime
-			).play;
-		}
+		{ source isKindOf: Nil } { ^this.ndef.play; }
 		{ source isKindOf: Function } {
 			var old, new;
 			old = currentEnvironment[this];
-			new = this.ndef(
-				source ?? {{Silent.ar}},
-				args, target, addAction, outbus, fadeTime
-			).play;
+			new = this.ndef(source, args, target, addAction, outbus, fadeTime);
 			(old === new).not.if { old.stop };
 			if (new.isPlaying.not) { { new.play }.defer(0.1); }
 			// this causes duplicates. could not determine cause:
@@ -106,13 +109,12 @@
 		{ source isKindOf: Symbol }{
 			var old, new;
 			old = currentEnvironment[this];
-			new = this.ndef(source, *args);
+			new = this.ndef(source, old, *args);
 			(old === new).not.if { old.stop };
 			if (new.isPlaying.not) { { new.play }.defer(0.1); }
 			// this causes duplicates. could not determine cause:
 			// if (whatever.isPlaying.not) { whatever.play; }
 		}
-		{ source isKindOf: Nil } { ^currentEnvironment[this].play;}
 		{ source isKindOf: Event } {
 			this.pdef(source, args).play
 		}
@@ -260,6 +262,8 @@
 		^event;
 	}
 }
+
++ Nil { getArgs { ^[] } }
 
 /* // DISCARDED 火  6  5 2025 06:28
 + Object {

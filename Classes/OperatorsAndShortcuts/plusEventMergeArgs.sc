@@ -4,7 +4,16 @@
 + Event {
 	mergeArgs { | args |
 		// add all key-value pairs in args to self.
-		(args ? []) keysValuesDo: { | key, value | this[key] = value };
+		// postln("debugging merge args");
+		// postln("here I am before getting the new args" + this);
+		// "now I start the merging".postln;
+		// postln("the args to be merged are" + (args ? []));
+		(args ? []) keysValuesDo: { | key, value |
+			// postln("adding to key" + key + "the value" + value);
+			this[key] = value;
+			// postln("after adding I am" + this);
+		};
+		// postln("the merged args are now" + this);
 		// return new args array for use by NodeTemplate etc.
 		^this.keys.asArray.sort.collect({ | key | [key, this[key]] }).flat;
 	}
