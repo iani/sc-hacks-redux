@@ -1,6 +1,5 @@
 // 木  8  5 2025 18:52
 // Redo of RokokoData for simpler implementation and usage.
-
 // NOTE: You should not make+play many instances of RokokoData2,
 // because each instance allocates 161 control buses.
 RokokoData2 : NamedSingleton2 {
@@ -14,7 +13,7 @@ RokokoData2 : NamedSingleton2 {
 	var <stack; // hold last 100 vectors received from playback
 	var <entry; // last played entry
 	var <sendPort = 22244;
-	var <sendAddress;
+	var <sendAdress;
 	var <filters, filterDict;
 	var <buses; // 161 buses.  Allocated by method play.
 	var <pollArray; // data from the latest bus poll
@@ -23,14 +22,14 @@ RokokoData2 : NamedSingleton2 {
 	init {
 		postln("initing RokokoData2" + name);
 		stack = Stack(100, false);
-		this.sendPort = 22244; // initialize and create sendAddress
+		this.sendPort = 22244; // initialize and create sendAdress
 		this.load;
 	}
 
 	sendPort_ { | argPort = 22244 |
-		// set port number + make sendAddress
+		// set port number + make sendAdress
 		sendPort = argPort;
-		sendAddress = NetAddr("127.0.0.1", sendPort);
+		sendAdress = NetAddr("127.0.0.1", sendPort);
 	}
 	load {
 		Paths.doGetPath({ | p, argPaths |
@@ -143,7 +142,7 @@ RokokoData2 : NamedSingleton2 {
 
 	addSendOscGroups {
 		this.addPlayAction({ | n, data |
-			sendAddress.sendMsg(*data);
+			sendAdress.sendMsg(*data);
 		}, \sendOscGroups);
 	}
 
@@ -228,7 +227,7 @@ RokokoData2 : NamedSingleton2 {
 			index = joints.flop[0] indexOf: joint;
 			joints[index][dim + 1] =
 			joints[index][dim + 1] + pollArray[dindex];
-			sendAddress.sendMsg(*(header ++ joints.flat));
+			sendAdress.sendMsg(*(header ++ joints.flat));
 		}, \pollSumSend);
 	}
 
@@ -240,10 +239,64 @@ RokokoData2 : NamedSingleton2 {
 			var cache; // safety for Osc sending delay
 			cache = entry;
 			cache[4] = cache[4] + data[0];
-			sendAddress.sendMsg(*cache);
+			sendAdress.sendMsg(*cache);
 		}, \pollSumSendTest);
 	}
 
 	removeSumSendTest { this.removePollAction(\pollSumSendTest) }
 
+	// ======= reacting to incoming /rokoko/ from OSCGroups =======
+	postRokokoOscTest {
+		OSC.add('/rokoko/', { | ... args |
+			postln("ROKOKO RECEIVED" + args);
+		})
+	}
+
+	postRokokoOsc {
+		OSC.add('/rokoko/', { | n, data |
+			postln("size:" + data.size + "data" + data[..5]);
+			this.changed('\play', data);
+		})
+	}
+	muteRokokoOsc {
+		OSC.remove('/rokoko/');
+	}
+
+	sendTest { // send a message to test reception.
+		NetAddr.localAddr.sendMsg('/rokoko/', 1, 2, 3);
+	}
+
+	// send playback and poll data locally and to OSC Groups
+	sendPlaybackLocally {
+		var localAddr;
+		localAddr = NetAddr.localAddr;
+		this.addPlayAction({ | n, data |
+			localAddr.sendMsg(*data);
+		}, \playbackLocally)
+	}
+	mutePlaybackLocally { this.removePlayAction(\playbackLocally) }
+
+		// send playback and poll data locally and to OSC Groups
+	sendPlaybackGroups {
+		this.addPlayAction({ | n, data |
+			sendAdress.sendMsg(*data);
+		}, \playbackGroups)
+	}
+	mutePlaybackGroups { this.removePlayAction(\playbackGroups) }
+
+	sendPollLocally {
+		this.addPollAction({ | n, data |
+			sendAdress.sendMsg(*data);
+		}, \sendPollLocally)
+
+	}
+	mutePollLocally { this.removePlayAction(\sendPollLocally) }
+
+	localSendTest {
+
+	}
+
+	remoteSendTest {
+
+	}
 }
