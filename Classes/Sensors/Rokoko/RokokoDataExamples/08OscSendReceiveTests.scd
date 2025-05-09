@@ -20,3 +20,23 @@
 //:Start a synth writing to bus 0, used by addSumSend
 ~rokoko.muteRokokoOsc;
 //:
+OscMonitor.gui
+//:
+~rokoko.resendRokokoOsc;
+//:
+~rokoko.muteRokokoOsc;
+//:
+~rokoko.findIndex;
+~rokoko.entry;
+~rokoko.data.class;
+//:
+~mouse = {
+	Out.kr(0, MouseX.kr(-1.0, 1.0));
+	Out.kr(1, MouseX.kr(-1.0, 1.0));
+}.play;
+//:
+~mouse.free;
+//:
+Bus(\control, 0, 1, Server.default).getn(1, { | v |
+				v.postln;
+			});
