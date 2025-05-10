@@ -1,9 +1,9 @@
 
 \x.play;
 \x.ndef(\default);
-\x.ndef({ WhiteNoise.ar(0.1) });
 \x.ndef({ WhiteNoise.ar(0.1) }, [freq: 50]);
 \x.ndef({ WhiteNoise.ar(0.1) }, [freq: 5000]);
+\x.ndef({ WhiteNoise.ar(0.1) });
 \x.ndef({ WhiteNoise.ar(0.1) }, outbus: 1);
 
 Synth(\default);
