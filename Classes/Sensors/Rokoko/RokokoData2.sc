@@ -10,7 +10,8 @@ RokokoData2 : NamedSingleton2 {
 	var dtimes; // dt from times
 	var controlValues; // all control values as nested numerical array
 	var <routine; // playback routine
-	var <stack; // hold last 100 vectors received from playback
+	var <stack;   // holds last 100 vectors received from playback
+	var <actors;  // all actors requested by OSC
 	var <entry; // last played entry
 	var <sendPort = 22244;
 	var <sendAddress;
@@ -20,41 +21,40 @@ RokokoData2 : NamedSingleton2 {
 	var <pollRoutine; // the routine polling the buses
 	var <mouseX = 0, <mouseY = 0;
 	var <mouse;
+	var <>verbose = false;
 
-	init {
-		postln("initing RokokoData2" + name);
+	init { actors ?? { this.prInit }; } // init only once
+
+	prInit {
+		postln("Initing" + this);
+		postln("Initializing actors dictionary");
+		actors = IdentityDictionary();
+		"Initializing stack".postln;
 		stack = Stack(100, false);
+		"Setting sendPort to 22244".postln;
 		this.sendPort = 22244; // initialize and create sendAddress
-		this.load;
-	}
-
-	sendPort_ { | argPort = 22244 |
-		// set port number + make sendAddress
-		sendPort = argPort;
-		sendAddress = NetAddr("127.0.0.1", sendPort);
-	}
-	load {
-		Paths.doGetPath({ | p, argPaths |
-			path = p;
-			paths = argPaths;
-			oscdata = OscData(paths);
-		}, name)
-	}
-
-	gui { oscdata.gui; }
-	data { ^oscdata.parsedEntries }
-	times { ^times ?? { times = this.data.flop.first } }
-	entries { ^this.data.flop[1] }
-	controlValues {
-		^controlValues ?? {
-			controlValues =	this.entries collect: { | e |
-				Rokoko.getControlValues(e.interpret)
-			};
-		}
+		// this.load; // loading is now done lazily when needed
 	}
 
 	playSegment { | begin = 0, end |
+		this doWhenLoaded: { this.doPlaySegment(begin, end) }
+	}
+
+	doWhenLoaded { | func ... args |
+		// this addDependant: { | ... args |
+		// 	"can we add notifier to self????????????".postln;
+		// 	args.postln;
+		// };
+		this.addNotifier(this, \loaded, {
+			postln("I loaded. Evaluating requested function:" + func);
+			this.doPlaySegment(*args);
+		});
+		oscdata.isNil.if { this.load; } { this changed: \loaded; }
+	}
+
+	doPlaySegment { | begin = 0, end |
 		var entries, dt; // own dtimes
+		postln("playing segment. begin" + begin + "end" + end);
 		end ?? { end = oscdata.parsedEntries.size - 1 };
 		end = oscdata.parsedEntries.size - 1 min: end; // constrain
 		entries = oscdata.parsedEntries[begin..end];
@@ -66,6 +66,7 @@ RokokoData2 : NamedSingleton2 {
 			dt do: { | delay, i |
 				delay.wait;
 				entry = entries[i][1].interpret;
+				verbose.if { entry.postln; };
 				filters do: { | f |
 					entry = f.(entry);
 				};
@@ -76,6 +77,10 @@ RokokoData2 : NamedSingleton2 {
 	}
 
 	loopSegment { | begin = 0, end |
+		this doWhenLoaded: { this.doLoopSegment(begin, end) }
+	}
+
+	doLoopSegment { | begin = 0, end |
 		var entries, dt; // own dtimes
 		end ?? { end = oscdata.parsedEntries.size - 1 };
 		end = oscdata.parsedEntries.size - 1 min: end; // constrain
@@ -100,6 +105,35 @@ RokokoData2 : NamedSingleton2 {
 	}
 
 	stop { routine.stop }
+
+	sendPort_ { | argPort = 22244 |
+		// set port number + make sendAddress
+		sendPort = argPort;
+		sendAddress = NetAddr("127.0.0.1", sendPort);
+	}
+
+	load {
+		Paths.doGetPath({ | p, argPaths |
+			path = p;
+			paths = argPaths;
+			oscdata = OscData(paths);
+			this.changed(\loaded);
+		}, name)
+	}
+
+	gui { oscdata.gui; }
+	data { ^oscdata.parsedEntries }
+	times { ^times ?? { times = this.data.flop.first } }
+	entries { ^this.data.flop[1] }
+	controlValues {
+		^controlValues ?? {
+			controlValues =	this.entries collect: { | e |
+				Rokoko.getControlValues(e.interpret)
+			};
+		}
+	}
+
+
 	// transforming data with filter functions
 	filterDict { ^filterDict ?? { filterDict = () } }
 	// NOTE: filter functions are added in sorted order by key!

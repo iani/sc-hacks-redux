@@ -30,8 +30,22 @@ Joint2 {
 		'rul', 'rl', 'rf', 'rt', 'rte'
 	];
 
-	classvar <>varNames = #[\x, \y, \z, \rx, \ry, \rz, \rw];
+	classvar jointNameDict; // for translating from long name to short name
+
+	classvar <>varNames = #[\x, \y, \z, 'X', 'Y', 'Y', 'W'];
 	var <actor, <name, <jointIndex;
+
+	jointNameDict {
+		^jointNameDict ?? {
+			jointNameDict = IdentityDictionary();
+			jointNames do: { | key, index |
+				jointNameDict[key] = shortJointNames[index];
+			};
+			jointNameDict;
+		}
+	}
+
+	shortName { ^this.jointNameDict[name] }
 
 	*makeJointsFor { | actor | // make all joints for actor
 		^jointNames collect: { | jn | this.new(actor, jn); };
@@ -42,29 +56,23 @@ Joint2 {
 	}
 
 	makeBusses {
-		// create the individual busses and store them in ector's envir
-		var busNames, shortBusNames, globalIndex, globalOutIndex, envir;
+		var busNames, shortBusNames, globalIndex, envir, sn;
 		jointIndex = jointNames.indexOf(name) * 7;
-		globalIndex = actor.inbus.index;
-		globalOutIndex = actor.outbus.index;
+		globalIndex = actor.bus.index;
 		envir = actor.envir;
-		busNames = jointNames collect: { | bn | (name ++ bn).asSymbol };
-		shortBusNames = shortJointNames collect: { | bn | (name ++ bn).asSymbol };
+		busNames = varNames collect: { | bn | (name ++ bn).asSymbol };
+		sn = this.shortName;
+		shortBusNames = varNames collect: { | bn | (sn ++ bn).asSymbol };
 		busNames do: { | n, i |
-			var localIndex, localOutIndex, inBus, outBus;
-			localIndex = globalIndex + jointIndex + i;
-			localOutIndex = globalOutIndex + jointIndex + i;
-			inBus = Bus(\control, localIndex, 1, Server.default);
-			outBus = Bus(\control, localOutIndex, 1, Server.default);
-			envir[n.asSymbol] = inBus;
-			envir[shortBusNames[i].asSymbol] = inBus;
-			envir[(n ++ "out").asSymbol] = outBus;
-			envir[(shortBusNames[i] ++ "out").asSymbol] = outBus;
+			var busIndex, bus;
+			busIndex = globalIndex + i;
+			bus = Bus(\control, busIndex, 1, Server.default);
+			envir[n] = bus;
+			envir[shortBusNames[i]] = bus;
 		}
-	}
-
-	makeBussesRedo {
-
+		// postln("actor" + actor + "joint" + name);
+		// postln("busNames" + busNames);
+		// postln("shortBusNames" + shortBusNames);
 	}
 
 	storeInEnvir { actor.envir[name] = this }

@@ -23,7 +23,7 @@ Paths {
 		pathLocation = this.makePathLocation(argKey);
 		if (File.exists(pathLocation)) {
 			path = File.readAllString(pathLocation);
-			this.doAction(action, path)
+			this.doAction(action, path);
 		}{
 			this.getPathFromUser(pathLocation, action, argKey);
 		}

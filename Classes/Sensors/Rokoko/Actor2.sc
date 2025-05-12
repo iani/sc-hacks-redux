@@ -1,4 +1,8 @@
 // 金  9  5 2025 20:51 Redoing Actor
+// Actor2 adds itself as dependant to RokokoData2 and listens to changed \play.
+// It then access the actor named in an OSC message and passes the latest
+// data to the joints of that Actor.
+// Actor responds by filtering the data according to
 // 火 15  4 2025 18:56
 // hold the buses for writing all data from an actor wearing Rokoko
 // tracker suit. Provide methods for writing + reading parts of the data,
@@ -9,25 +13,43 @@
 
 Actor2 {
 	classvar <>numControls = 161; // 23 * 7
-	var <name; // the name of this actor
-	var <scene; // the name of the scene containing the actor
+	classvar all;   // dictionary of actors.
+	classvar <>jointNames = #[
+		'hip', 'spine', 'chest', 'neck', 'head',
+		'leftShoulder', 'leftUpperArm', 'leftLowerArm', 'leftHand',
+		'rightShoulder', 'rightUpperArm', 'rightLowerArm', 'rightHand',
+		'leftUpLeg', 'leftLeg', 'leftFoot', 'leftToe', 'leftToeEnd',
+		'rightUpLeg', 'rightLeg', 'rightFoot', 'rightToe', 'rightToeEnd'
+	];
+
+	classvar <>shortJointNames = #[
+		'hi', 'sp', 'ch', 'ne', 'he',
+		'ls', 'lu', 'lo', 'lh',
+		'rs', 'ru', 'ro', 'rh',
+		'lul', 'll', 'lf', 'lt', 'lte',
+		'rul', 'rl', 'rf', 'rt', 'rte'
+	];
+
+	classvar <>varNames = #[\x, \y, \z, 'X', 'Y', 'Y', 'W'];
+
+	var <name;      // the name of this actor
+	var <scene;     // the name of the scene containing the actor
 	var <envirName; // unique name for each actor in each scene.
 	// used to create the envir of the actor
-	var <envir; // a Mediator storing the actor and all its joints
-	var <inbus; // holds all joint variable control values in 161 channels,
-	// set at once from OSC input, for efficiency.
-	var <outbus; // same as inbus, but for sending controls to Godot
-	var <joints; // dictionary of individual joints by name
+	var <envir;  // a Mediator storing the actor and all its joints
+	var <bus;    // holds all joint variable control values in 161 channels,
+	// var <joints; // dictionary of individual joints by name
 	*new { | name = \defaultActor, scene = \defaultScene |
-		ServerBoot add: { this.makeBuses };
 		^this.newCopyArgs(name.asSymbol, scene.asSymbol).init;
 	}
+
+	*all { ^all ?? { all = IdentityDictionary() } }
 
 	init {
 		envirName = (name ++ "_" ++ scene).asSymbol;
 		this.makeEnvir;
-		this.makeGlobalBuses;
-		this.makeJoints;
+		ServerBoot add: { this.makeBusAndJoints; };
+		Server.default.waitForBoot { this.makeBusAndJoints };
 	}
 
 	makeEnvir {
@@ -35,25 +57,31 @@ Actor2 {
 		envir[\actor] = this; // store self as actor in envir;
 	}
 
-	makeGlobalBuses {
+	makeBusAndJoints {
+		this.makeBus;
+		this.makeJoints;
+	}
+
+	makeBus {
 		// make the global input and output bus buses;
-		inbus !? { inbus.free; };
-		inbus = Bus.control(Server.default, numControls);
-		envir[\inbus] = inbus;
-		outbus !? { outbus.free; };
-		outbus = Bus.control(Server.default, numControls);
-		envir[\outbus] = outbus;
+		bus !? { bus.free; };
+		postln("Making bus for" + this);
+		bus = Bus.control(Server.default, numControls);
 	}
 
 	makeJoints { // make the joints (and their buses)
-		joints = ();
-		Joint.makeJointsFor(this) do: { | j | joints[j.name] = j; };
+		[jointNames, shortJointNames].flop do: { | jn, i |
+			var bus, jointIndex;
+			jointIndex = i * 7;
+			varNames do: { | vn, j |
+				bus = Bus(\control, jointIndex + j, 1, Server.default);
+				envir[(jn[0] ++ vn).asSymbol] = bus;
+				envir[(jn[1] ++ vn).asSymbol] = bus;
+			}
+		};
 	}
 
-	writeDataToBus { | data |
-		inbus.setn(Rokoko getControlValues: data);
-	}
-
+	at { | jointDim | ^envir[jointDim] }
 	printOn { | stream |
 		if (stream.atLimit) { ^this };
 		stream << this.class.name << "<" ;
@@ -61,6 +89,5 @@ Actor2 {
 		stream << ">" ;
 	}
 
-	at { | argKey | ^envir.at(argKey) }
 	push { envir.push; }
 }
