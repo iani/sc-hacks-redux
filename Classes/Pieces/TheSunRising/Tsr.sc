@@ -6,6 +6,7 @@ Tsr {
 	*initClass {
 		StartUp add: {
 			User doAfterActivate: {
+				/*
 				OSC.add(\char, { | ... args |
 					postln("received message char with args" + args);
 				});
@@ -15,6 +16,7 @@ Tsr {
 				OSC.add(\voice, { | ... args |
 					postln("received message voice with args" + args);
 				});
+				*/
 			}
 		};
 
