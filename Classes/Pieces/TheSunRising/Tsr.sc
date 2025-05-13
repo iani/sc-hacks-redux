@@ -40,12 +40,12 @@ Tsr {
 		^verseActions ?? { verseActions = IdentityDictionary() }
 	}
 
-	*type { | char |
+	*type { | char, cocoaModifiers, unicode, keycode, key |
 		// Type a character. For use by Yorgos.
 		// \typing.changed(\click, char);
 		// \tsr.changed(\char, char);
-		User.sendToSelf(\char, char.ascii);
-		User.forwardMessage(\char, char.ascii);
+		User.sendToSelf(\char, char.ascii, cocoaModifiers, unicode, keycode, key);
+		User.forwardMessage(\char, char.ascii, cocoaModifiers, unicode, keycode);
 		// format("\\tsr.changed(\\char, %)", char.asCompileString)
 	}
 
