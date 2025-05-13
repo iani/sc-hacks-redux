@@ -145,6 +145,10 @@ User {
 		sendAddress.sendMsg(*message);
 	}
 
+	*sendToSelf { | ... message |
+		NetAddr.localAddr.sendMsg(*message);
+	}
+
 	*oscSendPort_ { | argPort = 22244 |
 		oscSendPort = argPort;
 		this.makeSendAddress;

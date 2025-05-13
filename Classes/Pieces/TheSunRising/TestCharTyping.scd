@@ -2,6 +2,7 @@
 //:
 Tsr doOnType: { | n, char |
 	postln("Received type. Args:" + char);
+	Synth(\pinch);
 };
 //:
 Tsr doOnVerse: { | n ... stuff |
@@ -11,6 +12,7 @@ Tsr doOnVerse: { | n ... stuff |
 Tsr.undoOnType;
 //:
 Tsr.type($a);
+Tsr.type($b);
 //:
 $a.ascii;
 //:
@@ -19,4 +21,9 @@ $a.ascii;
 Tsr
 OscMonitor.gui;
 
+
+OSC.add(\char, { "char received".postln; });
+
 10000.rand;
+
+OscMonitor.gui;
