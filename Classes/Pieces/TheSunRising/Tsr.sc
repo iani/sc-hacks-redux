@@ -40,16 +40,15 @@ Tsr {
 
 	*type { | char |
 		// Type a character. For use by Yorgos.
-		\typing.changed(\click, char);
-		\tsr.changed(\char, char);
-		User.forwardMessage(\char, char);
-
-			// format("\\tsr.changed(\\char, %)", char.asCompileString)
+		// \typing.changed(\click, char);
+		// \tsr.changed(\char, char);
+		User.forwardMessage(\char, char.ascii);
+		// format("\\tsr.changed(\\char, %)", char.asCompileString)
 	}
 
 	*verse { | verse |
 		// Send a verse. For use by Yorgos.
-		\tsr.changed(\verse, verse);
+		// \tsr.changed(\verse, verse);
 		User.forwardMessage(\verse, verse);
 		// User.sendCode(
 			// format("\\tsr.changed(\\verse, %)", verse.asCompileString)
@@ -59,7 +58,7 @@ Tsr {
 	*voice { | voice, verseNums |
 		// send a selected voice + verse number + verse
 		// For use by Iannis - and maybe also others.
-		\tsr.changed(\voice, voice, verseNums);
+		// \tsr.changed(\voice, voice, verseNums);
 		User.forwardMessage(\voice, voice, verseNums);
 	}
 
