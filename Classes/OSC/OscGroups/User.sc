@@ -100,6 +100,10 @@ User {
 		this.changed(\enabled);
 	}
 
+	*sendMessage { | message, action |
+		OSC.add(message, action);
+	}
+
 	enableCodeForwarding { this.class.enableCodeForwarding }
 	*enableCodeForwarding {
 		thisProcess.interpreter.preProcessor = { | code |
@@ -135,6 +139,10 @@ User {
 		// also for sending code manually, for tests
 		if (verbose) { postln("user" + localId + "sending code to OscGroups.") };
 		sendAddress.sendMsg(codeMessage, argCode, localId);
+	}
+
+	*forwardMessage { | ... message |
+		sendAddress.sendMsg(*message);
 	}
 
 	*oscSendPort_ { | argPort = 22244 |
