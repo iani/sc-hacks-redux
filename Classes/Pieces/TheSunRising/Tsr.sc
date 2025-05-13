@@ -3,6 +3,33 @@ Tsr {
 	classvar charActions, verseActions;
 	classvar <>verbose = false;
 
+	*initClass {
+		StartUp add: {
+			User doAfterActivate: {
+				OSC.add(\char, { | ... args |
+					postln("received message char with args" + args);
+				});
+				OSC.add(\verse, { | ... args |
+					postln("received message verse with args" + args);
+				});
+				OSC.add(\voice, { | ... args |
+					postln("received message voice with args" + args);
+				});
+			}
+		};
+
+		ServerBoot add: {
+			SynthDef(\pinch, { |freq=330, ffreq=110, pos=0.0, amp=1.0|
+				var signal, env, conv, f1;
+				f1 = LFSaw.kr(ffreq * 0.001).range(0,1);
+				env = EnvGen.ar(Env.perc(0.01,0.1), doneAction: 2);
+				signal = SinOsc.ar(freq+SinOsc.ar(ffreq,0,freq)).fold(f1.neg,f1) * env;
+				conv = Limiter.ar(Convolution.ar(signal, Decay2.ar(Dust.ar(ffreq),0.01,f1/3)), 0.95);
+				Out.ar(0, Pan2.ar(signal, pos, amp))
+			}).add;
+		}
+	}
+
 	*charActions {
 		^charActions ?? { charActions = IdentityDictionary() }
 	}
@@ -36,28 +63,34 @@ Tsr {
 		User.forwardMessage(\voice, voice, verseNums);
 	}
 
-	*doOnType { | action |
-		this.addNotifier(\tsr, \char, action);
+	*doOnType { | action, key = \default |
+		OSC.add(\type, action, key);
+		// this.addNotifier(\tsr, \char, action);
 	}
 
-	*undoOnType {
-		this.removeNotifier(\tsr, \char);
+	*undoOnType { | key = \default |
+		OSC.remove(\type, key);
+		// this.removeNotifier(\tsr, \char);
 	}
 
-	*doOnVerse { | action |
-		this.addNotifier(\tsr, \verse, action);
+	*doOnVerse { | action, key = \default |
+		OSC.add(\verse, action, key);
+		// this.addNotifier(\tsr, \verse, action);
 	}
 
-	*undoOnVerse {
-		this.removeNotifier(\tsr, \verse);
+	*undoOnVerse { | key = \default |
+		OSC.remove(\verse, key);
+		// this.removeNotifier(\tsr, \verse);
 	}
 
-	*doOnVoice { | action |
-		this.addNotifier(\tsr, \voice, action);
+	*doOnVoice { | action, key = \default |
+		OSC.add(\voice, action, key);
+		// this.addNotifier(\tsr, \voice, action);
 	}
 
-	*undoOnVoice {
-		this.removeNotifier(\tsr, \voice);
+	*undoOnVoice { | key = \default |
+		OSC.remove(\voice, key);
+		// this.removeNotifier(\tsr, \voice);
 	}
 
 
@@ -68,18 +101,5 @@ Tsr {
 		this.doOnType({ | n, char |
 			this.charActions[char].value;
 		})
-	}
-
-	*initClass {
-		ServerBoot add: {
-			SynthDef(\pinch, { |freq=330, ffreq=110, pos=0.0, amp=1.0|
-				var signal, env, conv, f1;
-				f1 = LFSaw.kr(ffreq * 0.001).range(0,1);
-				env = EnvGen.ar(Env.perc(0.01,0.1), doneAction: 2);
-				signal = SinOsc.ar(freq+SinOsc.ar(ffreq,0,freq)).fold(f1.neg,f1) * env;
-				conv = Limiter.ar(Convolution.ar(signal, Decay2.ar(Dust.ar(ffreq),0.01,f1/3)), 0.95);
-				Out.ar(0, Pan2.ar(signal, pos, amp))
-			}).add;
-		}
 	}
 }
