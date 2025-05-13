@@ -72,7 +72,7 @@ JointNames {
 	*osc { | key | ^this.oscNames[key] }
 	*bus { | key | ^this.busNames[key] }
 
-	*toBus { | key |
+	*toBus { | key, increment = 0 |
 
 	}
 }
