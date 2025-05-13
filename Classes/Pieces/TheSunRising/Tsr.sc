@@ -13,6 +13,7 @@ Tsr {
 
 	*type { | char |
 		// Type a character. For use by Yorgos.
+		\typing.changed(\click, char);
 		\tsr.changed(\char, char);
 		User.sendCode(
 			format("\\tsr.changed(\\char, %)", char.asCompileString)
