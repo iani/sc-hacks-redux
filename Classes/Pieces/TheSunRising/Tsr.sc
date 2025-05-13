@@ -63,12 +63,12 @@ Tsr {
 	}
 
 	*doOnType { | action, key = \default |
-		OSC.add(\type, action, key);
+		OSC.add(\char, action, key);
 		// this.addNotifier(\tsr, \char, action);
 	}
 
 	*undoOnType { | key = \default |
-		OSC.remove(\type, key);
+		OSC.remove(\char, key);
 		// this.removeNotifier(\tsr, \char);
 	}
 
