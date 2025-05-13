@@ -56,6 +56,21 @@ OSC {
 		(key ? message).addNotifier(this, message.asOscMessage, function);
 	}
 
+	// pass hust the arguments to the function
+	*addArgs { | message, function, key |
+		// message is the osc message to which the function is bound.
+		// One can use different keys to add more than one function to one message.
+		// Each key - message pair creates a new Notification, with
+		// key as the listener and message as the message.
+		// Convert message to standard osc message format by prepending / if needed
+		(key ? message).addNotifier(this, message.asOscMessage, { | n, msg |
+			// postln("a" + a + "b" + b + "b" + c + "c");
+			// "It should be like this".postln;
+			// postln("args are now" + msg[1..]);
+			function.(*msg[1..])
+		});
+	}
+
 	*remove { | message, key |
 		(key ? message).removeNotifier(this, message.asOscMessage);
 	}

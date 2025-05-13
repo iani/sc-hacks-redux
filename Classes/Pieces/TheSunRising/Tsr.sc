@@ -68,7 +68,7 @@ Tsr {
 	}
 
 	*doOnType { | action, key = \default |
-		OSC.add(\char, action, key);
+		OSC.addArgs(\char, action, key);
 		// this.addNotifier(\tsr, \char, action);
 	}
 
@@ -78,7 +78,7 @@ Tsr {
 	}
 
 	*doOnVerse { | action, key = \default |
-		OSC.add(\verse, action, key);
+		OSC.addArgs(\verse, action, key);
 		// this.addNotifier(\tsr, \verse, action);
 	}
 
@@ -88,7 +88,7 @@ Tsr {
 	}
 
 	*doOnVoice { | action, key = \default |
-		OSC.add(\voice, action, key);
+		OSC.addArgs(\voice, action, key);
 		// this.addNotifier(\tsr, \voice, action);
 	}
 
