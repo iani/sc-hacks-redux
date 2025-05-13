@@ -4,7 +4,7 @@
 // data to the joints of that Actor.
 // Actor responds by filtering the data according to
 // 火 15  4 2025 18:56
-// hold the buses for writing all data from an actor wearing Rokoko
+// hold the buses for writing all data from an actor wearing Rokok
 // tracker suit. Provide methods for writing + reading parts of the data,
 // Provide interface for adding behaviors.
 /* joint names as sent by Rokoko OSC are:
@@ -36,9 +36,12 @@ Actor2 {
 	var <scene;     // the name of the scene containing the actor
 	var <envirName; // unique name for each actor in each scene.
 	// used to create the envir of the actor
-	var <envir;  // a Mediator storing the actor and all its joints
-	var <bus;    // holds all joint variable control values in 161 channels,
+	var <envir;  	// a Mediator storing the actor and all its joints
+	var <bus;    	// holds all joint variable control values in 161 channels,
+	var <indata;  	// the latest message received from Rokkoko.
+	var <>outdata; 	// data modified by action, sent to GODOT etc.
 	// var <joints; // dictionary of individual joints by name
+	var action;  // action for reacting to data. Only one is allowed.
 	*new { | name = \defaultActor, scene = \defaultScene |
 		^this.newCopyArgs(name.asSymbol, scene.asSymbol).init;
 	}
@@ -67,6 +70,7 @@ Actor2 {
 		bus !? { bus.free; };
 		postln("Making bus for" + this);
 		bus = Bus.control(Server.default, numControls);
+		this.changed(\madeBus);
 	}
 
 	makeJoints { // make the joints (and their buses)
@@ -89,5 +93,9 @@ Actor2 {
 		stream << ">" ;
 	}
 
+	// action group modifying data
+	action { ^action ?? { action = ActorAction(this); }}
+
+	numControls { ^numControls } // instance method for class variable
 	push { envir.push; }
 }

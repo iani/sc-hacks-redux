@@ -208,4 +208,8 @@ EventStream {
 		postln("removing trigger for" + message);
 		message >>> nil
 	}
+
+	// for exchanging play with SynthTemplates
+	outbus { ^stream[\out] ? 0 }
+	fadeTime { ^stream[\fadeTime] ? 0.02 }
 }

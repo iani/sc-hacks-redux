@@ -99,9 +99,13 @@
 		{ source isKindOf: Nil } { ^this.ndef.play; }
 		{ source isKindOf: Function } {
 			var old, new;
+			// "\n\nThis is Function playing\n\n".postln;
 			old = currentEnvironment[this];
 			new = this.ndef(source, args, target, addAction, outbus, fadeTime);
-			(old === new).not.if { old.stop };
+			(old === new).not.if {
+				// postln("I will stop" + old);
+				old.stop;
+			};
 			if (new.isPlaying.not) { { new.play }.defer(0.1); }
 			// this causes duplicates. could not determine cause:
 			// if (new.isPlaying.not) { new.play; } // this causes duplicates!

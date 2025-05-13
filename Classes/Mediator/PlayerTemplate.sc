@@ -271,4 +271,9 @@ PatternTemplate : PlayerTemplate { // for EventStreams
 
 	prStop { process.stop }
 	clear { source.clear }
+	outbus { ^source.outbus }
+	fadeTime { ^source.fadeTime }
+	set { | inEvent |
+		source mergeEvent: inEvent;
+	}
 }
