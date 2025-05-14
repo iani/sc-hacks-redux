@@ -1,19 +1,21 @@
 // 火 13  5 2025 21:17
 //:
-Tsr doOnType: { | n, char |
-	// postln("Received type. Args:" + char);
+Tsr.doOnType({ | char |
+	postln("Received type. Args:" + char);
 	// Synth(\pinch);
-};
+}, \iani1);
 //:
 Tsr.undoOnType;
 //:
-Tsr doOnVerse: { | n ... stuff |
-	postln("Received verse. Args:" + stuff);
+Tsr doOnVerse: { | n, stuff  |
+	postln("Received verse. n" + n + "Args:" + stuff);
 };
+//:
+Tsr.verse(0);
 //:
 Tsr.undoOnType;
 //:
-Tsr.type($a);
+Tsr.type($c);
 Tsr.type($b);
 //:
 $a.ascii;

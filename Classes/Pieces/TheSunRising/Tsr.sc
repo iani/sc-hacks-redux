@@ -4,6 +4,7 @@ Tsr {
 	classvar <>verbose = false;
 
 	*initClass {
+		/*
 		StartUp add: {
 			User doAfterActivate: {
 				/*
@@ -19,6 +20,7 @@ Tsr {
 				*/
 			}
 		};
+	*/
 
 		ServerBoot add: {
 			SynthDef(\pinch, { |freq=330, ffreq=110, pos=0.0, amp=1.0|
@@ -41,19 +43,18 @@ Tsr {
 	}
 
 	*type { | char, cocoaModifiers, unicode, keycode, key |
-		// Type a character. For use by Yorgos.
-		// \typing.changed(\click, char);
-		// \tsr.changed(\char, char);
-		User.sendToSelf(\char, char.ascii, cocoaModifiers, unicode, keycode, key);
-		User.forwardMessage(\char, char.ascii, cocoaModifiers, unicode, keycode);
-		// format("\\tsr.changed(\\char, %)", char.asCompileString)
+		// postln("forwarding \\char" + char + "ascii is" + char.ascii);
+		User.sendToAll(\char, char.ascii, cocoaModifiers, unicode, keycode);
+		// User.sendToSelf(\char, char.ascii, cocoaModifiers, unicode, keycode);
+		// User.forwardMessage(\char, char.ascii, cocoaModifiers, unicode, keycode);
 	}
 
-	*verse { | verse |
+	*verse { | verse, num |
 		// Send a verse. For use by Yorgos.
 		// \tsr.changed(\verse, verse);
-		User.sendToSelf(\verse, verse);
-		User.forwardMessage(\verse, verse);
+		User.sendToAll(\verse, verse, num);
+		// User.sendToSelf(\verse, verse);
+		// User.forwardMessage(\verse, verse);
 		// User.sendCode(
 			// format("\\tsr.changed(\\verse, %)", verse.asCompileString)
 		// );
@@ -63,8 +64,9 @@ Tsr {
 		// send a selected voice + verse number + verse
 		// For use by Iannis - and maybe also others.
 		// \tsr.changed(\voice, voice, verseNums);
-		User.sendToSelf(\voice, voice, verseNums);
-		User.forwardMessage(\voice, voice, verseNums);
+		User.sendToAll(\voice, voice, verseNums);
+		// User.sendToSelf(\voice, voice, verseNums);
+		// User.forwardMessage(\voice, voice, verseNums);
 	}
 
 	*doOnType { | action, key = \default |

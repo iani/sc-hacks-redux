@@ -141,7 +141,13 @@ User {
 		sendAddress.sendMsg(codeMessage, argCode, localId);
 	}
 
+	*sendToAll { | ... message |
+		this.forwardMessage(*message);
+		this.sendToSelf(*message);
+	}
+
 	*forwardMessage { | ... message |
+		// postln("Forwarding message" + message);
 		sendAddress.sendMsg(*message);
 	}
 
