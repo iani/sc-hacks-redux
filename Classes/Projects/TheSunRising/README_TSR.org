@@ -7,6 +7,36 @@
 ** Kosmas Eikona video
 ** Iannis: Synodeia ichou: Play back AI recitation of poem, with distortion and other effects.
 * Performance Instructions
+** Repositories
+*** Repositories to put in Extensions folder:
+**** SC Hacks Redux
+
+Basic SC lib for networked live coding.
+
+**** BALC-IZ version
+
+Vasilis library, modified by IZ
+
+**** BALK-Lib (audio folders by Vasilis)
+
+*** User Repositories: For UserAppSupportDir/Users/...
+Put your scd files (and buffers if needed) in:
+Platform.userAppSupportDir +/+ "Users/"
+.scd files will be loaded when your user is activated.
+**** iani
+
+Clone this into the iani folder in userAppSupportDir/Users/ :
+
+#+begin_src shell
+git clone https://github.com/iani/TheSunRisingIaniStartup.git
+#+end_src
+
+IMPORTANT: This contains the verse audio buffers with the synthesized voice,
+and it loads them.
+
+The files and folders should be moved out of the cloned repository directory "TheSunRisingIaniStartup", into the top level of iani directory.
+
+*** This repository (Instructions)
 ** Loading the synthetic poem recitation audio buffers
 1. Put the 4 folders with the audio buffers in a folder on your disk.
    Say, folder named "TSR_voices".
