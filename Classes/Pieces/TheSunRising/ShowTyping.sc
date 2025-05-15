@@ -2,7 +2,7 @@
 //: Show typing received from TypingListener
 ShowTyping {
 	classvar <tv, <txt;
-	*new { this.makeWindow }
+	*new { { this.makeWindow }.defer }
 	*makeWindow {
 		\tsr.hlayout(
 			tv = TextView();
