@@ -3,8 +3,30 @@
 // with fres compile!
 TypeTsr.verbose = true;
 TypeTsr.typeVerses;
-TypingListener(); // Test whether this makes the Segmentation Fault:
+TypingListener();
+RecordTyping(\test);
+//:Test sound
+RecordTyping(\test).replay1;
+RecordTyping(\test).gdplay;
+//: est
+RecordTyping(\testxxx).replay1;
 //:
+RecordTyping(\test).undoGdplay;
+
+//:posting - unposting while recording:
+RecordTyping(\test).post;
+//:
+RecordTyping(\test).undoPost;
+//: playback
+RecordTyping(\test).replay1;
+//:
+a = RecordTyping(\test).lines;
+a[0][0]
+
+RecordTyping(\test).replay1;
+a = RecordTyping(\test);
+//:
+
 ///////////////////////////////////////
 //:This is ok
 TypingListener.verbose = true;

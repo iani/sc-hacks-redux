@@ -80,7 +80,7 @@ Simplenumber @> \symbol // set bus to number
 		var bus, envir;
 		server = server.asTarget.server;
 		// get envirName from currentEnvironment (if needed):
-		envirName = envirName ?? { currentEnvironment.name ?? { ~mediator } };
+		envirName = envirName ?? { currentEnvironment.mediator };
 		envir = Mediator.at(envirName);
 		// bus = envir.busses.at(this);
 		bus = envir[this];
@@ -91,7 +91,7 @@ Simplenumber @> \symbol // set bus to number
 				val !? { bus.set(val) };
 				Bus.changed(this, envirName); // reset new bus numbers in other objects?
 			}.fork;
-			envir.busses.put(this, bus);
+			envir.put(this, bus);
 		}{
 			val !? { bus.set(val) };
 		};

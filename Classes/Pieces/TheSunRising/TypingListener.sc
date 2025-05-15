@@ -36,25 +36,9 @@ TypingListener {
 		};
 		(char.isAlpha or: { char.isPunct } or: { char.isSpace }).if {
 			char.post;
-			User.sendToAll(\tsrchar, char.ascii);
+			User.sendToAll(\tsrchar, char.ascii); // NEVER SEND CHAR OVER OSC!
 			tmp = tmp ++ char.asString;
 		}
-	}
-
-	processTypeInputDebug { | char, unicode |
-			case
-			{ unicode == 13 }{ // ascii code for Char.ret
-				Char.nl.asString.post;
-				cnt = 0;
-				tmp = "";
-				User.sendToAll(\cret);
-				verbose.if { postln("--- Starting new line. ---") };
-			}
-			{ (char.isAlpha || char.isPunct || char.isSpace) }{
-				char.post;
-				User.sendToAll(\tsrchar, char);	// send out printable chars
-				tmp = tmp ++ char.asString.last;
-			};
 	}
 
 	playSound { | char |

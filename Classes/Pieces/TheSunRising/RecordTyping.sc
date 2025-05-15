@@ -1,14 +1,13 @@
 // 木 15  5 2025 15:42
 // Record and replay typing actions, with timestamps
 
-RecordTyping {
-	classvar tsrKey = \recordTyping;
+RecordTyping : NamedSingleton2 {
+	classvar <>charMsg = \ascii;
 	var <lines, <currentLine, <routine;
 
-	*new { ^super.new.init }
-
 	init {
-		this.newLine; // start with a new line
+		lines ?? { this.newLine }; // start with a new line
+		this.activate;
 		CmdPeriod add: this;
 	}
 	doOnCmdPeriod { routine = nil }
@@ -16,32 +15,34 @@ RecordTyping {
 	activate {
 		Tsr.doOnType({ | char |
 			currentLine = currentLine add: [Main.elapsedTime, char];
-		}, tsrKey);
-		OSC.add(\cret, { this.newLine });
+		}, name);
+		OSC.add(\cret, { this.newLine }, name);
 	}
 
 	newLine {
+		currentLine = List();
 		lines = lines add: currentLine;
-		currentLine = [];
 	}
 
 	deactivate {
-		Tsr.undoOnType(tsrKey);
-		OSC.remove(\cret);
+		Tsr.undoOnType(name);
+		OSC.remove(\cret, name);
 	}
 
 	replay { | from = 0, to |
 		var timesChars;
+		(lines.size < 1).if { ^"There are no lines to replay".postln; };
 		to ?? { to = lines.size - 1 };
 		to = to.clip(from, lines.size - 1);
 		lines[(from..to)] do: { | tc |
-			timesChars = timesChars add: tc;
+			timesChars = timesChars add: tc.array;
 		};
 		this.play(timesChars.flatten2);
 	}
 
 	replay1 { | n = 0 |
-		this.play(lines[n]);
+		((lines@n).size == 0).if { ^postln("Cannot play an emptly line") };
+		this.play(lines[n].array);
 	}
 
 	play { | timesChars |
@@ -58,8 +59,35 @@ RecordTyping {
 		routine = fork {
 			dtimes do: { | dt, i |
 				dt.wait;
-				this.changed(\ascii, chars[i]);
+				// postln("playing" + chars[i]);
+				this.changed(charMsg, chars[i]);
 			}
 		}
 	}
+	// actions interface:
+	addAction { | action, key = \default |
+		key.addNotifier(this, charMsg, action);
+	}
+
+	removeAction { | key = \default |
+		key.removeNotifier(this, charMsg);
+	}
+
+	post {
+		this.addAction({ | n, char |
+			postln("recorder received" + char);
+		}, \post)
+	}
+
+	undoPost { this.removeAction(\post); }
+
+	gdplay {
+		this.addAction({ | n, char |
+			// postln("debugging gdplay. char is:" + char);
+			(instrument: \pinch, freq: char*3, ffreq: char / 3).play;
+			(instrument: \pinch, freq: char*5, ffreq: char / 5).play;
+		}, \gdplay);
+
+	}
+	undoGdplay { this.removeAction(\gdplay); }
 }
