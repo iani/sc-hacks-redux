@@ -9,12 +9,12 @@ BusMap {
 	}
 
 	init { | keyVals |
-		keyVals keysValuesDo: { | k, v | dict[k] = k.bus(v);};
+		keyVals keysValuesDo: { | k, v | buses[k] = k.bus(v);};
 	}
 
 	mapArgs {
 		var args;
-		dict keysValuesDo: { | k, v | args = args add: k; args = args add: v.index };
+		buses keysValuesDo: { | k, v | args = args add: k; args = args add: v.index };
 		^args;
 	}
 }
