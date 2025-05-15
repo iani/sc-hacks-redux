@@ -43,7 +43,7 @@ TypingListener {
 			(instrument: \pinch, freq: char.ascii*2, ffreq: char.ascii / 2).play;
 			(instrument: \pinch, freq: char.ascii*4, ffreq: char.ascii / 4).play;
 	}
-	// disabled to fix error
+
 	guessVerse {
 		var distances, minDistance, minIndex;
 		distances = ~verses collect: { | v | v editDistance: tmp };
