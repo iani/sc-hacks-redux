@@ -23,6 +23,7 @@ TypingListener {
 			this.playSound(char);
 			this.guessVerse;
 		}, key: \gdmusic);
+		ShowTyping();
 	}
 
 	processTypeInput { | char, unicode |

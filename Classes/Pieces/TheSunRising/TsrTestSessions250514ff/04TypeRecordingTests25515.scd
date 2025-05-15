@@ -5,3 +5,6 @@ c = RecordTyping().activate;
 b = TypeTsr(\iani).actions;
 b.typeVerses;
 //:
+Tsr.doOnType({ | char |
+	// postln("Tsr received char - for verse matching" + char);
+}, \iani1);
