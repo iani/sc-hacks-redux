@@ -13,7 +13,7 @@ TypingListener {
 		tmp = "";
 		cnt = 0;
 		onChange = OnChange({ | index |
-			Tsr.verse(index, ~verses[index], ~incipits[index]);
+			Tsr.verse(index, TsrPoem.verses[index], TsrPoem.incipits[index]);
 		});
 
 		Tsr.doOnType({ |ascii, cocoaModifiers, unicode, keycode, key|
@@ -49,7 +49,7 @@ TypingListener {
 
 	guessVerse {
 		var distances, minDistance, minIndex;
-		distances = ~verses collect: { | v | v editDistance: tmp };
+		distances = TsrPoem.verses collect: { | v | v editDistance: tmp };
 		minIndex = distances.minIndex;
 		minDistance = distances[minIndex];
 		(minDistance <= 10).if { onChange.check(minIndex); }
