@@ -4,24 +4,6 @@ Tsr {
 	classvar <>verbose = false;
 
 	*initClass {
-		/*
-		StartUp add: {
-			User doAfterActivate: {
-				/*
-				OSC.add(\char, { | ... args |
-					postln("received message char with args" + args);
-				});
-				OSC.add(\verse, { | ... args |
-					postln("received message verse with args" + args);
-				});
-				OSC.add(\voice, { | ... args |
-					postln("received message voice with args" + args);
-				});
-				*/
-			}
-		};
-	*/
-
 		ServerBoot add: {
 			SynthDef(\pinch, { |freq=330, ffreq=110, pos=0.0, amp=1.0|
 				var signal, env, conv, f1;
@@ -43,21 +25,11 @@ Tsr {
 	}
 
 	*type { | char, cocoaModifiers, unicode, keycode, key |
-		// postln("forwarding \\char" + char + "ascii is" + char.ascii);
 		User.sendToAll(\char, char.ascii, cocoaModifiers, unicode, keycode);
-		// User.sendToSelf(\char, char.ascii, cocoaModifiers, unicode, keycode);
-		// User.forwardMessage(\char, char.ascii, cocoaModifiers, unicode, keycode);
 	}
 
-	*verse { | verse, num |
-		// Send a verse. For use by Yorgos.
-		// \tsr.changed(\verse, verse);
-		User.sendToAll(\verse, verse, num);
-		// User.sendToSelf(\verse, verse);
-		// User.forwardMessage(\verse, verse);
-		// User.sendCode(
-			// format("\\tsr.changed(\\verse, %)", verse.asCompileString)
-		// );
+	*verse { | index, verse, incipit | // Send a verse.
+		User.sendToAll(\verse, index, verse, incipit);
 	}
 
 	*voice { | voice, verseNums |

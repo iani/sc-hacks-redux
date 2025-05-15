@@ -6,7 +6,7 @@
 // Only do this if the name given at instance creation matches the
 // local user's name (User.localId).
 
-TsrVerse : NamedSingleton2 {
+TypeTsr : NamedSingleton2 {
 	classvar <verses;
 	actions {
 		^LocalUserAction(name, this);
@@ -16,7 +16,6 @@ TsrVerse : NamedSingleton2 {
 		verse = verses@@verseNum;
 		{
 			verse do: { | char |
-				// postln("char" + char + "ascii" + char.ascii);
 				Tsr.type(char);
 				[0.1, 0.2, 0.25, 0.4].choose.wait;
 			};
@@ -31,11 +30,10 @@ TsrVerse : NamedSingleton2 {
 		{
 			section do: { | v |
 				verses[v] do: { | char |
-					// postln("char" + char + "ascii" + char.ascii);
 					Tsr.type(char);
 					[0.1, 0.2, 0.25, 0.4].choose.wait;
 				};
-				Tsr.verse(verses[v], v);
+				Tsr.type(Char.nl, nil, 13);
 				2.exprand(5.0).wait;
 			};
 		}.fork;
