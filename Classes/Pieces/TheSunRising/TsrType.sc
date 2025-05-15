@@ -7,6 +7,7 @@
 // local user's name (User.localId).
 
 TypeTsr : NamedSingleton2 {
+	classvar <>verbose = false;
 	classvar <verses;
 	actions {
 		^LocalUserAction(name, this);
@@ -14,8 +15,10 @@ TypeTsr : NamedSingleton2 {
 	typeVerse { | verseNum = 0 |
 		var verse;
 		verse = verses@@verseNum;
+		// verse.postln;
 		{
 			verse do: { | char |
+				verbose.if { char.postln; };
 				Tsr.type(char);
 				[0.1, 0.2, 0.25, 0.4].choose.wait;
 			};

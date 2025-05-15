@@ -31,16 +31,22 @@ RecordTyping {
 	}
 
 	replay { | from = 0, to |
+		var timesChars;
 		to ?? { to = lines.size - 1 };
 		to = to.clip(from, lines.size - 1);
+		lines[(from..to)] do: { | tc |
+			timesChars = timesChars add: tc;
+		};
+		this.play(timesChars.flatten2);
 	}
 
 	replay1 { | n = 0 |
-		this.play(lines[[]])
+		this.play(lines[n]);
 	}
 
 	play { | timesChars |
 		var times, chars, dtimes;
+		timesChars ?? { ^"RecordTyping refuses to play an empty array" };
 		#times, chars = timesChars.flop;
 		dtimes = times.differentiate;
 		dtimes[0] = 0;

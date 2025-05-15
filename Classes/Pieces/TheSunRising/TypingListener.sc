@@ -3,6 +3,7 @@
 // Redo of TypingActions
 
 TypingListener {
+	classvar <>verbose = false; // for debugging;
 	var onChange, <tmp, <cnt;
 	// var <dist, <currIdx, <sumscores, <maxitem;
 
@@ -12,29 +13,46 @@ TypingListener {
 		tmp = "";
 		cnt = 0;
 		onChange = OnChange({ | index |
-			// postln(~verses[index]);
 			Tsr.verse(index, ~verses[index], ~incipits[index]);
 		});
 
 		Tsr.doOnType({ |ascii, cocoaModifiers, unicode, keycode, key|
 			var char;
 			char = ascii.asAscii;
-			this.processTypeInput(char, unicode);
-			this.guessVerse;
+			this.processTypeInput(char, unicode ? 0);
 			this.playSound(char);
+			this.guessVerse;
 		}, key: \gdmusic);
 	}
 
 	processTypeInput { | char, unicode |
+		// "processing type input".postln;
+		(unicode == 13).if {
+			Char.nl.asString.post;
+			cnt = 0;
+			tmp = "";
+			User.sendToAll(\cret);
+			^this;
+		};
+		(char.isAlpha or: { char.isPunct } or: { char.isSpace }).if {
+			char.post;
+			User.sendToAll(\tsrchar, char.ascii);
+			tmp = tmp ++ char.asString;
+		}
+	}
+
+	processTypeInputDebug { | char, unicode |
 			case
 			{ unicode == 13 }{ // ascii code for Char.ret
 				Char.nl.asString.post;
 				cnt = 0;
 				tmp = "";
 				User.sendToAll(\cret);
+				verbose.if { postln("--- Starting new line. ---") };
 			}
 			{ (char.isAlpha || char.isPunct || char.isSpace) }{
 				char.post;
+				User.sendToAll(\tsrchar, char);	// send out printable chars
 				tmp = tmp ++ char.asString.last;
 			};
 	}

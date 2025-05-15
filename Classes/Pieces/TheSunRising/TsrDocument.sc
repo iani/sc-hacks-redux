@@ -7,7 +7,7 @@ TsrDocument {
 
 	*new { | user |
 		(user != User.localId).if {
-			^postln("cannot make document for" + user + "who is not the local user");
+			^postln("Won't make document for" + user + "who is not the local user");
 		};
 		^this.newCopyArgs(user).init;
 	}
