@@ -4,9 +4,11 @@ ShowTyping {
 	classvar <tv, <txt;
 	*new { { this.makeWindow }.defer }
 	*makeWindow {
-		\tsr.hlayout(
+		var window;
+		window = \tsr.hlayout(
 			tv = TextView();
 		);
+		window.bounds = Rect(0, 0, 400, 400);
 		Tsr.doOnType({ | char |
 			{
 				txt = tv.string;
