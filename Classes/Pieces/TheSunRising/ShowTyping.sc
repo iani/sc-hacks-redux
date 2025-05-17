@@ -8,6 +8,7 @@ ShowTyping {
 		window = \tsr.hlayout(
 			tv = TextView();
 		);
+		window.view.children.first.string = "";
 		window.bounds = Rect(0, 0, 400, 400);
 		Tsr.doOnType({ | char |
 			{

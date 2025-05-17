@@ -1,9 +1,10 @@
+// OBSOLETE. see plusUGenFader , f method
 // 水 14  5 2025 18:09
 // An easy way to create releasable synths
 
 + Env {
-	*fader {
-		^this.adsr.kr(\gate.kr(1), doneAction: 2)
+	*fader { | attack = 0.1, decay = 0.3, sustain = 1 |
+		^this.adsr(attack, decay, sustain).kr(\gate.kr(1), doneAction: 2)
 	}
 }
 

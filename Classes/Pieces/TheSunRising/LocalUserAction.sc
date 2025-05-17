@@ -14,6 +14,6 @@ LocalUserAction {
 			postln("Cannot do" + message + "because user" + user + "is not local");
 			^this;
 		};
-		action.perform(message, *args);
+		^action.perform(message, *args);
 	}
 }
