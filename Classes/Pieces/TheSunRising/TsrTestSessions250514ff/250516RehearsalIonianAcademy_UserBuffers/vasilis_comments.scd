@@ -1,4 +1,13 @@
 //:[81483.187111708] vasilis vasilis 250516_200949
+//: trying with LiveText2
+
+Tsr.doOnVerse({ | index, verse, incipit|
+	LiveText2.text(verse);
+	LiveText2.ints.postln;
+	LiveText2.floats.postln;
+})
+
+//:
 (
 Tsr.doOnVerse({ | index, verse, incipit |
 	"FOR VASILI".postln;
@@ -6,14 +15,18 @@ Tsr.doOnVerse({ | index, verse, incipit |
 	//\verse !!! verse;
 	LiveText.text(verse.asString);
 
-
 \sines1 play: (\instrument: \sines);
+
+\sines1 set: (dur: 2, degree: (1..10).pseq);
+\sines1 set: (dur: 2, \degree: (1..10).reverse.pseq);
 
 \sines1 set: (\freq: (LiveText.ints*60).pseq(1),
 freq2: (LiveText.ints*100).pseq(1),
 \freq3: (LiveText.ints*80).pseq(1),
 \vol: 0.2,
-\fade: (LiveText.floats)*2.pseq(1),
+	\fade: (LiveText.floats)*2.pseq(1), // this is wrong
+	// it should be:
+	// 	\fade: (LiveText.floats*2).pseq(1)
 \dur: (LiveText.floats).pseq(1),
 \amp: (LiveText.floats.linlin(0.5, 0.3, 0.4, 0.5)).pseq(1),
 \pan: 0);
