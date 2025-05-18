@@ -42,6 +42,8 @@ Tsr.doOnTrig({ | num, verse, incipit |
 	\sines1.stop;
 }, \vastest);
 
+Tsr.trig;
+
 
 //:
 
