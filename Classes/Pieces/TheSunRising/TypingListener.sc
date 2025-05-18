@@ -43,7 +43,7 @@ TypingListener {
 	}
 
 	playSound { | char |
-			(instrument: \pinch, freq: char.ascii*2, ffreq: char.ascii / 2).play;
+			// (instrument: \pinch, freq: char.ascii*2, ffreq: char.ascii / 2).play;
 			(instrument: \pinch, freq: char.ascii*4, ffreq: char.ascii / 4).play;
 	}
 
