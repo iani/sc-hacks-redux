@@ -8,8 +8,9 @@ ShowTyping {
 		window = \tsr.hlayout(
 			tv = TextView();
 		);
+		tv = window.view.children.first;
 		window.alwaysOnTop = true;
-		window.view.children.first.string = "";
+		tv.string = "";
 		window.bounds = Rect(0, 0, 400, 400);
 		Tsr.doOnType({ | char |
 			{
