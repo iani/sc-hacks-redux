@@ -19,7 +19,8 @@ SynthDef(\p, {
 
 //:
 ~vrs = BusEnvir(~p, args: [\buf, ~i1.bufnum, \l, 1, \amp, 0.1]);
-~vrs.addctl(\pan, { SinOsc.kr(0.2) });
+~vrs.map(\pan, { SinOsc.kr(0.2) });
+~vrs.set(\pan, 0);
 //:
 
 //:

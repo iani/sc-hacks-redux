@@ -79,6 +79,20 @@ BusEnvir {
 		mainSynth.map(key, buses[key].index);
 	}
 
+	remap { | key | // reconnect to an existing control synth
+		var ctl;
+		ctl = controlSynths[key];
+		if (ctl.isPlaying and: { mainSynth.isPlaying }) { mainSynth.map(key, ctl) }
+	}
+
+	unmap { | key |
+		var ctl;
+		ctl = controlSynths[key];
+		if (ctl.isPlaying) {
+			ctl.release;
+			controlSynths[key] = nil;
+		}
+	}
 	// set a bus to a value
 	set { | ... args |
 		mainSynth.isPlaying.if { mainSynth.set(*args) }
