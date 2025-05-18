@@ -7,6 +7,67 @@ Tsr.doOnVerse({ | index, verse, incipit|
 	LiveText2.ints.asStream.nextN(30).postln;
 	LiveText2.floats.asStream.nextN(25).postln;
 })
+//:Testing with Vasili's sines code
+Tsr.doOnVerse({ | index, verse, incipit|
+	"Testing LiveText2 - part 1".postln;
+	LiveText2.text(verse);
+	\sines1 play: (\instrument: \sines);
+
+	\sines1 set: (\freq: LiveText2.ints*60,
+		freq2: LiveText2.ints*100,
+		\freq3: LiveText2.ints*80,
+		\vol: 0.2,
+		\fade: LiveText2.floats*2, // this is wrong
+		// it should be:
+		// 	\fade: (LiveText.floats*2).pseq(1)
+		\dur: LiveText2.floats,
+		\amp: LiveText2.floats.linlin(0.5, 0.3, 0.4, 0.5),
+		\pan: 0);
+});
+//:Testing synths with Pbind
+Tsr.doOnVerse({ | index, verse, incipit|
+	"Testing LiveText2 - PBIND".postln;
+	LiveText2.text(verse);
+	Pbind(\instrument, \sines, // \default,
+		\freq, LiveText2.ints*60,
+		\freq2, LiveText2.ints*100,
+		\freq3, LiveText2.ints*80,
+		\vol, 0.2,
+		\fade, LiveText2.floats*2,
+		\dur, LiveText2.floats,
+		\amp, LiveText2.floats.linlin(0.5, 0.3, 0.4, 0.5),
+		\pan, 0).play;
+});
+//:Debugging synths
+
+//:
+	Pbind(\instrument, \default,
+		\freq, LiveText2.ints*60,
+		\freq2, LiveText2.ints*100,
+		\freq3, LiveText2.ints*80,
+		\vol, 0.2,
+		\fade, LiveText2.floats*2,
+		// \dur, 0.1,
+		// \dur, LiveText2.floats,
+		// \amp, LiveText2.floats.linlin(0.5, 0.3, 0.4, 0.5),
+		\pan, 0).play
+
+//: debugging again 2
+	Pbind(\instrument, \default,
+		\freq, LiveText2.ints*60,
+		\freq2, LiveText2.ints*100,
+		\freq3, LiveText2.ints*80,
+		\vol, 0.2,
+		\fade, LiveText2.floats*2,
+		// \dur, 0.1,
+		\dur, LiveText2.floats,
+		// \amp, LiveText2.floats.linlin(0.5, 0.3, 0.4, 0.5),
+		\pan, 0).play
+
+//:
+
+Pbind(\instrument, \default, \freq, Pseq([50, 60].midicps, 3)).play;
+Pbind(\instrument, \sines, \freq, Pseq([50, 60].midicps, 3)).play;
 
 //:
 (
@@ -17,9 +78,6 @@ Tsr.doOnVerse({ | index, verse, incipit |
 	LiveText.text(verse.asString);
 
 \sines1 play: (\instrument: \sines);
-
-\sines1 set: (dur: 2, degree: (1..10).pseq);
-\sines1 set: (dur: 2, \degree: (1..10).reverse.pseq);
 
 \sines1 set: (\freq: (LiveText.ints*60).pseq(1),
 freq2: (LiveText.ints*100).pseq(1),
