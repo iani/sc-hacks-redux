@@ -78,4 +78,7 @@ BusEnvir {
 	set { | ... args |
 		mainSynth.isPlaying.if { mainSynth.set(*args) }
 	}
+
+	free { mainSynth.free }
+	release { | dur |  mainSynth.release(dur) }
 }
