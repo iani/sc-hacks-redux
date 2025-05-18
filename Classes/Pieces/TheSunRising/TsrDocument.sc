@@ -13,7 +13,6 @@ TsrDocument {
 	}
 
 	init {
-		listener = TypingListener();
 		document = Document("The Sun Rising for" + user);
 		document.keyDownAction = { | doc, char, cocoaModifiers, unicode, keycode, key |
 			// postln("TYPING:" + [char, cocoaModifiers, unicode, keycode, key]);
