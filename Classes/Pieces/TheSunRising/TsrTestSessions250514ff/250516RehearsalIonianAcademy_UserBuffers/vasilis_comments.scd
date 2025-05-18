@@ -2,9 +2,10 @@
 //: trying with LiveText2
 
 Tsr.doOnVerse({ | index, verse, incipit|
+	"Testing LiveText2 - part 1".postln;
 	LiveText2.text(verse);
-	LiveText2.ints.postln;
-	LiveText2.floats.postln;
+	LiveText2.ints.asStream.nextN(30).postln;
+	LiveText2.floats.asStream.nextN(25).postln;
 })
 
 //:

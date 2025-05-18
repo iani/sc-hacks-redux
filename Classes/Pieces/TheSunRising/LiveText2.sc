@@ -13,7 +13,7 @@ LiveText2 {
     }
 
     *makeArrays {
-	  var w, x, y, z;
+	  var w, x, y, z, wxyz;
 	  intArray = (0..127) collect: 0;
 	  (($a.ascii)..($z.ascii)) do: { | n | intArray[n] = n - 96 };
 	  (($A.ascii)..($Z.ascii)) do: { | n | intArray[n] = n - 64 };
@@ -21,7 +21,14 @@ LiveText2 {
 	  x = (0.1, 0.21..0.98);
 	  y = [0.19];
 	  z = (0.220, 0.321..0.827);
-	  floatArray =  [w, x, y, z].flat;
+	  wxyz =  [w, x, y, z].flat;
+	  floatArray = 0.0 ! 127;
+	  (($a.ascii)..($z.ascii)) do: { | n, i |
+		floatArray[n] = wxyz[i];
+	  };
+	  (($A.ascii)..($Z.ascii)) do: { | n, i |
+		floatArray[n] = wxyz[i];
+	  };
     }
 
     *text { | argText |
