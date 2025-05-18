@@ -62,6 +62,11 @@ BusEnvir {
 	}
 
 	// play a function into a bus
+	// better synonym
+	map { | key, func |
+		this.addctl(key, func);
+	}
+
 	addctl { | key, func |
 		var prev;
 		buses[key] ?? {
