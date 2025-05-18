@@ -1,13 +1,7 @@
 //:[81483.187111708] vasilis vasilis 250516_200949
 //: trying with LiveText2
 
-Tsr.doOnVerse({ | index, verse, incipit|
-	"Testing LiveText2 - part 1".postln;
-	LiveText2.text(verse);
-	LiveText2.ints.asStream.nextN(30).postln;
-	LiveText2.floats.asStream.nextN(25).postln;
-})
-//:Testing with Vasili's sines code
+//:==================== Main Example ====================
 Tsr.doOnVerse({ | index, verse, incipit|
 	"Testing LiveText2 - part 1".postln;
 	LiveText2.text(verse);
@@ -17,9 +11,7 @@ Tsr.doOnVerse({ | index, verse, incipit|
 		freq2: LiveText2.ints*100,
 		\freq3: LiveText2.ints*80,
 		\vol: 0.2,
-		\fade: LiveText2.floats*2, // this is wrong
-		// it should be:
-		// 	\fade: (LiveText.floats*2).pseq(1)
+		\fade: LiveText2.floats*2,
 		\dur: LiveText2.floats,
 		\amp: LiveText2.floats.linlin(0.5, 0.3, 0.4, 0.5),
 		\pan: 0);
@@ -60,7 +52,7 @@ Tsr.doOnVerse({ | index, verse, incipit|
 		\vol, 0.2,
 		\fade, LiveText2.floats*2,
 		// \dur, 0.1,
-		\dur, LiveText2.floats,
+		\dur, Pseq([0.1, 0.2, Rest(1)], 4),
 		// \amp, LiveText2.floats.linlin(0.5, 0.3, 0.4, 0.5),
 		\pan, 0).play
 

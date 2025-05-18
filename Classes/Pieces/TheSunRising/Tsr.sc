@@ -32,6 +32,9 @@ Tsr {
 		User.sendToAll(\verse, index, verse, incipit);
 	}
 
+	*trig { | index, verse, incipit | // Send a verse.
+		User.sendToAll(\trig, index, verse, incipit);
+	}
 	*voice { | voice, verseNums |
 		// send a selected voice + verse number + verse
 		// For use by Iannis - and maybe also others.
@@ -54,6 +57,10 @@ Tsr {
 	*doOnVerse { | action, key = \default |
 		OSC.addArgs(\verse, action, key);
 		// this.addNotifier(\tsr, \verse, action);
+	}
+
+	*doOnTrig { | action, key = \default |
+		OSC.addArgs(\trig, action, key);
 	}
 
 	*undoOnVerse { | key = \default |

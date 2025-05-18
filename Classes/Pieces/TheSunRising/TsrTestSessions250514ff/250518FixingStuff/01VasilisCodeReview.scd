@@ -22,13 +22,31 @@ freq2: (LiveText.ints*100).pseq(1),
 \amp: (LiveText.floats.linlin(0.5, 0.3, 0.4, 0.5)).pseq(1),
 \pan: 0);
 //: Redoing LiveText to permit following syntax:
-LiveText.text("Busy old fool, unruly sun.");
-\sines1 play: (\instrument: \sines);
-\sines1 set: (
-	freq: LiveText.ints*60,
-	fade: LiveText.floats*2,
-	freq2: LiveText.ints*100,
-	freq3: LiveText.ints*80
-	vol: 0.2
-);
+LiveText.text(10, "Busy old fool, unruly sun.");
+//:
+Tsr.doOnVerse({ | num, verse, incipit |
+	LiveText2.text(verse);
+	\sines1 play: (\instrument: \sines);
+	\sines1 set: (
+		freq: LiveText2.ints(2)*60,
+		fade: LiveText2.floats(2)*2,
+		freq2: LiveText2.ints(2)*100,
+		freq3: LiveText2.ints(2)*80,
+		dur: LiveText2.floats(2),
+		vol: 0.2
+	);
+}, \vastest);
+//:
+
+Tsr.doOnTrig({ | num, verse, incipit |
+	\sines1.stop;
+}, \vastest);
+
+
+//:
+
+//:
 // etc.
+\sines1.stop;
+
+currentEnvironment;
