@@ -69,6 +69,16 @@ Tsr {
 		OSC.addArgs(\verse, action, key);
 	}
 
+	*doOnVerse2 { | action, key = \default |
+//		OSC.addArgs(\verse, action, key);
+		var envir;
+		envir = currentEnvironment; // store environment of user at doOnType2
+		// at each notification, run user's action inside user's environment
+		OSC.addArgs(\verse, { | ... args |
+			currentEnvironment.use({ action.(*args) }) },
+			key
+		);
+	}
 	*doOnTrig { | action, key = \default |
 		OSC.addArgs(\trig, action, key);
 	}
