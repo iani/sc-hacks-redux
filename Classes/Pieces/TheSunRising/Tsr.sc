@@ -30,8 +30,8 @@ Tsr {
 
 	*verse { | index, verse, incipit | // Send a verse.
 		// debugging double send on 250520
-		// User.sendToAll(\verse, index, verse, incipit);
-		User.forwardMessage(\verse, index, verse, incipit, User.localId);
+		User.sendToAll(\verse, index, verse, incipit);
+		// User.forwardMessage(\verse, index, verse, incipit, User.localId);
 	}
 
 	*trig { | index, verse, incipit | // Send a verse.
