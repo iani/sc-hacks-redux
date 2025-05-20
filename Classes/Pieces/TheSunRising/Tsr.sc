@@ -46,7 +46,16 @@ Tsr {
 
 	*doOnType { | action, key = \default |
 		OSC.addArgs(\char, action, key);
-		// this.addNotifier(\tsr, \char, action);
+	}
+
+	*doOnType2 { | action, key = \default |
+		var envir;
+		// store environment of user at time of issue
+		envir = currentEnvironment;
+		OSC.addArgs(\char, // run user's action inside user's environment
+			{ currentEnvironment.use({ | ... args | action.(*args) }) },
+			key
+		);
 	}
 
 	*undoOnType { | key = \default |
@@ -56,7 +65,6 @@ Tsr {
 
 	*doOnVerse { | action, key = \default |
 		OSC.addArgs(\verse, action, key);
-		// this.addNotifier(\tsr, \verse, action);
 	}
 
 	*doOnTrig { | action, key = \default |
