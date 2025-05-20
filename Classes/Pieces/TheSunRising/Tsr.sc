@@ -55,7 +55,7 @@ Tsr {
 		envir = currentEnvironment; // store environment of user at doOnType2
 		// at each notification, run user's action inside user's environment
 		OSC.addArgs(\char, { | ... args |
-			currentEnvironment.use({ action.(*args) }) },
+			envir.use({ action.(*args) }) },
 			key
 		);
 	}
