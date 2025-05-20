@@ -644,4 +644,16 @@ TODO: Check that the present User code actually works as described above!
 		this.enableCodeForwarding;
 		^result;
 	}
+
+	*prUse { | func, user, key |
+		var theUser, theEnvir;
+		user ?? localId;
+		key ?? user;
+		theUser = all[user];
+		theUser ?? { ^postln("cannot do use. non existing user" + user); };
+		theEnvir = theUser.envirs[key];
+		theUser ?? { ^postln("cannot do use. non existing envir" + key); };
+		theEnvir use: func;
+
+	}
 }
