@@ -20,7 +20,6 @@ a.c(\freq, { LFNoise0.kr(4).range(1080, 2090) },
 );
 //:
 
-
 // undoing controls (3 different ways: set, unmap, stopCtl)
 // set control \freq to 400. this unmaps the control
 // but the control synth keeps running

@@ -9,7 +9,10 @@ OnChange {
 	// check if new input is not equal to previous
 	// if yes, then perform action and store new input
 	check { | input |
+		postln("OnChange compares previous" + previous + "with new input" + input);
+		postln("input != previous???" + (input != previous));
 		if (input != previous) {
+			postln("OnChange runs action with input:" + input);
 			action.(input);
 			previous = input;
 		}

@@ -29,7 +29,9 @@ Tsr {
 	}
 
 	*verse { | index, verse, incipit | // Send a verse.
-		User.sendToAll(\verse, index, verse, incipit);
+		// debugging double send on 250520
+		// User.sendToAll(\verse, index, verse, incipit);
+		User.forwardMessage(\verse, index, verse, incipit);
 	}
 
 	*trig { | index, verse, incipit | // Send a verse.

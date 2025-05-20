@@ -13,6 +13,7 @@ TypingListener {
 		tmp = "";
 		cnt = 0;
 		onChange = OnChange({ | index |
+			postln("OnChange runs Tsr.verse with index" + index);
 			Tsr.verse(index, TsrPoem.verses[index], TsrPoem.incipits[index]);
 		});
 
@@ -50,6 +51,7 @@ TypingListener {
 	guessVerse {
 		var distances, minDistance, minIndex;
 		distances = TsrPoem.verses collect: { | v | v editDistance: tmp };
+		verbose.if { distances.postln; };
 		minIndex = distances.minIndex;
 		minDistance = distances[minIndex];
 		(minDistance <= 10).if { onChange.check(minIndex); }
