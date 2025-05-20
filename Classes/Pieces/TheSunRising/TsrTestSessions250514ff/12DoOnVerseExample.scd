@@ -1,4 +1,4 @@
-
+//:
 Tsr.doOnVerse2({ | index, verse, incipit, id |
 	postln("iani do on verse" + [index, verse, incipit, id]);
 	~x = { PinkNoise.ar(0.1).dup }.play;
