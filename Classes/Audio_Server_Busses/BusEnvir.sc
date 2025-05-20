@@ -79,6 +79,13 @@ BusEnvir {
 		synth.map(key, buses[key].index);
 	}
 
+	// free control and bus and remove from dicts
+	freectl { | key |
+		var bus, ctl;
+		bus = buses[key];
+		ctl = controlSynths[key];
+
+	}
 	remap { | key | // reconnect to an existing control synth
 		var ctl;
 		ctl = controlSynths[key];

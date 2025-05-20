@@ -19,7 +19,8 @@ CtlSynth {
 
 	play { | synthFunc |
 		// if synthFunc is nil, do nothing. allows remap
-		synthFunc ?? { ^this };
+		synthFunc ?? { ^this };// maybe remove this
+		// remap is done in MapBus!
 		this.stop;
 		ctlSynth = synthFunc.play(outbus: this.index).register;
 	}
@@ -48,7 +49,8 @@ MapBus {
 	bus { ^ctlSynth.bus }
 	index { ^ctlSynth.index }
 	play { | synthfunc |
-		ctlSynth play: synthfunc;
+		// if no synthFunc provided, remap!
+		synthfunc !? { ctlSynth play: synthfunc; };
 		synth.map(ctlName, ctlSynth.index);
 	}
 
@@ -64,19 +66,53 @@ MapBus {
 + Synth {
 	// get bus, play synth func into it, map it to ctlname
 
-	// shortcuts - also for chaining to higher-order control
-	c { | ctlname, synthfunc |
-		if (synthfunc.isNil) {
-			^this.getCtl.ctlSynth.ctlSynth;
-		}{
-			^this.addCtl(ctlname, synthfunc);
-		}
-	}
-	c_ { | ctlname |
-		this.unmap(ctlname);
+	// shortcuts
+	rc { | ... keys | // reconnect
+		keys do: { | key | this reconnect: key }
 	}
 
+	reconnect { | key | // remap to existing control synth/bus
+		var ctl;
+		ctl = this getCtl: key;
+		ctl !? { this.map(key, ctl.bus.index); }
+	}
+
+	c { | ... argFuncPairs |
+		// why doesn't this work ????:
+		// this.addCtl(*argFuncPairs);
+		argFuncPairs keysValuesDo: { | ctl, func |
+			this.add1Ctl(ctl, func);
+		};
+	}
+
+	ctl { | ... argFuncPairs |
+		// why doesn't this work ????:
+		// this.addCtl(*argFuncPairs);
+		argFuncPairs keysValuesDo: { | ctl, func |
+			this.add1Ctl(ctl, func);
+		};
+	}
+
+	add1Ctl { | ctlname, synthfunc |
+		var ctl;
+		postln("adding control" + ctlname + "with func" + synthfunc);
+		ctl = this getCtl: ctlname;
+		ctl.isNil.if {
+			ctl = MapBus(this, ctlname, CtlSynth.fromFunc(synthfunc));
+			this.map(ctlname, ctl.index);
+			this.putVar(ctlname, ctl);
+		}{
+			ctl play: synthfunc;
+		};
+		this.map(ctlname, ctl.index);
+		^ctl.ctlSynth.ctlSynth;
+	}
+
+	c_ { | ctlname | this.unmap(ctlname); }
+	cc_ { | ctlname | this.stopCtl(ctlname); }
+
 	// unmap in a safe way: set control to current bus value
+	u { | ctlname | this unmap: ctlname }
 	unmap { | ctlname |
 		var ctl;
 		ctl = this getCtl: ctlname;
@@ -85,8 +121,9 @@ MapBus {
 		}
 	}
 
-	// return ctl if it exists, else return nil
-	getCtl { | ctlname | ^this getVar: ctlname }
+	// return ctl synth if it exists, else return nil
+	cs { | ctlname | ^this.getCtlSynth(ctlname) }
+	getCtlSynth { | ctlname | ^this.getCtl(ctlname).ctlSynth.ctlSynth }
 
 	addCtl { | ctlname, synthfunc |
 		var ctl;
@@ -102,13 +139,17 @@ MapBus {
 		^ctl.ctlSynth.ctlSynth;
 	}
 
+	getCtl { | ctlname | ^this getVar: ctlname }
+
+
 	// remove control instance
 	// do not stop control synth, as it may be controlling other synths
 	removeCtl { | ctlname | this.removeValue(ctlname); }
+
+	// stop synth but do not remove bus or unmap
 	stopCtl { | ctlname |
-		// stop synth but do not remove bus or unmap
 		var ctl;
-		ctl = this getVar: ctlname;
+		ctl = this getCtl: ctlname;
 		ctl !? { ctl.stop; }
 	}
 

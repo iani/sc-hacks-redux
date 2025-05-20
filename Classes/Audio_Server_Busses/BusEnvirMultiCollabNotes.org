@@ -1,0 +1,9 @@
+#+title: Bus Envir Multi Collab Notes
+火 20  5 2025 14:48
+Ways to store synths in one environment for each user in a networked collab environment.
+
+BusEnvir could be expanded by adding a dictionary of dictionaries holding
+1. Level 1 user keys->Mediator or IdentityDictionary holding BusEnvir instances
+2. Level 2: Dicitonary holding the BusEnvirs of a user, by name
+
+BusEnvirs created by a user. Then when a user evaluates code involving BusEnvir, the busenvir instances created by the code are stored to the BusEnvir under .
