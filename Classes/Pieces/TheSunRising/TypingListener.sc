@@ -13,7 +13,7 @@ TypingListener {
 		tmp = "";
 		cnt = 0;
 		onChange = OnChange({ | index |
-			postln("OnChange runs Tsr.verse with index" + index);
+			// postln("OnChange runs Tsr.verse with index" + index);
 			Tsr.verse(index, TsrPoem.verses[index], TsrPoem.incipits[index]);
 		});
 		ShowTyping();
@@ -21,6 +21,7 @@ TypingListener {
 
 	processKeyboardInput { | charNum, cocoaModifiers, unicode, keycode, key |
 		var char;
+		User.sendToAll(\char, charNum);
 		char = charNum.asAscii;
 		this.processTypeInput(char, unicode ? 0);
 		this.guessVerse;
