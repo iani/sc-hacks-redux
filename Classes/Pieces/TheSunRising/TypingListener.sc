@@ -23,7 +23,7 @@ TypingListener {
 
 	processKeyboardInput { | charNum, cocoaModifiers, unicode, keycode, key |
 		var char;
-		User.sendToAll(\char, charNum);
+		User.sendToAll(\char, charNum, cocoaModifiers, unicode);
 		char = charNum.asAscii;
 		this.processTypeInput(char, unicode ? 0);
 		this.guessVerse;
