@@ -21,7 +21,7 @@ TypingListener {
 
 	processKeyboardInput { | charNum, cocoaModifiers, unicode, keycode, key |
 		var char;
-		char = ascii.asAscii;
+		char = charNum.asAscii;
 		this.processTypeInput(char, unicode ? 0);
 		this.guessVerse;
 	}
