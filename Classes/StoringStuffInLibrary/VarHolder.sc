@@ -9,19 +9,22 @@ VarHolder {
 	}
 
 	*getVar { | object, key |
-		^Library.getVarDict(object)[key];
+		^this.getVarDict(object)[key];
 	}
 
 	*putVar { | object, key, value |
-		this.getVarDict[key] = value;
+		this.getVarDict(object)[key] = value;
 	}
 
 	*removeVar { | object, key |
 		var dict;
-		dict = this.getVarDict;
+		dict = this getVarDict: object;
 		dict[key] = nil;
 		(dict.size == 0).if { Library.put(object, \vars, nil) };
 	}
+
+	*removeVarDict { | object | Library.put(object, \vars, nil); }
+
 	*getVarDict { | object |
 		var dict;
 		dict = Library.at(object, \vars);
@@ -37,4 +40,6 @@ VarHolder {
 	getVar { | key | ^VarHolder.getVar(this, key) }
 	putVar { | key, value | VarHolder.putVar(this, key, value) }
 	removeVar { | key | VarHolder.removeVar(this, key) }
+	removeVarDict { VarHolder.removeVarDict(this) }
+	vars { ^VarHolder.getVarDict(this) }
 }

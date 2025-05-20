@@ -66,13 +66,12 @@ MapBus {
 
 	// shortcuts - also for chaining to higher-order control
 	c { | ctlname, synthfunc |
-		synthfunc.isNil.if {
+		if (synthfunc.isNil) {
 			^this.getCtl.ctlSynth.ctlSynth;
 		}{
 			^this.addCtl(ctlname, synthfunc);
 		}
 	}
-
 	c_ { | ctlname |
 		this.unmap(ctlname);
 	}
@@ -116,9 +115,15 @@ MapBus {
 	// stop all control synths and free their buses
 	// DANGER: this may stop control synths controlling other synths
 	freeCtls {
-		this.getVarDict keysValuesDo: { | key, ctl |
+		// this.vars keysValuesDo: { | key, ctl |
+		// 	[key, ctl].postln;
+		// };
+		var vars;
+		vars = this.vars;
+		vars keysValuesDo: { | key, ctl |
 			ctl.free;
-			this removeVar: key;
-		}
+			vars[key] = nil;
+		};
+		((vars.size) == 0).if { this.removeVarDict }
 	}
 }
