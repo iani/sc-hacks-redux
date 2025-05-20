@@ -50,10 +50,10 @@ Tsr {
 
 	*doOnType2 { | action, key = \default |
 		var envir;
-		// store environment of user at time of issue
-		envir = currentEnvironment;
-		OSC.addArgs(\char, // run user's action inside user's environment
-			{ currentEnvironment.use({ | ... args | action.(*args) }) },
+		envir = currentEnvironment; // store environment of user at doOnType2
+		// at each notification, run user's action inside user's environment
+		OSC.addArgs(\char, { | ... args |
+			currentEnvironment.use({ action.(*args) }) },
 			key
 		);
 	}

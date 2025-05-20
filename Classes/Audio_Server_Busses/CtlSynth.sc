@@ -18,7 +18,7 @@ CtlSynth {
 	}
 
 	play { | synthFunc |
-		// if synthFunc is nil, return existing ctlSynth
+		// if synthFunc is nil, do nothing. allows remap
 		synthFunc ?? { ^this };
 		this.stop;
 		ctlSynth = synthFunc.play(outbus: this.index).register;
