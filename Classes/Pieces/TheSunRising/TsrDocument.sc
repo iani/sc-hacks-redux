@@ -14,9 +14,11 @@ TsrDocument {
 
 	init {
 		document = Document("The Sun Rising for" + user);
+		listener = TypingListener();
 		document.keyDownAction = { | doc, char, cocoaModifiers, unicode, keycode, key |
 			// postln("TYPING:" + [char, cocoaModifiers, unicode, keycode, key]);
-			User.sendToAll(\char, char.ascii, cocoaModifiers, unicode, keycode, key);
-		}
+			listener.processKeyboardInput(char.ascii, cocoaModifiers, unicode, keycode, key);
+			// User.sendToAll(\char, char.ascii, cocoaModifiers, unicode, keycode, key);
+		};
 	}
 }

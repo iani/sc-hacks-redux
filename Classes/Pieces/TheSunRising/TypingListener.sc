@@ -7,24 +7,23 @@ TypingListener {
 	var onChange, <tmp, <cnt;
 	// var <dist, <currIdx, <sumscores, <maxitem;
 
-	*new { ^super.new.onTyping; }
+	*new { ^super.new.init; }
 
-	onTyping { // verseExraction -> extractVerse
+	init { // verseExraction -> extractVerse
 		tmp = "";
 		cnt = 0;
 		onChange = OnChange({ | index |
 			postln("OnChange runs Tsr.verse with index" + index);
 			Tsr.verse(index, TsrPoem.verses[index], TsrPoem.incipits[index]);
 		});
-
-		Tsr.doOnType({ |ascii, cocoaModifiers, unicode, keycode, key|
-			var char;
-			char = ascii.asAscii;
-			this.processTypeInput(char, unicode ? 0);
-			this.playSound(char);
-			this.guessVerse;
-		}, key: \gdmusic);
 		ShowTyping();
+	}
+
+	processKeyboardInput { | charNum, cocoaModifiers, unicode, keycode, key |
+		var char;
+		char = ascii.asAscii;
+		this.processTypeInput(char, unicode ? 0);
+		this.guessVerse;
 	}
 
 	processTypeInput { | char, unicode |
@@ -41,11 +40,6 @@ TypingListener {
 			User.sendToAll(\tsrchar, char.ascii); // NEVER SEND CHAR OVER OSC!
 			tmp = tmp ++ char.asString;
 		}
-	}
-
-	playSound { | char |
-			// (instrument: \pinch, freq: char.ascii*2, ffreq: char.ascii / 2).play;
-			(instrument: \pinch, freq: char.ascii*4, ffreq: char.ascii / 4).play;
 	}
 
 	guessVerse {

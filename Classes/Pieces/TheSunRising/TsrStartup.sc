@@ -10,6 +10,5 @@ TsrStartup {
 
 	init {
 		TsrDocument(user);
-		listener = TypingListener();
 	}
 }
