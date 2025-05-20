@@ -73,12 +73,12 @@ Tsr {
 //		OSC.addArgs(\verse, action, key);
 		var envir;
 		envir = currentEnvironment; // store environment of user at doOnType2
-		postln("The user of this doOnVerse is:" + envir[\user].id);
+		//postln("The user of this doOnVerse is:" + envir[\user].id);
 		// at each notification, run user's action inside user's environment
 		OSC.addArgs(\verse, { | ... args |
-			postln("this runs in the environment of user:" +
-				envir[\user].id;
-			);
+			// postln("this runs in the environment of user:" +
+			// 	envir[\user].id;
+			// );
 			envir.use({ action.(*args) }) },
 			key
 		);
