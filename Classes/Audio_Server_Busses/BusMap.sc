@@ -1,6 +1,9 @@
 // 木 15  5 2025 20:31
 // automatically map a collection of named buses to the controls of a synth
 // also handle creation/stopping of control synths that write to these buses
+// 月 19  5 2025 21:21: See CtlSynth, MapBus
+// probably Obsolete!
+
 BusMap {
 	var <buses, synths;
 

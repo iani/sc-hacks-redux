@@ -7,7 +7,7 @@
 BusEnvir {
 	var <synthFunc, <target, <outbus, <fadeTime, <addAction, <args;
 	var <synthDef, <controlNames;
-	var <mainSynth, <buses, <controlSynths;
+	var <synth, <buses, <controlSynths;
 
 	*new { | synthFunc, target, outbus = 0, fadeTime = 0.02, addAction = \addToHead, args |
 		^this.newCopyArgs(synthFunc, target, outbus, fadeTime, addAction, args).init;
@@ -51,12 +51,12 @@ BusEnvir {
 
 	makeSynth {
 		Server.default.sync;
-		mainSynth = synthDef.play(target, args, addAction);
-		mainSynth.register;
-		mainSynth.onStart({
+		synth = synthDef.play(target, args, addAction);
+		synth.register;
+		synth.onStart({
 			// "Synth started. Mapping controls".postln;
 			buses keysValuesDo: { | key, value |
-				mainSynth.map(key, value.index);
+				synth.map(key, value.index);
 			}
 		});
 	}
@@ -70,19 +70,19 @@ BusEnvir {
 	addctl { | key, func |
 		var prev;
 		buses[key] ?? {
-			^postln("Error: synth" + mainSynth + "has no control named" + key);
+			^postln("Error: synth" + synth + "has no control named" + key);
 		};
 		prev = controlSynths[key];
 		prev.isPlaying.if { prev.release };
 		controlSynths[key] = buses[key].ff(func);
 		// remap in case map was unsed throug ha set comman
-		mainSynth.map(key, buses[key].index);
+		synth.map(key, buses[key].index);
 	}
 
 	remap { | key | // reconnect to an existing control synth
 		var ctl;
 		ctl = controlSynths[key];
-		if (ctl.isPlaying and: { mainSynth.isPlaying }) { mainSynth.map(key, ctl) }
+		if (ctl.isPlaying and: { synth.isPlaying }) { synth.map(key, ctl) }
 	}
 
 	unmap { | key |
@@ -95,9 +95,9 @@ BusEnvir {
 	}
 	// set a bus to a value
 	set { | ... args |
-		mainSynth.isPlaying.if { mainSynth.set(*args) }
+		synth.isPlaying.if { synth.set(*args) }
 	}
 
-	free { mainSynth.free }
-	release { | dur |  mainSynth.release(dur) }
+	free { synth.free }
+	release { | dur |  synth.release(dur) }
 }

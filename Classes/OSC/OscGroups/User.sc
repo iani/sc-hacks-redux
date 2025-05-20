@@ -35,7 +35,7 @@ User {
 	var document, <file;
 	var <stack;
 	var <isActive = false;
-	var <makeDocument = false;
+	classvar <>makeDocument = false;
 
 	*enable { | argSessionName = "session", waitTime ... users |
 		// if waitTime is given, defer the enabling by wait seconds (default: 3).
