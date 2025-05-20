@@ -7,6 +7,8 @@ TypingListener {
 	var onChange, <tmp, <cnt;
 	// var <dist, <currIdx, <sumscores, <maxitem;
 
+	*showTypingListener { this.new }
+
 	*new { ^super.new.init; }
 
 	init { // verseExraction -> extractVerse

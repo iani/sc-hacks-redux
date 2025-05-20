@@ -35,12 +35,20 @@ LiveText2 {
 	    text = argText.asString;
     }
 
-    *ints { | repeats = 1 |
+    *intsSeq { | repeats = 1 |
 	  ^text.ascii.collect({ | a | intArray[a] }).pseq(repeats);
     }
 
-    *floats { | repeats = 1 |
+    *floatsSeq { | repeats = 1 |
 	  ^text.ascii.collect({ | a | floatArray[a] }).pseq(repeats);
+    }
+
+	 *intsRand { | repeats = 1 |
+	  ^text.ascii.collect({ | a | intArray[a] }).prand(repeats);
+    }
+
+    *floatsRand { | repeats = 1 |
+	  ^text.ascii.collect({ | a | floatArray[a] }).prand(repeats);
     }
 
 }
