@@ -5,8 +5,9 @@ PlayerTemplate : NamedSingleton2 { // neutral.  source specifies default behavio
 	classvar permanent; // any instances added here will restart after CmdPeriod
 	var <>source;
 	var <process; // the running process of this player. A Synth or EventStream.
-	var argDict; // accumulate arg settings
-	// in FunctionNodeTemplate, and NodeTemplate
+	var argDict; // accumulate arg settings in FunctionNodeTemplate, and NodeTemplate
+	var busDict; // buses to map controls inputs to
+
 	init { | argSource |
 		source = argSource ?? { this.defaultSource };
 	}
@@ -148,8 +149,10 @@ NodeTemplate : PlayerTemplate { // for synths
 				VarHolder.addVarDict(process, controlDict);
 
 				controlDict keysValuesDo: { | key, ctl |
-					// postln("mapping synth" + process + "key" + key
+					// postln("NodeTemplate mapping synth" + process
+					// 	+ "key" + key
 					// 	+ "synthctl" + ctl
+					// 	+ "with bus index" + ctl.index
 					// );
 					ctl.synth = process;
 					process.map(key, ctl.index);

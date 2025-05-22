@@ -4,7 +4,9 @@
 TypingRecorder : NamedSingleton2 {
 	classvar <>charMsg = \ascii;
 	classvar <>custom;
-	var <lines, <currentLine, <routine;
+	var <lines, <currentLine;
+	var <routine; // obsolete! Replaced by task. Kept for backward compatibility
+	var players; // dict with multiple player tasks
 
 	init {
 		lines ?? { this.newLine }; // start with a new line
@@ -43,6 +45,28 @@ TypingRecorder : NamedSingleton2 {
 		OSC.remove(\cret, name);
 	}
 
+	// Play an entire verse.
+	playVerse {}
+	// play characters from-to from the entire typing.
+	playChars {}
+	play { | actionFunc, key = \default, filterFunc, from, to |
+
+	}
+
+	getPlayer { | key = \default |
+		var player;
+		player = this.players[key];
+		player ?? {
+			player = TypingPlayer(this, key);
+			players[key] = player;
+		};
+		^player
+	}
+
+
+	//============================================================
+	// replay, replay1, simplePlay is replaced by new scheme:
+	// play, using TypingPlayer on 22  5 2025 11:43
 	replay { | from = 0, to |
 		var timesChars;
 		(lines.size < 1).if { ^"There are no lines to replay".postln; };
@@ -51,15 +75,15 @@ TypingRecorder : NamedSingleton2 {
 		lines[(from..to)] do: { | tc |
 			timesChars = timesChars add: tc.array;
 		};
-		this.play(timesChars.flatten2);
+		this.simplePlay(timesChars.flatten2);
 	}
 
 	replay1 { | n = 0 |
 		((lines@n).size == 0).if { ^postln("Cannot play an emptly line") };
-		this.play(lines[n].array);
+		this.simplePlay(lines[n].array);
 	}
 
-	play { | timesChars |
+	simplePlay { | timesChars |
 		var times, chars, dtimes;
 		timesChars ?? { ^"RecordTyping refuses to play an empty array" };
 		#times, chars = timesChars.flop;

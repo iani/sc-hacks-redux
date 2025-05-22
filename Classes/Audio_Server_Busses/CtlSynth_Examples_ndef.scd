@@ -27,15 +27,12 @@ c.synth;
 \a.c(\freq, { LFNoise0.kr(4).range(1080, 2090) },
 	\amp, { SinOsc.kr(1).range(0, 0.1)}
 );
-//: loss of maps when substituting synths?
-\a play: { SinOsc.ar(\freq.kr(600), 0, \amp.kr(0.02)) };
-//: remapAll (will be built in NodeTemplate!)
-\a.remapAll;
+\a play: { SinOsc.ar(\freq.kr(610), 0, \amp.kr(0.02)) };
 
 // undoing controls (3 different ways: set, unmap, stopCtl)
 // set control \freq to 400. this unmaps the control
 // but the control synth keeps running
-a.set(\freq, 400);
+\a.set(\freq, 400);
 
 // Note: a.set requires that you provide the value to set.
 // This can be different from the current value of the parameter,
@@ -44,43 +41,53 @@ a.set(\freq, 400);
 
 // To keep the latest value of a parameter set by a control synth,
 // use unmap
-a = { SinOsc.ar(\freq.kr(400), 0, \amp.kr(0.02)) }.play;
-a.c(\freq, { LFNoise1.kr(1).range(1080, 2090) });
-a.unmap(\freq); // reconnect to
-a.u(\freq); // u shortcut for unmap
+\a play: { SinOsc.ar(\freq.kr(400), 0, \amp.kr(0.02)) };
+\a.c(\freq, { LFNoise1.kr(1).range(1080, 2090) });
+\a.unmap(\freq); // disconnect from bus
+\a.u(\freq, \amp); // u shortcut for unmap
+\a.rc(\freq); // remap to bus
+\a.rc(\amp, \freq);
+//: remapAll unmapped controls
+\a.remapAll;
+
+\a.u(\freq, \amp); // u shortcut for unmap
+
+
+/// 木 22  5 2025 19:44 connection breaks. Why?
+\a play: { SinOsc.ar(\freq.kr(400), 0, \amp.kr(0.03)) };
 
 // Unmap keeps the control synth running, so it can be used
 // again with remap (or also mapped to another synth?)
 // use rc :
-a = { SinOsc.ar(\freq.kr(400), 0, \amp.kr(0.02)) }.play;
-a.c(\freq, { LFNoise0.kr(30).range(280, 2090) });
-a.unmap(\freq);
-a.reconnect(\freq); // reconnect: remaps to existing control synth
+\a play: { SinOsc.ar(\freq.kr(400), 0, \amp.kr(0.02)) };
+\a.c(\freq, { LFNoise0.kr(30).range(280, 2090) });
+\a.unmap(\freq);
+\a.rc(\freq); // reconnect: remaps to existing control synth
 // shortcuts:
-a.u(\freq); // disconnect from control
-a.rc(\freq); // reconnect: remaps to existing control synth
+\a.u(\freq); // disconnect from control
+\a.rc(\freq); // reconnect: remaps to existing control synth
 
 // shortcut for unmap: c_
-a = { SinOsc.ar(\freq.kr(400), 0, \amp.kr(0.02)) }.play;
-a.c(\freq, { LFNoise1.kr(3).range(1080, 2090) });
-a.c_(\freq);
+\a play: { SinOsc.ar(\freq.kr(400), 0, \amp.kr(0.02)) };
+\a.c(\freq, { LFNoise1.kr(3).range(1080, 2090) });
+\a.c_(\freq);
 
 // Stopping the control synth:
 // stopCtl stops the control synth - but does not unmap
-a = { SinOsc.ar(\freq.kr(400), 0, \amp.kr(0.02)) }.play;
-a.c(\freq, { LFNoise0.kr(4).range(1080, 2090) });
+\a play: { SinOsc.ar(\freq.kr(401), 0, \amp.kr(0.02)) };
+a.c(\freq, { LFNoise0.kr(10).range(1080, 2090) });
 a.stopCtl(\freq);
 
 // shortcut for stopCtl: cc_
-a = { SinOsc.ar(\freq.kr(400), 0, \amp.kr(0.02)) }.play;
-a.c(\freq, { LFNoise0.kr(4).range(1080, 2090) });
-a.cc_(\freq);
+\a play: { SinOsc.ar(\freq.kr(420), 0, \amp.kr(0.02)) };
+\a.c(\freq, { LFNoise0.kr(14).range(1080, 2090) });
+\a.cc_(\freq);
 
 // Free all control synths: freeCtls
-a = { SinOsc.ar(\freq.kr(400), 0, \amp.kr(0.02)) }.play;
-a.c(\freq, { LFNoise0.kr(4).range(1080, 2090) });
-a.c(\amp, { LFSaw.kr(10).range(0, 0.1) });
-a.freeCtls; // frees control synths and their MapBus, CtlSynth
+\a play: { SinOsc.ar(\freq.kr(400), 0, \amp.kr(0.02)) };
+\a.c(\freq, { LFNoise0.kr(4).range(1080, 2090) });
+\a.c(\amp, { LFSaw.kr(10).range(0, 0.1) });
+\a.freeCtls; // frees control synths and their MapBus, CtlSynth
 
 
 // Getting a control synth.  This is useful for

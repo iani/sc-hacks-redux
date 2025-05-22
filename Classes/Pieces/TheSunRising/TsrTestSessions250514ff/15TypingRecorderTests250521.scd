@@ -95,3 +95,12 @@ a.play;
 Rand()
 
 Synth(\lsine3);
+//============================================================
+// Testing new playback mechanism:
+// Play multiple playback tasks in parallel, accessed by name
+// customize playback function and data filter for each task, by name
+//: Testing Task for state tracking (Routine isPlaying does not work)
+a = Task({ loop { "PLAYING".postln; 1.0.wait;} } );
+a.play;
+a.stop;
+a.isPlaying;

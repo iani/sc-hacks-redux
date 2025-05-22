@@ -9,7 +9,10 @@
 // Therefore the control name is stored in separate instance, MapBus
 
 CtlSynth {
+	classvar named; // store instances for access by name.
+	// For mapping multiple synths/NodeTemplates to one CtlSynth
 	var <bus, <ctlSynth;
+	*named { ^named ?? { named = IdentityDictionary() } }
 	*fromFunc { | synthFunc |
 		^this.new(Bus.control).play(synthFunc);
 	}

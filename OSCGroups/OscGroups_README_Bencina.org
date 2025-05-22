@@ -1,0 +1,285 @@
+
+*This is the README downloaded from:*
+https://code.google.com/archive/p/oscgroups/downloads
+
+
+* Intro: OSCgroups client and server
+(c) Ross Bencina 2005-2013 <rossb@audiomulch.com>
+
+
+OSCgroups is a system for routing OSC messages between a group of 
+collaborating users. It is designed to make joining and leaving a 
+group simple, and to overcome the problem of connecting multiple 
+users behind different NAT routers using a NAT traversal server with 
+the usual "NAT hole punching" scheme (you can put that into google 
+for more info). OSCgroups also implements basic group functionality 
+similar to the concept of channels in internet relay chat.
+
+To use OSCgroups, a group of collaborators (or processes) each pick a 
+unique user name and password, and all agree on a shared group name 
+and group password. They then each run an OSCgroups enabled client 
+which connects with a server to retrieve the names, ip addresses and 
+port numbers of all other group members. This information can easily 
+be refreshed over time allowing dynamic group membership, this also 
+supports situations where ip addresses may change. Once an 
+OSCgroups client has the list of user names, addresses and port 
+numbers it could do a number of things, for example it could 
+implement message forwarding to named endpoints (i.e. always send 
+these messages to user 'fred' no matter what his address is) or to 
+multicast messages to all other members of the group.
+
+In this initial release of OSCgroups there is only one client: 
+OscGroupClient -- which implements multicast to other group members. 
+Future versions may include more advanced point-to-point routing 
+functionality.
+
+This distribution contains OSCGroupServer and OSCGroupClient, both 
+written in C++. It is envisiaged that OSCgroups clients could also be 
+implemented in other environments such as SuperCollider or max.msp. 
+
+
+
+* COMPILING
+---------
+
+OSCgroups is implemented using oscpack, a simple C++ library for 
+packing and unpacking OSC messages. In general you should try
+to build OSCgroups with a similarly timestamped snapshot of 
+oscpack.
+
+To compile oscgroups, unzip the oscgroups and oscpack archives
+(or check out from the svn repository) to obtain the following  
+directory structure:
+
+
+/oscgroups
+    Makefile
+    ... (other files from the oscgroups zip)
+    /bin
+
+ /oscpack
+    /osc
+    /ip
+    ....
+
+
+On Unix just type 
+
+>make
+
+in the oscgroups directory and the OscGroupServer and OscGroupClient 
+should end up in the bin directory. If you encounter any compilation 
+errors please email me. For other platforms take a look at the 
+makefile and work out which source files you need to build and which 
+include directories need to be on your include path.
+
+There is a batch file for building with MinGW on Windows (make.MinGW32.bat)
+
+There is a CMakeLists.txt file that you can use with CMake.
+
+OSCgroups should compile everywhere oscpack compiles, which is at 
+least Windows, Linux and MacOSX.
+
+
+
+* RUNNING
+-------
+
+** OSCGroupsServer
+
+
+To run your own OSCGroupsServer simply run the OSCGroupsServer,
+use -h to get a list of possible parameters. You can specify
+the port the server listens on, limit the number of connected
+users and groups, set a timeout after which the server will
+forget inactive users, and specify a file to which log messages
+will be written. Without any parameters the server will run
+on the default port 22242
+
+*** Info and test results running on a Mac on 22  5 2025
+NOTE: IZ: On an M3 macbook pro on 22  5 2025, I ran the binary contained here under bin/macos, as follows:
+
+#+begin_src shell
+./OscGroupServer
+#+end_src
+
+The answer was:
+
+#+begin_example
+Thu May 22 11:18:19 2025: oscgroupserver listening on port 22242...
+timeoutSeconds=60, maxUsers=100, maxGroups=50, logFile=stdout
+press ctrl-c to end.
+#+end_example
+
+It remains to test this from a wired or wireless LAN connection!
+
+** OscGroupClient
+
+This client registers with the server and establishes contact with
+all the other members of the specified group. It then listens on a
+specified port and transfers all traffic from there to other group
+members. It also forwards all traffic from other group members to
+another specified port on the local machine. The arguments are as
+follows (you can get a summary of this info by just passing -h). Note
+that all arguments must be supplied, and given in the order listed
+below.
+
+servername
+        an internet name such as oscgroups.iua.upf.edu or an ip address
+such as 193.145.55.19
+
+    serverport
+        the udp port which the server is listening on, the server
+defaults to 22242
+
+    localtoremoteport
+        the local port used to connect with the server and to other
+group members.
+
+    localtxport
+        this is the port which OscGroupClient listens to and forwards
+to other group members. direct your OSC traffic to this port.
+
+    localrxport
+        this is the port which OscGroupClient forwards trafic from
+other users to. you should configure your OSC application to listen
+to this port.
+
+    username
+        a unique user name used to identify you with other clients.
+
+    password
+        a password which is used to try to make sure that no one else
+pretends to be you on the server. this isn't secure but it helps.
+
+    groupname
+        a name that all group members agree on, like a user name it
+should be unique.
+
+    grouppassword
+        a password for the group. users without the correct password
+won't be admitted to the group.
+
+
+All of the port numbers specified need to be different. If multiple
+users are behind the same NAT and you experience difficulties. you
+might like to try all using a different value for localtoremoteport
+for each user, although this shouldn't usually be necessary.
+
+OSCGroups will report if you failed to register with the server
+because of an incorrect password. This could be caused by another user
+with the same name being connected to the server. So try to pick
+your usernames to be unique, or use your own server. Like IRC, the
+server forgets names quickly if no client is using them.
+
+
+Here's an example:
+
+
+./OscGroupClient oscgroups.iua.upf.edu 22242 22243 22244 22245 tim
+timspassword testgroup testpass
+
+
+with the above running in one window you could run oscdump:
+
+OscDump localhost 22245
+
+then all messages sent by all other group members (but not you) would
+be dumped to the console.
+
+If you're lucky there is an OSCGroupsServer running on oscgroups.iua.upf.edu
+port 22242
+
+
+If you want to run OscGroupClient on the same machine as the server
+make sure that you use a real ip address or machine name (not
+localhost or 127.0.0.1) as the servername parameter of OscGroupClient
+otherwise it won't work properly. This is a kind of bug which I don't
+really want to fix right now.
+
+
+If you have a software firewall installed on your machine you may need
+to ensure that the OscGroupClient executable is registered with the
+firewall. If you update the executable you may need to re-register it.
+Also remember that the local-to-remote port (22242) must not be blocked
+by your firewall.
+
+
+
+PLANNED EXTENSIONS
+------------------
+
+The planned extensions can be summarised as:
+
+    - serverless operation for locally connected machines using IP broadcast
+
+    - compute and display ping times
+
+    - point-to-point routing in OscGroupClient
+
+
+
+NOTES
+-----
+
+This is an initial version and it's possible that a few things will
+change, including the protocol. Right now it isn't foolproof, the
+references below suggest it probably works behind about 80-85% of
+routers on the market today -- this is a little worrying in the
+context of using it to perform live, however the alternatives involve
+providing fallback strategies such as forwarding via a server using
+TCP on port 80 -- perhaps that can be added for version 2. There is a
+nice analysis of the Skype protocol in the references section. There
+are clearly many things which could be added to OSCGroups, but for
+now the idea is to keep it simple.
+
+I mentioned above that OSCGroups clients could be implemented with
+other OSC enabled applications. While this is true in theory, I'm not
+sure how practical it would be because the NAT traversal strategy
+requires that the same socket be used for sending and receiving data
+to the outside world. The OscGroupClient uses a fixed port number for
+this, but that isn't strictly required.
+
+The server protocol has been designed to be pretty general, and
+OscGroupClient doesn't really take full advantage of it. For example,
+it would be easy to implement point-to-point routing (send these
+messages only to these users), or to fire events when users join or
+leave a group.
+
+Right now OscGroupClient parses every OSC packet it sees: this isn't
+ideal but it also isn't easy to avoid. One method might be to use
+non-bundled messages for /groupclient/ping messages so that it can
+only process non-bundled packets. Another option is to take advantage
+of the fact that every message is parsed and allow the packets to
+pass routing information. In reality the routing information would be
+easier to use if it was embedded in outbound packets (eg send this
+packet to this username). It's not obvious to me how to cleanly
+provide an interface to this functionality (or if it is really
+needed) so it hasn't been done.
+
+
+
+SOME REFERENCES
+---------------
+
+NAT and Peer-to-peer networking
+Dan Kegel
+http://alumnus.caltech.edu/~dank/peer-nat.html
+
+Peer-to-Peer Communication Across Network Address Translators
+Bryan Ford, Pyda Srisuresh, Dan Kegel
+http://www.brynosaurus.com/pub/net/p2pnat/
+
+RFC3489: STUN - Simple Traversal of User Datagram Protocol (UDP)
+ Through Network Address Translators (NATs)
+http://www.ietf.org/rfc/rfc3489.txt
+
+An Analysis of Skype Peer-to-Peer Internet Telephony Protocol
+Salman A. Baset and Henning Schulzrinne
+http://arxiv.org/ftp/cs/papers/0412/0412017.pdf
+
+Beej's Guide to Network Programming
+http://www.ecst.csuchico.edu/~beej/guide/net/
+
+
+Thanks to John Lazzaro for hooking me up with the right information.
