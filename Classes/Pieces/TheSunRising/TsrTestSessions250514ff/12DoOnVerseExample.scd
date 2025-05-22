@@ -27,3 +27,5 @@ User.all[\geodia].envir;
 User.all[\geodia].envirs[\geodia];
 
 ShowTyping();
+
+LiveText2

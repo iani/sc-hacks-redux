@@ -23,7 +23,15 @@ VarHolder {
 		(dict.size == 0).if { Library.put(object, \vars, nil) };
 	}
 
+	// remove object's var Dict, and object from Library
+	// this will break if we want to use multiple keys, other than \vars
+	*removeObject { | object |
+		Library.put(object, nil);
+	}
 	*removeVarDict { | object | Library.put(object, \vars, nil); }
+	*addVarDict { | object, dict |
+		Library.put(object, \vars, dict);
+	}
 
 	*getVarDict { | object |
 		var dict;

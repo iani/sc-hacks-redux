@@ -1,20 +1,34 @@
 // 木 15  5 2025 15:42
 // Record and replay typing actions, with timestamps
 
-RecordTyping : NamedSingleton2 {
+TypingRecorder : NamedSingleton2 {
 	classvar <>charMsg = \ascii;
+	classvar <>custom;
 	var <lines, <currentLine, <routine;
 
 	init {
 		lines ?? { this.newLine }; // start with a new line
 		this.activate;
 		CmdPeriod add: this;
+		custom ?? { | ascii | ascii };
 	}
+	/*
+		custom = { | ascii |
+		[
+		ascii.abs.linlin(0, 127, 30, 40),
+		0.1 // vol
+		-1.0 // pan;
+		]
+
+		};
+
+
+	*/
 	doOnCmdPeriod { routine = nil }
 
 	activate {
 		Tsr.doOnType({ | char |
-			currentLine = currentLine add: [Main.elapsedTime, char];
+			currentLine = currentLine add: [Clock.seconds, char];
 		}, name);
 		OSC.add(\cret, { this.newLine }, name);
 	}
@@ -60,6 +74,11 @@ RecordTyping : NamedSingleton2 {
 			dtimes do: { | dt, i |
 				dt.wait;
 				// postln("playing" + chars[i]);
+				this.changed(charMsg, chars[i]);
+				/*
+
+				this.changed(charMsg, *custom.(chars[i]).asArray);
+				*/
 				this.changed(charMsg, chars[i]);
 			}
 		}

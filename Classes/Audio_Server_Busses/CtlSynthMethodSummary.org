@@ -1,0 +1,69 @@
+#+title: Ctl Synth Method Summary
+
+Summary of methods for mapping/unmapping controls to Synth.
+Source file: CtlSynth.sc
+
+The present serves as guide for use, for writing help files, and for adding the same methods to NodeTemplate / FunctionNodeTemplate.
+
+* Summary of methods grouped by action type:
+
+** rc, remap : restore (repeat) map to running control synth
+
+** remapAll : remap all controls found in VarHolder
+
+This serves to inherit the previous maps when starting (or restarting) a new synth in a NodeTemplate.
+
+** c, ctl : add control synths for multiple key-function pairs
+
+** add1Ctl : add control synth for a key-function pair
+
+** c_, u, unmap : unmap each key in an array of arguments
+
+See unmap1
+
+control synths by setting the target synth's args bus value. Unmaps
+
+** unmap1 unmap the control of the target synth by setting to the current value of the control bus
+
+** cs, getCtlSynth get the control synth for a control name
+
+** getCtl get the MapBus instance for a control name
+
+** removeCtl remove the MapBus instance for a control name.
+Do not do anything else.
+Unmap must be done separately with c_, u, unmap or unmap1 above.
+
+** cc_, stopCtl stop the synth of control at control name.
+
+** freeCtls: stop all controls and free their buses
+
+* list of methods one by one (for porting to NodeTemplate, Symbol)
+
+1. [X] rc ... keys
+2. [X] remap key
+3. [X] remapAll -
+4. [X] c ... argFuncPairs
+5. [X] ctl ... argFuncPairs
+6. [X] add1Ctl ctlname synthfunc
+7. [X] c_ ... ctlnames
+8. [X] u ... ctlnames
+9. [X] unmap ... ctlnames
+10. [X] unmap1 ctlname
+11. [X] cs ctlname
+12. [X] getCtlSynth ctlname
+13. [X] getCtl ctlname
+14. [X] removeCtl ctlname
+15. [X] cc_ ctlname
+16. [X] stopCtl ctlname
+17. [X] freeCtls -
+
+* Ideas for future work
+** (TODO:) mlm, multiLevelMap: map down several levels of control keys
+
+#+begin_src sclang
+<synth>.mm(\freq, \lo, <{ func }>):
+#+end_src
+
+** Variations of mapping to multiple synths:
+1. Map one control synth to multiple target synths
+2. Generate multiple control synths from one synth func and map each control synth to each target synth.

@@ -1,24 +1,36 @@
 
+// Mapping NodeTemplate synths
+// Test 水 21  5 2025 19:48
 // Create a synth to control and store it in a
-a = { SinOsc.ar(\freq.kr(400), 0, \amp.kr(0.02)) }.play;
 
+\a play: { SinOsc.ar(\freq.kr (400), 0, \amp.kr(0.02)) };
+\a play: { LFSaw.ar(\freq.kr(600), 0, \amp.kr(0.02)) };
+
+~a.process;
+
+b = Library.at(~a.process)[\vars];
+c = b[\freq];
+c.synth;
 // map control \freq to a synth synth made from a func
-a.ctl(\freq, { LFNoise0.kr(10).range(100, 900) });
+\a.ctl(\freq, { LFNoise0.kr(10).range(100, 900) });
 
 // Shortcut for ctl: c
-a.c(\freq, { LFNoise1.kr(10).range(800, 900) });
+\a.c(\freq, { LFNoise1.kr(10).range(800, 900) });
 
 // Adding multiple controls with list of key-function pairs
-a = { SinOsc.ar(\freq.kr(400), 0, \amp.kr(0.02)) }.play;
+\a play: { SinOsc.ar(\freq.kr(600), 0, \amp.kr(0.02)) };
 //: with ctl:
-a.ctl(\freq, { LFNoise1.kr(1).range(1080, 2090) },
+\a.ctl(\freq, { LFNoise1.kr(1).range(1080, 2090) },
 	\amp, { LFSaw.kr(7).range(0, 0.1)}
 );
 //: with c
-a.c(\freq, { LFNoise0.kr(4).range(1080, 2090) },
+\a.c(\freq, { LFNoise0.kr(4).range(1080, 2090) },
 	\amp, { SinOsc.kr(1).range(0, 0.1)}
 );
-//:
+//: loss of maps when substituting synths?
+\a play: { SinOsc.ar(\freq.kr(600), 0, \amp.kr(0.02)) };
+//: remapAll (will be built in NodeTemplate!)
+\a.remapAll;
 
 // undoing controls (3 different ways: set, unmap, stopCtl)
 // set control \freq to 400. this unmaps the control
@@ -78,8 +90,8 @@ a.freeCtls; // frees control synths and their MapBus, CtlSynth
 a = { SinOsc.ar(\freq.kr(400), 0, \amp.kr(0.02)) }.play;
 a.c(\freq, { LFNoise0.kr(4).range(1080, 2090) });
 a.getCtlSynth(\freq);
-// shortcut for getCtl: cS (Not overwriting Object:cs)
-a.cS(\freq);
+// shortcut for getCtl: cs
+a.cS(\freq); // not to overwrite Object:cs!
 a.unmap(\freq); // unmaps input but keeps control synth
 a.stopCtl(\freq); // stops control synth
 
@@ -91,5 +103,6 @@ a.c(\freq, {
 	LFNoise0.kr(\rate.kr(4))
 		.range(\lo.kr(1080), \hi.kr(2090))
 });
-//: cs : shortcut for getCtlSynth
+//: cS : shortcut for getCtlSynth
+// Note: do not overwrite Object:cs ...
 a.cS(\freq).c(\lo, { SinOsc.kr(10).range(100, 400) })

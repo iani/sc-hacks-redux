@@ -85,6 +85,12 @@ PlayerTemplate : NamedSingleton2 { // neutral.  source specifies default behavio
 			[key, argDict[key]]
 		}).flat;
 	}
+
+	//==================== Mapping interface ====================
+	// Transferred from same methods of Synth
+
+
+
 }
 
 NodeTemplate : PlayerTemplate { // for synths
@@ -128,9 +134,38 @@ NodeTemplate : PlayerTemplate { // for synths
 		{ this.prPlay }
 	}
 	prPlay {
-		^process = Synth(source, this.getArgs, target, addAction).register;
+		var controlDict;
+		if (process isKindOf: Synth) {
+			// "process is synth and I will get its controls".postln;
+			controlDict = process.vars;
+		};
+		this.preparePlay;
+		process = this.makeProcess;
+		process.register;
+		process onStart: { | s |
+			// postln("Synth started, and BEING MAPPED NOW:" + s);
+			controlDict !? {
+				VarHolder.addVarDict(process, controlDict);
+
+				controlDict keysValuesDo: { | key, ctl |
+					// postln("mapping synth" + process + "key" + key
+					// 	+ "synthctl" + ctl
+					// );
+					ctl.synth = process;
+					process.map(key, ctl.index);
+					VarHolder.putVar(process, key, ctl);
+				};
+			}
+		};
+		^process;
 	}
 
+	preparePlay { // FunctionNodeTemplate does something here
+	}
+
+	makeProcess {
+		^Synth(source, this.getArgs, target, addAction);
+	}
 	stop { this.isPlaying.if { this.prStop }; }
 	prStop { process.stop }
 	 // empty arguments  // NOTE: keep argDict? What for?
@@ -153,6 +188,52 @@ NodeTemplate : PlayerTemplate { // for synths
 	fadeTime { ^argDict[\fadeTime] ? 0.02 }
 	// TODO: move synth to new position of addAction and new target if needed
 	// moveSynth {  }
+	//==================== mapping interface ====================
+	rc { | ... keys |
+		if (process.isPlaying) { process.rc(*keys) }
+	}
+
+	remap { | key |
+		if (process.isPlaying) { process.remap(key) }
+	}
+
+	remapAll { if (process.isPlaying) { process.remapAll } }
+	c { | ... argFuncPairs |
+		if (process.isPlaying) { process.c(*argFuncPairs) }
+	}
+	ctl { | ... argFuncPairs |
+		if (process.isPlaying) { process.ctl(*argFuncPairs) }
+	}
+	add1Ctl { | ctlname, synthfunc |
+		if (process.isPlaying) { process.add1Ctl(ctlname, synthfunc) }
+	}
+	c_ { | ... ctlnames |
+		if (process.isPlaying) { process.c_(*ctlnames) }
+	}
+	u { | ... ctlnames |
+		if (process.isPlaying) { process.u(*ctlnames) }
+	}
+	unmap { | ... ctlnames |
+		if (process.isPlaying) { process.unmap(*ctlnames) }
+	}
+	cS { | ctlname |
+		if (process.isPlaying) { process.cS(ctlname) }
+	}
+	getCtlSynth { | ctlname |
+		if (process.isPlaying) { process.getCtlSynth(ctlname) }
+	}
+	removeCtl { | ctlname |
+		if (process.isPlaying) { process.removeCtl(ctlname) }
+	}
+	cc_ { | ctlname |
+		if (process.isPlaying) { process.cc_(ctlname) }
+	}
+	stopCtl { | ctlname |
+		if (process.isPlaying) { process.stopCtl(ctlname) }
+	}
+	freeCtls {
+		if (process.isPlaying) { process.freeCtls }
+	}
 }
 
 FunctionNodeTemplate : NodeTemplate { // for synths
@@ -162,7 +243,7 @@ FunctionNodeTemplate : NodeTemplate { // for synths
 	// Copying from Synth:play and adding outbuss and fadeTime last!
 	var <outbus, <fadeTime = 0.02;
 	// TODO: Resolve this outbus vs out inconsistency in Function:asDef
-    defaultSource {
+	defaultSource {
 		^{ | freq = 400, amp = 0.1 |
 			SinOsc.ar(freq, 0, amp).dup;
 		}
@@ -198,17 +279,22 @@ FunctionNodeTemplate : NodeTemplate { // for synths
 		^(thisdef == prevdef).not
 	}
 
+	/*
 	prPlay {
-		// "Debugging FunctionNodeTemplate.play".postln;
-		// postln("source" + source + "target" + target
-		// 	+ "outbus" + outbus + "fadeTime" + fadeTime
-		// 	+ "addAction" + addAction + "args" + this.getArgs;
-		// );
-		// ^this;
 		this.fixOutAndFadeTime;
 		^process = source.play(
 			target, outbus, fadeTime, addAction, this.getArgs
 		).register;
+	}
+	*/
+
+	makeProcess {
+		^source.play(
+			target, outbus, fadeTime, addAction, this.getArgs
+		);
+	}
+	preparePlay {
+		this.fixOutAndFadeTime;
 	}
 
 	fixOutAndFadeTime {
