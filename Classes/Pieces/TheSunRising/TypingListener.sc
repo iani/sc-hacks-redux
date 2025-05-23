@@ -18,7 +18,6 @@ TypingListener {
 			// postln("OnChange runs Tsr.verse with index" + index);
 			Tsr.verse(index, TsrPoem.verses[index], TsrPoem.incipits[index]);
 		});
-		ShowTyping();
 	}
 
 	processKeyboardInput { | charNum, cocoaModifiers, unicode, keycode, key |

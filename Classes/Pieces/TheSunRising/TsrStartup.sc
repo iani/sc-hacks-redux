@@ -9,6 +9,7 @@ TsrStartup {
 	}
 
 	init {
+		postln("Making a TsrDocument for user" + user);
 		TsrDocument(user);
 	}
 }

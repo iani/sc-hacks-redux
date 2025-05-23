@@ -6,19 +6,19 @@ TsrDocument {
 	var <listener, <document;
 
 	*new { | user |
-		(user != User.localId).if {
-			^postln("Won't make document for" + user + "who is not the local user");
-		};
 		^this.newCopyArgs(user).init;
 	}
 
 	init {
-		document = Document("The Sun Rising for" + user);
-		listener = TypingListener();
-		document.keyDownAction = { | doc, char, cocoaModifiers, unicode, keycode, key |
-			// postln("TYPING:" + [char, cocoaModifiers, unicode, keycode, key]);
-			listener.processKeyboardInput(char.ascii, cocoaModifiers, unicode, keycode, key);
-			// User.sendToAll(\char, char.ascii, cocoaModifiers, unicode, keycode, key);
+		ShowTyping();
+		(user != User.localId).if {
+			postln("Won't make document for" + user + "who is not the local user");
+		}{
+			document = Document("The Sun Rising for" + user);
+			document.keyDownAction = { | doc, char, cocoaModifiers, unicode, keycode, key |
+				listener.processKeyboardInput(char.ascii, cocoaModifiers, unicode, keycode, key);
+			};
+			listener = TypingListener();
 		};
 	}
 }
