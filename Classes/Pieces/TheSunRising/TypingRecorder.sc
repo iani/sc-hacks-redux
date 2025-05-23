@@ -4,9 +4,10 @@
 TypingRecorder : NamedSingleton2 {
 	classvar <>charMsg = \ascii;
 	classvar <>custom;
-	var <lines, <currentLine;
-	var <routine; // obsolete! Replaced by task. Kept for backward compatibility
+	var <>lines, <currentLine;
 	var players; // dict with multiple player tasks
+	//  // obsolete! Replaced by task. Kept for backward compatibility:
+	var <routine;
 
 	init {
 		lines ?? { this.newLine }; // start with a new line
@@ -26,6 +27,7 @@ TypingRecorder : NamedSingleton2 {
 	newLine {
 		currentLine = List();
 		lines = lines add: currentLine;
+		this.changed(\newLine);
 	}
 
 	deactivate {
@@ -44,8 +46,17 @@ TypingRecorder : NamedSingleton2 {
 
 	}
 
-	play { | actionFunc, key = \default, filterFunc, from = 0, to, numChars |
-
+	play { | playFunc, key = \default, filterFunc, from = 0, to, numChars |
+		var charList, player;
+		charList = this.allChars;
+		from = from.clip(0, charList.size - 1);
+		numChars ?? { numChars = charList.size - 1 };
+		numChars = numChars.clip(from + 1, charList.size - 1);
+		player = this.getPlayer(key);
+		player.data = charList;
+		player.playFunc = playFunc;
+		player.filterFunc = filterFunc ?? {{ | ... args | args }};
+		player.start;
 	}
 
 	charCount { | verseNum |
@@ -61,6 +72,8 @@ TypingRecorder : NamedSingleton2 {
 		};
 		^player
 	}
+
+	players { ^players ?? { players = IdentityDictionary() } }
 
 	allChars {
 		var allch;
