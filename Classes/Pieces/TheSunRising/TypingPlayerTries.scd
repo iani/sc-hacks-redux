@@ -29,11 +29,44 @@ TypingRecorder(\ianiy);
 //:
 TypingRecorder(\ianiy).play({ | char |
 	Synth(\sline2, [freq: char.wrap(40, 100).midicps, dur: 1]);
-	{ Synth(\sline2, [freq: (char.wrap(40, 100) - 1).midicps]) }.defer(0.3);
+	{ Synth(\sline2, [freq: (char.wrap(40, 100) - 1).midicps, dur: 5]) }.defer(3);
+}, from: 0, to: 10);
+//:
+TypingRecorder(\ianiy).play({ | char |
+	Synth(\sline2, [freq: char.wrap(40, 100).midicps, dur: 10]);
+	{ Synth(\sline2, [freq: (char.wrap(40, 100) - 1).midicps, dur: 5]) }.defer(3);
+}, from: 0, to: 10);
+//:
+TypingRecorder(\ianiy).play({ | char |
+	Synth(\sline2, [freq: char.wrap(20, 30).midicps, dur: 10, amp: 0.1]);
+	{ Synth(\sline2, [freq: (char.wrap(40, 50) - 1).midicps, dur: 5, amp: 0.2]) }.defer(3);
+}, from: 0, to: 10);
+//:
+TypingRecorder(\ianiy).play({ | char |
+	Synth(\sline2, [freq: char.wrap(20, 90).midicps, dur: 10, amp: 0.1]);
+	{ Synth(\sline2, [freq: (char.wrap(40, 90) - 1).midicps, dur: 5, amp: 0.2]) }.defer(3);
+}, from: 0, to: 10);
+//:
+TypingRecorder(\ianiy).play({ | char |
+	Synth(\sline3, [freq: (char.wrap(40, 100) - 20).midicps, dur: 1]);
+	{ Synth(\sline3, [freq: (char.wrap(40, 100) - 1).midicps], dur: 3) }.defer(0.3 rrand: 1);
+}, from: 0, to: 10);
+//: KEEP THIS ONE!!!!!!
+TypingRecorder(\ianiy).play({ | char |
+	Synth(\sline3, [freq: (char.wrap(40, 100) - 20).midicps, dur: 10, amp: 0.1]);
+	{ Synth(\sline3, [freq: (char.wrap(40, 100) - 1).midicps, dur: 3, amp: 0.1]) }.defer(0.3 rrand: 1);
+}, from: 0, to: 10);
+//: KEEP THIS ONE!!!!!!
+TypingRecorder(\ianiy).play({ | char |
+	Synth(\sline3, [freq: (char.wrap(40, 100) - 20).midicps, dur: 10, amp: 0.1]);
+	{ Synth(\sline3, [freq: (char.wrap(40, 100) - 1).midicps, dur: 3, amp: 0.1]) }.defer(0.3 rrand: 1);
+	{ Synth(\sline3, [freq: (char.wrap(40, 100) - 1).midicps, dur: 3, amp: 0.1]) }
+	.defer(0.25);
 }, from: 0, to: 10);
 //:
 TypingRecorder()
 
+User.all[\geodia].envirs[\geodia].use({ ~letter_frequency });
 
 Platform.userAppSupportDir;
 

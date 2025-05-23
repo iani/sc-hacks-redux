@@ -19,14 +19,14 @@ SynthDef(\sline2, { | out = 0, freq = 400, amp = 0.02, dur = 0.1 |
 Synth(\sline1, [freq: 700, dur: 10.2]);
 (dur: 5).play;
 //:
-SynthDef(\sline3, { | ffreq=0.3, ascii = 50 |
-	var src, env, freq, lfo, dur, amp, noise, decay;
+SynthDef(\sline3, { | ffreq=0.3, ascii = 50, dur = 1, amp: 0.1 |
+	var src, env, freq, lfo, noise, decay;
 	lfo = SinOsc.kr(ffreq).exprange(0.3,0.9);
 	noise = WhiteNoise.ar(1);
 	ascii = ascii.wrap(1, 127).linlin(1, 127, 1.01, 2);
 	decay = ascii.wrap(1, 127).linlin(1, 127, 0.1, 0.9);
-	dur = Rand(0.2, 1.8);
-	amp = Rand(0.01, 0.1);
+	// dur = Rand(0.2, 1.8);
+	// amp = Rand(0.01, 0.1);
 	freq = Line.kr(Rand(100, 1000), Rand(100, 1000), dur,
 		doneAction: 2
 	);
