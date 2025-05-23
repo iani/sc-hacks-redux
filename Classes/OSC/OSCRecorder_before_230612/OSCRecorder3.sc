@@ -88,8 +88,8 @@ OSCRecorder3 {
 		}{
 			{
 				"Trying to open the file again - waiting for folder in file system".postln;
-				while { file.isOpen.not } do: {
-					"Trying to open the file again - waiting for folder in file system".postln;
+				while { file.isOpen.not } {
+					"WHILE LOOP waiting to open the file again - waiting for folder in file system".postln;
 					file = File.open(thePath, "w");
 					numAttempts = numAttempts + 1;
 					if (numAttempts > 10) {
