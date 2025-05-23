@@ -88,7 +88,7 @@ OSCRecorder3 {
 		}{
 			{
 				"Trying to open the file again - waiting for folder in file system".postln;
-				while (file.isOpen.not) do: {
+				while { file.isOpen.not } do: {
 					"Trying to open the file again - waiting for folder in file system".postln;
 					file = File.open(thePath, "w");
 					numAttempts = numAttempts + 1;
@@ -140,7 +140,7 @@ OSCRecorder3 {
 
 	*osDependentRootDir {
 		if (thisProcess.platform.class === WindowsPlatform) {
-			^PathName(Platform.userAppSupportDir);
+			^PathName(Platform.userAppSupportDir +/+ "OSC_Recordings");
 		};
 		if (thisProcess.platform.class === OSXPlatform) {
 			rootFolder = "SuperCollider Recordings";
