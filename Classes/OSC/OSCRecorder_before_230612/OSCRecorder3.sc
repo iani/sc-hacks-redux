@@ -103,7 +103,6 @@ OSCRecorder3 {
 				"FILE WAS CREATED. RECORDING HAS STARTED".postln;
 			}.fork;
 		}
-
 	}
 
 	*saveAndContinue {
@@ -139,10 +138,10 @@ OSCRecorder3 {
 	}
 
 	*osDependentRootDir {
-		if (thisProcess.platform.class === WindowsPlatform) {
+		if (thisProcess.platform.class.asSymbol === 'WindowsPlatform') {
 			^PathName(Platform.userHomeDir +/+ "OSC_Recordings");
 		};
-		if (thisProcess.platform.class === OSXPlatform) {
+		if (thisProcess.platform.class.asSymbol === 'OSXPlatform') {
 			rootFolder = "SuperCollider Recordings";
 			^PathName(Platform.userHomeDir +/+ "Music")
 		}{
@@ -196,10 +195,15 @@ OSCRecorder3 {
 		// is called by enable inside a fork, therefore does not delay execution.
 		var errorCode;
 		this.makeDailySubfolderTimestamp;
-		// run command synchronously and collect error:
-		errorCode = ("mkdir -p " ++ this.folderPath.replace(" ", "\\ ")).systemCmd;
-		// TODO: find out which error signifies a problem, and catch it here
-		// if (errorCode == ??? ) { issue a warning }
+		// make directories for windows using File.mkdir.
+		if (thisProcess.platform.class.asSymbol === 'WindowsPlatform') {
+			File.mkdir(this.folderPath);
+		}{
+			// run command synchronously and collect error:
+			errorCode = ("mkdir -p " ++ this.folderPath.replace(" ", "\\ ")).systemCmd;
+			// TODO: find out which error signifies a problem, and catch it here
+			// if (errorCode == ??? ) { issue a warning }
+		}
 	}
 
 	*makeDailySubfolderTimestamp {
