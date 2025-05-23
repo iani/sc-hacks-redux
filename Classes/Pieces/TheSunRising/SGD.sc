@@ -38,7 +38,7 @@ SGD {
 				typedVerseChars = typedVerseChars ++ [typedChars];
 				typingIOI = [];
 				typedChars = [];
-				autocorrIOI= typingVersesIOI collect: {|arr| arr.autocorr };
+				// autocorrIOI= typingVersesIOI collect: {|arr| arr.autocorr };
 			};
 
 			// ">> timeDiff: ".post; ~timeDiff.postln;
