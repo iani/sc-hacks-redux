@@ -139,12 +139,14 @@ OSCRecorder3 {
 	}
 
 	*osDependentRootDir {
+		if (thisProcess.platform.class === WindowsPlatform) {
+			^PathName(Platform.userAppSupportDir);
+		};
 		if (thisProcess.platform.class === OSXPlatform) {
 			rootFolder = "SuperCollider Recordings";
 			^PathName(Platform.userHomeDir +/+ "Music")
 		}{
 			^PathName(Platform.userAppSupportDir);
-
 		}
 	}
 

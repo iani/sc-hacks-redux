@@ -147,18 +147,22 @@ NodeTemplate : PlayerTemplate { // for synths
 			// postln("Synth started, and BEING MAPPED NOW:" + s);
 			controlDict !? {
 				VarHolder.addVarDict(process, controlDict);
-
-				controlDict keysValuesDo: { | key, ctl |
-					// postln("NodeTemplate mapping synth" + process
-					// 	+ "key" + key
-					// 	+ "synthctl" + ctl
-					// 	+ "with bus index" + ctl.index
-					// );
-					ctl.synth = process;
-					process.map(key, ctl.index);
-					VarHolder.putVar(process, key, ctl);
-				};
-			}
+				// fork {
+					controlDict keysValuesDo: { | key, ctl |
+						// postln("NodeTemplate mapping synth" + process
+						// 	+ "key" + key
+						// 	+ "synthctl" + ctl
+						// 	+ "with bus index" + ctl.index
+						// );
+						// 0.01.wait;
+						ctl.synth = process;
+						process.map(key, ctl.index);
+						VarHolder.putVar(process, key, ctl);
+					};
+				// }; // prevent loss of mapping sometimes?
+			};
+			// prevent loss of mapping sometimes? ????????
+			{ this.remapAll; }.defer(0.1); // !!!!!!!! ?????
 		};
 		^process;
 	}

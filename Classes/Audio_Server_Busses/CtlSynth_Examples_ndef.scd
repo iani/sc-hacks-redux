@@ -7,7 +7,9 @@
 \a play: { LFSaw.ar(\freq.kr(600), 0, \amp.kr(0.02)) };
 
 ~a.process;
-
+x = ~a.process.vars;
+x[\amp].index;
+x[\freq].index;
 b = Library.at(~a.process)[\vars];
 c = b[\freq];
 c.synth;
@@ -21,6 +23,10 @@ c.synth;
 \a play: { SinOsc.ar(\freq.kr(600), 0, \amp.kr(0.02)) };
 //: with ctl:
 \a.ctl(\freq, { LFNoise1.kr(1).range(1080, 2090) },
+	\amp, { LFSaw.kr(7).range(0, 0.1)}
+);
+//: with ctl:
+\a.c(\freq, { LFNoise1.kr(8).range(800, 2090) },
 	\amp, { LFSaw.kr(7).range(0, 0.1)}
 );
 //: with c

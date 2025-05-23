@@ -14,18 +14,6 @@ TypingRecorder : NamedSingleton2 {
 		CmdPeriod add: this;
 		custom ?? { | ascii | ascii };
 	}
-	/*
-		custom = { | ascii |
-		[
-		ascii.abs.linlin(0, 127, 30, 40),
-		0.1 // vol
-		-1.0 // pan;
-		]
-
-		};
-
-
-	*/
 	doOnCmdPeriod { routine = nil }
 
 	activate {
@@ -45,12 +33,23 @@ TypingRecorder : NamedSingleton2 {
 		OSC.remove(\cret, name);
 	}
 
+	//============================================================
+	// PLAYING
 	// Play an entire verse.
-	playVerse {}
-	// play characters from-to from the entire typing.
-	playChars {}
-	play { | actionFunc, key = \default, filterFunc, from, to |
+	playVerse { | index = 0, actionFunc, key = \default, filterFunc, repeats = 1, numChars |
 
+	}
+	// play characters from-to from the entire typing.
+	playChars { | from = 0, to, actionFunc, key = \default, filterFunc |
+
+	}
+
+	play { | actionFunc, key = \default, filterFunc, from = 0, to, numChars |
+
+	}
+
+	charCount { | verseNum |
+		^this.allChars.size;
 	}
 
 	getPlayer { | key = \default |
@@ -63,7 +62,11 @@ TypingRecorder : NamedSingleton2 {
 		^player
 	}
 
-
+	allChars {
+		var allch;
+		lines do: { | l | allch = allch add: l.array };
+		^allch flatten: 2
+	}
 	//============================================================
 	// replay, replay1, simplePlay is replaced by new scheme:
 	// play, using TypingPlayer on 22  5 2025 11:43
