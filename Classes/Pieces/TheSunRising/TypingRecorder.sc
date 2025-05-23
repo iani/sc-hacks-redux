@@ -46,7 +46,7 @@ TypingRecorder : NamedSingleton2 {
 
 	}
 
-	play { | playFunc, key = \default, filterFunc, from = 0, to, numChars |
+	play { | playFunc, dur = 10, key = \default, filterFunc, from = 0, to, numChars |
 		var charList, player;
 		charList = this.allChars;
 		from = from.clip(0, charList.size - 1);
@@ -56,6 +56,7 @@ TypingRecorder : NamedSingleton2 {
 		player.data = charList;
 		player.playFunc = playFunc;
 		player.filterFunc = filterFunc ?? {{ | ... args | args }};
+		player.dur = dur;
 		player.start;
 	}
 

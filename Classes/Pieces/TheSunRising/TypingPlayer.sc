@@ -11,8 +11,10 @@ TypingPlayer {
 	var <>playFunc, <>filterFunc;
 	var <task, <index = 0;
 	var <times, <chars;
+	var <>dur = 10, <startTime = 0; // play for specified duration
 
-	*new { | recorder, key = \defalt |
+
+	*new { | recorder, key = \default |
 		^this.newCopyArgs(recorder, key);
 	}
 
@@ -37,13 +39,18 @@ TypingPlayer {
 
 	prStart {
 		index = 0;
+		startTime = Clock.seconds;
 		this.makeTimesChars;
 		task = Task({
-			while { index < (data.size - 1) }
+			// while { index < (data.size - 1) }
+			// play for specified duration
+			while { Clock.seconds - startTime < dur }
 			{
 				var unfiltered, filtered;
-				times[index].wait;
-				unfiltered = chars[index];
+				// times[index].wait;
+				(times@@index).wait;
+				// unfiltered = chars[index];
+				unfiltered = (chars@@index);
 				filtered = filterFunc.(unfiltered);
 				postln("playing unfiltered" + unfiltered
 					+ "filtered" + filtered);
