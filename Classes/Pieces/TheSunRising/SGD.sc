@@ -5,7 +5,7 @@ SGD {
 	classvar <typingIOI, <typingVersesIOI, <typedChars, <autocorrIOI;
 	classvar <typedVerseChars, <letters, <lowercase,<uppercase;
 	classvar <lastTimestamp, <currTimestamp, <timeDiff, <currChar;
-
+	classvar <running_sum, <letter_frequency;
 	*initClass {
 		StartUp add: { this.init }
 	}
@@ -46,20 +46,22 @@ SGD {
 			// (instrument: \pinch, freq: char*8, ffreq: char / 3).play;
 			// >> Letter frequency
 			if(char.asAscii.isUpper){
-				"ENTER UPPER".postln;
+				// " wdENTER UPPER".postln;
 				currChar = lowercase[uppercase.find(char.asAscii.asString)];
-				"upercase: ".post; uppercase.find(char.asAscii.asString);
-				"currChar: ".post; currChar.postln;
+				// "upercase: ".post; uppercase.find(char.asAscii.asString);
+				// "currChar: ".post; currChar.postln;
 			}{
-				"ENTER lowercase".postln;
+				// "ENTER lowercase".postln;
 				currChar = char.asAscii;
 			};
 
 			if(letters.includesKey(char.asAscii.asSymbol)){
 				letters[currChar.asSymbol] = letters[currChar.asSymbol] + 1;
+				running_sum = letters.values.sum;
+				letter_frequency = letters[currChar.asSymbol] / running_sum;
 			};
-			(instrument: \pinch, freq: char*4, ffreq: char / 2).play;
-		}, \geodia);
+			// (instrument: \pinch, freq: char*4, ffreq: char / 2).play;
+		}, \geodia_statistics);
 	}
 
 }
