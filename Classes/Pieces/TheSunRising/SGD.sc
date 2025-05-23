@@ -22,9 +22,9 @@ SGD {
 
 		Tsr.doOnType2({ | char, modifier, unicode |
 			// postln("Tsr received char - for verse matching" + char);
-			char.post; " ==== ".post; char.class.postln;
-			char.asAscii.post; " == ".post; char.asAscii.class.postln;
-			[char, modifier, unicode].postln;
+			// char.post; " ==== ".post; char.class.postln;
+			// char.asAscii.post; " == ".post; char.asAscii.class.postln;
+			// [char, modifier, unicode].postln;
 			currTimestamp = Clock.seconds;
 			if(lastTimestamp.notNil){
 				timeDiff = (lastTimestamp - currTimestamp).abs;
