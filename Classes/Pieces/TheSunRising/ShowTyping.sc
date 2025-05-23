@@ -11,7 +11,7 @@ ShowTyping {
 		tv = window.view.children.first;
 		window.alwaysOnTop = true;
 		tv.string = "";
-		window.bounds = Rect(0, 0, 500, 900);
+		window.bounds = Rect(0, 0, 400, 580);
 		Tsr.doOnType({ | char |
 			{
 				txt = tv.string;
