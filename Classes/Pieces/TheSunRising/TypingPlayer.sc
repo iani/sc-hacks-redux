@@ -25,7 +25,7 @@ TypingPlayer {
 
 	makeTimesChars {
 		var rawTimes;
-		#rawTimes, chars = data.clump(2).flop;
+		#rawTimes, chars = data.flop;
 		times = rawTimes.differentiate;
 		times[0] = 0;
 	}
@@ -52,8 +52,7 @@ TypingPlayer {
 				// unfiltered = chars[index];
 				unfiltered = (chars@@index);
 				filtered = filterFunc.(unfiltered);
-				postln("playing unfiltered" + unfiltered
-					+ "filtered" + filtered);
+				// postln("playing unfiltered" + unfiltered + "filtered" + filtered);
 				playFunc.(filtered);
 				index = index + 1;
 			};

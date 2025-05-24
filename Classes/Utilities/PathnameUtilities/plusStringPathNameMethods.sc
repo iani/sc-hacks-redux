@@ -4,6 +4,10 @@
 
 + String {
 	// new utility method: return filenamewithoutextension or folder name:
+	asFolder { // add folder ending slash if needed.
+		// Useful for entriesMatching ... methods
+		^this +/+ "";
+	}
 	basicName {
 		var p;
 		p = PathName(this);
@@ -58,7 +62,7 @@
 	entriesMatchingWAV { ^this entriesMatchingExtension: "WAV" }
 
 	entriesMatchingExtension { | extension = "scd" |
-		^(this.pathOnly +/+ "*." ++ extension).pathMatch;
+		^(this.pathOnly.asFolder +/+ "*." ++ extension).pathMatch;
 	}
 
 	// folders { ^PathName(this).folders }

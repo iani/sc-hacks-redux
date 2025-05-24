@@ -9,6 +9,20 @@ TypingRecorder : NamedSingleton2 {
 	//  // obsolete! Replaced by task. Kept for backward compatibility:
 	var <routine;
 
+	*initClass {
+		StartUp add: { this.init; };
+	}
+
+	*init { this.makeBaseDirectory; }
+
+	*makeBaseDirectory {
+		if (File.exists(this.baseDirectory).not) {
+			File.mkdir(this.baseDirectory)
+		}
+	}
+
+	*baseDirectory { ^Platform.userAppSupportDir +/+ "TypingRecorder"; }
+
 	init {
 		lines ?? { this.newLine }; // start with a new line
 		this.activate;
@@ -79,7 +93,7 @@ TypingRecorder : NamedSingleton2 {
 	allChars {
 		var allch;
 		lines do: { | l | allch = allch add: l.array };
-		^allch flatten: 2
+		^allch.flatten
 	}
 	//============================================================
 	// replay, replay1, simplePlay is replaced by new scheme:
@@ -150,4 +164,86 @@ TypingRecorder : NamedSingleton2 {
 
 	}
 	undoGdplay { this.removeAction(\gdplay); }
+
+	// --------- Saving and loading lists --------
+	// Save current list in file named afer name + key + timestamp
+	save { | key |
+		var filename;
+		key ?? { key = name };
+		filename = format("%_%_%.scd", name, key, Date.localtime.stamp);
+		postln("Saving lines of" + this + "to" + filename);
+		lines.writeArchive(this.baseDirectory +/+ filename);
+		filename.writeArchive(this.lastSavedPathLocation);
+	}
+
+	baseDirectory { ^this.class.baseDirectory }
+
+	loadLast { | key |
+		var filename, newlines;
+		filename = this.lastSavedPath;
+		if (filename.isNil or: {
+			File.exists(filename = this.baseDirectory +/+ filename).not }) {
+			"Could not find file at".postln;
+			filename.postln;
+			"Trying load from GUI".postln;
+			this.loadFromGui;
+		}{
+			// filename = this.baseDirectory +/+ filename;
+			postln("Reading last saved file:");
+			filename.postln;
+			newlines = Object.readArchive(filename);
+			if (newlines.size == 0) {
+				"Refusing to receive 0 lines.".postln;
+			}{
+				lines = newlines;
+				this.postLoadStats;
+			}
+		};
+	}
+
+	lastSavedPath {
+		var lspl, lastSavedPath;
+		lspl = this.lastSavedPathLocation;
+		if (lspl.isNil or: { File.exists(lspl).not })
+		{
+			"TypingRecorder could not locate last saved file path".postln;
+			"No file found at:".postln;
+			lspl.postln;
+			^nil;
+		}{
+			lastSavedPath = Object.readArchive(lspl);
+			postln("Last saved path is" + lastSavedPath);
+			^lastSavedPath;
+		}
+	}
+
+	lastSavedPathLocation { ^this.baseDirectory +/+ "lastsaved.scd" }
+
+	pathsKey { | key = \default | ^(name ++ "_" ++ key).asSymbol }
+
+	loadFromGui {
+		var window, listview, paths;
+		paths = (TypingRecorder.baseDirectory +/+ "").entriesMatchingScd;
+		window = \typingRecorder.hlayout(
+			listview = ListView();
+		).bounds_(Rect(600, 200, 400, 400));
+		window.name = "Select a list file";
+		listview.items = paths collect: _.fileName;
+		listview.hiliteColor = Color(0.5, 0.9, 0.8);
+		listview.enterKeyAction = { | me |
+			postln("Loading" + me.item);
+			lines = Object readArchive: paths[me.value];
+			this.postLoadStats;
+		}
+	}
+
+	postLoadStats {
+		postln("read" + lines.size + "lines" + "containing a total of"
+			+ this.allChars.size + "chars. Duration is:"
+			+ this.duration.minsec + "minutes:seconds"
+		);
+	}
+
+	duration { ^this.times.sum; }
+	times { ^this.allChars.flop[0].differentiate[0] = 0; }
 }

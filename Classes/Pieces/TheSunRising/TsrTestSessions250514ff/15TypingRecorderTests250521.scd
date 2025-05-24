@@ -1,17 +1,7 @@
-
-
-a = TypingRecorder(\iani2);
+TypingRecorder(\iani2);
+//:
 b = TypingRecorder(\iani);
 c = TypingRecorder(\giorgos);
-
-a === b
-
-a === c;
-a;
-a.inspect;
-
-a.lines;
-a.currentLine;
 //:
 \checkRecording.addNotifier(TypingRecorder(\iani),
 	\ascii, { | ... args |

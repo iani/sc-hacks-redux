@@ -19,7 +19,7 @@ SynthDef(\sline2, { | out = 0, freq = 400, amp = 0.02, dur = 0.1 |
 Synth(\sline1, [freq: 700, dur: 10.2]);
 (dur: 5).play;
 //:
-SynthDef(\sline3, { | ffreq=0.3, ascii = 50, dur = 1, amp: 0.1 |
+SynthDef(\sline3, { | ffreq=0.3, ascii = 50, dur = 1, amp = 0.1 |
 	var src, env, freq, lfo, noise, decay;
 	lfo = SinOsc.kr(ffreq).exprange(0.3,0.9);
 	noise = WhiteNoise.ar(1);
@@ -36,8 +36,10 @@ SynthDef(\sline3, { | ffreq=0.3, ascii = 50, dur = 1, amp: 0.1 |
 		freq * [1, ascii],
 		decay
 	) * env.kr(1, doneAction: 2);
-	Out.ar(0, Lag.ar(src.fold(lfo.neg,lfo), amp/30));
+	Out.ar(0, Lag.ar(src.fold(lfo.neg,lfo)) * amp);
 }).add;
+//:
+"	Out.ar(0, Lag.ar(src.fold(lfo.neg,lfo), amp/30));"
 
 1 + 1;
 

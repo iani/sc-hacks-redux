@@ -68,7 +68,5 @@ TypingActions {
 				Tsr.verse(verseIndex, verse, incipit);
 			};
 		};
-
 	}
-
 }
