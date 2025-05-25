@@ -3,16 +3,15 @@
 // Test 水 21  5 2025 19:48
 // Create a synth to control and store it in a
 
+
+
+\b play: \default;
+// map control \freq to a synth synth made from a func
+\b.ctl(\freq, { LFNoise0.kr(10).range(100, 900) });
+
 \a play: { SinOsc.ar(\freq.kr (400), 0, \amp.kr(0.02)) };
 \a play: { LFSaw.ar(\freq.kr(600), 0, \amp.kr(0.02)) };
-
-~a.process;
-x = ~a.process.vars;
-x[\amp].index;
-x[\freq].index;
-b = Library.at(~a.process)[\vars];
-c = b[\freq];
-c.synth;
+\a play: \default;
 // map control \freq to a synth synth made from a func
 \a.ctl(\freq, { LFNoise0.kr(10).range(100, 900) });
 
