@@ -40,7 +40,7 @@ TypingSynthdefs {
 		})
 	}
 	*sline3 {
-		^SynthDef(\sline3, { | out = 0, ffreq=0.3, ascii = 50, dur = 1, amp = 0.1 |
+		^SynthDef(\sline3, { | out = 0, ffreq=0.3, ascii = 50, dur = 1, amp = 0.1, mul = 1 |
 			var src, env, freq, lfo, noise, decay;
 			lfo = SinOsc.kr(ffreq).exprange(0.3,0.9);
 			noise = WhiteNoise.ar(1);
@@ -54,7 +54,7 @@ TypingSynthdefs {
 			env = Env.perc(0.1, dur - 0.1);
 			src = Ringz.ar(
 				noise,
-				freq * [1, ascii],
+				mul * freq * [1, ascii],
 				decay
 			) * env.kr(1, doneAction: 2);// amp * 10: make default more audible
 			Out.ar(0, Lag.ar(src.fold(lfo.neg,lfo)) * amp * 10);

@@ -1,14 +1,214 @@
 
+//
+
 TypingRecorder(\ianix);
 //:
-TypingRecorder(\ianix).loadLast;
+
+TypingRecorder(\ianix).save;
 //:
+// TypingRecorder(\ianix).loadLast;
+//: Sound check
+// TypingRecorder(\ianix).play({ | char |
+// 	(dur: 0.1, midinote: char.wrap(20, 80)).play;
+// });
+//: sline1 - default duration, Default play duration: 10 seconds
 TypingRecorder(\ianix).play({ | char |
-	(dur: 0.1, midinote: char.wrap(20, 80)).play;
+	Synth(\sline1, [freq: char.wrap(20, 80).midicps])
+});
+//: sline5 - default duration, Default play duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	Synth(\sline2, [freq: char.wrap(20, 80).midicps, dur: 4])
+});
+//: sline3 - default duration, Default play duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	Synth(\sline3, [ascii: char.first, dur: 4, amp: 0.01])
+});
+//: sline3 - default duration, Default play duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	Synth(\sline3, [ascii: char.first, dur: 0.1.exprand(5), amp: 0.1])
+});
+//: sline1, dur: 5 Default play duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	Synth(\sline1, [freq: char.wrap(20, 80).midicps, dur: 5])
+});
+//: sline1, multiplay dur: 5   Default duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	fork {
+		10 do: { | i |
+			var f;
+			f = i.linlin(0, 10, 1.0, 2.0);
+			Synth(\sline1, [freq: char.wrap(20, 80).midicps * i, dur: 5, amp: 0.01]);
+			0.1.wait;
+		};
+	};
+});
+//: sline1, multiplay dur: 0.1   Default duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	fork {
+		10 do: { | i |
+			var f;
+			f = i.linlin(0, 10, 1.0, 2.0);
+			Synth(\sline1, [freq: char.wrap(20, 80).midicps * i, dur: 0.1, amp: 0.01]);
+			0.1.wait;
+		};
+	};
+});
+//: sline1, multiplay dur: 0.1   Default duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	fork {
+		var dur;
+		dur = [0.05, 0.1, 0.15, 0.2].choose;
+		50 do: { | i |
+			var f;
+			f = i.linlin(0, 50, 1.0, 2.0);
+			Synth(\sline1, [freq: char.wrap(20, 80).midicps * i, dur: dur, amp: 0.01]);
+			dur.wait;
+		};
+	};
+});
+//: sline1, multiplay dur: 0.1   Default duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	fork {
+		var dur;
+		dur = [0.05, 0.1, 0.15, 0.2].choose;
+		50 do: { | i |
+			var f;
+			f = i.linlin(0, 50, 1.0, 2.0);
+			Synth(\sline2, [freq: char.wrap(20, 80).midicps * i, dur: dur, amp: 0.01]);
+			dur.wait;
+		};
+	};
+});
+//: sline1, multiplay dur: 0.1   Default duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	fork {
+		var dur;
+		dur = [0.05, 0.1, 0.15, 0.2].choose;
+		(50..1) do: { | i |
+			var f;
+			f = i.linlin(1, 50, 1.0, 2.0);
+			Synth(\sline2, [freq: char.wrap(20, 80).midicps * i, dur: dur, amp: 0.01]);
+			dur.wait;
+		};
+	};
+});
+//: sline1, multiplay dur: 0.1   Default duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	fork {
+		var dur;
+		dur = [0.05, 0.1, 0.15, 0.2].choose;
+		(50..1) do: { | i |
+			var f;
+			f = i.linlin(1, 50, 1.0, 2.0);
+			Synth(\sline2, [freq: char.wrap(20, 80).midicps * i, dur: dur, amp: 0.01]);
+			dur.wait;
+		};
+	};
+});
+//: sline1, multiplay dur: 0.1   Default duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	fork {
+		var dur;
+		dur = [0.05, 0.1, 0.15, 0.2].choose;
+		(50..1) do: { | i |
+			var f;
+			f = i.linlin(1, 50, 1.0, 2.0);
+			Synth(\sline3, [ascii: char.first, dur: dur, amp: 0.01]);
+			dur.wait;
+		};
+	};
+});
+//: sline1, multiplay dur: 0.1   Default duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	fork {
+		var dur;
+		dur = [0.05, 0.1, 0.15, 0.2].choose;
+		(50..1) do: { | i |
+			var f;
+			f = i.linlin(1, 50, 1.0, 2.0);
+			Synth(\sline3, [ascii: char.first, dur: dur * 5, amp: 0.1]);
+			dur.wait;
+		};
+	};
+});
+//: sline1, multiplay - lower    Default duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	fork {
+		10 do: { | i |
+			var f;
+			f = i.linlin(0, 10, 0.5, 1.0);
+			Synth(\sline1, [freq: char.wrap(20, 80).midicps * i, dur: 5, amp: 0.01]);
+			0.1.wait;
+		};
+	};
+});
+//: sline1, multiplay - downwards    Default duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	fork {
+		(10..1) do: { | i |
+			var f;
+			f = i.linlin(1, 10, 0.5, 1.0);
+			Synth(\sline1, [freq: char.wrap(20, 80).midicps * i, dur: 5, amp: 0.01]);
+			0.1.wait;
+		};
+	};
+});
+//: sline1, multiplay - downwards - short    Default duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	fork {
+		(10..1) do: { | i |
+			var f;
+			f = i.linlin(1, 10, 0.5, 1.0);
+			Synth(\sline1, [freq: char.wrap(20, 80).midicps * i, dur: 0.5, amp: 0.01]);
+			0.1.wait;
+		};
+	};
+});
+//: sline2, multiplay - downwards - short    Default duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	fork {
+		(10..1) do: { | i |
+			var f;
+			f = i.linlin(1, 10, 0.25, 0.5);
+			Synth(\sline2, [freq: char.wrap(20, 80).midicps * i, dur: 0.5, amp: 0.01]);
+			0.1.exprand(1.0).wait;
+		};
+	};
+});
+//: sline2, multiplay - downwards - short    Default duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	fork {
+		(10..1) do: { | i |
+			var f;
+			f = i.linlin(1, 10, 0.25, 0.5);
+			Synth(\sline2, [freq: char.wrap(20, 80).midicps * i, dur: 1.5, amp: 0.01]);
+			0.1.exprand(1.0).wait;
+		};
+	};
 });
 //: Default duration: 10 seconds
 TypingRecorder(\ianix).play({ | char |
-	Synth(\sline1, [freq: char.wrap(20, 80).midicps])
+	Synth(\sline2, [freq: char.wrap(20, 80).midicps])
+});
+//: sline3 --- Default duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	Synth(\sline3, [ascii: char.first])
+});
+//: sline3 --- long notes!!! Default duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	char = char.first;
+	Synth(\sline3, [ascii: char, dur: 1.1.exprand(5.2)]);
+	{ Synth(\sline3, [ascii: char + 10]) }.defer(3.1 exprand: 7.2)
+});
+//: sline3 --- Default duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	char = char.first;
+	Synth(\sline3, [ascii: char, dur: 0.1.exprand(1.2)]);
+	{ Synth(\sline3, [ascii: char + 10]) }.defer(0.1 exprand: 1.2)
+});
+//: sline3 --- Default duration: 10 seconds
+TypingRecorder(\ianix).play({ | char |
+	Synth(\sline3, [freq: char.wrap(20, 80).midicps])
 });
 //: custom duration: 30 seconds
 TypingRecorder(\ianix).play({ | char |

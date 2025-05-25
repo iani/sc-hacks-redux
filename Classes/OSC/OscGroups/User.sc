@@ -37,6 +37,27 @@ User {
 	var <isActive = false;
 	classvar <>makeDocument = false;
 
+	// create a LAN group independent of OscGroups
+	// add static IP addresses of all users except local user.
+	*setLAN { | userIPpairs |
+		var backup;
+		backup = sendAddress;
+		sendAddress = nil;
+		userIPpairs keysValuesDo: { | u, ip |
+			if (u === localId) {
+				postln ("Skipping add of ip for local user" + u);
+			}{
+				postln("Adding IP" + ip + "for user" + u);
+				sendAddress = sendAddress add: ip;
+			}
+		};
+		if (sendAddress.isKindOf(Array).not) { // if no users were added
+			"Please specify some users and IPs to set.".postln;
+			"Restoring ip address of OscGroups".postln;
+			sendAddress = backup;
+		};
+		postln("Broadcasting to:" + sendAddress);
+	}
 	*enable { | argSessionName = "session", waitTime ... users |
 		// if waitTime is given, defer the enabling by wait seconds (default: 3).
 		// Use this to enable User from a startup script.
@@ -135,24 +156,27 @@ User {
 		this.sendCode(argCode);
 	}
 
-	*sendCode { | argCode | // when active, send code before interpreting
-		// also for sending code manually, for tests
-		if (verbose) { postln("user" + localId + "sending code to OscGroups.") };
-		sendAddress.sendMsg(codeMessage, argCode, localId);
-	}
-
+	// send message as is. Not as code, not with User ID
+	// TODO: This does not send userID. What are the repercussions
+	// on user environment handling?
 	*sendToAll { | ... message |
 		this.forwardMessage(*message);
 		this.sendToSelf(*message);
 	}
-
 	*forwardMessage { | ... message |
-		// postln("Forwarding message" + message);
-		sendAddress.sendMsg(*message);
+		sendAddress.asArray do: { | a | a.sendMsg(*message); }
 	}
+	*sendToSelf { | ... message | NetAddr.localAddr.sendMsg(*message); }
 
-	*sendToSelf { | ... message |
-		NetAddr.localAddr.sendMsg(*message);
+	// Forward code to OSC groups before interpreting it locally.
+	// Send code + local user ID, to OSC groups only, not to self
+	*sendCode { | argCode | // when active, send code before interpreting
+		// also for sending code manually, for tests
+		if (verbose) { postln("user" + localId + "sending code to OscGroups.") };
+		// allow broadcast to multiple addresses (substitute for oscgroups)
+		sendAddress.asArray do: { | a |
+			a.sendMsg(codeMessage, argCode, localId);
+		}
 	}
 
 	*oscSendPort_ { | argPort = 22244 |
