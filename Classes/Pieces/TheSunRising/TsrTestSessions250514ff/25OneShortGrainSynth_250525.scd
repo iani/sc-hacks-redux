@@ -5,7 +5,7 @@
 // of a recorded verse buffer.
 SynthDef(\grainSynth, { | out = 0, buf = 0, rate = 1, dur = 1, pos = 0, amp = 1 |
 	var env, src, startPos;
-	env = Env.perc(0.02, dur - 0.02 max: 0.02);
+	env = Env([0, 1, 1, 0], [0.1, 1, 0.1].normalizeSum * dur);
 	startPos = pos.clip(0.0, 1.0) * BufFrames.kr(buf);
 	rate = BufRateScale.kr(buf) * rate;
 	src = PlayBuf.ar(1, buf, rate, 1, startPos, 1);
@@ -15,6 +15,30 @@ SynthDef(\grainSynth, { | out = 0, buf = 0, rate = 1, dur = 1, pos = 0, amp = 1 
 Synth(\grainSynth, [buf: ~i2]);
 //
 Synth(\grainSynth, [buf: ~i2, dur: 10]);
+//: play just for the duration of the buffer (!)
+Synth(\grainSynth, [buf: ~i2, dur: ~i2.dur]);
+//: position the envelope to peak at midd5e of sample
+Synth(\grainSynth, [buf: ~i2, dur: ~i2.dur, pos: 0.5]);
+//: shorten the grain
+Synth(\grainSynth, [buf: ~i2, dur: 1, pos: 0.75]);
+//:
+fork {
+	10 do: { | i |
+		Synth(\grainSynth, [buf: ~i2, dur: 1, pos: i / 10]);
+		1.5.wait;
+	};
+}
+
+//:
+fork {
+	10 do: { | i |
+		Synth(\grainSynth, [buf: ~i2, dur: 1, pos: i / 10, rate: (i / 10 + 1)]);
+		1.5.wait;
+	};
+}
+
+//:
+~i1.dur;
 //:pattern playing is easy:
 //: but the single grains have max duration dur: There is no overlap!
 \x play: (instrument: \grainSynth, buf: ~i2.bufnum, dur: 0.1);
@@ -31,7 +55,6 @@ Synth(\grainSynth, [buf: ~i2, dur: 10]);
 	legato: 5
 );
 //:
-\y play: (dur: 0.1, degree: [0, 10, 2].pbrown, legato: 2);
 //:----------
 //:To play overlapping synths, we should write our own redo of
 //pattern playing.
@@ -52,5 +75,52 @@ fork {
 			rate: r, buf: buf
 		).play;
 		dt.wait;
+	}
+}
+//:Reconfirming - redoing tests to check dur argument
+Synth(\grainSynth, [buf: ~i1.bufnum, dur: 10]);
+//:
+fork {
+	10 do: {
+		Synth(\grainSynth,
+			[buf: ~i1.bufnum, dur: 10, rate: 0.5.rrand(2), amp: 0.01.exprand(0.1)]);
+		1.wait;
+	}
+}
+//:
+fork {
+	10 do: {
+		Synth(\grainSynth,
+			[buf: ~i1.bufnum, dur: 3, rate: 1.5.rrand(2), amp: 0.01.exprand(0.1)]);
+		1.wait;
+	}
+}
+
+//:
+fork {
+	100 do: {
+		Synth(\grainSynth,
+			[buf: ~i1.bufnum, dur: 0.3, rate: 1.5.rrand(3), amp: 0.01.exprand(0.1)]);
+		0.1.wait;
+	}
+}
+
+//:
+fork {
+	100 do: {
+		Synth(\grainSynth, [buf: ~i1.bufnum, dur: 0.7, rate: 1.5.rrand(3), amp: 0.01]);
+		0.1.wait;
+	}
+}
+
+//:
+fork {
+	100 do: { | i |
+		Synth(\grainSynth, [buf: ~i1.bufnum, dur: 0.7,
+			rate: (i / 100 + 1),
+			pos: (i / 100),
+			amp: 0.01
+		]);
+		0.1.wait;
 	}
 }

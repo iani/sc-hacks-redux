@@ -14,6 +14,7 @@ SynthDef(\tgrainsr2trig, {	| out = 0, bufnum = 0, trig = 0, rate = 1, centerPos 
 }).add;
 //:
 a = Synth(\tgrainsr2trig, [bufnum: ~busy1.bufnum, dur: 0.1]);
+//:
 //
 a.ctl(
 	\trig, { Dust.kr(5) },

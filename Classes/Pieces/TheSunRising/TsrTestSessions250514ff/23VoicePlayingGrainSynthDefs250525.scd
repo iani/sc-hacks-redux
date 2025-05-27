@@ -256,6 +256,82 @@ a.ctl(
 a.set(\trate, 10);
 //:
 a.release;
+//: - EXTRA: grainFroth
+//: Model UGenFunc
+GrainFroth_ : UGenFunc {
+	*ar {
+		var trate, dur, clk, pos, pan, b;
+		b = (~buf ? \default).buf ?? { \default.buf };
+		// trate = MouseY.kr(1,400,1);
+		trate = \trate.br(~trate ? 0.5).linexp(0, 1, 1, 400);
+		dur = 8 / trate;
+		clk = Impulse.kr(trate);
+		// pos = MouseX.kr(0,BufDur.kr(b));
+		pos = Pos(b);
+		pan = WhiteNoise.kr(0.8);
+		^TGrains.ar(2, clk, b, 2 ** WhiteNoise.kr(2), pos, dur, pan, 0.1)
+		* \vol.br(~vol ? 1);
+	}
+}
+//: SynthDef grainFroth
+SynthDef(\grainFroth1, { | out = 0, buf = 0, trate = 0.5, pos = 0, amp = 0.2 |
+	var dur, clk, src, pan;
+	trate = trate.linexp(0, 1, 1, 400);
+	dur = 8 / trate;
+	clk = Impulse.kr(trate);
+	pos = pos * BufDur.kr(buf);
+	pan = WhiteNoise.kr(0.8);
+	src = TGrains.ar(2, clk, buf, 2 ** WhiteNoise.kr(2), pos, dur, pan, amp, 4);
+	Out.ar(out, src * amp);
+}).add;
+//:
+a = Synth(\grainFroth1, [buf: ~i2]);
+a.ctl(\pos, { LFSaw.kr(0.01) });
+a.ctl(\trate, { LFNoise1.kr(0.1).range(0.1, 0.9) });
+//: adding DynKlank
+SynthDef(\grainFroth2, { | out = 0, buf = 0, trate = 0.5, pos = 0, amp = 0.05 |
+	var dur, clk, src, ksrc, freqs, amps, rings, pan;
+	trate = trate.linexp(0, 1, 1, 400);
+	dur = 8 / trate;
+	clk = Impulse.kr(trate);
+	pos = pos * BufDur.kr(buf);
+	pan = WhiteNoise.kr(0.8);
+	src = TGrains.ar(2, clk, buf, 2 ** WhiteNoise.kr(2), pos, dur, pan, amp, 4);
+	freqs = #[100, 200, 300, 400] * 1;
+    amps = #[1, 0.3, 0.2, 0.05];
+    rings = #[1, 1, 1, 2];
+	ksrc = DynKlank.ar(`[freqs, amps, rings], src * amp);
+	Out.ar(out, ksrc);
+}).add;
+//:
+a = Synth(\grainFroth2, [buf: ~i2]);
+
+//: adding DynKlank
+SynthDef(\grainFroth3, { | out = 0, buf = 0, trate = 0.5, pos = 0, amp = 0.1,
+	f1 = 100, f2 = 200, f3 = 300, f4 = 400 |
+	var dur, clk, src, ksrc, freqs, amps, rings, pan;
+	trate = trate.linexp(0, 1, 1, 400);
+	dur = 8 / trate;
+	clk = Impulse.kr(trate);
+	pos = pos * BufDur.kr(buf);
+	pan = WhiteNoise.kr(0.8);
+	src = TGrains.ar(2, clk, buf, 2 ** WhiteNoise.kr(2), pos, dur, pan, amp, 4);
+	freqs = [f1, f2, f3, f4];
+    amps = #[1, 0.3, 0.2, 0.05];
+    rings = #[0.05, 0.05, 0.05, 0.05];
+	ksrc = DynKlank.ar(`[freqs, amps, rings], src * amp);
+	Out.ar(out, ksrc);
+}).add;
+//:
+a = Synth(\grainFroth3, [buf: ~i2]);
+//:
+a.ctl(
+	\f1, { LFNoise0.kr(0.2).range(100, 2000) },
+	\f2, { LFNoise0.kr(0.3).range(100, 2000) },
+	\f3, { LFNoise0.kr(0.4).range(100, 2000) },
+	\f4, { LFNoise0.kr(2).range(100, 2000) },
+)
+
 //: 3 De-re-constructing synthdef 3 --- From TGrains help file
 // target full arguments:
 // | out = 0, bufnum = 0, t_trig = 0, rate = 1, centerPos = 0, dur = 0.1, pan = 0, amp = 0.1 |
@@ -293,7 +369,7 @@ a.release;
 	var pos; //
 	var numChannels; number
 	var pan; // panning position.
-	, b;
+	// , b;
 	b = ~busy1;
     trate = MouseY.kr(2,200,1);
     dur = 4 / trate;

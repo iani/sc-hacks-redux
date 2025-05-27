@@ -1,0 +1,12 @@
+#+title: Readme Buffer Synth Details
+
+Reworking the synthdefs for playing buffers, One file per SynthDef, in order to have enough space to explore each SynthDef with different control mechanisms.
+
+* Overview, List of Files and SynthDefs
+
+**
+
+* Overview, list of SynthDefs:
+
+** tgrainsr2trig - single grain per trigger
+TGrains triggered by a control to play a single grain per trigger.
