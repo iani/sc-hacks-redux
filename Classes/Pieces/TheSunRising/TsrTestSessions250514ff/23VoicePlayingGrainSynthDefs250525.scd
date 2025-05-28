@@ -301,7 +301,7 @@ SynthDef(\grainFroth2, { | out = 0, buf = 0, trate = 0.5, pos = 0, amp = 0.05 |
     amps = #[1, 0.3, 0.2, 0.05];
     rings = #[1, 1, 1, 2];
 	ksrc = DynKlank.ar(`[freqs, amps, rings], src * amp);
-	Out.ar(out, ksrc);
+	Out.ar(out, ksrc.f);
 }).add;
 //:
 a = Synth(\grainFroth2, [buf: ~i2]);
@@ -320,18 +320,21 @@ SynthDef(\grainFroth3, { | out = 0, buf = 0, trate = 0.5, pos = 0, amp = 0.1,
     amps = #[1, 0.3, 0.2, 0.05];
     rings = #[0.05, 0.05, 0.05, 0.05];
 	ksrc = DynKlank.ar(`[freqs, amps, rings], src * amp);
-	Out.ar(out, ksrc);
+	Out.ar(out, ksrc.f);
 }).add;
 //:
-a = Synth(\grainFroth3, [buf: ~i2]);
+a = Synth(\grainFroth3, [buf: ~this2]);
 //:
 a.ctl(
 	\f1, { LFNoise0.kr(0.2).range(100, 2000) },
 	\f2, { LFNoise0.kr(0.3).range(100, 2000) },
 	\f3, { LFNoise0.kr(0.4).range(100, 2000) },
 	\f4, { LFNoise0.kr(2).range(100, 2000) },
-)
-
+);
+//:
+a release: 5;
+//:
+a.freeCtls;
 //: 3 De-re-constructing synthdef 3 --- From TGrains help file
 // target full arguments:
 // | out = 0, bufnum = 0, t_trig = 0, rate = 1, centerPos = 0, dur = 0.1, pan = 0, amp = 0.1 |
