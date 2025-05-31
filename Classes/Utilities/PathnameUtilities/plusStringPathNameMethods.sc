@@ -36,7 +36,7 @@
 	isRelativePath { ^PathName(this).isRelativePath }
 	// asRelativePath { | relativeTo | ^PathName(this).asRelativePath(relativeTo) }
 	folderName { ^PathName(this).folderName }
-	// !!!!! this causes seggmentation faul!!!!!!!!!!
+	// !!!!! this causes segmentation fault!!!!!!!!!!
 	// fullPath { ^PathName(this).fullPath } // WHY ????????
 	entries {
 		if (this.isFolder) {

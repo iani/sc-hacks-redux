@@ -1,0 +1,103 @@
+#+title: Network Bending Notes
+
+Anti-theoretical appraoch to neural synthesis with Pure Data.
+
+* Industrial AI v Creative micro-AI
+
+** Indutrial AI
+- Large-scale ...
+
+** Creative micro-AI
+- Artist-built or open-source models (e.g. DDSP, RAVE)
+- Designed for exploration, tinkering and play
+- Hands-on, distributed, interpretable
+
+* What do we lose with scale?
+
+- Cultural diversity: centralised, corporate taste shapes the output
+  Which
+- Agency: From creators we are reduced to users
+- Control
+
+* Why small models matter?
+
+- local tweakale, trainable
+- more inclusive experimentation
+- shifting
+
+* From tool to instrument
+
+- AI does not have to be used, it can be played
+- Emphasis on live interaction, feedback and control
+-
+
+* hackng music technology
+
+* TOOLS!!!!!!
+- install *plugdata*
+- install nn-external (from IRCAM, plugins for SuperCollider also exist)
+- Download pretrained models
+- Explore the Pd bending patches
+** Instructions from online
+
+Preparation
+Install plugdata
+Make sure that you have the newest version of Plugdat installed. In case you don’t have it, you can download it from here https://plugdata.org/download.html.
+Pure data is ok too, but you might need to install some extra externals. Make sure you are using the newest version. https://puredata.info/downloads/pure-data.
+nn~ external
+The extension is precompiled only for MacOS and Windows operating systems. If you are on Linux, you need to compile the extension yourself. You can find the details below.
+Windows / MacOS
+Download the right version of the external for your operating system.
+Windows
+Mac (Intel)
+Mac (M1/M2…)
+https://github.com/blazejkotowski/nn_tilde_bending/releases/download/v1.5.6-bending/nn_puredata_windows_x64.tar.gz
+https://github.com/blazejkotowski/nn_tilde_bending/releases/download/v1.5.6-bending/nn_puredata_macOS_x64.tar.gz
+https://github.com/blazejkotowski/nn_tilde_bending/releases/download/v1.5.6-bending/nn_puredata_macOS_arm64.tar.gz
+Windows
+Unpack the content of the archive (the entire nn_tilde folder) to the Pd directory
+%AppData%/Pd .
+In order to find the %AppData% directory, you need to open the command line and type echo %AppData% .
+Add the %AppData%/Pd/nn_tilde to the path in Pure Data preferences.
+MacOS
+Unpack the content of the archive (the entire nn_tilde folder) to the Pd directory ~/Library/Pd
+Add the ~/Library/Pd/nn_tilde to the Path in Pure Data. (Pd → Preferences → Edit Preferences → Path)
+Remove the quarantine: open the terminal, move to the directory of the external (cd ~/Library/Pd/nn_tilde), and run this command xattr -r -d com.apple.quarantine .
+Linux
+Run the following commands in your terminal. In case of issues, you can follow the original instructions in the original repository . The issues & discussions section might be helpful too.
+​
+Verify the installation
+Download the following archive, and try to run the nn_bending_test.pd .
+Make sure to turn the DSP on.
+If you can hear the sound after turning volume up, and the Pd doesn’t crash, you can consider the installation successful.
+Troubleshooting
+“error loading model”
+If the nn~ external loads successfully, but you get the “error loading model” in the Pd console, you need to setup the Pd path to find your working directory.
+Go to Pd → Preferences → Path
+Type the absolute path to the directory containing the nn_bending_test.pd
+Restart Pd
+MacOS: Can’t run the library from untrusted source
+First time the you run the external on Mac, the system might complain that it comes from untrusted source. You need to go to Privacy and Security settings on your mac and allow the libraries to run. You might need to repeat the process multiple times.
+** nn.ar for SuperCollider
+*** Source
+https://github.com/elgiano/nn.ar
+*** Prebuilt releases
+
+https://github.com/elgiano/nn.ar/releases/tag/v0.0.7-alpha
+*** Pretrained models for download
+
+Pre-trained models
+NN.ar is only an interface to load and use torchscripts, but doesn't include any pre-trained model. However, pre-trained RAVE models for real-time neural synthesis can be found on the Internet, for example:
+
+at acids-ircam, the creators of RAVE: https://acids-ircam.github.io/rave_models_download
+at iil (Intelligent Instruments Lab): https://huggingface.co/Intelligent-Instruments-Lab/rave-models
+For training your own RAVE models, please refer to RAVE documentation at https://github.com/acids-ircam/rave. NN.ar is not limited to RAVE model, and can load and use any model prepared to work in nn_tilde. For more information please visit https://github.com/acids-ircam/nn_tilde
+
+**** Hugging Face RAVE Models info
+
+Pre-trained models
+NN.ar is only an interface to load and use torchscripts, but doesn't include any pre-trained model. However, pre-trained RAVE models for real-time neural synthesis can be found on the Internet, for example:
+
+at acids-ircam, the creators of RAVE: https://acids-ircam.github.io/rave_models_download
+at iil (Intelligent Instruments Lab): https://huggingface.co/Intelligent-Instruments-Lab/rave-models
+For training your own RAVE models, please refer to RAVE documentation at https://github.com/acids-ircam/rave. NN.ar is not limited to RAVE model, and can load and use any model prepared to work in nn_tilde. For more information please visit https://github.com/acids-ircam/nn_tilde

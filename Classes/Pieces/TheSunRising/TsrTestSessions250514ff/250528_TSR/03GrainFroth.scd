@@ -22,7 +22,7 @@ SynthDef(\grainFroth1, { | out = 0, buf = 0, trate = 0.5, pos = 0, amp = 0.2 |
 	Out.ar(out, src * amp.f);
 }).add;
 //:!!!!!!!!!!!!
-a = Synth(\grainFroth1, [buf: ~i2]);
+a = Synth(\grainFroth1, [buf: ~v4]);
 a.ctl(\pos, { LFSaw.kr(0.01) });
 a.ctl(\trate, { LFNoise1.kr(0.1).range(0.1, 0.9) });
 a release: 10;
@@ -45,7 +45,7 @@ SynthDef(\grainFroth3, { | out = 0, buf = 0, trate = 0.5, pos = 0, amp = 0.05,
 	Out.ar(out, ksrc.f);
 }).add;
 //:!!!!!!!!
-a = Synth(\grainFroth3, [buf: ~i2, amp: 0.05]);
+a = Synth(\grainFroth3, [buf: ~v2, amp: 0.05]);
 a.ctl(
 	\pos, { LFSaw.kr(0.01) },
 	\trate, { LFNoise1.kr(0.1).range(0.1, 0.9) },
