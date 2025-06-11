@@ -9,7 +9,7 @@ Animation : NamedSingleton2 {
 	classvar >homeFolder;
 	classvar sessions; // all sessions read from homeFolder
 	var <folder, <files;
-	var <oscdata, <numdata;
+	var <converter;
 
 	*homeFolder {
 		homeFolder ?? { homeFolder = "~/oscdata".standardizePath; };
@@ -40,13 +40,9 @@ Animation : NamedSingleton2 {
 		files = (folder.fullPath +/+ "*.scd").pathMatch;
 	}
 
-	readData {
-		oscdata = OscData(files);
-		numdata = OscDataConverter convert: oscdata;
-
+	convertData {
+		converter = OscDataConverter convert: files;
 	}
-
-	type { ^oscdata.type }
 
 	*gui {
 	// list loaded Animations.

@@ -60,10 +60,12 @@ b = Buffer.loadCollection(Server.default, a);
 // The playback rate of 0.04 is correct.
 //: ========== For playback with Dbufrd.==========
 //:MUST lace nested array to 1-dimensional array.
-a = ({1.0.rand2} ! 200) ! (44100 * 5.0) ; // 5 seconds of noise
+a = ({1.0.rand2} ! 200) ! (48000 * 5.0) ;
 b = Buffer.loadCollection(Server.default, a.lace, 200);
 //:b has 200 channels:
 b.numChannels; // 200
+b.numFrames;
+b.dur;
 //:write b to file
 b.write("~/audiofiles/multichannelWrite200_250603.aiff".standardizePath);
 //:

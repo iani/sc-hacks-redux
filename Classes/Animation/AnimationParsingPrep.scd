@@ -1,16 +1,51 @@
 //: Part 1: Read data from osc message recorded on file,
-//: Convert data to
+//: Convert data of first session:
 a = Animation.sessions.asArray;  // ok
 b = a.first; // ok
 b.files; // ok
-b.readData; // ok
+b.convertData; // ok
+b.converter.buffer; // OK
+//:Convert all sessions (and save data as audio files)
+Animation.sessions.asArray do: _.convertData;
+// error at session 2.  Try again, troubleshoot.
+//:
+b = Animation.sessions.asArray[1];
+b.convertData;
+b.converter.buffer;
+c = b.converter.buffer;
+c[0].size;
+c collect: (_.size) do: _.postln;
+c.size;
+//:
+d = Buffer.loadCollection(Server.default,
+	c[0][..210], 1
+);
+//: Found the bug: c[0][212] is [] - not a Float!
+c[0][212];
+c[0][213];
+//:
+c do: { | chan, chnum |
+	chan do: { | num, numindex |
+		if (num.isKindOf(SimpleNumber).not) {
+			postln("Not float:" + num + "chan" + chnum +
+			"frame" + numindex);
+		}
+	}
+};
+//:
+b.files;
+
+//:
+
+
+
 c = b.numdata; // ok
 d = c.first; // ok
 d.size; // ok: 161 floats
 d.[150..]; //comparison with original data on file. OK
 b.type; // '/rokoko'  OK
 //: Part 2: Save data as aiff sound files, for playback in control busses.
-// ------ TBD! ------
+b.converter.oscdata.paths.first.folderName
 //:
 c = OscData(b.files);
 //:Lookig at times. Finding out the average sample playback rate
