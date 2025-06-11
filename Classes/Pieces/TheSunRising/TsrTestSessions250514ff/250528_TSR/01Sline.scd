@@ -2,10 +2,11 @@
 //: sline1
 Synth(\sline1, [dur: 10]);
 //:
-\s1 play: (instrument: \sline1, dur: [0.2, 0.1].prand)
+\s1 play: (instrument: \sline1, dur: [0.2, 0.1].prand);
 \s1 play: (amp: (100..1).normalize(0.1, 0.001).pseq(1));
 \s1 play: (freq: (40..100).midicps.pseq(1));
 \s1 play: (freq: (40..100).palindrome.midicps.pseq(1));
+//:
 \s1.stop;
 //: sline2
 Synth(\sline2, [dur: 10, amp: 0.1]);
@@ -13,7 +14,7 @@ Synth(\sline2, [dur: 10, amp: 0.1]);
 \s2 play: (instrument: \sline2, dur: 0.51);
 \s2.stop;
 //:
-\s3 play: (instrument: \sline2, dur: [0.2, 0.1].prand)
+\s3 play: (instrument: \sline2, dur: [0.2, 0.1].prand);
 \s3 play: (amp: (100..1).normalize(0.1, 0.001).pseq(1));
 \s3 play: (freq: (40..100).midicps.pseq(1));
 \s3 play: (freq: (40..100).palindrome.midicps.pseq(1));
@@ -38,6 +39,13 @@ fork {
 	(1..127) do: { | ascii |
 		Synth(\sline4, [ascii: ascii]);
 		0.15.wait;
+	}
+}
+//: sline4
+fork {
+	(1..127) do: { | ascii |
+		Synth(\sline4, [ascii: ascii]);
+		[0.15, 0.3].choose.wait;
 	}
 }
 //:
@@ -103,4 +111,7 @@ r = fork {
 	}
 };
 //:
-\s5 play: (instrument: \sline5, dur: 0.51);
+\s5 play: (instrument: \sline5, dur: [0.1, 0.2].prand(20));
+\s5.stop;
+
+a.free;

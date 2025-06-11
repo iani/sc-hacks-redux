@@ -85,6 +85,10 @@ OscData {
 		).convertTimesMessages; // .gui;
 	}
 
+	type {
+		^messages.first.interpret.first;
+	}
+
 	init {
 		header = ""; // initialize header to reread from files.
 		this.readSource;

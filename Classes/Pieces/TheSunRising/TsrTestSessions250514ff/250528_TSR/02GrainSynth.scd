@@ -49,8 +49,9 @@ fork {
 			[0.2.rrand(2.0), -2.0.rrand(-0.2)].choose, amp: 0.01.exprand(0.25)]);
 		0.15.wait;
 	};
-}
-
+};
+//:
+a.free;
 //:Alvin
 fork {
 	10 do: { | i |
@@ -104,3 +105,5 @@ fork {
 	 ~shes1, ~nothing1, ~princes1,
 	 ~all1, ~thou1, ~in1, ~thine1, ~to1, ~shine1, ~this1
  ]
+
+a.release

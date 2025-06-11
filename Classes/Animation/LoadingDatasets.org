@@ -1,0 +1,10 @@
+#+title: Loading Datasets
+
+火 10  6 2025 18:39
+
+The default folder for osc data (for animations or other stuff) is:
+"~/oscdata".
+The default folder may be changed
+In
+
+Sets with oscdata are saved in subfolders of a single default folder.

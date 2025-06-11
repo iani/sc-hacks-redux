@@ -1,0 +1,8 @@
+#+title: Readme Quarks
+
+This folder contains notes about Quarks explored during use and development of sc-hacks.
+
+Currently (日  1  6 2025 15:44), looking at:
+
+- FluCoMa
+- Bacalao

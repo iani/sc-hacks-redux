@@ -35,7 +35,7 @@ Paths {
 			p = p.first;
 			this.savePathAndDo(p, pathLocation, action);
 			action.(p, this.pathsInFolder(p));
-		});
+		}, fileMode: 0);
 	}
 
 	*getPathFromKey { | key, default = "" |

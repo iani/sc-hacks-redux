@@ -13,9 +13,15 @@ Tsr.doOnVerse2({ | index, verse, incipit |
 }, \ianiverse);
 //:
 // TEST
-
+OscMonitor.gui;
 \v1 !!! ~verses1[0];
 
+~v1;
+~v2;
+~v3;
+~v4.play;
+
+"bien";
 ~v1;
 //:
 \test;
