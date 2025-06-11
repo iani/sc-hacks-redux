@@ -56,5 +56,8 @@ RokokoConverter : OscDataConverter {
 
 // Convert yolo format data into numeric arrays
 YoloConverter : OscDataConverter {
-
+	// a yolo data vector has a header of 3 elements:
+	// 0: osc message '/poseperson', 1: person id, 2: global confidence
+	// This is followed by 17 x,y,z point coordinate triplets. Total: 51 floats.
+	getNumVector { | messageVector | ^messageVector[3..]; }
 }
