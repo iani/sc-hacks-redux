@@ -1,7 +1,9 @@
 // 水 11  6 2025 12:05
 // Choose converter to perform conversion from osc
 // messages to numeric data, based on the data.
-// Then convert messages and return the numeric data.
+// Convert messages create the numeric data.
+// Store the data in an audio buffer.
+// Save the buffer in the same folder as the data files.
 
 OscDataConverter {
 	classvar converters;
@@ -24,7 +26,6 @@ OscDataConverter {
 		converter ?? {
 			^postln("Could not find converter of type" + oscdata.type);
 		};
-		// ^converter convert: oscdata;
 		^converter.new(oscdata);
 	}
 
@@ -35,6 +36,7 @@ OscDataConverter {
 	convert {
 		this.makeMessages;
 		this.makeNumData;
+		// N.B. For simplicity always make and save the buffer.
 		this.makeBuffer;
 	}
 

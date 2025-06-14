@@ -95,7 +95,7 @@ OscData {
 		this.makeMessages;
 		localAddr = NetAddr.localAddr;
 		OscGroups.enable(verbose: false);
-		oscgroupsAddr = OscGroups.sendAddress;
+		// oscgroupsAddr = OscGroups.sendAddress;
 		// remake player stream when selection changes:
 		this.addNotifier(this, \selection, {
 			if (this.isPlaying.not) { { this.makeStream }.fork };
@@ -484,6 +484,7 @@ OscData {
 	removeTrigger { | message | stream.removeTrigger(message) }
 
 	makeStream {
+		oscgroupsAddr = OscGroups.sendAddress;
 		this.makeStreamEvent;
 		// track progress both from onsets and progress routine
 		// If onsets are too far apart, then progressRoutine is useful
@@ -520,7 +521,7 @@ OscData {
 		var localaddr, oscgroupsaddr;
 		localaddr = LocalAddr();
 		OscGroups.enable(verbose: false); // enable silently
-		oscgroupsaddr = OscGroups.sendAddress;
+		// oscgroupsaddr = OscGroups.sendAddress;
 		^{
 			var msg;
 			msg = ~message.interpret;

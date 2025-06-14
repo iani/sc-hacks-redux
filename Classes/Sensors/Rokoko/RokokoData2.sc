@@ -178,6 +178,10 @@ RokokoData2 : NamedSingleton2 {
 
 	addSendOscGroups {
 		this.addPlayAction({ | n, data |
+			if (verbose) {
+				postln("Sending data to" + sendAddress);
+				postln("Data sent is:" + data);
+			};
 			sendAddress.sendMsg(*data);
 		}, \sendOscGroups);
 	}

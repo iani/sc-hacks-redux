@@ -7,9 +7,9 @@
 
 Animation : NamedSingleton2 {
 	classvar >homeFolder;
-	classvar sessions; // all sessions read from homeFolder
+	classvar >sessions; // all sessions read from homeFolder
 	var <folder, <files;
-	var <converter;
+	var <converter, <cliplist;
 
 	*homeFolder {
 		homeFolder ?? { homeFolder = "~/oscdata".standardizePath; };
@@ -22,6 +22,8 @@ Animation : NamedSingleton2 {
 	}
 
 	*makeSessions {
+		sessions !? { ^sessions }; // only remake sessions when needed
+		// to force remake, set sessions to nil.
 		sessions = IdentityDictionary();
 		this.homeFolder.entries do: { | e |
 			var basename, subfolder, sessionname;
@@ -38,39 +40,21 @@ Animation : NamedSingleton2 {
 	setFolder { | argFolder |
 		folder = argFolder;
 		files = (folder.fullPath +/+ "*.scd").pathMatch;
+		this.readClipList;
 	}
 
-	convertData {
-		converter = OscDataConverter convert: files;
+	convertData { converter = OscDataConverter convert: files; }
+
+	readClipList { // read list of preset animation clips from file
+
+
 	}
 
-	*gui {
-	// list loaded Animations.
-	// Add new animation by reading data.
-	// Start/stop a selected animation from the list.
-		var list;
-		this.vlayout(
-			list = ListView().items_(this.sessionFolders);
-		);
+	saveClipList {
 	}
 
 	*sessionFolders { ^this.sessions.keys.asArray.sort }
 
-	*fromUser {
-		FileDialog({ | path |
-			path = path[0];
-			postln("Fullpath" + path);
-			postln("foldername" + path.folderName);
-			postln("folder" + path.folder);
-		}, fileMode: 2);
-	}
-
-	*fromFolder { | folder |
-		var name;
-		name = folder.folderName.asSymbol;
-
-	}
-	// *new { | folder |
-	// 	*this.newCopyArgs(folder).init;
-	// }
+	*gui { AnimationGui.gui }
+	gui { AnimationGui(this).gui }
 }

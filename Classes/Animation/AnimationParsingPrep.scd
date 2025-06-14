@@ -10,6 +10,12 @@ Animation.sessions.asArray do: _.convertData;
 // error at session 2.  Try again, troubleshoot.
 //:
 b = Animation.sessions.asArray[1];
+
+Animation.sessions;
+
+c = b.converter.oscdata.times;
+c.last / c.size;
+Animation.gui;
 b.convertData;
 b.converter.buffer;
 c = b.converter.buffer;
