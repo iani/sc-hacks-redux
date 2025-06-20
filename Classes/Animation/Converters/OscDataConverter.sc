@@ -70,10 +70,14 @@ OscDataConverter {
 
 	saveBuffer { | argBuffer |
 		var bufPath;
-		bufPath = oscdata.paths.first.folder +/+
-		oscdata.paths.first.folderName ++ ".aiff";
+		bufPath = this.soundFilePath;
 		argBuffer.write(bufPath);
 		argBuffer.path = bufPath;
+	}
+
+	soundFilePath {
+		^oscdata.paths.first.folder +/+
+		oscdata.paths.first.folderName ++ ".aiff";
 	}
 }
 

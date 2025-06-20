@@ -9,7 +9,7 @@ Animation : NamedSingleton2 {
 	classvar >homeFolder;
 	classvar >sessions; // all sessions read from homeFolder
 	var <folder, <files;
-	var <converter, <cliplist;
+	var converter, <cliplist;
 
 	*homeFolder {
 		homeFolder ?? { homeFolder = "~/oscdata".standardizePath; };
@@ -43,12 +43,19 @@ Animation : NamedSingleton2 {
 		this.readClipList;
 	}
 
+	converter {
+		if (converter.isNil) { this.convertData };
+		^converter;
+	}
+
 	convertData { converter = OscDataConverter convert: files; }
 
 	readClipList { // read list of preset animation clips from file
-
+		this.clipPath.postln;
 
 	}
+
+	clipPath { ^folder +/+ "clips.scd" }
 
 	saveClipList {
 	}
@@ -57,4 +64,5 @@ Animation : NamedSingleton2 {
 
 	*gui { AnimationGui.gui }
 	gui { AnimationGui(this).gui }
+	soundFilePath { ^this.converter.soundFilePath }
 }

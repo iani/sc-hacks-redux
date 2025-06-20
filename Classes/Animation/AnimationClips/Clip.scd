@@ -12,7 +12,13 @@
 // relevantChannels: Channels where sonification or other effects should concentrate
 
 ClipList {
+	var list; // actually an IdentityDictionary;
 
+	list { ^list ?? { list = IdentityDictionary() } }
+
+	add { | name, path, buffer, startPos, length, speed, loop, relevantChannels |
+
+	}
 }
 
 Clip {

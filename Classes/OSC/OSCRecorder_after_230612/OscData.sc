@@ -94,7 +94,7 @@ OscData {
 		this.readSource;
 		this.makeMessages;
 		localAddr = NetAddr.localAddr;
-		OscGroups.enable(verbose: false);
+		// OscGroups.enable(verbose: false);
 		// oscgroupsAddr = OscGroups.sendAddress;
 		// remake player stream when selection changes:
 		this.addNotifier(this, \selection, {
