@@ -27,7 +27,10 @@ AnimationGui : NamedSingleton2 {
 				}),
 				sessionPlayButton = Button().states_([["play session"]])
 				.action_({ | me |
-					;
+					var chosenSession;
+					chosenSession = Animation.sessions.at(sessionList.item.asSymbol);
+					chosenSession.postln;
+					chosenSession.play;
 				})
 				)
 			),

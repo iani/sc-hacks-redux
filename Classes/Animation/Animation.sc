@@ -49,6 +49,11 @@ Animation : NamedSingleton2 {
 		^converter;
 	}
 
+	play {
+		postln("Playing with" + this.player);
+		this.player.postln.play;
+
+	}
 	// use just default animation player
 	// TODO: get different player class,
 	// TODO: use different players per animation instance

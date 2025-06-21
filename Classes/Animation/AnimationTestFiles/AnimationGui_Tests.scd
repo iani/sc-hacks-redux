@@ -23,6 +23,8 @@ b.hlayout(ListView());
 
 Animation
 
+AnimationPlayer.verbose = true;
+
 \x.window;
 
 OscGroups.enable;
