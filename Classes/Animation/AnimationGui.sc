@@ -15,15 +15,21 @@ AnimationGui : NamedSingleton2 {
 	// Add new animation by reading data.
 	// Start/stop a selected animation from the list.
 		var sessionList, clipList, playButton, viewButton, window;
-		var sessionButton;
+		var sessionButton, sessionPlayButton;
 		window = this.hlayout(
 			VLayout(
 				sessionList = ListView().items_(Animation.sessionFolders)
 				.minWidth_(300),
+				HLayout(
 				sessionButton = Button().states_([["session gui"]])
 				.action_({ | me |
 					AnimationGui(sessionList.item.asSymbol);
+				}),
+				sessionPlayButton = Button().states_([["play session"]])
+				.action_({ | me |
+					;
 				})
+				)
 			),
 			VLayout(
 				clipList = ListView(),

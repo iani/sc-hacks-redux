@@ -10,6 +10,7 @@ Animation : NamedSingleton2 {
 	classvar >sessions; // all sessions read from homeFolder
 	var <folder, <files;
 	var converter, <cliplist;
+	var player;
 
 	*homeFolder {
 		homeFolder ?? { homeFolder = "~/oscdata".standardizePath; };
@@ -47,6 +48,11 @@ Animation : NamedSingleton2 {
 		if (converter.isNil) { this.convertData };
 		^converter;
 	}
+
+	// use just default animation player
+	// TODO: get different player class,
+	// TODO: use different players per animation instance
+	player { ^player ?? { player = AnimationPlayer(\default, this); }; }
 
 	convertData { converter = OscDataConverter convert: files; }
 

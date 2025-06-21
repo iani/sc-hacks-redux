@@ -1,13 +1,34 @@
 //: Part 1: Read data from osc message recorded on file,
 //: Convert data of first session:
 a = Animation.sessions.asArray;  // ok
+
 b = a.first; // ok
+
+c = b.player;
+
+c.buffer;
+
+c.inspect;
+
+nil.free;
+
 b.files; // ok
 b.convertData; // ok
 b.converter.buffer; // OK
 //:Convert all sessions (and save data as audio files)
 Animation.sessions.asArray do: _.convertData;
 // error at session 2.  Try again, troubleshoot.
+//:
+z = (1..161).clump(7);
+RokokoJoints.joints.collect({ | j, i |
+	[j, z[i]]
+}).flat;
+//:
+RokokoJoints.joints.size;
+
+([RokokoJoints.joints] ++ z.clump(7)).lace;
+
+
 //:
 b = Animation.sessions.asArray[1];
 
