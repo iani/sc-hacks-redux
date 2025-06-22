@@ -14,6 +14,7 @@ AnimationController : NamedSingleton2 {
 	var <oscMaker; // construct osc messages from polled number array
 	var <synth, <pollRoutine;
 	var <data; // polled from synth
+	var <ctlSynths;
 
 	*initClass {
 		StartUp add: { this.makeSendAddress }
@@ -29,6 +30,9 @@ AnimationController : NamedSingleton2 {
 	}
 
 	init {
+		// init only once
+		oscMaker !? { ^this };
+		ctlSynths = MultiLevelIdentityDictionary();
 		this.makeOscMaker;
 		this.makeBuses;
 		this.makeSynth;
@@ -49,8 +53,7 @@ AnimationController : NamedSingleton2 {
 	makeBuses {
 		this.makeDataBus;
 		this.makeModBus;
-		this.makeDataJoints;
-		this.makeModJoints;
+		this.makeJoints;
 	}
 
 
@@ -62,12 +65,18 @@ AnimationController : NamedSingleton2 {
 		modbus = Bus.control(Server.default, oscMaker.numChannels);
 	}
 
-	makeDataJoints {
-
-	}
-
-	makeModJoints {
-
+	makeJoints {
+		var index;
+		dataJoints = MultiLevelIdentityDictionary();
+		modJoints = MultiLevelIdentityDictionary();
+		oscMaker enumerate: { | i, j, v |
+			dataJoints.put(j, v,
+				Bus(\control, databus.index + i, 1, Server.default);
+			);
+			modJoints.put(j, v,
+				Bus(\control, modbus.index + i, 1, Server.default);
+			);
+		}
 	}
 
 	makeSynth {
@@ -99,7 +108,45 @@ AnimationController : NamedSingleton2 {
 		sendAddress.sendMsg(*msg);
 	}
 
-	set { | bus, dim |
+	setJoint { | joint, dim, value |
+		this.modJoint(joint, dim).set(value);
+	}
 
+	modJoint { | joint, dim |
+		^modJoints.at(joint, dim);
+	}
+
+	modIndex { | joint, dim |
+		^this.modJoint(joint, dim).index;
+	}
+
+	dataJoint { | joint, dim |
+		^dataJoints.at(joint, dim);
+	}
+
+	getCtl { | joint, dim | ^ctlSynths.at(joint, dim); }
+	putCtl { | joint, dim, synth | ctlSynths.put(joint, dim, synth); }
+
+	addCtl { | joint, dim, func |
+		this.stopCtl(joint, dim);
+		this.putCtl(
+			joint, dim, func.play(outbus: this.modIndex(joint, dim))
+		);
+	}
+
+	stopCtl { | joint, dim |
+		this.getCtl(joint, dim).free;
+	}
+	stopCtls {
+		var nullSynth;
+		ctlSynths leafDo: { | coords | ctlSynths.at(*coords).free; };
+		// add synth to zero mod bus values:
+		this.addCtl(\hip, \x, { \ctl.kr(0) ! 161});
+		nullSynth = this.getCtl(\hip, \x);
+		{ nullSynth.free; }.defer(0.5);
+	}
+
+	addConst { | joint, dim, val = 0 |
+		this.addCtl(joint, dim, { joint.kr(val) });
 	}
 }

@@ -81,4 +81,8 @@ Animation : NamedSingleton2 {
 	*gui { AnimationGui.gui }
 	gui { AnimationGui(this).gui }
 	soundFilePath { ^this.converter.soundFilePath }
+
+	setJoint { | bus, dim, value |
+		player.setJoint(bus, dim, value);
+	}
 }

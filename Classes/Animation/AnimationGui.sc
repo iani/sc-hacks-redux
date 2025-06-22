@@ -34,10 +34,16 @@ AnimationGui : NamedSingleton2 {
 						chosenSession = Animation.sessions.at(sessionList.item.asSymbol);
 						chosenSession.postln;
 						if (me.value > 0) {
-							chosenSession.play
+							chosenSession.play;
+							freezeButton.value = 0;
 						}{ // stop all - in case previous sessions left
 							Animation.stopAll;
 						}
+					})
+					.addNotifier(this, \cmdperiod, { | n |
+						// { "I should change".postln; } ! 10;
+						// postln("Setting to 0" + n.listener);
+						n.listener.value = 0;
 					}),
 					freezeButton = Button().states_(
 						[["freeze"], ["move"]])
@@ -74,6 +80,12 @@ AnimationGui : NamedSingleton2 {
 			Animation.sessions[me.item].postln;
 		};
 		sessionList.valueAction = 0;
+		CmdPeriod add: this;
+	}
+
+	*doOnCmdPeriod {
+		// { "CMDPERIOD".postln; } ! 10;
+		this.changed(\cmdperiod);
 	}
 
 	gui {

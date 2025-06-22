@@ -30,6 +30,8 @@ RokokoJoints {
 		'rul', 'rl', 'rf', 'rt', 'rte'
 	];
 
+	classvar <>vars = #[\x, \y, \z, \qx, \qy, \qz, \qw];
+
 	*makeOscMessage { | nums, name = 'Baubo' |
 		nums = nums clump: 7;
 		^this.makeHeader ++
@@ -80,10 +82,20 @@ RokokoJoints {
 	}
 
 	varIndex { | argVar = \x |
-		^[\x, \y, \z, \qx, \qy, \qz, \qw] indexOf: argVar;
+		^vars indexOf: argVar;
 	}
 
 	numChannels {
 		^joints.size * 7
+	}
+
+	enumerate { | func |
+		var i = 0;
+		joints do: { | j |
+			vars do: { | v |
+				func.(i, j, v);
+				i = i + 1;
+			}
+		}
 	}
 }

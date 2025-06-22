@@ -10,7 +10,8 @@ AnimationPlayer : NamedSingleton2 {
 	init { | argAnimation |
 		animation = argAnimation;
 		buffer = animation.converter.buffer;
-		controller = AnimationController(\default); // different names?
+		// controller = AnimationController(\default); // different names?
+		this.makeController;
 		CmdPeriod add: this;
 	}
 
@@ -62,6 +63,8 @@ AnimationPlayer : NamedSingleton2 {
 	makeController {
 		controller = AnimationController(\default);
 		controller.player = this;
+		// postln("Controller:" + controller);
+		// postln("Controller player:" + controller.player);
 	}
 
 	synthStarted {
@@ -78,5 +81,8 @@ AnimationPlayer : NamedSingleton2 {
 			synth.free;
 			synth = nil;
 		};
+	}
+	setJoint { | bus, dim, value |
+		controller.setJoint(bus, dim, value);
 	}
 }
