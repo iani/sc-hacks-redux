@@ -15,23 +15,50 @@ AnimationGui : NamedSingleton2 {
 	// Add new animation by reading data.
 	// Start/stop a selected animation from the list.
 		var sessionList, clipList, playButton, viewButton, window;
-		var sessionButton, sessionPlayButton;
+		var sessionButton, sessionPlayButton, verboseButton, freezeButton;
 		window = this.hlayout(
 			VLayout(
 				sessionList = ListView().items_(Animation.sessionFolders)
-				.minWidth_(300),
+				.minWidth_(300)
+				.hiliteColor_(Color(0.7, 0.8, 0.9))
+				.selectedStringColor_(Color.red),
 				HLayout(
-				sessionButton = Button().states_([["session gui"]])
-				.action_({ | me |
-					AnimationGui(sessionList.item.asSymbol);
-				}),
-				sessionPlayButton = Button().states_([["play session"]])
-				.action_({ | me |
-					var chosenSession;
-					chosenSession = Animation.sessions.at(sessionList.item.asSymbol);
-					chosenSession.postln;
-					chosenSession.play;
-				})
+					sessionButton = Button().states_([["session gui"]])
+					.action_({ | me |
+						AnimationGui(sessionList.item.asSymbol);
+					}),
+					sessionPlayButton = Button().states_(
+						[["play"], ["stop"]])
+					.action_({ | me |
+						var chosenSession;
+						chosenSession = Animation.sessions.at(sessionList.item.asSymbol);
+						chosenSession.postln;
+						if (me.value > 0) {
+							chosenSession.play
+						}{ // stop all - in case previous sessions left
+							Animation.stopAll;
+						}
+					}),
+					freezeButton = Button().states_(
+						[["freeze"], ["move"]])
+					.action_({ | me |
+						var animation;
+						animation = Animation.sessions.at(sessionList.item.asSymbol);
+						if (me.value > 0) {
+							animation.freeze;
+						}{
+							animation.move;
+						}
+					}),
+					verboseButton = Button().states_(
+						[["post"], ["mute"]])
+					.action_({ | me |
+						if (me.value > 0) {
+							AnimationController.verbose = true;
+						}{
+							AnimationController.verbose = false;
+						}
+					})
 				)
 			),
 			VLayout(

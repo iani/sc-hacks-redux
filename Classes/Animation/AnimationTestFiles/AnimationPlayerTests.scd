@@ -1,4 +1,6 @@
 //: 250616
+Animation.gui;
+//:
 a = Animation.sessions.asArray;  // ok
 b = a.first; // ok
 c = b.player;
@@ -7,6 +9,11 @@ c.class.verbose;
 c.play;
 c.class.verbose = true;
 c.stop;
+c.synth;
+//:
+AnimationController.player;
+c.bus;
+c.buffer;
 d = b.converter;
 d.buffer;
 d.buffer.numChannels;
@@ -30,3 +37,6 @@ var oscMaker;
 oscMaker = RokokoJoints();
 oscMaker.activeJoints = RokokoJoints.joints;
 oscMaker.makeOscMessage((1..161), \testFigureInGodot);
+//:
+AnimationGui.gui;
+AnimationPlayer.verbose=true;

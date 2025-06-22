@@ -49,15 +49,20 @@ Animation : NamedSingleton2 {
 		^converter;
 	}
 
-	play {
-		postln("Playing with" + this.player);
-		this.player.postln.play;
-
+	play { // only one animation can play at any time.
+		// Playing many in parallel to be implemented later, when needed.
+		sessions do: _.stop;
+		postln("Playing animation:" + this);
+		this.player.play;
 	}
+	freeze { this.player.freeze }
+	move { this.player.move }
+	stopAll { sessions do: _.stop; }
+	stop { player.stop }
 	// use just default animation player
 	// TODO: get different player class,
 	// TODO: use different players per animation instance
-	player { ^player ?? { player = AnimationPlayer(\default, this); }; }
+	player { ^player ?? { player = AnimationPlayer(name, this); }; }
 
 	convertData { converter = OscDataConverter convert: files; }
 

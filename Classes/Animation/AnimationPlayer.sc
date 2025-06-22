@@ -1,45 +1,26 @@
 // 250616 Playback an Animation from a multichannel buffer
-//
+// The output bus for playback is obtained from controller.
+// TODO: To play several figures concurrently, create
+// a controller with a custom name for each AnimationPlayer corresponding
+// to a different figure.
 
 AnimationPlayer : NamedSingleton2 {
-	classvar <>verbose = false;
-	var animation;
-	var <pollRoutine, <synth, <buffer, <databus, <modbus;
-	var <sendPort = 22245, <>sendAddress;
-	var oscMaker; // construct osc messages from polled number array
-	var <>playerName = \default; // each named player has own busses
+	var <animation, <buffer, <synth, <controller;
 
 	init { | argAnimation |
 		animation = argAnimation;
 		buffer = animation.converter.buffer;
-		this.makeSendAddress;
-		this.makeOscMaker;
+		controller = AnimationController(\default); // different names?
 		CmdPeriod add: this;
 	}
 
 	doOnCmdPeriod { // mark as stopped. Do not restart.
 		synth = nil;
-		pollRoutine = nil;
-	}
-
-
-	sendPort_ { | argPort = 22245 |
-		sendPort = argPort;
-		this.makeSendAddress;
-	}
-
-	makeSendAddress {
-		sendAddress = NetAddr("127.0.0.1", sendPort);
-	}
-
-	makeOscMaker {
-		oscMaker = RokokoJoints();
-		oscMaker.activeJoints = RokokoJoints.joints;
+		this.changed(\stopped);
 	}
 
 	play { | from = 0, to, loop = 1 |
 		this doWhenBufferLoaded: {
-			this.makeBuses;
 			this.makeSynth(from, to, loop);
 		}
 	}
@@ -55,21 +36,17 @@ AnimationPlayer : NamedSingleton2 {
 		}
 	}
 
-	makeBuses {
-		databus = AnimationBus(name, \data, buffer.numChannels);
-		modbus = AnimationBus(name, \mod, buffer.numChannels)
-	}
-
 	makeSynth { | from = 0, to, loop = 1 |
-		synth = {
-			var src, mod;
+		postln("Playing buffer:" + buffer);
+		postln("Buffer filename:" + buffer.path.fileName);
+		synth = { | rate = 1 |
+			var src;
 			src = PlayBuf.kr(buffer.numChannels,
 				buffer.bufnum,
-				BufRateScale.kr(buffer.bufnum) * 0.04,
+				BufRateScale.kr(buffer.bufnum) * 0.04 * rate,
 				loop: loop,
 				doneAction: Done.freeSelf);
-			mod = In.kr(modbus.index, modbus.numChannels);
-			Out.kr(databus.index, mod + src);
+			Out.kr(controller.databus.index, src);
 		}.play;
 		synth onStart: {
 			this.synthStarted; // start polling
@@ -79,46 +56,27 @@ AnimationPlayer : NamedSingleton2 {
 		}
 	}
 
+	move { synth.set(\rate, 1) }
+	freeze { synth.set(\rate, 0) }
+
+	makeController {
+		controller = AnimationController(\default);
+		controller.player = this;
+	}
+
 	synthStarted {
-		"synth started. will start poll routine".postln;
-		pollRoutine ?? { this.startPolling }
+		postln("Synth started:" + this);
 	}
 
-	startPolling {
-		pollRoutine = {
-			loop {
-				if (verbose) { postln("Polling bus for" + this); };
-				this.poll1;
-				30.reciprocal.wait;
-			}
-		}.fork
-	}
-
-	poll1 {
-		databus !? {
-			databus.getn(databus.numChannels, { | nums |
-				var msg;
-				msg = oscMaker.makeOscMessage(nums, name);
-				if (verbose) { msg.postln; };
-				sendAddress.sendMsg(*msg);
-			})
-		}
-	}
 
 	synthEnded {
-		pollRoutine.stop;
-		pollRoutine = nil;
+		postln("Synth ended" + this);
 	}
 
 	stop {
-		synth.free; // also stops routine trhough onEnd!
-	}
-
-	// '/rokoko/', 2.8176906108856, 'Baubo'
-	num2osc { | nums |
-		// build osc message from numeric array
-		// Currently limited to Rokoko format
-		var header, joints;
-		header = ['/rokoko/', Clock.seconds, name];
+		if (synth.isPlaying) {
+			synth.free;
+			synth = nil;
+		};
 	}
 }

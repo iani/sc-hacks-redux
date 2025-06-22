@@ -1,7 +1,15 @@
 // 250615ff
 
 Animation.gui;
+AnimationPlayer.verbose = true;
+		synth.free; // also stops routine trhough onEnd!
+//:
+a = Animation.sessions.asArray.first;
+a.play;
+a.stop;
 
+a.player.synth;
+//:
 a = Animation.sessions.asArray.first.name;
 x = Animation.sessions.asArray.first;
 x.soundFilePath;

@@ -82,4 +82,8 @@ RokokoJoints {
 	varIndex { | argVar = \x |
 		^[\x, \y, \z, \qx, \qy, \qz, \qw] indexOf: argVar;
 	}
+
+	numChannels {
+		^joints.size * 7
+	}
 }
