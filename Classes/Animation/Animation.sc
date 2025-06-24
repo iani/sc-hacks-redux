@@ -6,11 +6,16 @@
 // Sets with oscdata are saved in subfolders of a single default folder.
 
 Animation : NamedSingleton2 {
+	classvar <>port = 22245; // default port for sending osc messages
 	classvar >homeFolder;
 	classvar >sessions; // all sessions read from homeFolder
 	var <folder, <files;
 	var converter, <cliplist;
 	var player;
+
+	*localListener {
+		^NetAddr("127.0.0.1", port);
+	}
 
 	*homeFolder {
 		homeFolder ?? { homeFolder = "~/oscdata".standardizePath; };
@@ -85,4 +90,5 @@ Animation : NamedSingleton2 {
 	setJoint { | bus, dim, value |
 		player.setJoint(bus, dim, value);
 	}
+	stopCtls { player.stopCtls }
 }

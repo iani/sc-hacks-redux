@@ -4,6 +4,8 @@ Animation.gui;
 a = Animation.sessions.asArray;  // ok
 b = a.first; // ok
 c = b.player;
+c.controller;
+c.controller.databus;
 c;
 c.class.verbose;
 c.play;

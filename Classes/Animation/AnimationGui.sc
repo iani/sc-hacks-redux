@@ -15,7 +15,7 @@ AnimationGui : NamedSingleton2 {
 	// Add new animation by reading data.
 	// Start/stop a selected animation from the list.
 		var sessionList, clipList, playButton, viewButton, window;
-		var sessionButton, sessionPlayButton, verboseButton, freezeButton;
+		var sessionButton, sessionPlayButton, verboseButton, freezeButton, stopCtlsButton;
 		window = this.hlayout(
 			VLayout(
 				sessionList = ListView().items_(Animation.sessionFolders)
@@ -23,10 +23,10 @@ AnimationGui : NamedSingleton2 {
 				.hiliteColor_(Color(0.7, 0.8, 0.9))
 				.selectedStringColor_(Color.red),
 				HLayout(
-					sessionButton = Button().states_([["session gui"]])
-					.action_({ | me |
-						AnimationGui(sessionList.item.asSymbol);
-					}),
+					// sessionButton = Button().states_([["session gui"]])
+					// .action_({ | me |
+					// 	AnimationGui(sessionList.item.asSymbol);
+					// }),
 					sessionPlayButton = Button().states_(
 						[["play"], ["stop"]])
 					.action_({ | me |
@@ -64,6 +64,12 @@ AnimationGui : NamedSingleton2 {
 						}{
 							AnimationController.verbose = false;
 						}
+					}),
+					stopCtlsButton = Button().states_([[0]])
+					.action_({ | me |
+						var animation;
+						animation = Animation.sessions.at(sessionList.item.asSymbol);
+						animation.stopCtls;
 					})
 				)
 			),

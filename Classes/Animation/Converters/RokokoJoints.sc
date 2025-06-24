@@ -32,6 +32,22 @@ RokokoJoints {
 
 	classvar <>vars = #[\x, \y, \z, \qx, \qy, \qz, \qw];
 
+	classvar <synthArgs; // for setting synth from OSC message
+
+	*new {
+		this.makeSynthArgs;
+		^super.new;
+	}
+
+	*makeSynthArgs {
+		joints do: { | j |
+			vars do: { | v |
+				synthArgs = synthArgs.add(format("%%", j, v).asSymbol)
+			}
+		}
+	}
+
+
 	*makeOscMessage { | nums, name = 'Baubo' |
 		nums = nums clump: 7;
 		^this.makeHeader ++
@@ -97,5 +113,13 @@ RokokoJoints {
 				i = i + 1;
 			}
 		}
+	}
+
+	osc2synth { | osc |
+		// construct synth args for setting bus for animation
+		osc = osc[3..].clump(8).flop;
+		osc = osc[1..].flop;
+		^[synthArgs, osc.flat].flop.flat;
+		// ^osc;
 	}
 }

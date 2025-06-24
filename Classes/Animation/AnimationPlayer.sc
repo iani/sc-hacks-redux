@@ -23,6 +23,7 @@ AnimationPlayer : NamedSingleton2 {
 	play { | from = 0, to, loop = 1 |
 		this doWhenBufferLoaded: {
 			this.makeSynth(from, to, loop);
+			thisProcess.interpreter.c = controller; // shortcut for live coding controls + synths
 		}
 	}
 
@@ -85,4 +86,5 @@ AnimationPlayer : NamedSingleton2 {
 	setJoint { | bus, dim, value |
 		controller.setJoint(bus, dim, value);
 	}
+	stopCtls { controller.stopCtls }
 }

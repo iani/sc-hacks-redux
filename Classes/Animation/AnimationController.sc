@@ -5,34 +5,27 @@
 // in the default instance of AnimationController.
 // Multiple named AnimationControllers can be created
 // To provide control to multiple concurrently playing AnimationPlayers.
+// REMEMBER:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// 	*sendPort_ { | argPort = 22245 |
+// REMEMBER:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 AnimationController : NamedSingleton2 {
-	classvar <sendPort = 22245, <>sendAddress;
+	// REMEMBER:
+	// 	*sendPort_ { | argPort = 22245 |
 	classvar <>verbose = false;
+	classvar <current; // current controller
 	var <>player; // the player currently playing
 	var <databus, <modbus, <dataJoints, <modJoints;
 	var <oscMaker; // construct osc messages from polled number array
 	var <synth, <pollRoutine;
 	var <data; // polled from synth
-	var <ctlSynths;
-
-	*initClass {
-		StartUp add: { this.makeSendAddress }
-	}
-
-	*sendPort_ { | argPort = 22245 |
-		sendPort = argPort;
-		this.makeSendAddress;
-	}
-
-	*makeSendAddress {
-		sendAddress = NetAddr("127.0.0.1", sendPort);
-	}
+	var <ctlSynths, <soundSynths;
 
 	init {
 		// init only once
 		oscMaker !? { ^this };
 		ctlSynths = MultiLevelIdentityDictionary();
+		soundSynths = MultiLevelIdentityDictionary();
 		this.makeOscMaker;
 		this.makeBuses;
 		this.makeSynth;
@@ -105,7 +98,19 @@ AnimationController : NamedSingleton2 {
 		var msg;
 		msg = oscMaker.makeOscMessage(data, name);
 		if (verbose) { msg.postln; };
-		sendAddress.sendMsg(*msg);
+		this.changed(\msg, [msg]);
+	}
+
+	addListener { | addr |
+		addr.asSymbol.addNotifier(this, \msg, { | n, msg |
+			// postln("Sending to addr" + addr);
+			// postln("Message:", msg);
+			addr.sendMsg(*msg);
+		})
+	}
+
+	removeListener { | addr |
+		addr.asSymbol.removeNotifier(this, \msg);
 	}
 
 	setJoint { | joint, dim, value |
@@ -137,16 +142,32 @@ AnimationController : NamedSingleton2 {
 	stopCtl { | joint, dim |
 		this.getCtl(joint, dim).free;
 	}
-	stopCtls {
+	stopCtls { // stop all synths and set control busses to 0
 		var nullSynth;
-		ctlSynths leafDo: { | coords | ctlSynths.at(*coords).free; };
+		this.freeCtls;
 		// add synth to zero mod bus values:
 		this.addCtl(\hip, \x, { \ctl.kr(0) ! 161});
 		nullSynth = this.getCtl(\hip, \x);
 		{ nullSynth.free; }.defer(0.5);
 	}
 
+	freeCtls { // stop all synths.  (Leave control busses unchanged.)
+		ctlSynths leafDo: { | coords | ctlSynths.at(*coords).free; };
+	}
 	addConst { | joint, dim, val = 0 |
 		this.addCtl(joint, dim, { joint.kr(val) });
+	}
+
+	getSound { | joint, dim | ^soundSynths.at(joint, dim); }
+	putSound { | joint, dim, synth | soundSynths.put(joint, dim, synth); }
+	addSound { | joint, dim, func |
+		this.stopSound(joint, dim);
+		current = this;
+		this.putSound(
+			joint, dim, func.play(args: [inchan: this.getCtl(joint, dim)])
+		);
+	}
+	stopSound { | joint, dim |
+		this.getSound(joint, dim).free;
 	}
 }
